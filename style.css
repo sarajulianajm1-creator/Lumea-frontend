@@ -1,0 +1,263 @@
+/* ============================================================
+   LUMEA - Hoja de Estilos Unificada (Bootstrap 5 Companion)
+   ============================================================ */
+
+/* --- Variables de Diseño --- */
+:root {
+  --lumea-primary: #1e5e3a;
+  --lumea-primary-hover: #15452a;
+  --lumea-primary-light: #2d6a4f;
+  --lumea-accent-soft: #e8f5e9;
+  --lumea-accent-badge: #d8f3dc;
+  --lumea-accent-border: #b7e4c7;
+  --lumea-text-dark: #1b281f;
+  --lumea-text-muted: #4f6458;
+  --lumea-bg-page: #f8faf8;
+  --lumea-card-bg: #ffffff;
+  --lumea-border-subtle: #e2e8e4;
+  --lumea-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --lumea-shadow-hover: 0 12px 28px rgba(30, 94, 58, 0.12);
+}
+
+/* --- Base & Tipografía --- */
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--lumea-bg-page);
+  color: var(--lumea-text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* --- Botones Personalizados LUMEA --- */
+.btn-lumea {
+  background-color: var(--lumea-primary);
+  color: #ffffff !important;
+  font-weight: 600;
+  border: 1px solid var(--lumea-primary);
+  transition: all 0.25s ease;
+}
+
+.btn-lumea:hover,
+.btn-lumea:focus {
+  background-color: var(--lumea-primary-hover);
+  border-color: var(--lumea-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 94, 58, 0.25);
+}
+
+.btn-lumea-outline {
+  background-color: transparent;
+  color: var(--lumea-primary) !important;
+  font-weight: 600;
+  border: 2px solid var(--lumea-primary);
+  transition: all 0.25s ease;
+}
+
+.btn-lumea-outline:hover,
+.btn-lumea-outline:focus {
+  background-color: var(--lumea-accent-soft);
+  color: var(--lumea-primary-hover) !important;
+  transform: translateY(-2px);
+}
+
+.btn-nav-health {
+  background-color: var(--lumea-accent-soft);
+  color: var(--lumea-primary-light) !important;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: 1px solid var(--lumea-accent-border);
+  transition: all 0.2s ease;
+}
+
+.btn-nav-health:hover {
+  background-color: #c8e6c9;
+  color: var(--lumea-primary) !important;
+}
+
+/* --- Barra de Navegación --- */
+.navbar-lumea {
+  background: #ffffff;
+  border-bottom: 1px solid var(--lumea-border-subtle);
+  transition: all 0.2s ease;
+}
+
+.logo-brand {
+  color: var(--lumea-primary) !important;
+  font-size: 1.35rem;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+}
+
+.navbar .nav-link {
+  color: var(--lumea-text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.navbar .nav-link:hover {
+  color: var(--lumea-primary);
+  background-color: var(--lumea-accent-soft);
+}
+
+.navbar .nav-link.active {
+  color: var(--lumea-primary) !important;
+  font-weight: 700;
+  background-color: var(--lumea-accent-badge);
+}
+
+/* --- Hero Sections --- */
+.hero-section {
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.90) 0%, rgba(248, 250, 248, 0.96) 100%),
+              url("Lumen.png") center/cover no-repeat;
+  border-bottom: 1px solid var(--lumea-border-subtle);
+}
+
+.hero-tag {
+  background-color: var(--lumea-accent-badge);
+  color: var(--lumea-primary);
+  letter-spacing: 0.5px;
+  font-size: 0.82rem;
+}
+
+.hero-title {
+  color: var(--lumea-primary);
+}
+
+.hero-lead {
+  max-width: 720px;
+  font-size: 1.15rem;
+  line-height: 1.65;
+}
+
+/* --- Tarjetas & Efecto Hover --- */
+.card-hover {
+  background-color: var(--lumea-card-bg);
+  border: 1px solid var(--lumea-border-subtle);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--lumea-shadow-hover) !important;
+  border-color: var(--lumea-accent-border) !important;
+}
+
+/* Insignias de paso (01, 02...) */
+.step-badge {
+  width: 44px;
+  height: 44px;
+  background-color: var(--lumea-accent-badge);
+  color: var(--lumea-primary);
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.step-card-highlight {
+  background: linear-gradient(180deg, #ffffff 0%, #f4fbf5 100%);
+  border: 1px solid #74c69d !important;
+}
+
+.step-badge-highlight {
+  background-color: var(--lumea-primary);
+  color: #ffffff;
+}
+
+.card-step-title {
+  color: var(--lumea-primary-light);
+}
+
+.feature-list li {
+  color: var(--lumea-primary-light);
+}
+
+/* --- Tarjetas de Pilares Franciscano (Conócenos) --- */
+.pillar-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background-color: var(--lumea-accent-badge);
+  color: var(--lumea-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.quote-box {
+  background: #ffffff;
+  border-left: 5px solid var(--lumea-primary);
+  box-shadow: var(--lumea-shadow-sm);
+}
+
+/* --- Formularios y Autenticación (Login & Register) --- */
+.auth-container {
+  min-height: calc(100vh - 160px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.4) 0%, rgba(248, 250, 248, 0.9) 100%),
+              url("Lumen.png") center/cover no-repeat;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: #ffffff;
+  border: 1px solid var(--lumea-border-subtle);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card-wide {
+  max-width: 600px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--lumea-accent-border);
+  box-shadow: 0 0 0 0.25rem rgba(45, 106, 79, 0.15);
+}
+
+/* --- Avisos Legales & Salud --- */
+.notice-box-warning {
+  background-color: #fff8e1;
+  border: 1px solid #ffe082 !important;
+  color: #7c5e10;
+}
+
+.notice-box-warning .alert-heading {
+  color: #614605;
+}
+
+/* --- Pie de Página --- */
+.footer-lumea {
+  background-color: #ffffff;
+  border-top: 1px solid var(--lumea-border-subtle);
+  color: var(--lumea-text-muted);
+}
+
+.footer-lumea a {
+  color: var(--lumea-text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-lumea a:hover {
+  color: var(--lumea-primary);
+}
+
+
+  

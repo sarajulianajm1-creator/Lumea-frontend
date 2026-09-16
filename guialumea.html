@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LUMEA | Guía de Uso</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="lumeaaa.png">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Hoja de Estilos Unificada -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Barra de Navegación Global -->
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-lumea sticky-top py-3 shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2 logo-brand" href="index.html">
+          <span>🌿</span> LUMEA
+        </a>
+        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarLumea" aria-controls="navbarLumea" aria-expanded="false" aria-label="Abrir navegación">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarLumea">
+          <ul class="navbar-nav me-auto ms-lg-4 mb-2 mb-lg-0 align-items-lg-center gap-lg-2 pt-3 pt-lg-0">
+            <li class="nav-item">
+              <a class="nav-link px-3" href="index.html">Inicio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link px-3" href="conocenos.html">Conócenos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active px-3" href="guialumea.html">Guía LUMEA</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link px-3" href="terminos.html">Términos</a>
+            </li>
+          </ul>
+          <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mt-3 mt-lg-0">
+            <a href="iniciar-sesion.html" class="btn btn-lumea-outline rounded-pill px-3 py-2 text-decoration-none text-center">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+            </a>
+            <a href="crear-cuenta.html" class="btn btn-lumea rounded-pill px-3 py-2 text-decoration-none text-center">
+              <i class="bi bi-person-plus me-1"></i> Crear Cuenta
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section text-center py-5" id="intro">
+    <div class="container py-3 py-lg-4">
+      <span class="badge rounded-pill px-3 py-2 text-uppercase fw-semibold mb-3 hero-tag">
+        <i class="bi bi-compass me-1"></i> Guía de usuario
+      </span>
+      <h1 class="display-5 fw-bold hero-title mb-3">¿Cómo utilizar LUMEA?</h1>
+      <p class="lead text-secondary mx-auto hero-lead mb-0">
+        LUMEA es una herramienta para que los estudiantes comprendan mejor los alimentos que consumen a diario mediante una simple fotografía, fomentando decisiones conscientes y saludables.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contenido Principal / Pasos -->
+  <main class="py-5" id="guia">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold hero-title mb-2">Paso a paso para tu día a día</h2>
+        <p class="text-secondary mb-0">Aprende a registrar y explorar la información nutricional de tus comidas.</p>
+      </div>
+
+      <!-- Rejilla de Pasos con Bootstrap (1 col móvil, 2 cols tablet, 4 cols desktop) -->
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+        
+        <!-- Paso 01 -->
+        <div class="col">
+          <article class="card h-100 rounded-4 card-hover p-2 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="step-badge mb-3">
+                <span>01</span>
+              </div>
+              <h3 class="h5 fw-bold card-step-title mb-2">Crear cuenta</h3>
+              <p class="text-secondary small card-text mb-0 flex-grow-1">
+                Selecciona “Crear cuenta” y completa tus datos. Al ingresar a tu perfil podrás almacenar tus registros de comida y consultarlos cuando desees.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Paso 02 -->
+        <div class="col">
+          <article class="card h-100 rounded-4 card-hover p-2 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="step-badge mb-3">
+                <span>02</span>
+              </div>
+              <h3 class="h5 fw-bold card-step-title mb-2">Registrar una comida</h3>
+              <p class="text-secondary small card-text mb-0 flex-grow-1">
+                Al momento de comer, pulsa “Registrar comida”. Puedes capturar una fotografía en vivo o elegir una de tu galería. Cuida que los alimentos se aprecien con claridad.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Paso 03 -->
+        <div class="col">
+          <article class="card h-100 rounded-4 card-hover p-2 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="step-badge mb-3">
+                <span>03</span>
+              </div>
+              <h3 class="h5 fw-bold card-step-title mb-2">Analiza la fotografía</h3>
+              <p class="text-secondary small card-text mb-0 flex-grow-1">
+                El sistema procesará la foto reconociendo grupos de alimentos (frutas, vegetales, proteínas, cereales). La precisión dependerá de la iluminación y nitidez.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Paso 04 (Destacado) -->
+        <div class="col">
+          <article class="card h-100 rounded-4 card-hover step-card-highlight p-2 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="step-badge step-badge-highlight mb-3">
+                <span>04</span>
+              </div>
+              <h3 class="h5 fw-bold card-step-title mb-2">Conoce los nutrientes</h3>
+              <p class="text-secondary small card-text mb-3">
+                Recibe una estimación orientativa de calorías y nutrientes esenciales para comprender mejor tu plato.
+              </p>
+              <ul class="list-unstyled feature-list small mt-auto mb-0 pt-3 border-top">
+                <li class="d-flex align-items-center gap-2 mb-1">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span>Alimentos identificados</span>
+                </li>
+                <li class="d-flex align-items-center gap-2 mb-1">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span>Calorías estimadas</span>
+                </li>
+                <li class="d-flex align-items-center gap-2">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span>Aporte de nutrientes clave</span>
+                </li>
+              </ul>
+            </div>
+          </article>
+        </div>
+
+        <!-- Paso 05 -->
+        <div class="col">
+          <article class="card h-100 rounded-4 card-hover p-2 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="step-badge mb-3">
+                <span>05</span>
+              </div>
+              <h3 class="h5 fw-bold card-step-title mb-2">Comprende tu comida</h3>
+              <p class="text-secondary small card-text mb-0 flex-grow-1">
+                Más allá de las calorías, LUMEA ofrece consejos educativos para equilibrar tus comidas. No busca calificar ni juzgar, sino fomentar tu bienestar.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Paso 06 -->
+        <div class="col">
+          <article class="card h-100 rounded-4 card-hover p-2 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="step-badge mb-3">
+                <span>06</span>
+              </div>
+              <h3 class="h5 fw-bold card-step-title mb-2">Guarda tus comidas</h3>
+              <p class="text-secondary small card-text mb-0 flex-grow-1">
+                Al terminar la revisión, pulsa “Guardar registro” para crear un histórico personal de tus hábitos a lo largo del tiempo.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Paso 07 -->
+        <div class="col">
+          <article class="card h-100 rounded-4 card-hover p-2 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="step-badge mb-3">
+                <span>07</span>
+              </div>
+              <h3 class="h5 fw-bold card-step-title mb-2">Consulta tus registros</h3>
+              <p class="text-secondary small card-text mb-0 flex-grow-1">
+                En “Mis registros” podrás repasar tus platos guardados cronológicamente y reflexionar sobre tu progreso, sin presiones de peso ni comparaciones con otros.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Paso 08 -->
+        <div class="col">
+          <article class="card h-100 rounded-4 card-hover p-2 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="step-badge mb-3">
+                <span>08</span>
+              </div>
+              <h3 class="h5 fw-bold card-step-title mb-2">Decisiones conscientes</h3>
+              <p class="text-secondary small card-text mb-0 flex-grow-1">
+                Convierte una foto diaria en un aprendizaje continuo sobre variedad y armonía alimentaria para mejorar tu calidad de vida.
+              </p>
+            </div>
+          </article>
+        </div>
+
+      </div>
+
+      <!-- Alerta / Aviso Legal Educativo con Bootstrap Alert -->
+      <aside class="alert notice-box-warning shadow-sm rounded-4 p-4 d-flex align-items-start gap-3" id="descargo" role="alert">
+        <div class="fs-2 text-warning lh-1">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div>
+          <h4 class="alert-heading h6 fw-bold mb-1">Nota importante de salud</h4>
+          <p class="mb-0 small">
+            LUMEA proporciona estimaciones y contenido exclusivamente con fines educativos. La información mostrada no sustituye bajo ninguna circunstancia el diagnóstico, orientación o prescripción de un profesional de la salud o nutricionista.
+          </p>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Pie de Página Unificado -->
+  <footer class="footer-lumea py-4 mt-auto">
+    <div class="container">
+      <div class="row align-items-center gy-3">
+        <div class="col-md-6 text-center text-md-start">
+          <span class="fw-bold hero-title">🌿 LUMEA</span>
+          <span class="small text-secondary ms-2">&copy; 2026. Bienestar y educación nutricional para estudiantes.</span>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <ul class="list-inline mb-0 small">
+            <li class="list-inline-item"><a href="index.html">Inicio</a></li>
+            <li class="list-inline-item">&bull;</li>
+            <li class="list-inline-item"><a href="conocenos.html">Conócenos</a></li>
+            <li class="list-inline-item">&bull;</li>
+            <li class="list-inline-item"><a href="guialumea.html">Guía</a></li>
+            <li class="list-inline-item">&bull;</li>
+            <li class="list-inline-item"><a href="terminos.html">Términos</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3.3 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
