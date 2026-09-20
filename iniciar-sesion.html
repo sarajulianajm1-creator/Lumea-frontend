@@ -161,7 +161,8 @@
         if (ok && cuerpo.success) {
           guardarSesion(email);
           mensaje.classList.add("alert-success");
-          mensaje.textContent = "¡Bienvenida de nuevo, " + cuerpo.perfil.nombre + "!";
+          mensaje.innerHTML = "¡Bienvenida de nuevo, " + cuerpo.perfil.nombre +
+            '! <a href="registrar-comida.html" class="alert-link">Registrar una comida &rarr;</a>';
         } else {
           mensaje.classList.add("alert-danger");
           mensaje.textContent = "No existe una cuenta con ese correo. ¿Quieres crear una?";

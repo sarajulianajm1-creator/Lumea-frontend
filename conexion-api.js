@@ -32,3 +32,35 @@ async function buscarPerfilPorCorreo(email) {
 function guardarSesion(email) {
   localStorage.setItem("lumea_email", email);
 }
+
+function obtenerSesion() {
+  return localStorage.getItem("lumea_email");
+}
+
+function cerrarSesion() {
+  localStorage.removeItem("lumea_email");
+}
+
+// Envía la foto a /predecir. `email` es opcional (multipart/form-data,
+// igual que en app.py) -- si hay sesión activa, la predicción queda ligada
+// a ese perfil en historial_comida; si no, igual se predice pero sin dueño.
+async function predecirComida(archivoImagen, email) {
+  const formulario = new FormData();
+  formulario.append("file", archivoImagen);
+  if (email) {
+    formulario.append("email", email);
+  }
+  const respuesta = await fetch(`${API_BASE_URL}/predecir`, {
+    method: "POST",
+    body: formulario,
+  });
+  const cuerpo = await respuesta.json();
+  return { ok: respuesta.ok, cuerpo };
+}
+
+async function obtenerHistorial(email) {
+  const url = `${API_BASE_URL}/historial?email=${encodeURIComponent(email)}`;
+  const respuesta = await fetch(url);
+  const cuerpo = await respuesta.json();
+  return { ok: respuesta.ok, cuerpo };
+}

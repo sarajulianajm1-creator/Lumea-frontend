@@ -222,7 +222,8 @@
         if (ok) {
           guardarSesion(datosPerfil.email);
           mensaje.classList.add("alert-success");
-          mensaje.textContent = "¡Cuenta creada! Bienvenida a LUMEA, " + datosPerfil.nombre + ".";
+          mensaje.innerHTML = "¡Cuenta creada! Bienvenida a LUMEA, " + datosPerfil.nombre +
+            '. <a href="registrar-comida.html" class="alert-link">Registra tu primera comida &rarr;</a>';
         } else {
           mensaje.classList.add("alert-danger");
           mensaje.textContent = cuerpo.error || "No se pudo crear la cuenta. Intenta de nuevo.";
