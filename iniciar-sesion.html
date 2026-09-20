@@ -102,6 +102,9 @@
           <a href="#" class="text-decoration-none text-success fw-medium">¿Olvidaste tu contraseña?</a>
         </div>
 
+        <!-- Mensaje de error / éxito (lo llena conexion-api.js) -->
+        <div id="mensajeLogin" class="alert d-none small mb-3" role="alert"></div>
+
         <!-- Botón de Envío -->
         <button type="submit" class="btn btn-lumea w-100 rounded-pill py-2 mb-3">
           <i class="bi bi-box-arrow-in-right me-1"></i> Entrar a LUMEA
@@ -143,5 +146,32 @@
 
   <!-- Bootstrap 5.3.3 Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="conexion-api.js"></script>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+      const mensaje = document.getElementById("mensajeLogin");
+      const email = document.getElementById("correo").value.trim();
+      // La contraseña NO se verifica -- no hay autenticación real todavía
+      // (ver nota en conexion-api.js). El correo es el único identificador.
+
+      try {
+        const { ok, cuerpo } = await buscarPerfilPorCorreo(email);
+        mensaje.classList.remove("d-none", "alert-success", "alert-danger");
+        if (ok && cuerpo.success) {
+          guardarSesion(email);
+          mensaje.classList.add("alert-success");
+          mensaje.textContent = "¡Bienvenida de nuevo, " + cuerpo.perfil.nombre + "!";
+        } else {
+          mensaje.classList.add("alert-danger");
+          mensaje.textContent = "No existe una cuenta con ese correo. ¿Quieres crear una?";
+        }
+      } catch (error) {
+        mensaje.classList.remove("d-none");
+        mensaje.classList.add("alert-danger");
+        mensaje.textContent = "No se pudo conectar con el servidor. ¿Está corriendo app.py en " + API_BASE_URL + "?";
+      }
+    });
+  </script>
 </body>
 </html>

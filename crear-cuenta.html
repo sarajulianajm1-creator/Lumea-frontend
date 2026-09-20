@@ -106,9 +106,18 @@
 
         <!-- Fila de Datos Biométricos -->
         <div class="row g-3 mb-3">
-          
+
+          <!-- Edad -->
+          <div class="col-6 col-md-3">
+            <label for="edad" class="form-label fw-semibold small text-secondary">Edad</label>
+            <div class="input-group">
+              <input type="number" class="form-control" id="edad" name="edad" placeholder="16" min="5" max="120" required />
+              <span class="input-group-text bg-light text-secondary small">años</span>
+            </div>
+          </div>
+
           <!-- Género -->
-          <div class="col-12 col-md-4">
+          <div class="col-6 col-md-3">
             <label for="genero" class="form-label fw-semibold small text-secondary">Género</label>
             <select class="form-select" id="genero" name="genero" required>
               <option value="" disabled selected>Selecciona</option>
@@ -119,7 +128,7 @@
           </div>
 
           <!-- Altura -->
-          <div class="col-6 col-md-4">
+          <div class="col-6 col-md-3">
             <label for="altura" class="form-label fw-semibold small text-secondary">Altura (cm)</label>
             <div class="input-group">
               <input type="number" class="form-control" id="altura" name="altura" placeholder="170" min="100" max="250" required />
@@ -128,7 +137,7 @@
           </div>
 
           <!-- Peso -->
-          <div class="col-6 col-md-4">
+          <div class="col-6 col-md-3">
             <label for="peso" class="form-label fw-semibold small text-secondary">Peso (kg)</label>
             <div class="input-group">
               <input type="number" step="0.1" class="form-control" id="peso" name="peso" placeholder="65.0" min="30" max="300" required />
@@ -137,6 +146,9 @@
           </div>
 
         </div>
+
+        <!-- Mensaje de error / éxito (lo llena conexion-api.js) -->
+        <div id="mensajeRegistro" class="alert d-none small mb-3" role="alert"></div>
 
         <!-- Aceptación de Términos -->
         <div class="form-check mb-4 small">
@@ -187,5 +199,40 @@
 
   <!-- Bootstrap 5.3.3 Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="conexion-api.js"></script>
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+      const mensaje = document.getElementById("mensajeRegistro");
+
+      const datosPerfil = {
+        nombre: document.getElementById("nombre").value.trim(),
+        email: document.getElementById("correo").value.trim(),
+        edad: Number(document.getElementById("edad").value),
+        genero: document.getElementById("genero").value,
+        peso: Number(document.getElementById("peso").value),
+        altura: Number(document.getElementById("altura").value),
+        // La contraseña NO se envía -- el backend no la valida ni la
+        // almacena (ver nota en conexion-api.js).
+      };
+
+      try {
+        const { ok, cuerpo } = await crearOActualizarPerfil(datosPerfil);
+        mensaje.classList.remove("d-none", "alert-success", "alert-danger");
+        if (ok) {
+          guardarSesion(datosPerfil.email);
+          mensaje.classList.add("alert-success");
+          mensaje.textContent = "¡Cuenta creada! Bienvenida a LUMEA, " + datosPerfil.nombre + ".";
+        } else {
+          mensaje.classList.add("alert-danger");
+          mensaje.textContent = cuerpo.error || "No se pudo crear la cuenta. Intenta de nuevo.";
+        }
+      } catch (error) {
+        mensaje.classList.remove("d-none");
+        mensaje.classList.add("alert-danger");
+        mensaje.textContent = "No se pudo conectar con el servidor. ¿Está corriendo app.py en " + API_BASE_URL + "?";
+      }
+    });
+  </script>
 </body>
 </html>
