@@ -8,7 +8,7 @@
 //
 // Cambia esta URL si el backend corre en otra dirección/puerto (ej. el día
 // de la sustentación, si no es localhost).
-const API_BASE_URL = "http://127.0.0.1:5001";
+const API_BASE_URL = "http://127.0.0.1:5002";
 
 async function crearOActualizarPerfil(datosPerfil) {
   const respuesta = await fetch(`${API_BASE_URL}/perfil`, {
