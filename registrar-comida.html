@@ -181,11 +181,57 @@
       }
     });
 
+    // Nombre para mostrar en un botón a partir del código técnico (ej.
+    // "bonbonbum" -> "Bonbonbum") -- solo para las opciones de confirmación,
+    // que llegan como código crudo. No es tan lindo como nombre_pantalla de
+    // tabla_alimentos, pero no hace falta otra llamada al backend solo para
+    // esto, y /confirmar-alimento ya devuelve el nombre bonito una vez
+    // confirmado.
+    function nombreLegible(codigo) {
+      return codigo.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    async function confirmarYMostrar(codigo) {
+      resultado.innerHTML = '<div class="text-center text-secondary py-3"><span class="spinner-border spinner-border-sm me-2"></span>Confirmando...</div>';
+      try {
+        const { cuerpo } = await confirmarAlimento(codigo, email);
+        mostrarResultado(cuerpo);
+      } catch (error) {
+        resultado.innerHTML = `<div class="alert alert-danger mb-0">No se pudo conectar con el servidor. ¿Está corriendo app.py en ${API_BASE_URL}?</div>`;
+      }
+    }
+
     function mostrarResultado(cuerpo) {
       resultado.classList.remove("d-none");
 
       if (cuerpo.error) {
         resultado.innerHTML = `<div class="alert alert-danger mb-0">${cuerpo.error}</div>`;
+        return;
+      }
+
+      // opciones_sugeridas: el modelo detectó un grupo que se confunde
+      // fácilmente (ajiaco/sancocho/mondongo, o los 7 dulces) -- se pide
+      // confirmar cuál es con un botón por opción, en vez del mensaje
+      // genérico de "vuelve a intentar".
+      if (cuerpo.opciones_sugeridas && cuerpo.opciones_sugeridas.length > 0) {
+        const botones = cuerpo.opciones_sugeridas.map((codigo) => `
+          <button type="button" class="btn btn-lumea-outline rounded-pill btn-confirmar" data-codigo="${codigo}">
+            ${nombreLegible(codigo)}
+          </button>
+        `).join("");
+
+        resultado.innerHTML = `
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="fs-3"><i class="bi bi-question-circle text-warning"></i></span>
+            <h3 class="h5 fw-bold hero-title mb-0">${cuerpo.mensaje ?? "Confirma cuál es"}</h3>
+          </div>
+          <p class="text-secondary small mb-3">Certeza de la IA: <strong>${cuerpo.certeza ?? "—"}%</strong></p>
+          <div class="d-flex flex-wrap gap-2">${botones}</div>
+        `;
+
+        resultado.querySelectorAll(".btn-confirmar").forEach((boton) => {
+          boton.addEventListener("click", () => confirmarYMostrar(boton.dataset.codigo));
+        });
         return;
       }
 

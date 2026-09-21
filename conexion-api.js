@@ -64,3 +64,21 @@ async function obtenerHistorial(email) {
   const cuerpo = await respuesta.json();
   return { ok: respuesta.ok, cuerpo };
 }
+
+// Confirma a mano cuál alimento es cuando /predecir respondió
+// seleccion_manual=true (certeza baja, o el grupo ajiaco/sancocho/mondongo/
+// dulces, que siempre piden confirmación). `email` opcional, mismo patrón
+// que predecirComida.
+async function confirmarAlimento(alimentoCodigo, email) {
+  const cuerpoPeticion = { alimento_codigo: alimentoCodigo };
+  if (email) {
+    cuerpoPeticion.email = email;
+  }
+  const respuesta = await fetch(`${API_BASE_URL}/confirmar-alimento`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cuerpoPeticion),
+  });
+  const cuerpo = await respuesta.json();
+  return { ok: respuesta.ok, cuerpo };
+}
