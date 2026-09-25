@@ -116,7 +116,7 @@ main {
 /* --- Hero Sections --- */
 .hero-section {
   background: linear-gradient(135deg, rgba(232, 245, 233, 0.90) 0%, rgba(248, 250, 248, 0.96) 100%),
-              url("Lumen.png") center/cover no-repeat;
+    url("Lumen.png") center/cover no-repeat;
   border-bottom: 1px solid var(--lumea-border-subtle);
 }
 
@@ -209,7 +209,7 @@ main {
   justify-content: center;
   padding: 2.5rem 1rem;
   background: linear-gradient(135deg, rgba(232, 245, 233, 0.4) 0%, rgba(248, 250, 248, 0.9) 100%),
-              url("Lumen.png") center/cover no-repeat;
+    url("Lumen.png") center/cover no-repeat;
 }
 
 .auth-card {
@@ -222,7 +222,7 @@ main {
 }
 
 .auth-card-wide {
-  max-width: 600px;
+  max-width: 620px;
 }
 
 .form-control:focus,
@@ -230,6 +230,52 @@ main {
   border-color: var(--lumea-accent-border);
   box-shadow: 0 0 0 0.25rem rgba(45, 106, 79, 0.15);
 }
+
+/* --- Botones de Selección de Objetivo --- */
+.objective-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.6rem;
+}
+
+.btn-objective {
+  background-color: #ffffff;
+  border: 1.5px solid var(--lumea-border-subtle);
+  color: var(--lumea-text-dark);
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 0.6rem 0.85rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 56px;
+  white-space: normal;
+}
+
+.btn-objective:hover {
+  background-color: var(--lumea-accent-soft);
+  border-color: var(--lumea-accent-border);
+  color: var(--lumea-primary);
+  transform: translateY(-2px);
+}
+
+.btn-check:checked+.btn-objective {
+  background-color: var(--lumea-accent-badge) !important;
+  border-color: var(--lumea-primary) !important;
+  color: var(--lumea-primary) !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(30, 94, 58, 0.15);
+}
+
+.btn-check:focus+.btn-objective {
+  box-shadow: 0 0 0 0.25rem rgba(45, 106, 79, 0.2);
+}
+
 
 /* --- Avisos Legales & Salud --- */
 .notice-box-warning {
@@ -258,6 +304,3 @@ main {
 .footer-lumea a:hover {
   color: var(--lumea-primary);
 }
-
-
-  

@@ -69,6 +69,9 @@
         <p class="text-secondary small mb-0">Completa tus datos para personalizar tus estimaciones nutricionales.</p>
       </div>
 
+      <!-- Mensaje de Alerta (Éxito o Error) -->
+      <div id="alertFeedback" class="alert d-none mb-4" role="alert"></div>
+
       <form action="crear-cuenta.html" method="post" id="registerForm">
         
         <!-- Nombre Completo -->
@@ -84,16 +87,16 @@
 
         <!-- Correo Electrónico -->
         <div class="mb-3">
-          <label for="correo" class="form-label fw-semibold small text-secondary">Correo Electrónico</label>
+          <label for="email" class="form-label fw-semibold small text-secondary">Correo Electrónico</label>
           <div class="input-group">
             <span class="input-group-text bg-white border-end-0 text-secondary">
               <i class="bi bi-envelope"></i>
             </span>
-            <input type="email" class="form-control border-start-0 rounded-end" id="correo" name="correo" placeholder="ejemplo@universidad.edu" required />
+            <input type="email" class="form-control border-start-0 rounded-end" id="email" name="email" placeholder="ejemplo@universidad.edu" required />
           </div>
         </div>
 
-        <!-- Contraseña -->
+        <!-- Contraseña (No se envía al backend en esta fase) -->
         <div class="mb-3">
           <label for="contrasena" class="form-label fw-semibold small text-secondary">Contraseña</label>
           <div class="input-group">
@@ -104,11 +107,20 @@
           </div>
         </div>
 
-        <!-- Fila de Datos Biométricos -->
+        <!-- Fila de Datos Biométricos (Edad, Género, Altura, Peso) -->
         <div class="row g-3 mb-3">
           
+          <!-- Edad -->
+          <div class="col-6 col-md-3">
+            <label for="edad" class="form-label fw-semibold small text-secondary">Edad</label>
+            <div class="input-group">
+              <input type="number" class="form-control" id="edad" name="edad" placeholder="20" min="14" max="120" required />
+              <span class="input-group-text bg-light text-secondary small">años</span>
+            </div>
+          </div>
+
           <!-- Género -->
-          <div class="col-12 col-md-4">
+          <div class="col-6 col-md-3">
             <label for="genero" class="form-label fw-semibold small text-secondary">Género</label>
             <select class="form-select" id="genero" name="genero" required>
               <option value="" disabled selected>Selecciona</option>
@@ -119,7 +131,7 @@
           </div>
 
           <!-- Altura -->
-          <div class="col-6 col-md-4">
+          <div class="col-6 col-md-3">
             <label for="altura" class="form-label fw-semibold small text-secondary">Altura (cm)</label>
             <div class="input-group">
               <input type="number" class="form-control" id="altura" name="altura" placeholder="170" min="100" max="250" required />
@@ -128,7 +140,7 @@
           </div>
 
           <!-- Peso -->
-          <div class="col-6 col-md-4">
+          <div class="col-6 col-md-3">
             <label for="peso" class="form-label fw-semibold small text-secondary">Peso (kg)</label>
             <div class="input-group">
               <input type="number" step="0.1" class="form-control" id="peso" name="peso" placeholder="65.0" min="30" max="300" required />
@@ -136,6 +148,56 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- Selección de Objetivo (Exactamente 5 opciones como botones seleccionables) -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold small text-secondary d-block mb-2">
+            Objetivo Principal <span class="text-danger">*</span>
+          </label>
+          <div class="objective-grid">
+            
+            <div>
+              <input type="radio" class="btn-check" name="objetivo" id="obj1" value="comer_balanceado" autocomplete="off" required />
+              <label class="btn-objective w-100" for="obj1">
+                <span>🥗</span>
+                <span>Comer balanceado</span>
+              </label>
+            </div>
+
+            <div>
+              <input type="radio" class="btn-check" name="objetivo" id="obj2" value="tomar_agua" autocomplete="off" />
+              <label class="btn-objective w-100" for="obj2">
+                <span>💧</span>
+                <span>Tomar agua</span>
+              </label>
+            </div>
+
+            <div>
+              <input type="radio" class="btn-check" name="objetivo" id="obj3" value="moverse_mas" autocomplete="off" />
+              <label class="btn-objective w-100" for="obj3">
+                <span>🏃</span>
+                <span>Moverse más</span>
+              </label>
+            </div>
+
+            <div>
+              <input type="radio" class="btn-check" name="objetivo" id="obj4" value="dormir_mejor" autocomplete="off" />
+              <label class="btn-objective w-100" for="obj4">
+                <span>🌙</span>
+                <span>Dormir mejor</span>
+              </label>
+            </div>
+
+            <div>
+              <input type="radio" class="btn-check" name="objetivo" id="obj5" value="conocer_lo_que_como" autocomplete="off" />
+              <label class="btn-objective w-100" for="obj5">
+                <span>🔍</span>
+                <span>Conocer lo que como</span>
+              </label>
+            </div>
+
+          </div>
         </div>
 
         <!-- Aceptación de Términos -->
@@ -147,7 +209,7 @@
         </div>
 
         <!-- Botón de Envío -->
-        <button type="submit" class="btn btn-lumea w-100 rounded-pill py-2 mb-3">
+        <button type="submit" id="btnSubmit" class="btn btn-lumea w-100 rounded-pill py-2 mb-3">
           <i class="bi bi-check2-circle me-1"></i> Finalizar Registro
         </button>
 
@@ -187,5 +249,108 @@
 
   <!-- Bootstrap 5.3.3 Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script para conectar el formulario al backend con fetch -->
+  <script>
+    // 1. Obtenemos referencias a los elementos del formulario y la alerta
+    const registerForm = document.getElementById('registerForm');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const alertFeedback = document.getElementById('alertFeedback');
+
+    // Función auxiliar para mostrar alertas de éxito o error
+    function mostrarAlerta(tipo, mensaje) {
+      alertFeedback.className = `alert alert-${tipo} d-flex align-items-center gap-2 mb-4`;
+      const icono = tipo === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+      alertFeedback.innerHTML = `
+        <i class="bi ${icono} fs-5 flex-shrink-0"></i>
+        <div>${mensaje}</div>
+      `;
+      alertFeedback.classList.remove('d-none');
+      // Aseguramos que la alerta sea visible deslizándonos hacia ella si es necesario
+      alertFeedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // 2. Escuchamos el evento 'submit' del formulario
+    registerForm.addEventListener('submit', async function (event) {
+      // Evitamos que la página se recargue (comportamiento por defecto de HTML)
+      event.preventDefault();
+
+      // Ocultamos alertas previas
+      alertFeedback.classList.add('d-none');
+
+      // Obtenemos el objetivo seleccionado
+      const objetivoSeleccionado = document.querySelector('input[name="objetivo"]:checked');
+      if (!objetivoSeleccionado) {
+        mostrarAlerta('danger', 'Por favor selecciona uno de los 5 objetivos.');
+        return;
+      }
+
+      // 3. Preparamos el objeto JSON con los datos exactos requeridos por el backend
+      // NOTA: La contraseña no se incluye aquí a propósito
+      const datosUsuario = {
+        nombre: document.getElementById('nombre').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        edad: parseInt(document.getElementById('edad').value, 10),
+        genero: document.getElementById('genero').value,
+        peso: parseFloat(document.getElementById('peso').value),
+        altura: parseFloat(document.getElementById('altura').value),
+        objetivo: objetivoSeleccionado.value
+      };
+
+      // 4. Cambiamos el estado del botón a "Cargando..." para evitar dobles clics
+      const textoOriginalBoton = btnSubmit.innerHTML;
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Registrando...
+      `;
+
+      try {
+        // 5. Enviamos la petición POST al backend con fetch
+        const response = await fetch('http://127.0.0.1:5001/perfil', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datosUsuario)
+        });
+
+        // Intentamos leer la respuesta JSON del servidor
+        let resultado = {};
+        try {
+          resultado = await response.json();
+        } catch (e) {
+          // Si el servidor no devolvió JSON, dejamos resultado vacío
+        }
+
+        // 6. Verificamos si la respuesta fue exitosa (código HTTP 200 a 299)
+        if (response.ok) {
+          const mensajeServidor = resultado.mensaje || resultado.message || '¡Tu perfil ha sido registrado con éxito!';
+          mostrarAlerta('success', `${mensajeServidor} Ya puedes ingresar.`);
+
+          // Opcional: limpiar el formulario tras éxito
+          registerForm.reset();
+
+          // Opcional: redirigir a iniciar sesión tras 2.5 segundos
+          setTimeout(() => {
+            window.location.href = 'iniciar-sesion.html';
+          }, 2500);
+        } else {
+          // Si el servidor respondió con un error (ej. 400, 500)
+          const errorServidor = resultado.error || resultado.mensaje || resultado.message || `Error del servidor (código ${response.status})`;
+          mostrarAlerta('danger', `No se pudo registrar: ${errorServidor}`);
+        }
+
+      } catch (error) {
+        // Si no hay conexión (ej. el backend no está encendido o hay bloqueo CORS)
+        console.error('Error al conectar con el backend:', error);
+        mostrarAlerta('danger', 'No se pudo conectar con el servidor backend en http://127.0.0.1:5001. Asegúrate de tenerlo encendido.');
+      } finally {
+        // Restauramos el botón
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = textoOriginalBoton;
+      }
+    });
+  </script>
 </body>
 </html>
