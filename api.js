@@ -7,10 +7,9 @@
 // Todas las funciones devuelven { ok, cuerpo }: ok es true si el backend
 // respondió 2xx, y cuerpo es el JSON de la respuesta.
 //
-// Sesión: por ahora el correo es el identificador del perfil (perfil.email
-// es UNIQUE) y se guarda en localStorage. El login con contraseña (POST
-// /login, Bcrypt) lo está programando Isabella: cuando exista, se usa
-// iniciarSesion() de abajo.
+// Sesión: el login con contraseña (POST /login, Bcrypt) verifica la
+// contraseña; después, el correo se guarda en localStorage y las demás rutas
+// identifican a la persona por el correo (todavía no hay token de sesión).
 //
 // Cambia esta URL si el backend corre en otra dirección/puerto (ej. el día
 // de la sustentación, si no es localhost).
@@ -109,11 +108,10 @@ async function confirmarAlimento(alimentoCodigo, email) {
 }
 
 // ===== Login con contraseña =====
-// POST /login todavía NO existe: Isabella lo está programando (sus pruebas
-// están en Backend/test_login.py). Mientras tanto, iniciar-sesion.html usa
-// buscarPerfilPorCorreo(); hoy esta función falla ("Failed to fetch").
-// Cuando exista, responderá 200 con el perfil, o 401 con el mismo mensaje
-// si el correo no existe o la contraseña está mal.
+// POST /login responde 200 con el perfil, o 401 con el MISMO mensaje si el
+// correo no existe o la contraseña está mal (y una "ayuda" para cuentas de
+// antes de las contraseñas). Para crear la cuenta, crearOActualizarPerfil()
+// debe llevar "contraseña" (mínimo 6 caracteres).
 function iniciarSesion(email, contrasena) {
   return _postJSON("/login", { email, "contraseña": contrasena });
 }

@@ -212,8 +212,9 @@
         genero: document.getElementById("genero").value,
         peso: Number(document.getElementById("peso").value),
         altura: Number(document.getElementById("altura").value),
-        // La contraseña NO se envía -- el backend no la valida ni la
-        // almacena (ver nota en api.js).
+        // Obligatoria desde el login con Bcrypt (mínimo 6 caracteres). El
+        // backend guarda solo su hash, nunca la contraseña.
+        "contraseña": document.getElementById("contrasena").value,
       };
 
       try {
