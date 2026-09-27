@@ -133,6 +133,24 @@
   </footer>
 
   <!-- Bootstrap 5.3.3 Bundle JS -->
+  <style>
+    /* Sello de advertencia: octágono negro con letras blancas, como en la norma. */
+    .sello {
+      width: 88px;
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0.5rem;
+      background: #000;
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      line-height: 1.15;
+      clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="api.js"></script>
   <script src="sesion-nav.js"></script>
@@ -197,6 +215,47 @@
       return codigo.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     }
 
+    // Sellos de advertencia (Res. 810 de 2021). Nunca se dice "saludable":
+    // lista vacía = "Sin sellos de advertencia"; null = no se sabe, no se
+    // muestra nada. Ver Backend/CONTRATO_CONFIRMACION.md.
+    const TEXTO_SELLO = {
+      sodio: "EXCESO EN SODIO",
+      azucares: "EXCESO EN AZÚCARES",
+      grasas_saturadas: "EXCESO EN GRASAS SATURADAS",
+      grasas_trans: "EXCESO EN GRASAS TRANS",
+      edulcorantes: "CONTIENE EDULCORANTES",
+    };
+
+    function htmlSellos(sellos) {
+      if (sellos === null || sellos === undefined) return "";
+      if (sellos.length === 0) {
+        return '<p class="small text-secondary mb-1"><i class="bi bi-info-circle me-1"></i>Sin sellos de advertencia</p>';
+      }
+      return `<div class="d-flex flex-wrap gap-2 my-2">${sellos.map((s) => `<span class="sello">${TEXTO_SELLO[s] ?? s}</span>`).join("")}</div>`;
+    }
+
+    // Botones de confirmación agrupados por "grupo" (p. ej. tamal / envuelto).
+    // opciones_detalle trae el nombre bonito; si no viniera, se usa el código.
+    function htmlOpciones(cuerpo) {
+      const opciones = cuerpo.opciones_detalle ??
+        cuerpo.opciones_sugeridas.map((codigo) => ({ codigo, nombre: nombreLegible(codigo), grupo: "" }));
+      const grupos = {};
+      opciones.forEach((opcion) => {
+        const grupo = opcion.grupo ?? "";
+        if (!grupos[grupo]) grupos[grupo] = [];
+        grupos[grupo].push(opcion);
+      });
+      const variosGrupos = Object.keys(grupos).length > 1;
+      return Object.entries(grupos).map(([grupo, lista]) => `
+        ${variosGrupos ? `<p class="small fw-semibold text-secondary text-capitalize mb-1 mt-2">${grupo}</p>` : ""}
+        <div class="d-flex flex-wrap gap-2">
+          ${lista.map((opcion) => `
+            <button type="button" class="btn btn-lumea-outline rounded-pill btn-confirmar" data-codigo="${opcion.codigo}">
+              ${opcion.nombre}
+            </button>`).join("")}
+        </div>`).join("");
+    }
+
     async function confirmarYMostrar(codigo) {
       resultado.innerHTML = '<div class="text-center text-secondary py-3"><span class="spinner-border spinner-border-sm me-2"></span>Confirmando...</div>';
       try {
@@ -220,19 +279,13 @@
       // confirmar cuál es con un botón por opción, en vez del mensaje
       // genérico de "vuelve a intentar".
       if (cuerpo.opciones_sugeridas && cuerpo.opciones_sugeridas.length > 0) {
-        const botones = cuerpo.opciones_sugeridas.map((codigo) => `
-          <button type="button" class="btn btn-lumea-outline rounded-pill btn-confirmar" data-codigo="${codigo}">
-            ${nombreLegible(codigo)}
-          </button>
-        `).join("");
-
         resultado.innerHTML = `
           <div class="d-flex align-items-center gap-2 mb-2">
             <span class="fs-3"><i class="bi bi-question-circle text-warning"></i></span>
             <h3 class="h5 fw-bold hero-title mb-0">${cuerpo.mensaje ?? "Confirma cuál es"}</h3>
           </div>
-          <p class="text-secondary small mb-3">Certeza de la IA: <strong>${cuerpo.certeza ?? "—"}%</strong></p>
-          <div class="d-flex flex-wrap gap-2">${botones}</div>
+          <p class="text-secondary small mb-2">Certeza de la IA: <strong>${cuerpo.certeza ?? "—"}%</strong></p>
+          ${htmlOpciones(cuerpo)}
         `;
 
         resultado.querySelectorAll(".btn-confirmar").forEach((boton) => {
@@ -262,6 +315,7 @@
           <h3 class="h5 fw-bold hero-title mb-0">${cuerpo.alimento ?? "Alimento no identificado"}</h3>
         </div>
         <p class="text-secondary small mb-1">Certeza de la IA: <strong>${cuerpo.certeza ?? "—"}%</strong></p>
+        ${htmlSellos(cuerpo.sellos_advertencia)}
         ${cuerpo.dato_curioso ? `<p class="small mb-1"><i class="bi bi-stars me-1"></i>${cuerpo.dato_curioso}</p>` : ""}
         <p class="small text-secondary mb-0">${cuerpo.mensaje ?? ""}</p>
         ${notaGuardado}

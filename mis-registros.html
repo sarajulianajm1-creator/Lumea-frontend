@@ -141,7 +141,9 @@
       if (!fechaISO) return "";
       const fecha = new Date(fechaISO);
       if (Number.isNaN(fecha.getTime())) return fechaISO;
-      return fecha.toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" });
+      // El backend manda la fecha como "Sun, 27 Sep 2026 00:00:00 GMT" (medianoche
+      // en UTC). Sin timeZone: "UTC", en Colombia (UTC-5) saldría el día anterior.
+      return fecha.toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
     }
 
     async function cargarHistorial() {
@@ -157,12 +159,7 @@
         listaRegistros.innerHTML = cuerpo.historial.map((registro) => `
           <div class="col">
             <div class="card h-100 rounded-4 shadow-sm p-3">
-              <div class="d-flex justify-content-between align-items-start">
-                <h3 class="h6 fw-bold hero-title mb-1">${registro.alimento_detectado ?? "Alimento"}</h3>
-                <span class="badge ${registro.balanceado ? "text-bg-success" : "text-bg-secondary"} rounded-pill">
-                  ${registro.balanceado ? "Balanceado" : "Ocasional"}
-                </span>
-              </div>
+              <h3 class="h6 fw-bold hero-title mb-1">${registro.alimento_detectado ?? "Alimento"}</h3>
               <p class="small text-secondary mb-1"><i class="bi bi-calendar3 me-1"></i>${formatearFecha(registro.fecha)}</p>
               <p class="small text-secondary mb-1"><i class="bi bi-fire me-1"></i>${registro.calorias_aprox ?? "—"} kcal aprox.</p>
               <p class="small text-secondary mb-0"><i class="bi bi-bullseye me-1"></i>Certeza IA: ${Number(registro.certeza_ia ?? 0).toFixed(1)}%</p>
