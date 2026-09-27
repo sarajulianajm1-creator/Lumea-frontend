@@ -102,7 +102,7 @@
           <a href="#" class="text-decoration-none text-success fw-medium">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <!-- Mensaje de error / éxito (lo llena conexion-api.js) -->
+        <!-- Mensaje de error / éxito (lo llena api.js) -->
         <div id="mensajeLogin" class="alert d-none small mb-3" role="alert"></div>
 
         <!-- Botón de Envío -->
@@ -146,14 +146,14 @@
 
   <!-- Bootstrap 5.3.3 Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="conexion-api.js"></script>
+  <script src="api.js"></script>
   <script>
     document.getElementById("loginForm").addEventListener("submit", async (evento) => {
       evento.preventDefault();
       const mensaje = document.getElementById("mensajeLogin");
       const email = document.getElementById("correo").value.trim();
       // La contraseña NO se verifica -- no hay autenticación real todavía
-      // (ver nota en conexion-api.js). El correo es el único identificador.
+      // (ver nota en api.js). El correo es el único identificador.
 
       try {
         const { ok, cuerpo } = await buscarPerfilPorCorreo(email);

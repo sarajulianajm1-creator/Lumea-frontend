@@ -1,6 +1,6 @@
 // sesion-nav.js — Llena el bloque de sesión de la barra de navegación
 // (botones de Iniciar Sesión/Crear Cuenta, o el correo + Cerrar Sesión si
-// ya hay una "sesión" activa -- ver la nota de conexion-api.js: es solo el
+// ya hay una "sesión" activa -- ver la nota de api.js: es solo el
 // correo guardado en localStorage, no autenticación real).
 document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("navSesion");
