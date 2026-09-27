@@ -119,6 +119,16 @@
   </footer>
 
   <!-- Bootstrap 5.3.3 Bundle JS -->
+  <style>
+    /* Sello de advertencia en pequeño: octágono negro, como en la norma. */
+    .sello-mini {
+      width: 58px; height: 58px;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      padding: 0.35rem; background: #000; color: #fff;
+      font-size: 0.45rem; font-weight: 700; line-height: 1.1;
+      clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+    }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="api.js"></script>
   <script src="sesion-nav.js"></script>
@@ -135,6 +145,21 @@
     } else {
       conSesion.classList.remove("d-none");
       cargarHistorial();
+    }
+
+    // Sellos de advertencia (Res. 810): lista vacía = "Sin sellos", null = no se sabe.
+    const TEXTO_SELLO = {
+      sodio: "EXCESO EN SODIO",
+      azucares: "EXCESO EN AZÚCARES",
+      grasas_saturadas: "EXCESO EN GRASAS SATURADAS",
+      grasas_trans: "EXCESO EN GRASAS TRANS",
+      edulcorantes: "CONTIENE EDULCORANTES",
+    };
+
+    function htmlSellos(sellos) {
+      if (sellos === null || sellos === undefined) return "";
+      if (sellos.length === 0) return '<p class="small text-secondary mb-1">Sin sellos de advertencia</p>';
+      return `<div class="d-flex flex-wrap gap-1 mb-1">${sellos.map((s) => `<span class="sello-mini">${TEXTO_SELLO[s] ?? s}</span>`).join("")}</div>`;
     }
 
     function formatearFecha(fechaISO) {
@@ -161,6 +186,7 @@
             <div class="card h-100 rounded-4 shadow-sm p-3">
               <h3 class="h6 fw-bold hero-title mb-1">${registro.alimento_detectado ?? "Alimento"}</h3>
               <p class="small text-secondary mb-1"><i class="bi bi-calendar3 me-1"></i>${formatearFecha(registro.fecha)}</p>
+              ${htmlSellos(registro.sellos_advertencia)}
               <p class="small text-secondary mb-1"><i class="bi bi-fire me-1"></i>${registro.calorias_aprox ?? "—"} kcal aprox.</p>
               <p class="small text-secondary mb-0"><i class="bi bi-bullseye me-1"></i>Certeza IA: ${Number(registro.certeza_ia ?? 0).toFixed(1)}%</p>
             </div>

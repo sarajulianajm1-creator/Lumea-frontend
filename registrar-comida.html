@@ -234,6 +234,18 @@
       return `<div class="d-flex flex-wrap gap-2 my-2">${sellos.map((s) => `<span class="sello">${TEXTO_SELLO[s] ?? s}</span>`).join("")}</div>`;
     }
 
+    // XP ganado, misiones cumplidas y celebraciones (Puntos v2). Nunca se
+    // muestra como juicio sobre la comida.
+    function htmlGamificacion(gami) {
+      if (!gami) return "";
+      const partes = [];
+      if (gami.xp_ganado > 0) partes.push(`<strong>+${gami.xp_ganado} XP</strong>`);
+      (gami.misiones_cumplidas || []).forEach((m) => partes.push(`<i class="bi bi-flag-fill me-1"></i>¡Misión cumplida: ${m.nombre}!`));
+      if (gami.subio_de_nivel) partes.push(`<i class="bi bi-stars me-1"></i>¡Subiste al nivel ${gami.nivel}!`);
+      if (gami.meta_diaria && gami.meta_diaria.recien_cumplida) partes.push("¡Cumpliste la meta de hoy!");
+      return partes.length ? `<p class="small text-success mt-2 mb-0">${partes.join(" · ")}</p>` : "";
+    }
+
     // Botones de confirmación agrupados por "grupo" (p. ej. tamal / envuelto).
     // opciones_detalle trae el nombre bonito; si no viniera, se usa el código.
     function htmlOpciones(cuerpo) {
@@ -316,9 +328,11 @@
         </div>
         <p class="text-secondary small mb-1">Certeza de la IA: <strong>${cuerpo.certeza ?? "—"}%</strong></p>
         ${htmlSellos(cuerpo.sellos_advertencia)}
+        ${cuerpo.mensaje_educativo ? `<div class="alert alert-light border small py-2 mb-2"><i class="bi bi-lightbulb me-1"></i>${cuerpo.mensaje_educativo}</div>` : ""}
         ${cuerpo.dato_curioso ? `<p class="small mb-1"><i class="bi bi-stars me-1"></i>${cuerpo.dato_curioso}</p>` : ""}
         <p class="small text-secondary mb-0">${cuerpo.mensaje ?? ""}</p>
         ${notaGuardado}
+        ${htmlGamificacion(cuerpo.gamificacion)}
       `;
     }
   </script>
