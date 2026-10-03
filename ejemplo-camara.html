@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lumea | Registrar comida</title>
+  <link rel="stylesheet" href="estilos/tokens.css">
+  <link rel="stylesheet" href="estilos/componentes.css">
+</head>
+<body>
+  <!-- Íconos: Lucide (licencia ISC). Se dibujan una vez aquí y se reusan con <use>. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-camara" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="i-progreso" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+    <symbol id="i-animo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></symbol>
+    <symbol id="i-perfil" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-subir" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  </svg>
+
+  <div class="app">
+    <nav class="nav-app" aria-label="Principal">
+      <a class="nav-app__marca" href="#">Lumea</a>
+      <a class="nav-app__enlace" href="#"><svg class="icono"><use href="#i-inicio"/></svg>Inicio</a>
+      <a class="nav-app__enlace" href="#" aria-current="page"><svg class="icono"><use href="#i-camara"/></svg>Registrar</a>
+      <a class="nav-app__enlace" href="#"><svg class="icono"><use href="#i-progreso"/></svg>Progreso</a>
+      <a class="nav-app__enlace" href="#"><svg class="icono"><use href="#i-animo"/></svg>Ánimo</a>
+      <a class="nav-app__enlace" href="#"><svg class="icono"><use href="#i-perfil"/></svg>Perfil</a>
+    </nav>
+
+    <main class="contenido">
+      <header>
+        <h1 class="contenido__titulo">Registrar comida</h1>
+        <p class="contenido__subtitulo">Toma una foto de lo que vas a comer. Lumea te dice qué es y algo que vale la pena saber.</p>
+      </header>
+
+      <section class="camara">
+        <div>
+          <div class="visor">
+            <div class="visor__vacio">
+              <svg class="icono"><use href="#i-camara"/></svg>
+              <p>La cámara está apagada</p>
+              <button class="boton" type="button">Encender cámara</button>
+            </div>
+          </div>
+          <div class="controles">
+            <button class="boton boton--grande" type="button" disabled>Tomar foto</button>
+            <button class="boton boton--secundario boton--grande" type="button"><svg class="icono"><use href="#i-subir"/></svg>Subir una foto</button>
+          </div>
+        </div>
+
+        <article class="etiqueta etiqueta--entrando" aria-live="polite">
+          <p class="etiqueta__pregunta">Lumea cree que es</p>
+          <h2 class="etiqueta__nombre">Gaseosa</h2>
+          <div class="etiqueta__certeza">
+            <span class="etiqueta__medidor" style="--certeza: 94%"></span>
+            <span class="numero">Segura al 94 %</span>
+          </div>
+          <div class="sellos">
+            <span class="sello">Exceso en <span>azúcares</span></span>
+          </div>
+          <div class="etiqueta__datos">
+            <span class="etiqueta__kcal numero">42 kcal</span>
+            <span class="etiqueta__unidad">por cada 100 ml</span>
+          </div>
+          <p class="etiqueta__dato">Una lata trae cerca de 39 g de azúcar; la OMS sugiere no pasar de 25 g en todo el día. No está prohibida: es para de vez en cuando.</p>
+          <div class="etiqueta__acciones">
+            <button class="boton" type="button"><svg class="icono"><use href="#i-check"/></svg>Sí, es esto <span class="boton__premio">+10 XP</span></button>
+            <button class="boton boton--fantasma" type="button">No, es otra cosa</button>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

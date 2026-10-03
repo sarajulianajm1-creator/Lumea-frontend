@@ -1,0 +1,97 @@
+/* =====================================================================
+   LUMEA · tokens.css — el sistema de diseño en un solo lugar
+   ---------------------------------------------------------------------
+   Concepto: "plaza de mercado". La paleta sale de la comida que el
+   estudiante fotografía (plátano, lulo, mora, aguacate) sobre el verde
+   de marca que ya usaba el equipo. Cada color de acento tiene UN
+   significado; nunca se usa solo para decorar.
+
+   Regla: ninguna pantalla escribe un color, tamaño o duración a mano.
+   Todo sale de aquí. Cambiar un token cambia toda la app.
+   ===================================================================== */
+
+/* La fuente vive DENTRO del proyecto (carpeta fuentes/), así la app se ve
+   igual aunque el día de la demo no haya internet. Licencia: SIL OFL 1.1
+   (fuentes/OFL-Bricolage.txt): se puede usar y redistribuir gratis. */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("fuentes/bricolage-grotesque-latin-opsz-normal.woff2") format("woff2");
+}
+
+:root {
+  /* ---------- Color: base ---------- */
+  --c-fondo:        #F4F7F1;   /* hoja: fondo general, verde casi blanco */
+  --c-superficie:   #FFFFFF;   /* tarjetas y paneles */
+  --c-tinta:        #1A2A21;   /* texto principal (verde muy oscuro, no negro) */
+  --c-tinta-suave:  #55665B;   /* texto secundario */
+  --c-borde:        #DCE5DA;   /* divisiones y bordes */
+
+  /* ---------- Color: marca ---------- */
+  --c-marca:        #1E5E3A;   /* verde Lumea (heredado del diseño de Sara) */
+  --c-marca-hover:  #154A2D;
+  --c-marca-suave:  #DCEFE1;   /* fondos de selección */
+
+  /* ---------- Color: acentos con significado ---------- */
+  --c-lulo:         #E8892B;   /* logro: XP, racha, subir de nivel */
+  --c-lulo-suave:   #FDEBD7;
+  --c-lulo-tinta:   #8A4A0C;   /* para TEXTO sobre lulo-suave (el lulo puro no pasa contraste) */
+  --c-mora:         #6B3F9E;   /* emociones: estado de ánimo, avatar */
+  --c-mora-suave:   #EEE6F7;
+  --c-platano:      #F2C230;   /* atención amable: "la IA no está segura" */
+  --c-platano-suave:#FFF6D6;
+  --c-platano-tinta:#6E5300;   /* para TEXTO: el amarillo puro es ilegible sobre blanco */
+  --c-error:        #B42318;   /* solo errores del sistema */
+  --c-sello:        #000000;   /* sellos de advertencia: negro por norma (Res. 810) */
+
+  /* ---------- Tipografía ---------- */
+  /* Una sola familia con personalidad, legible para 11–17 años y con
+     tildes y eñe completas. Si no hay internet, cae a la del sistema. */
+  --f-familia: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Escala 1.25 (tercera mayor), base 16 px */
+  --t-xs:  0.8rem;    /* 12.8 px — notas */
+  --t-s:   0.875rem;  /* 14 px — texto secundario */
+  --t-m:   1rem;      /* 16 px — texto */
+  --t-l:   1.25rem;   /* 20 px — subtítulos */
+  --t-xl:  1.563rem;  /* 25 px — títulos de sección */
+  --t-2xl: 1.953rem;  /* 31 px — título de pantalla */
+  --t-3xl: 3.052rem;  /* 49 px — el nombre del alimento */
+  --t-peso-normal: 400;
+  --t-peso-medio: 560;
+  --t-peso-fuerte: 720;
+  --t-interlineado: 1.5;
+  --t-interlineado-titulo: 1.1;
+
+  /* ---------- Espacio (múltiplos de 4 px) ---------- */
+  --e-1: 4px;  --e-2: 8px;  --e-3: 12px; --e-4: 16px;
+  --e-5: 24px; --e-6: 32px; --e-7: 48px; --e-8: 64px;
+
+  /* ---------- Radios: según jerarquía, no uno para todo ---------- */
+  --r-control: 10px;   /* botones, campos */
+  --r-tarjeta: 16px;   /* tarjetas */
+  --r-panel:   24px;   /* paneles grandes y hojas */
+  --r-pildora: 999px;  /* solo chips y etiquetas */
+
+  /* ---------- Sombras: dos niveles, nada más ---------- */
+  --s-1: 0 1px 2px rgba(26, 42, 33, .06), 0 1px 1px rgba(26, 42, 33, .04);
+  --s-2: 0 12px 32px -12px rgba(26, 42, 33, .22);
+
+  /* ---------- Movimiento ---------- */
+  --m-rapido: 120ms;   /* hover, presionar */
+  --m-base:   220ms;   /* abrir, cambiar de estado */
+  --m-lento:  420ms;   /* celebraciones */
+  --m-salida:  cubic-bezier(.2, .8, .2, 1);    /* frena suave al llegar */
+  --m-resorte: cubic-bezier(.34, 1.56, .64, 1);/* rebote leve: solo para logros */
+
+  /* ---------- Estructura ---------- */
+  --ancho-contenido: 1120px;
+  --ancho-lateral: 248px;
+  --alto-barra-inferior: 68px;
+}
+
+/* Quien desactiva las animaciones en su sistema, no las ve. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --m-rapido: 0ms; --m-base: 0ms; --m-lento: 0ms; }
+}

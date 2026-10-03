@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lumea | Sistema de diseño</title>
+  <link rel="stylesheet" href="estilos/tokens.css">
+  <link rel="stylesheet" href="estilos/componentes.css">
+  <style>
+    /* Estilos SOLO de esta página de referencia (no son parte de la app) */
+    .ref { max-width: var(--ancho-contenido); margin: 0 auto; padding: var(--e-8) var(--e-6); display: grid; gap: var(--e-8); }
+    .ref__intro { display: grid; gap: var(--e-4); max-width: 46rem; }
+    .ref__intro h1 { font-size: var(--t-3xl); letter-spacing: -0.03em; }
+    .ref__intro p { font-size: var(--t-l); color: var(--c-tinta-suave); }
+    .ref__seccion { display: grid; gap: var(--e-5); }
+    .ref__seccion > h2 { font-size: var(--t-xl); }
+    .ref__nota { color: var(--c-tinta-suave); max-width: 64ch; }
+
+    .muestras { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--e-4); }
+    .muestra { border-radius: var(--r-tarjeta); overflow: hidden; background: var(--c-superficie); box-shadow: var(--s-1); }
+    .muestra__color { height: 88px; }
+    .muestra__texto { padding: var(--e-3) var(--e-4) var(--e-4); display: grid; gap: 2px; }
+    .muestra__nombre { font-weight: var(--t-peso-fuerte); }
+    .muestra__uso { font-size: var(--t-s); color: var(--c-tinta-suave); }
+    .muestra__hex { font-size: var(--t-xs); color: var(--c-tinta-suave); font-variant-numeric: tabular-nums; }
+
+    .escala { display: grid; gap: var(--e-3); }
+    .escala__fila { display: grid; grid-template-columns: 120px 1fr; align-items: baseline; gap: var(--e-4); padding-bottom: var(--e-3); border-bottom: 1px solid var(--c-borde); }
+    .escala__token { font-size: var(--t-s); color: var(--c-tinta-suave); }
+
+    .fila { display: flex; flex-wrap: wrap; gap: var(--e-4); align-items: center; }
+    .rejilla-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--e-6); align-items: start; }
+
+    .espacios { display: flex; align-items: flex-end; gap: var(--e-4); flex-wrap: wrap; }
+    .espacio { display: grid; justify-items: center; gap: var(--e-2); font-size: var(--t-xs); color: var(--c-tinta-suave); }
+    .espacio__caja { background: var(--c-marca-suave); border: 1px solid var(--c-marca); }
+    .radios { display: flex; gap: var(--e-5); flex-wrap: wrap; }
+    .radio { width: 120px; height: 84px; background: var(--c-superficie); border: 1.5px solid var(--c-borde); display: grid; place-content: center; text-align: center; font-size: var(--t-s); }
+
+    .pantallas { display: flex; gap: var(--e-6); align-items: flex-start; flex-wrap: wrap; }
+    .pantalla { display: grid; gap: var(--e-2); }
+    .pantalla__marco { border-radius: var(--r-tarjeta); overflow: hidden; box-shadow: var(--s-2); background: var(--c-superficie); }
+    .pantalla__marco--pc { width: 704px; height: 440px; }          /* 1280×800 al 55 % */
+    .pantalla__marco--pc iframe { width: 1280px; height: 800px; transform: scale(.55); transform-origin: 0 0; border: 0; }
+    .pantalla__marco--cel { width: 300px; height: 600px; }          /* 390×780 al 77 % */
+    .pantalla__marco--cel iframe { width: 390px; height: 780px; transform: scale(.7692); transform-origin: 0 0; border: 0; }
+    .pantalla__pie { font-size: var(--t-s); color: var(--c-tinta-suave); }
+
+    @media (max-width: 720px) {
+      .ref { padding: var(--e-6) var(--e-4); gap: var(--e-7); }
+      .ref__intro h1 { font-size: var(--t-2xl); }
+      .escala__fila { grid-template-columns: 1fr; gap: var(--e-1); }
+      .pantalla__marco--pc { width: 100%; height: auto; aspect-ratio: 16 / 10; }
+      .pantalla__marco--pc iframe { transform: scale(calc((100vw - 32px) / 1280px)); }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-racha" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  </svg>
+
+  <main class="ref">
+    <header class="ref__intro">
+      <h1>Cómo se ve y se siente Lumea</h1>
+      <p>Una plaza de mercado colombiana: colores que salen de la comida, cada uno con un solo significado, y una etiqueta de precio que se vuelve el resultado de la foto.</p>
+      <p class="ref__nota">Esta página es la referencia viva. Si cambias un valor en <code>tokens.css</code>, cambia aquí y en todas las pantallas.</p>
+    </header>
+
+    <section class="ref__seccion">
+      <h2>Color</h2>
+      <p class="ref__nota">Los acentos nunca decoran: si algo es lulo, es un logro; si es mora, habla de emociones; si es plátano, la IA pide ayuda. Así el estudiante aprende a leer la app sin instrucciones.</p>
+      <div class="muestras">
+        <div class="muestra"><div class="muestra__color" style="background:var(--c-marca)"></div><div class="muestra__texto"><span class="muestra__nombre">Verde Lumea</span><span class="muestra__uso">Acciones principales y marca</span><span class="muestra__hex">#1E5E3A</span></div></div>
+        <div class="muestra"><div class="muestra__color" style="background:var(--c-lulo)"></div><div class="muestra__texto"><span class="muestra__nombre">Lulo</span><span class="muestra__uso">Logros: XP, racha, nivel</span><span class="muestra__hex">#E8892B</span></div></div>
+        <div class="muestra"><div class="muestra__color" style="background:var(--c-mora)"></div><div class="muestra__texto"><span class="muestra__nombre">Mora</span><span class="muestra__uso">Emociones y avatar</span><span class="muestra__hex">#6B3F9E</span></div></div>
+        <div class="muestra"><div class="muestra__color" style="background:var(--c-platano)"></div><div class="muestra__texto"><span class="muestra__nombre">Plátano</span><span class="muestra__uso">La IA no está segura</span><span class="muestra__hex">#F2C230</span></div></div>
+        <div class="muestra"><div class="muestra__color" style="background:var(--c-tinta)"></div><div class="muestra__texto"><span class="muestra__nombre">Tinta</span><span class="muestra__uso">Texto y visor de cámara</span><span class="muestra__hex">#1A2A21</span></div></div>
+        <div class="muestra"><div class="muestra__color" style="background:var(--c-fondo); border-bottom:1px solid var(--c-borde)"></div><div class="muestra__texto"><span class="muestra__nombre">Hoja</span><span class="muestra__uso">Fondo de toda la app</span><span class="muestra__hex">#F4F7F1</span></div></div>
+      </div>
+    </section>
+
+    <section class="ref__seccion">
+      <h2>Tipografía</h2>
+      <p class="ref__nota">Bricolage Grotesque, una sola familia. Tiene ajuste óptico: en tamaños grandes se vuelve más apretada y expresiva, en tamaños pequeños más abierta y legible. Escala 1,25.</p>
+      <div class="escala">
+        <div class="escala__fila"><span class="escala__token">3xl · 49 px</span><span style="font-size:var(--t-3xl);font-weight:var(--t-peso-fuerte);letter-spacing:-.03em;line-height:1">Arepa con queso</span></div>
+        <div class="escala__fila"><span class="escala__token">2xl · 31 px</span><span style="font-size:var(--t-2xl);font-weight:var(--t-peso-fuerte)">Registrar comida</span></div>
+        <div class="escala__fila"><span class="escala__token">xl · 25 px</span><span style="font-size:var(--t-xl);font-weight:var(--t-peso-fuerte)">Tu semana</span></div>
+        <div class="escala__fila"><span class="escala__token">l · 20 px</span><span style="font-size:var(--t-l);font-weight:var(--t-peso-medio)">Misión de hoy: una fruta antes del almuerzo</span></div>
+        <div class="escala__fila"><span class="escala__token">m · 16 px</span><span>Lumea no te prohíbe nada. Te muestra qué comes para que tú decidas mejor la próxima vez.</span></div>
+        <div class="escala__fila"><span class="escala__token">s · 14 px</span><span style="font-size:var(--t-s);color:var(--c-tinta-suave)">Fuente: Tabla de Composición de Alimentos Colombianos, ICBF</span></div>
+      </div>
+    </section>
+
+    <section class="ref__seccion">
+      <h2>Espacio y esquinas</h2>
+      <p class="ref__nota">Todo espacio es múltiplo de 4 px. Las esquinas crecen con la jerarquía: un botón es menos redondo que una tarjeta, y una tarjeta menos que un panel.</p>
+      <div class="espacios">
+        <div class="espacio"><div class="espacio__caja" style="width:4px;height:4px"></div>4</div>
+        <div class="espacio"><div class="espacio__caja" style="width:8px;height:8px"></div>8</div>
+        <div class="espacio"><div class="espacio__caja" style="width:12px;height:12px"></div>12</div>
+        <div class="espacio"><div class="espacio__caja" style="width:16px;height:16px"></div>16</div>
+        <div class="espacio"><div class="espacio__caja" style="width:24px;height:24px"></div>24</div>
+        <div class="espacio"><div class="espacio__caja" style="width:32px;height:32px"></div>32</div>
+        <div class="espacio"><div class="espacio__caja" style="width:48px;height:48px"></div>48</div>
+        <div class="espacio"><div class="espacio__caja" style="width:64px;height:64px"></div>64</div>
+      </div>
+      <div class="radios">
+        <div class="radio" style="border-radius:var(--r-control)">Control<br>10 px</div>
+        <div class="radio" style="border-radius:var(--r-tarjeta)">Tarjeta<br>16 px</div>
+        <div class="radio" style="border-radius:var(--r-panel)">Panel<br>24 px</div>
+      </div>
+    </section>
+
+    <section class="ref__seccion">
+      <h2>Componentes</h2>
+      <div class="rejilla-2">
+        <div class="tarjeta" style="display:grid;gap:var(--e-4)">
+          <h3>Botones</h3>
+          <div class="fila">
+            <button class="boton" type="button">Guardar cambios</button>
+            <button class="boton boton--secundario" type="button">Subir una foto</button>
+            <button class="boton boton--fantasma" type="button">Cancelar</button>
+          </div>
+          <div class="fila"><button class="boton" type="button" disabled>Tomar foto</button></div>
+        </div>
+
+        <div class="tarjeta" style="display:grid;gap:var(--e-4)">
+          <h3>Campos</h3>
+          <label class="campo">
+            <span class="campo__nombre">Correo</span>
+            <input class="campo__entrada" type="email" value="ana@colegio.edu.co">
+          </label>
+          <label class="campo campo--error">
+            <span class="campo__nombre">Contraseña</span>
+            <input class="campo__entrada" type="password" value="12345">
+            <span class="campo__ayuda">Usa al menos 6 caracteres.</span>
+          </label>
+        </div>
+
+        <div class="tarjeta" style="display:grid;gap:var(--e-4)">
+          <h3>Progreso</h3>
+          <div class="barra-xp">
+            <div class="barra-xp__fila"><strong>Nivel 4</strong><span class="numero">320 de 500 XP</span></div>
+            <div class="barra-xp__riel"><div class="barra-xp__relleno" style="--avance:64%"></div></div>
+          </div>
+          <div class="fila">
+            <span class="chip chip--logro"><svg class="icono" style="width:16px;height:16px"><use href="#i-racha"/></svg>Racha de 5 días</span>
+            <span class="chip">Misión cumplida</span>
+          </div>
+        </div>
+
+        <div class="tarjeta" style="display:grid;gap:var(--e-4)">
+          <h3>¿Cómo te sientes hoy?</h3>
+          <div class="animo" role="group" aria-label="Estado de ánimo">
+            <button class="animo__opcion" type="button" aria-pressed="false">Con energía</button>
+            <button class="animo__opcion" type="button" aria-pressed="true">Tranquila</button>
+            <button class="animo__opcion" type="button" aria-pressed="false">Cansada</button>
+            <button class="animo__opcion" type="button" aria-pressed="false">Mal</button>
+          </div>
+          <p class="ref__nota" style="font-size:var(--t-s)">Todas las respuestas dan el mismo XP: no premiamos estar bien.</p>
+        </div>
+
+        <div class="tarjeta" style="display:grid;gap:var(--e-4)">
+          <h3>Sellos de advertencia</h3>
+          <div class="sellos">
+            <span class="sello">Exceso en <span>azúcares</span></span>
+            <span class="sello">Exceso en <span>sodio</span></span>
+            <span class="sello">Exceso en <span>grasas saturadas</span></span>
+          </div>
+          <p class="ref__nota" style="font-size:var(--t-s)">Negros y octagonales, como exige la Resolución 810 de 2021. Es el único lugar donde Lumea usa negro puro.</p>
+        </div>
+
+        <div class="tarjeta" style="display:grid;gap:var(--e-4)">
+          <h3>Mientras la IA piensa</h3>
+          <div class="esqueleto" style="height:40px;width:70%"></div>
+          <div class="esqueleto" style="height:14px;width:40%"></div>
+          <div class="esqueleto" style="height:14px;width:90%"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ref__seccion">
+      <h2>La etiqueta de plaza</h2>
+      <p class="ref__nota">El resultado de cada foto se cuelga como la etiqueta de precio de un puesto de frutas. Es la pieza que la gente va a recordar, por eso todo lo demás es sobrio. Cuando la IA duda, en vez de adivinar ofrece sus tres mejores opciones: en las pruebas de campo la respuesta correcta estuvo entre esas tres en 13 de 13 fotos.</p>
+      <div class="rejilla-2">
+        <article class="etiqueta">
+          <p class="etiqueta__pregunta">Lumea cree que es</p>
+          <h2 class="etiqueta__nombre">Banano</h2>
+          <div class="etiqueta__certeza"><span class="etiqueta__medidor" style="--certeza:94%"></span><span class="numero">Segura al 94 %</span></div>
+          <div class="etiqueta__datos"><span class="etiqueta__kcal numero">89 kcal</span><span class="etiqueta__unidad">por cada 100 g</span></div>
+          <p class="etiqueta__dato">Su potasio ayuda a que tus músculos funcionen bien después de educación física.</p>
+          <div class="etiqueta__acciones">
+            <button class="boton" type="button"><svg class="icono"><use href="#i-check"/></svg>Sí, es esto</button>
+            <button class="boton boton--fantasma" type="button">No, es otra cosa</button>
+          </div>
+        </article>
+
+        <article class="etiqueta etiqueta--duda">
+          <p class="etiqueta__pregunta">No estoy segura. ¿Cuál de estos es?</p>
+          <div class="etiqueta__certeza"><span class="etiqueta__medidor" style="--certeza:32%"></span><span class="numero">Segura al 32 %</span></div>
+          <div class="opciones">
+            <button class="opciones__boton" type="button">Huevo <span class="opciones__pista numero">32 %</span></button>
+            <button class="opciones__boton" type="button">Llapingachos <span class="opciones__pista numero">13 %</span></button>
+            <button class="opciones__boton" type="button">Arepa <span class="opciones__pista numero">10 %</span></button>
+          </div>
+          <button class="boton boton--fantasma" type="button" style="justify-self:start">Ninguno, lo escribo yo</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="ref__seccion">
+      <h2>Una pantalla armada con estas piezas</h2>
+      <p class="ref__nota">El mismo archivo en dos tamaños. En computador el menú es una columna a la izquierda; en celular se vuelve una barra abajo, al alcance del pulgar. No hay dos menús: es el mismo HTML con otro CSS.</p>
+      <div class="pantallas">
+        <div class="pantalla">
+          <div class="pantalla__marco pantalla__marco--pc"><iframe src="ejemplo-camara.html" title="Pantalla de cámara en computador"></iframe></div>
+          <span class="pantalla__pie">Computador, 1280 × 800</span>
+        </div>
+        <div class="pantalla">
+          <div class="pantalla__marco pantalla__marco--cel"><iframe src="ejemplo-camara.html" title="Pantalla de cámara en celular"></iframe></div>
+          <span class="pantalla__pie">Celular, 390 × 780</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

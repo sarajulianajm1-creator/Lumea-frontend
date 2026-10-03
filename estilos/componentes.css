@@ -1,0 +1,356 @@
+/* =====================================================================
+   LUMEA · componentes.css — las piezas con las que se arma cada pantalla
+   ---------------------------------------------------------------------
+   Depende de tokens.css (cárgalo antes). Aquí no hay colores ni tamaños
+   escritos a mano: todo es var(--algo).
+
+   Convención de nombres (para que el CSS no se pelee consigo mismo):
+     .pieza            el componente
+     .pieza--variante  una versión distinta (ej. .boton--secundario)
+     .pieza__parte     algo que vive dentro (ej. .etiqueta__nombre)
+   Cada selector es UNA clase, así ninguna regla le gana a otra por
+   accidente (especificidad baja y pareja).
+   ===================================================================== */
+
+/* ---------- 0. Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--f-familia);
+  font-size: var(--t-m);
+  line-height: var(--t-interlineado);
+  color: var(--c-tinta);
+  background: var(--c-fondo);
+  font-optical-sizing: auto;          /* la fuente ajusta su dibujo al tamaño */
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  line-height: var(--t-interlineado-titulo);
+  font-weight: var(--t-peso-fuerte);
+  letter-spacing: -0.01em;
+  text-wrap: balance;                 /* títulos sin una palabra huérfana */
+}
+p { margin: 0; text-wrap: pretty; }
+
+/* Foco visible SOLO cuando se navega con teclado */
+:focus-visible {
+  outline: 3px solid var(--c-marca);
+  outline-offset: 2px;
+  border-radius: var(--r-control);
+}
+
+/* Transición suave al cambiar de página (Chrome 126+, Safari 18.2+).
+   En navegadores viejos simplemente no pasa nada: degradación elegante. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+
+.icono {
+  width: 20px; height: 20px;
+  flex: none;
+  stroke: currentColor; fill: none;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ---------- 1. Botones ---------- */
+.boton {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--e-2);
+  min-height: 44px;                   /* tamaño mínimo táctil (WCAG 2.5.5) */
+  padding: 0 var(--e-5);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-control);
+  font: inherit; font-weight: var(--t-peso-medio);
+  cursor: pointer;
+  background: var(--c-marca); color: #fff;
+  transition: background var(--m-rapido) var(--m-salida),
+              transform var(--m-rapido) var(--m-salida);
+}
+.boton:hover  { background: var(--c-marca-hover); }
+.boton:active { transform: scale(.97); }     /* se "hunde" al presionar */
+.boton:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+.boton--secundario { background: var(--c-superficie); color: var(--c-marca); border-color: var(--c-borde); }
+.boton--secundario:hover { background: var(--c-marca-suave); }
+
+.boton--fantasma { background: transparent; color: var(--c-tinta-suave); }
+.boton--fantasma:hover { background: var(--c-marca-suave); color: var(--c-marca); }
+
+.boton__premio {                      /* lo que gana al hacer clic: lulo = logro */
+  margin-left: var(--e-1); padding: 2px var(--e-2);
+  border-radius: var(--r-pildora);
+  background: var(--c-lulo-suave); color: var(--c-lulo-tinta);
+  font-size: var(--t-xs); font-weight: var(--t-peso-fuerte);
+}
+.boton--grande { min-height: 56px; padding: 0 var(--e-6); font-size: var(--t-l); }
+
+/* ---------- 2. Campo de formulario ---------- */
+.campo { display: grid; gap: var(--e-2); }
+.campo__nombre { font-size: var(--t-s); font-weight: var(--t-peso-medio); }
+.campo__entrada {
+  min-height: 44px;
+  padding: 0 var(--e-4);
+  border: 1.5px solid var(--c-borde);
+  border-radius: var(--r-control);
+  background: var(--c-superficie);
+  font: inherit; color: inherit;
+  transition: border-color var(--m-rapido);
+}
+.campo__entrada:focus { outline: none; border-color: var(--c-marca); box-shadow: 0 0 0 3px var(--c-marca-suave); }
+.campo__ayuda { font-size: var(--t-s); color: var(--c-tinta-suave); }
+.campo--error .campo__entrada { border-color: var(--c-error); }
+.campo--error .campo__ayuda   { color: var(--c-error); }
+
+/* ---------- 3. Superficies: tarjeta < panel ---------- */
+.tarjeta {
+  background: var(--c-superficie);
+  border-radius: var(--r-tarjeta);
+  padding: var(--e-5);
+  box-shadow: var(--s-1);
+}
+.panel {
+  background: var(--c-superficie);
+  border-radius: var(--r-panel);
+  padding: var(--e-6);
+  box-shadow: var(--s-2);
+}
+
+/* ---------- 4. Chips (solo para estados o filtros cortos) ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--e-1);
+  padding: var(--e-1) var(--e-3);
+  border-radius: var(--r-pildora);
+  font-size: var(--t-s); font-weight: var(--t-peso-medio);
+  background: var(--c-marca-suave); color: var(--c-marca);
+}
+.chip--logro   { background: var(--c-lulo-suave);    color: var(--c-lulo-tinta); }
+.chip--emocion { background: var(--c-mora-suave);    color: var(--c-mora); }
+.chip--duda    { background: var(--c-platano-suave); color: var(--c-platano-tinta); }
+
+/* ---------- 5. Sello de advertencia (Resolución 810 de 2021) ---------- */
+/* Octágono negro con borde blanco, como en el empaque real.
+   Mayúsculas porque así lo exige la norma, no por estilo. */
+.sello {
+  position: relative; isolation: isolate;
+  display: inline-grid; place-content: center;
+  width: 84px; aspect-ratio: 1;
+  padding: var(--e-3);
+  background: var(--c-sello); color: #fff;
+  clip-path: var(--octagono);
+  text-align: center; text-transform: uppercase;
+  font-size: 0.62rem; font-weight: var(--t-peso-fuerte); line-height: 1.05;
+}
+/* El filete blanco interior: un octágono blanco y encima otro negro, más pequeño */
+.sello::before, .sello::after {
+  content: ""; position: absolute; z-index: -1;
+  clip-path: var(--octagono);
+}
+.sello::before { inset: 4px; background: #fff; }
+.sello::after  { inset: 6px; background: var(--c-sello); }
+.sello { --octagono: polygon(29.3% 0, 70.7% 0, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0 70.7%, 0 29.3%); }
+.sellos { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+
+/* ---------- 6. Barra de experiencia ---------- */
+.barra-xp { display: grid; gap: var(--e-2); }
+.barra-xp__fila { display: flex; justify-content: space-between; font-size: var(--t-s); }
+.barra-xp__riel {
+  height: 12px; border-radius: var(--r-pildora);
+  background: var(--c-lulo-suave); overflow: hidden;
+}
+.barra-xp__relleno {
+  height: 100%; width: var(--avance, 0%);
+  border-radius: inherit; background: var(--c-lulo);
+  transition: width var(--m-lento) var(--m-resorte);   /* el rebote = logro */
+}
+.numero { font-variant-numeric: tabular-nums; }        /* cifras que no "bailan" */
+
+/* ---------- 7. Selector de ánimo ---------- */
+.animo { display: flex; gap: var(--e-2); flex-wrap: wrap; }
+.animo__opcion {
+  min-height: 44px; padding: 0 var(--e-4);
+  border: 1.5px solid var(--c-borde); border-radius: var(--r-pildora);
+  background: var(--c-superficie); color: var(--c-tinta);
+  font: inherit; cursor: pointer;
+  transition: background var(--m-rapido), border-color var(--m-rapido);
+}
+.animo__opcion:hover { border-color: var(--c-mora); }
+.animo__opcion[aria-pressed="true"] { background: var(--c-mora); border-color: var(--c-mora); color: #fff; }
+
+/* ---------- 8. LA ETIQUETA DE PLAZA (el resultado de la foto) ---------- */
+/* La pieza memorable de Lumea. Se inspira en la etiqueta colgante de
+   precio de la plaza de mercado: un agujero, una línea perforada y el
+   nombre del alimento escrito grande. Todo lo demás en la app es
+   tranquilo para que esto destaque. */
+.etiqueta {
+  position: relative;
+  display: grid; gap: var(--e-4);
+  padding: var(--e-6) var(--e-6) var(--e-6) calc(var(--e-6) + 40px);
+  background: var(--c-superficie);
+  border-radius: var(--r-panel);
+  box-shadow: var(--s-2);
+}
+.etiqueta::before {                     /* el agujero del cordel */
+  content: ""; position: absolute;
+  left: 22px; top: 34px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--c-fondo);
+  box-shadow: inset 0 1px 2px rgba(26, 42, 33, .25);
+}
+.etiqueta::after {                      /* la línea perforada */
+  content: ""; position: absolute;
+  left: 52px; top: var(--e-5); bottom: var(--e-5);
+  border-left: 2px dashed var(--c-borde);
+}
+.etiqueta__pregunta { font-size: var(--t-s); color: var(--c-tinta-suave); }
+.etiqueta__nombre {
+  font-size: var(--t-3xl);
+  font-weight: var(--t-peso-fuerte);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.etiqueta__certeza { display: flex; align-items: center; gap: var(--e-3); font-size: var(--t-s); color: var(--c-tinta-suave); }
+.etiqueta__medidor {
+  width: 96px; height: 6px; border-radius: var(--r-pildora);
+  background: var(--c-marca-suave); overflow: hidden;
+}
+.etiqueta__medidor::after {
+  content: ""; display: block; height: 100%;
+  width: var(--certeza, 0%); background: var(--c-marca);
+}
+.etiqueta__datos {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--e-1) var(--e-2);
+  padding-top: var(--e-4);
+  border-top: 1px solid var(--c-borde);
+}
+.etiqueta__kcal { font-size: var(--t-xl); font-weight: var(--t-peso-fuerte); }
+.etiqueta__unidad { font-size: var(--t-s); color: var(--c-tinta-suave); }
+.etiqueta__dato { max-width: 46ch; color: var(--c-tinta-suave); }
+.etiqueta__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); }
+
+/* Variante: la IA no está segura → plátano (atención amable, no error) */
+.etiqueta--duda { box-shadow: var(--s-2), inset 0 6px 0 var(--c-platano); }
+.etiqueta--duda .etiqueta__medidor::after { background: var(--c-platano); }
+.opciones { display: grid; gap: var(--e-2); }
+.opciones__boton {
+  display: flex; justify-content: space-between; align-items: center;
+  min-height: 48px; padding: 0 var(--e-4);
+  border: 1.5px solid var(--c-borde); border-radius: var(--r-control);
+  background: var(--c-superficie); color: var(--c-tinta);
+  font: inherit; font-weight: var(--t-peso-medio); text-align: left; cursor: pointer;
+  transition: border-color var(--m-rapido), background var(--m-rapido);
+}
+.opciones__boton:hover { border-color: var(--c-marca); background: var(--c-marca-suave); }
+.opciones__pista { font-weight: var(--t-peso-normal); font-size: var(--t-s); color: var(--c-tinta-suave); }
+
+/* Entrada de la etiqueta: el ÚNICO movimiento automático de la pantalla.
+   Aparece como si la colgaran: baja un poco y se balancea una vez. */
+.etiqueta--entrando { animation: colgar var(--m-lento) var(--m-resorte) both; transform-origin: 30px 42px; }
+@keyframes colgar {
+  from { opacity: 0; transform: translateY(-12px) rotate(-2.5deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- 9. Esqueleto de carga (mientras la IA piensa) ---------- */
+.esqueleto {
+  border-radius: var(--r-control);
+  background: linear-gradient(90deg, var(--c-borde) 0%, var(--c-fondo) 50%, var(--c-borde) 100%);
+  background-size: 200% 100%;
+  animation: brillo 1.2s linear infinite;
+}
+@keyframes brillo { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .esqueleto { animation: none; } }
+
+/* ---------- 10. Estructura de la app: lateral en computador, barra abajo en celular ---------- */
+/* UN solo <nav> en el HTML. El CSS decide si es columna o barra:
+   no hay que mantener dos menús distintos. */
+.app {
+  display: grid;
+  grid-template-columns: var(--ancho-lateral) 1fr;
+  min-height: 100vh; min-height: 100dvh;
+}
+.nav-app {
+  position: sticky; top: 0; height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column; gap: var(--e-1);
+  padding: var(--e-5) var(--e-4);
+  background: var(--c-superficie);
+  border-right: 1px solid var(--c-borde);
+}
+.nav-app__marca {
+  display: flex; align-items: center; gap: var(--e-2);
+  padding: 0 var(--e-3) var(--e-5);
+  font-size: var(--t-l); font-weight: var(--t-peso-fuerte); color: var(--c-marca);
+  text-decoration: none;
+}
+.nav-app__enlace {
+  display: flex; align-items: center; gap: var(--e-3);
+  min-height: 44px; padding: 0 var(--e-3);
+  border-radius: var(--r-control);
+  color: var(--c-tinta-suave); text-decoration: none; font-weight: var(--t-peso-medio);
+  transition: background var(--m-rapido), color var(--m-rapido);
+}
+.nav-app__enlace:hover { background: var(--c-fondo); color: var(--c-tinta); }
+.nav-app__enlace[aria-current="page"] { background: var(--c-marca-suave); color: var(--c-marca); }
+.nav-app__pie { margin-top: auto; }
+
+.contenido {
+  width: 100%; max-width: var(--ancho-contenido);
+  margin: 0 auto;
+  padding: var(--e-7) var(--e-6);
+  display: grid; gap: var(--e-6); align-content: start;
+}
+.contenido__titulo { font-size: var(--t-2xl); }
+.contenido__subtitulo { color: var(--c-tinta-suave); margin-top: var(--e-2); }
+
+@media (max-width: 720px) {
+  .app { grid-template-columns: 1fr; }
+  .nav-app {
+    position: fixed; inset: auto 0 0 0; top: auto; z-index: 10;
+    height: auto; min-height: var(--alto-barra-inferior);
+    flex-direction: row; justify-content: space-around; gap: 0;
+    padding: var(--e-1) var(--e-2) max(var(--e-1), env(safe-area-inset-bottom));
+    border-right: 0; border-top: 1px solid var(--c-borde);
+  }
+  .nav-app__marca, .nav-app__pie { display: none; }
+  .nav-app__enlace {
+    flex: 1; flex-direction: column; justify-content: center; gap: 2px;
+    padding: var(--e-1); font-size: var(--t-xs);
+  }
+  .nav-app__enlace[aria-current="page"] { background: transparent; }
+  .contenido {
+    padding: var(--e-5) var(--e-4) calc(var(--alto-barra-inferior) + var(--e-6));
+    gap: var(--e-5);
+  }
+  .contenido__titulo { font-size: var(--t-xl); }
+  .etiqueta { padding: var(--e-5) var(--e-5) var(--e-5) calc(var(--e-5) + 36px); }
+  .etiqueta::before { left: 16px; top: 28px; }
+  .etiqueta::after  { left: 42px; }
+  .etiqueta__nombre { font-size: var(--t-2xl); }
+}
+
+/* ---------- 11. Pantalla de cámara: visor | etiqueta ---------- */
+.camara {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 1fr);
+  gap: var(--e-6); align-items: start;
+}
+.visor {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-panel);
+  background: var(--c-tinta);
+  overflow: hidden;
+  display: grid; place-items: center;
+  color: #CFE0D3;
+}
+.visor video, .visor img { width: 100%; height: 100%; object-fit: cover; }
+.visor__vacio { display: grid; justify-items: center; gap: var(--e-3); text-align: center; padding: var(--e-5); }
+.visor__vacio .icono { width: 40px; height: 40px; stroke-width: 1.5; }
+.controles { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-4); }
+.controles .boton { flex: 1 1 200px; }
+@media (max-width: 960px) {
+  .camara { grid-template-columns: 1fr; }
+}
