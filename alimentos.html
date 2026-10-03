@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LUMEA | Guía de Uso</title>
+<title>LUMEA | Registrar comida</title>
 <!-- Favicon -->
 <link rel="icon" type="image/png" href="lumeaaa.png">
 <!-- Google Fonts -->
@@ -104,6 +104,11 @@
       </button>
     </div>
 
+    <!-- Resultado de la IA (lo llena lumea-camara.js) -->
+    <div class="card-section-title mt-3"><span>2. LO QUE VE LA IA</span></div>
+    <h2 id="backend-alimento" class="h4 fw-bold mb-1">—</h2>
+    <p id="backend-estado" class="small text-secondary mb-2" aria-live="polite"></p>
+
     <!-- Criterios inferiores preparados para recibir datos del backend -->
     <div class="criterios-grid-nuevos">
       
@@ -136,5 +141,16 @@
 
     </div>
 
+    <!-- Confirmación, mensaje y dato curioso (los llena lumea-camara.js) -->
+    <div id="backend-opciones" class="d-flex flex-wrap gap-2 mt-3"></div>
+    <p id="backend-mensaje" class="small mt-2 mb-1"></p>
+    <p id="backend-dato" class="small text-secondary mb-0"></p>
+
   </div>
 </div>
+
+  <!-- api.js (dirección y llamadas al backend) + lógica de la cámara, sin diseño -->
+  <script src="api.js"></script>
+  <script src="lumea-camara.js"></script>
+</body>
+</html>
