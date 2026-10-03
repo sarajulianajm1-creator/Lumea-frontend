@@ -161,8 +161,9 @@
         if (ok && cuerpo.success) {
           guardarSesion(email);
           mensaje.classList.add("alert-success");
-          mensaje.innerHTML = "¡Bienvenida de nuevo, " + (cuerpo.perfil.nombre || "") +
-            '! <a href="registrar-comida.html" class="alert-link">Registrar una comida &rarr;</a>';
+          mensaje.textContent = "¡Bienvenida de nuevo, " + (cuerpo.perfil.nombre || "") + "!";
+          // Al inicio del estudiante (nivel, XP, racha, meta del día)
+          setTimeout(() => { window.location.href = "index-ingresado.html"; }, 800);
         } else {
           // 401: el mismo mensaje si el correo no existe o la contraseña está mal
           // (así nadie averigua qué correos están registrados). "ayuda" explica
