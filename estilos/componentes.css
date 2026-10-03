@@ -80,10 +80,10 @@ p { margin: 0; text-wrap: pretty; }
 .boton--fantasma { background: transparent; color: var(--c-tinta-suave); }
 .boton--fantasma:hover { background: var(--c-marca-suave); color: var(--c-marca); }
 
-.boton__premio {                      /* lo que gana al hacer clic: lulo = logro */
+.boton__premio {                      /* lo que gana al hacer clic: dorado = logro */
   margin-left: var(--e-1); padding: 2px var(--e-2);
   border-radius: var(--r-pildora);
-  background: var(--c-lulo-suave); color: var(--c-lulo-tinta);
+  background: var(--c-logro-suave); color: var(--c-logro-tinta);
   font-size: var(--t-xs); font-weight: var(--t-peso-fuerte);
 }
 .boton--grande { min-height: 56px; padding: 0 var(--e-6); font-size: var(--t-l); }
@@ -119,6 +119,29 @@ p { margin: 0; text-wrap: pretty; }
   box-shadow: var(--s-2);
 }
 
+/* Tarjetas de color: el fondo dice de qué trata (como en la plaza,
+   cada puesto tiene su color). Texto siempre en tinta: pasa AA en todas. */
+.tarjeta--aguacate { background: var(--c-tarjeta-aguacate); }
+.tarjeta--maracuya { background: var(--c-tarjeta-maracuya); }
+.tarjeta--mango    { background: var(--c-tarjeta-mango); }
+.tarjeta--guayaba  { background: var(--c-tarjeta-guayaba); }
+.tarjeta--mora     { background: var(--c-tarjeta-mora); }
+.tarjeta--color { position: relative; overflow: hidden; box-shadow: none; display: grid; gap: var(--e-2); align-content: start; }
+.tarjeta__cifra { font-size: var(--t-2xl); font-weight: var(--t-peso-fuerte); line-height: 1; font-variant-numeric: tabular-nums; }
+.tarjeta__titulo { font-weight: var(--t-peso-fuerte); }
+.tarjeta__nota { font-size: var(--t-s); color: var(--c-tinta-suave); }
+
+/* Calcomanía: la forma decorativa que se gana con un logro.
+   Va máximo UNA por pantalla; si hay tres, deja de ser especial. */
+.calcomania {
+  position: absolute; right: -16px; top: -16px;
+  width: 88px; aspect-ratio: 1;
+  background: var(--c-logro-fuerte);
+  clip-path: polygon(50% 0, 61% 18%, 82% 10%, 80% 32%, 100% 40%, 85% 56%, 96% 76%, 74% 78%, 68% 100%, 50% 87%, 32% 100%, 26% 78%, 4% 76%, 15% 56%, 0 40%, 20% 32%, 18% 10%, 39% 18%);
+  opacity: .9;
+  transform: rotate(-8deg);
+}
+
 /* ---------- 4. Chips (solo para estados o filtros cortos) ---------- */
 .chip {
   display: inline-flex; align-items: center; gap: var(--e-1);
@@ -127,9 +150,9 @@ p { margin: 0; text-wrap: pretty; }
   font-size: var(--t-s); font-weight: var(--t-peso-medio);
   background: var(--c-marca-suave); color: var(--c-marca);
 }
-.chip--logro   { background: var(--c-lulo-suave);    color: var(--c-lulo-tinta); }
-.chip--emocion { background: var(--c-mora-suave);    color: var(--c-mora); }
-.chip--duda    { background: var(--c-platano-suave); color: var(--c-platano-tinta); }
+.chip--logro   { background: var(--c-logro-suave);    color: var(--c-logro-tinta); }
+.chip--emocion { background: var(--c-emocion-suave);    color: var(--c-emocion); }
+.chip--duda    { background: var(--c-duda-suave); color: var(--c-duda-tinta); }
 
 /* ---------- 5. Sello de advertencia (Resolución 810 de 2021) ---------- */
 /* Octágono negro con borde blanco, como en el empaque real.
@@ -159,11 +182,11 @@ p { margin: 0; text-wrap: pretty; }
 .barra-xp__fila { display: flex; justify-content: space-between; font-size: var(--t-s); }
 .barra-xp__riel {
   height: 12px; border-radius: var(--r-pildora);
-  background: var(--c-lulo-suave); overflow: hidden;
+  background: var(--c-logro-suave); overflow: hidden;
 }
 .barra-xp__relleno {
   height: 100%; width: var(--avance, 0%);
-  border-radius: inherit; background: var(--c-lulo);
+  border-radius: inherit; background: var(--c-logro);
   transition: width var(--m-lento) var(--m-resorte);   /* el rebote = logro */
 }
 .numero { font-variant-numeric: tabular-nums; }        /* cifras que no "bailan" */
@@ -177,8 +200,8 @@ p { margin: 0; text-wrap: pretty; }
   font: inherit; cursor: pointer;
   transition: background var(--m-rapido), border-color var(--m-rapido);
 }
-.animo__opcion:hover { border-color: var(--c-mora); }
-.animo__opcion[aria-pressed="true"] { background: var(--c-mora); border-color: var(--c-mora); color: #fff; }
+.animo__opcion:hover { border-color: var(--c-emocion); }
+.animo__opcion[aria-pressed="true"] { background: var(--c-emocion); border-color: var(--c-emocion); color: var(--c-emocion-texto); }
 
 /* ---------- 8. LA ETIQUETA DE PLAZA (el resultado de la foto) ---------- */
 /* La pieza memorable de Lumea. Se inspira en la etiqueta colgante de
@@ -219,7 +242,7 @@ p { margin: 0; text-wrap: pretty; }
 }
 .etiqueta__medidor::after {
   content: ""; display: block; height: 100%;
-  width: var(--certeza, 0%); background: var(--c-marca);
+  width: var(--certeza, 0%); background: var(--c-marca-viva);
 }
 .etiqueta__datos {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--e-1) var(--e-2);
@@ -232,8 +255,8 @@ p { margin: 0; text-wrap: pretty; }
 .etiqueta__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); }
 
 /* Variante: la IA no está segura → plátano (atención amable, no error) */
-.etiqueta--duda { box-shadow: var(--s-2), inset 0 6px 0 var(--c-platano); }
-.etiqueta--duda .etiqueta__medidor::after { background: var(--c-platano); }
+.etiqueta--duda { box-shadow: var(--s-2), inset 0 6px 0 var(--c-duda); }
+.etiqueta--duda .etiqueta__medidor::after { background: var(--c-duda); }
 .opciones { display: grid; gap: var(--e-2); }
 .opciones__boton {
   display: flex; justify-content: space-between; align-items: center;

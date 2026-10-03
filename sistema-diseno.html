@@ -16,6 +16,22 @@
     .ref__seccion > h2 { font-size: var(--t-xl); }
     .ref__nota { color: var(--c-tinta-suave); max-width: 64ch; }
 
+    .selector { display: inline-flex; align-items: center; gap: var(--e-1); padding: var(--e-1); background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-pildora); justify-self: start; }
+    .selector__nombre { padding: 0 var(--e-3); font-size: var(--t-s); color: var(--c-tinta-suave); }
+    .selector__opcion { min-height: 36px; padding: 0 var(--e-4); border: 0; border-radius: var(--r-pildora); background: transparent; font: inherit; font-weight: var(--t-peso-medio); color: var(--c-tinta); cursor: pointer; }
+    .selector__opcion[aria-pressed="true"] { background: var(--c-marca); color: #fff; }
+    .rampas { display: grid; gap: var(--e-4); }
+    .rampa { display: grid; grid-template-columns: 220px 1fr; gap: var(--e-4); align-items: center; }
+    .rampa__info { display: grid; }
+    .rampa__nombre { font-weight: var(--t-peso-fuerte); font-size: var(--t-l); }
+    .rampa__uso { font-size: var(--t-s); color: var(--c-tinta-suave); }
+    .rampa__tonos { display: grid; grid-template-columns: repeat(10, 1fr); border-radius: var(--r-tarjeta); overflow: hidden; }
+    .rampa__tono { height: 64px; display: flex; align-items: flex-end; padding: var(--e-1) var(--e-2); font-size: var(--t-xs); font-variant-numeric: tabular-nums; }
+    .rampa__tono:nth-child(-n+6) span { color: var(--c-tinta); opacity: .7; }
+    .rampa__tono:nth-child(n+7) span { color: #fff; opacity: .85; }
+    .rampa__tono--ancla { box-shadow: inset 0 0 0 3px var(--c-tinta); }
+    .tarjetas-color { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--e-4); }
+    .tarjetas-color .tarjeta { min-height: 168px; }
     .muestras { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--e-4); }
     .muestra { border-radius: var(--r-tarjeta); overflow: hidden; background: var(--c-superficie); box-shadow: var(--s-1); }
     .muestra__color { height: 88px; }
@@ -50,6 +66,8 @@
       .ref { padding: var(--e-6) var(--e-4); gap: var(--e-7); }
       .ref__intro h1 { font-size: var(--t-2xl); }
       .escala__fila { grid-template-columns: 1fr; gap: var(--e-1); }
+      .rampa { grid-template-columns: 1fr; gap: var(--e-2); }
+      .rampa__tono { height: 48px; padding: 2px; font-size: .65rem; }
       .pantalla__marco--pc { width: 100%; height: auto; aspect-ratio: 16 / 10; }
       .pantalla__marco--pc iframe { transform: scale(calc((100vw - 32px) / 1280px)); }
     }
@@ -64,20 +82,67 @@
   <main class="ref">
     <header class="ref__intro">
       <h1>Cómo se ve y se siente Lumea</h1>
-      <p>Una plaza de mercado colombiana: colores que salen de la comida, cada uno con un solo significado, y una etiqueta de precio que se vuelve el resultado de la foto.</p>
-      <p class="ref__nota">Esta página es la referencia viva. Si cambias un valor en <code>tokens.css</code>, cambia aquí y en todas las pantallas.</p>
+      <p>Una plaza de mercado colombiana: cada fruta es una familia de colores y cada familia significa una sola cosa. La etiqueta de precio del puesto se vuelve el resultado de la foto.</p>
+      <div class="selector" role="group" aria-label="Paleta">
+        <span class="selector__nombre">Paleta</span>
+        <button class="selector__opcion" type="button" data-paleta="viva" aria-pressed="true">Viva</button>
+        <button class="selector__opcion" type="button" data-paleta="original" aria-pressed="false">Original</button>
+      </div>
+      <p class="ref__nota">Cambia entre las dos y mira toda la página, incluida la pantalla de ejemplo del final. Las piezas son las mismas; solo cambian los colores.</p>
     </header>
 
     <section class="ref__seccion">
       <h2>Color</h2>
-      <p class="ref__nota">Los acentos nunca decoran: si algo es lulo, es un logro; si es mora, habla de emociones; si es plátano, la IA pide ayuda. Así el estudiante aprende a leer la app sin instrucciones.</p>
-      <div class="muestras">
-        <div class="muestra"><div class="muestra__color" style="background:var(--c-marca)"></div><div class="muestra__texto"><span class="muestra__nombre">Verde Lumea</span><span class="muestra__uso">Acciones principales y marca</span><span class="muestra__hex">#1E5E3A</span></div></div>
-        <div class="muestra"><div class="muestra__color" style="background:var(--c-lulo)"></div><div class="muestra__texto"><span class="muestra__nombre">Lulo</span><span class="muestra__uso">Logros: XP, racha, nivel</span><span class="muestra__hex">#E8892B</span></div></div>
-        <div class="muestra"><div class="muestra__color" style="background:var(--c-mora)"></div><div class="muestra__texto"><span class="muestra__nombre">Mora</span><span class="muestra__uso">Emociones y avatar</span><span class="muestra__hex">#6B3F9E</span></div></div>
-        <div class="muestra"><div class="muestra__color" style="background:var(--c-platano)"></div><div class="muestra__texto"><span class="muestra__nombre">Plátano</span><span class="muestra__uso">La IA no está segura</span><span class="muestra__hex">#F2C230</span></div></div>
-        <div class="muestra"><div class="muestra__color" style="background:var(--c-tinta)"></div><div class="muestra__texto"><span class="muestra__nombre">Tinta</span><span class="muestra__uso">Texto y visor de cámara</span><span class="muestra__hex">#1A2A21</span></div></div>
-        <div class="muestra"><div class="muestra__color" style="background:var(--c-fondo); border-bottom:1px solid var(--c-borde)"></div><div class="muestra__texto"><span class="muestra__nombre">Hoja</span><span class="muestra__uso">Fondo de toda la app</span><span class="muestra__hex">#F4F7F1</span></div></div>
+      <p class="ref__nota">Cinco frutas, diez tonos cada una. El tono con borde es el color “de verdad” de la fruta; los demás se calcularon en OKLCH para que cada paso se vea igual de grande en todas las familias. Los claros (50–200) son fondos, los vivos (300–500) son rellenos, y los oscuros (700–900) son texto.</p>
+      <div class="rampas">
+        <div class="rampa">
+          <div class="rampa__info"><span class="rampa__nombre">Aguacate</span><span class="rampa__uso">Marca, botones y todo lo de comida</span></div>
+          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--aguacate-50)" title="aguacate-50 #F2FAEA"><span>50</span></span><span class="rampa__tono" style="background:var(--aguacate-100)" title="aguacate-100 #E3F3D4"><span>100</span></span><span class="rampa__tono" style="background:var(--aguacate-200)" title="aguacate-200 #CEE9B3"><span>200</span></span><span class="rampa__tono" style="background:var(--aguacate-300)" title="aguacate-300 #B4DB8B"><span>300</span></span><span class="rampa__tono" style="background:var(--aguacate-400)" title="aguacate-400 #9AC964"><span>400</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--aguacate-500)" title="aguacate-500 #7FB03F"><span>500</span></span><span class="rampa__tono" style="background:var(--aguacate-600)" title="aguacate-600 #669326"><span>600</span></span><span class="rampa__tono" style="background:var(--aguacate-700)" title="aguacate-700 #4D7410"><span>700</span></span><span class="rampa__tono" style="background:var(--aguacate-800)" title="aguacate-800 #375505"><span>800</span></span><span class="rampa__tono" style="background:var(--aguacate-900)" title="aguacate-900 #223800"><span>900</span></span></div>
+        </div>
+        <div class="rampa">
+          <div class="rampa__info"><span class="rampa__nombre">Maracuyá</span><span class="rampa__uso">Logros: XP, racha, nivel</span></div>
+          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--maracuya-50)" title="maracuya-50 #FFF6E6"><span>50</span></span><span class="rampa__tono" style="background:var(--maracuya-100)" title="maracuya-100 #FFEAC6"><span>100</span></span><span class="rampa__tono" style="background:var(--maracuya-200)" title="maracuya-200 #FFD894"><span>200</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--maracuya-300)" title="maracuya-300 #FFBA18"><span>300</span></span><span class="rampa__tono" style="background:var(--maracuya-400)" title="maracuya-400 #ECAA00"><span>400</span></span><span class="rampa__tono" style="background:var(--maracuya-500)" title="maracuya-500 #CC9300"><span>500</span></span><span class="rampa__tono" style="background:var(--maracuya-600)" title="maracuya-600 #AA7900"><span>600</span></span><span class="rampa__tono" style="background:var(--maracuya-700)" title="maracuya-700 #855E00"><span>700</span></span><span class="rampa__tono" style="background:var(--maracuya-800)" title="maracuya-800 #624400"><span>800</span></span><span class="rampa__tono" style="background:var(--maracuya-900)" title="maracuya-900 #412C00"><span>900</span></span></div>
+        </div>
+        <div class="rampa">
+          <div class="rampa__info"><span class="rampa__nombre">Guayaba</span><span class="rampa__uso">Emociones y avatar</span></div>
+          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--guayaba-50)" title="guayaba-50 #FFF3F6"><span>50</span></span><span class="rampa__tono" style="background:var(--guayaba-100)" title="guayaba-100 #FFE5EB"><span>100</span></span><span class="rampa__tono" style="background:var(--guayaba-200)" title="guayaba-200 #FFD0DA"><span>200</span></span><span class="rampa__tono" style="background:var(--guayaba-300)" title="guayaba-300 #FFB4C6"><span>300</span></span><span class="rampa__tono" style="background:var(--guayaba-400)" title="guayaba-400 #FF90AE"><span>400</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--guayaba-500)" title="guayaba-500 #E8608A"><span>500</span></span><span class="rampa__tono" style="background:var(--guayaba-600)" title="guayaba-600 #CF5078"><span>600</span></span><span class="rampa__tono" style="background:var(--guayaba-700)" title="guayaba-700 #A6395D"><span>700</span></span><span class="rampa__tono" style="background:var(--guayaba-800)" title="guayaba-800 #7C2743"><span>800</span></span><span class="rampa__tono" style="background:var(--guayaba-900)" title="guayaba-900 #55152B"><span>900</span></span></div>
+        </div>
+        <div class="rampa">
+          <div class="rampa__info"><span class="rampa__nombre">Mora</span><span class="rampa__uso">Misiones y retos</span></div>
+          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--mora-50)" title="mora-50 #F8F5FF"><span>50</span></span><span class="rampa__tono" style="background:var(--mora-100)" title="mora-100 #EFE9FF"><span>100</span></span><span class="rampa__tono" style="background:var(--mora-200)" title="mora-200 #E2D7FF"><span>200</span></span><span class="rampa__tono" style="background:var(--mora-300)" title="mora-300 #D3C0FF"><span>300</span></span><span class="rampa__tono" style="background:var(--mora-400)" title="mora-400 #C2A4FF"><span>400</span></span><span class="rampa__tono" style="background:var(--mora-500)" title="mora-500 #AE80FF"><span>500</span></span><span class="rampa__tono" style="background:var(--mora-600)" title="mora-600 #9462E4"><span>600</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--mora-700)" title="mora-700 #7B4FC0"><span>700</span></span><span class="rampa__tono" style="background:var(--mora-800)" title="mora-800 #56338B"><span>800</span></span><span class="rampa__tono" style="background:var(--mora-900)" title="mora-900 #391E5F"><span>900</span></span></div>
+        </div>
+        <div class="rampa">
+          <div class="rampa__info"><span class="rampa__nombre">Mango</span><span class="rampa__uso">Atención: la IA no está segura</span></div>
+          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--mango-50)" title="mango-50 #FFF4EE"><span>50</span></span><span class="rampa__tono" style="background:var(--mango-100)" title="mango-100 #FFE8DA"><span>100</span></span><span class="rampa__tono" style="background:var(--mango-200)" title="mango-200 #FFD4BB"><span>200</span></span><span class="rampa__tono" style="background:var(--mango-300)" title="mango-300 #FFBB92"><span>300</span></span><span class="rampa__tono" style="background:var(--mango-400)" title="mango-400 #FF9B5B"><span>400</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--mango-500)" title="mango-500 #F27A1A"><span>500</span></span><span class="rampa__tono" style="background:var(--mango-600)" title="mango-600 #CA6100"><span>600</span></span><span class="rampa__tono" style="background:var(--mango-700)" title="mango-700 #9F4B00"><span>700</span></span><span class="rampa__tono" style="background:var(--mango-800)" title="mango-800 #763600"><span>800</span></span><span class="rampa__tono" style="background:var(--mango-900)" title="mango-900 #4F2200"><span>900</span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ref__seccion">
+      <h2>Tarjetas de color</h2>
+      <p class="ref__nota">Para inicio y progreso. El color del fondo ya te dice de qué habla la tarjeta antes de leerla. El texto siempre va en tinta oscura: así pasa el contraste mínimo en las cinco.</p>
+      <div class="tarjetas-color">
+        <article class="tarjeta tarjeta--color tarjeta--aguacate">
+          <span class="tarjeta__titulo">Esta semana</span>
+          <span class="tarjeta__cifra">12</span>
+          <span class="tarjeta__nota">comidas registradas, 5 con fruta</span>
+        </article>
+        <article class="tarjeta tarjeta--color tarjeta--maracuya">
+          <span class="tarjeta__titulo">Racha</span>
+          <span class="tarjeta__cifra">5 días</span>
+          <span class="tarjeta__nota">Tu mejor racha hasta ahora</span>
+          <span class="calcomania" aria-hidden="true"></span>
+        </article>
+        <article class="tarjeta tarjeta--color tarjeta--guayaba">
+          <span class="tarjeta__titulo">Tu ánimo</span>
+          <span class="tarjeta__cifra">Tranquila</span>
+          <span class="tarjeta__nota">4 de los últimos 7 días</span>
+        </article>
+        <article class="tarjeta tarjeta--color tarjeta--mora">
+          <span class="tarjeta__titulo">Misión de hoy</span>
+          <span class="tarjeta__cifra">1 de 3</span>
+          <span class="tarjeta__nota">Una fruta antes del almuerzo</span>
+        </article>
       </div>
     </section>
 
@@ -148,7 +213,7 @@
           </div>
           <div class="fila">
             <span class="chip chip--logro"><svg class="icono" style="width:16px;height:16px"><use href="#i-racha"/></svg>Racha de 5 días</span>
-            <span class="chip">Misión cumplida</span>
+            <span class="chip">Comiste fruta hoy</span>
           </div>
         </div>
 
@@ -226,5 +291,20 @@
       </div>
     </section>
   </main>
+  <script>
+    // Cambia la paleta en esta página y en las pantallas de ejemplo (iframes).
+    const botones = document.querySelectorAll('.selector__opcion');
+    function ponerPaleta(nombre) {
+      const docs = [document, ...[...document.querySelectorAll('iframe')].map(f => { try { return f.contentDocument; } catch (e) { return null; } })];
+      docs.forEach(d => { if (!d) return; if (nombre === 'viva') delete d.documentElement.dataset.paleta; else d.documentElement.dataset.paleta = nombre; });
+      botones.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.paleta === nombre)));
+    }
+    botones.forEach(b => b.addEventListener('click', () => ponerPaleta(b.dataset.paleta)));
+    // Si el iframe carga después del clic, que herede la paleta elegida.
+    document.querySelectorAll('iframe').forEach(f => f.addEventListener('load', () => {
+      const actual = document.documentElement.dataset.paleta;
+      if (actual) try { f.contentDocument.documentElement.dataset.paleta = actual; } catch (e) {}
+    }));
+  </script>
 </body>
 </html>

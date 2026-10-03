@@ -1,13 +1,20 @@
 /* =====================================================================
    LUMEA · tokens.css — el sistema de diseño en un solo lugar
    ---------------------------------------------------------------------
-   Concepto: "plaza de mercado". La paleta sale de la comida que el
-   estudiante fotografía (plátano, lulo, mora, aguacate) sobre el verde
-   de marca que ya usaba el equipo. Cada color de acento tiene UN
-   significado; nunca se usa solo para decorar.
+   Concepto: "plaza de mercado". Los colores salen de frutas colombianas
+   (aguacate, maracuyá, mango, guayaba, mora). Cada fruta tiene una
+   RAMPA de 10 tonos (50 = casi blanco ... 900 = casi negro) calculada en
+   OKLCH, un espacio de color donde "un paso" se ve igual de grande en
+   todas las frutas. Así hay muchas tonalidades sin que se vuelva un
+   arcoíris: todo sale de 5 familias.
+
+   Dos capas de tokens:
+     1. Primitivos  (--aguacate-500)  = QUÉ color es.
+     2. Semánticos  (--c-logro)       = PARA QUÉ se usa.
+   Las pantallas solo usan los semánticos. Si mañana el logro deja de ser
+   amarillo, se cambia UNA línea y no hay que buscar en 20 archivos.
 
    Regla: ninguna pantalla escribe un color, tamaño o duración a mano.
-   Todo sale de aquí. Cambiar un token cambia toda la app.
    ===================================================================== */
 
 /* La fuente vive DENTRO del proyecto (carpeta fuentes/), así la app se ve
@@ -22,29 +29,54 @@
 }
 
 :root {
-  /* ---------- Color: base ---------- */
-  --c-fondo:        #F4F7F1;   /* hoja: fondo general, verde casi blanco */
-  --c-superficie:   #FFFFFF;   /* tarjetas y paneles */
-  --c-tinta:        #1A2A21;   /* texto principal (verde muy oscuro, no negro) */
-  --c-tinta-suave:  #55665B;   /* texto secundario */
-  --c-borde:        #DCE5DA;   /* divisiones y bordes */
+  /* ---------- 1. Primitivos: rampas por fruta (OKLCH) ---------- */
+  --aguacate-50: #F2FAEA; --aguacate-100: #E3F3D4; --aguacate-200: #CEE9B3; --aguacate-300: #B4DB8B; --aguacate-400: #9AC964;
+  --aguacate-500: #7FB03F; --aguacate-600: #669326; --aguacate-700: #4D7410; --aguacate-800: #375505; --aguacate-900: #223800;
+  --maracuya-50: #FFF6E6; --maracuya-100: #FFEAC6; --maracuya-200: #FFD894; --maracuya-300: #FFBA18; --maracuya-400: #ECAA00;
+  --maracuya-500: #CC9300; --maracuya-600: #AA7900; --maracuya-700: #855E00; --maracuya-800: #624400; --maracuya-900: #412C00;
+  --mango-50: #FFF4EE; --mango-100: #FFE8DA; --mango-200: #FFD4BB; --mango-300: #FFBB92; --mango-400: #FF9B5B;
+  --mango-500: #F27A1A; --mango-600: #CA6100; --mango-700: #9F4B00; --mango-800: #763600; --mango-900: #4F2200;
+  --guayaba-50: #FFF3F6; --guayaba-100: #FFE5EB; --guayaba-200: #FFD0DA; --guayaba-300: #FFB4C6; --guayaba-400: #FF90AE;
+  --guayaba-500: #E8608A; --guayaba-600: #CF5078; --guayaba-700: #A6395D; --guayaba-800: #7C2743; --guayaba-900: #55152B;
+  --mora-50: #F8F5FF; --mora-100: #EFE9FF; --mora-200: #E2D7FF; --mora-300: #D3C0FF; --mora-400: #C2A4FF;
+  --mora-500: #AE80FF; --mora-600: #9462E4; --mora-700: #7B4FC0; --mora-800: #56338B; --mora-900: #391E5F;
 
-  /* ---------- Color: marca ---------- */
-  --c-marca:        #1E5E3A;   /* verde Lumea (heredado del diseño de Sara) */
-  --c-marca-hover:  #154A2D;
-  --c-marca-suave:  #DCEFE1;   /* fondos de selección */
+  /* ---------- 2. Semánticos: paleta "viva" (la nueva) ---------- */
+  --c-fondo:        #F6F6E6;              /* crema con un toque de limón */
+  --c-superficie:   #FFFEF8;              /* tarjetas: blanco tibio, no blanco hospital */
+  --c-tinta:        #1E2A12;              /* texto: verde-oliva casi negro */
+  --c-tinta-suave:  #586048;              /* texto secundario */
+  --c-borde:        #E3E3CC;
 
-  /* ---------- Color: acentos con significado ---------- */
-  --c-lulo:         #E8892B;   /* logro: XP, racha, subir de nivel */
-  --c-lulo-suave:   #FDEBD7;
-  --c-lulo-tinta:   #8A4A0C;   /* para TEXTO sobre lulo-suave (el lulo puro no pasa contraste) */
-  --c-mora:         #6B3F9E;   /* emociones: estado de ánimo, avatar */
-  --c-mora-suave:   #EEE6F7;
-  --c-platano:      #F2C230;   /* atención amable: "la IA no está segura" */
-  --c-platano-suave:#FFF6D6;
-  --c-platano-tinta:#6E5300;   /* para TEXTO: el amarillo puro es ilegible sobre blanco */
-  --c-error:        #B42318;   /* solo errores del sistema */
-  --c-sello:        #000000;   /* sellos de advertencia: negro por norma (Res. 810) */
+  --c-marca:        var(--aguacate-800);  /* botón principal y marca */
+  --c-marca-hover:  var(--aguacate-900);
+  --c-marca-suave:  var(--aguacate-100);
+  --c-marca-viva:   var(--aguacate-400);  /* rellenos grandes: medidores, ilustración */
+
+  --c-logro:        var(--maracuya-300);  /* XP, racha, nivel: el dorado */
+  --c-logro-suave:  var(--maracuya-100);
+  --c-logro-fuerte: var(--maracuya-400);  /* calcomanías sobre tarjeta amarilla */
+  --c-logro-tinta:  var(--maracuya-800);  /* TEXTO sobre logro-suave */
+
+  --c-emocion:       var(--guayaba-400);  /* ánimo y avatar */
+  --c-emocion-suave: var(--guayaba-100);
+  --c-emocion-tinta: var(--guayaba-800);
+  --c-emocion-texto: var(--c-tinta);     /* texto ENCIMA del relleno vivo (blanco no pasa) */
+
+  --c-duda:         var(--mango-500);     /* "la IA no está segura": atención amable */
+  --c-duda-suave:   var(--mango-100);
+  --c-duda-tinta:   var(--mango-800);
+
+  --c-error:        #B42318;              /* solo errores del sistema */
+  --c-sello:        #000000;              /* sellos: negro por norma (Res. 810) */
+
+  /* Fondos de tarjetas de color. Mismo significado que los acentos:
+     aguacate = comida, maracuyá = logros, guayaba = emociones, mora = misiones */
+  --c-tarjeta-aguacate: var(--aguacate-200);
+  --c-tarjeta-maracuya: var(--maracuya-200);
+  --c-tarjeta-mango:    var(--mango-200);
+  --c-tarjeta-guayaba:  var(--guayaba-200);
+  --c-tarjeta-mora:     var(--mora-200);
 
   /* ---------- Tipografía ---------- */
   /* Una sola familia con personalidad, legible para 11–17 años y con
@@ -71,12 +103,12 @@
   /* ---------- Radios: según jerarquía, no uno para todo ---------- */
   --r-control: 10px;   /* botones, campos */
   --r-tarjeta: 16px;   /* tarjetas */
-  --r-panel:   24px;   /* paneles grandes y hojas */
+  --r-panel:   28px;   /* paneles grandes y hojas */
   --r-pildora: 999px;  /* solo chips y etiquetas */
 
   /* ---------- Sombras: dos niveles, nada más ---------- */
-  --s-1: 0 1px 2px rgba(26, 42, 33, .06), 0 1px 1px rgba(26, 42, 33, .04);
-  --s-2: 0 12px 32px -12px rgba(26, 42, 33, .22);
+  --s-1: 0 1px 2px rgba(30, 42, 18, .06), 0 1px 1px rgba(30, 42, 18, .04);
+  --s-2: 0 14px 34px -14px rgba(30, 42, 18, .24);
 
   /* ---------- Movimiento ---------- */
   --m-rapido: 120ms;   /* hover, presionar */
@@ -89,6 +121,20 @@
   --ancho-contenido: 1120px;
   --ancho-lateral: 248px;
   --alto-barra-inferior: 68px;
+}
+
+/* ---------- Paleta "original" (la primera propuesta), para comparar ----------
+   Se activa con <html data-paleta="original">. Solo cambian los semánticos:
+   por eso el resto de la app no se entera. */
+:root[data-paleta="original"] {
+  --c-fondo: #F4F7F1; --c-superficie: #FFFFFF; --c-tinta: #1A2A21;
+  --c-tinta-suave: #55665B; --c-borde: #DCE5DA;
+  --c-marca: #1E5E3A; --c-marca-hover: #154A2D; --c-marca-suave: #DCEFE1; --c-marca-viva: #1E5E3A;
+  --c-logro: #E8892B; --c-logro-suave: #FDEBD7; --c-logro-tinta: #8A4A0C; --c-logro-fuerte: #E8892B;
+  --c-emocion: #6B3F9E; --c-emocion-suave: #EEE6F7; --c-emocion-tinta: #6B3F9E; --c-emocion-texto: #FFFFFF;
+  --c-duda: #F2C230; --c-duda-suave: #FFF6D6; --c-duda-tinta: #6E5300;
+  --c-tarjeta-aguacate: #FFFFFF; --c-tarjeta-maracuya: #FFFFFF; --c-tarjeta-mango: #FFFFFF;
+  --c-tarjeta-guayaba: #FFFFFF; --c-tarjeta-mora: #FFFFFF;
 }
 
 /* Quien desactiva las animaciones en su sistema, no las ve. */
