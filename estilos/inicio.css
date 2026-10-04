@@ -1,0 +1,67 @@
+/* =====================================================================
+   LUMEA · componentes.css — las piezas con las que se arma cada pantalla
+   ---------------------------------------------------------------------
+   Depende de tokens.css (cárgalo antes). Aquí no hay colores ni tamaños
+   escritos a mano: todo es var(--algo).
+
+   Convención de nombres (para que el CSS no se pelee consigo mismo):
+     .pieza            el componente
+     .pieza--variante  una versión distinta (ej. .boton--secundario)
+     .pieza__parte     algo que vive dentro (ej. .etiqueta__nombre)
+   Cada selector es UNA clase, así ninguna regla le gana a otra por
+   accidente (especificidad baja y pareja).
+   ===================================================================== */
+/* ---------- 0. Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--f-familia);
+  font-size: var(--t-m);
+  line-height: var(--t-interlineado);
+  color: var(--c-tinta);
+  background: var(--c-fondo);
+  font-optical-sizing: auto;          /* la fuente ajusta su dibujo al tamaño */
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  line-height: var(--t-interlineado-titulo);
+  font-weight: var(--t-peso-fuerte);
+  letter-spacing: -0.01em;
+  text-wrap: balance;                 /* títulos sin una palabra huérfana */
+}
+p { margin: 0; text-wrap: pretty; }
+
+/* Foco visible SOLO cuando se navega con teclado */
+:focus-visible {
+  outline: 3px solid var(--c-marca);
+  outline-offset: 2px;
+  border-radius: var(--r-control);
+}
+
+/* Transición suave al cambiar de página (Chrome 126+, Safari 18.2+).
+   En navegadores viejos simplemente no pasa nada: degradación elegante. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+
+.saludo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var( --r-tarjeta);
+}
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--c-emocion);
+    color: var(--c-marca-tinta);
+    font-weight: var(--t-peso-fuerte);
+    text-decoration: none;
+}

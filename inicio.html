@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <link rel="stylesheet" href="estilos/tokens.css">
+  <link rel="stylesheet" href="estilos/paletas.css">
+  <link rel="stylesheet" href="estilos/componentes.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumea | Inicio</title>
+  <script src="tema.js"></script>   <!-- Pregunta: ¿por qué sin defer?  Porque se necesita que se ejecute antes de que se cargue el contenido de la página para aplicar el tema correctamente.--> 
+  <link rel="stylesheet" href="estilos/___.css">
+  <link rel="stylesheet" href="estilos/___.css">
+  <link rel="stylesheet" href="estilos/___.css">
+  <link rel="stylesheet" href="estilos/inicio.css">
+</head>
+<body>
+  <div class="app">
+   <nav class="nav-app" aria-label="Principal">
+     <a class="nav-app__marca" href="inicio.html">Lumea</a>
+     <a class="nav-app__enlace" href="inicio.html" aria-current="page">Inicio</a>
+     <a class="nav-app__enlace" href="mis-registros.html">Mis registros</a>
+     <a class="nav-app__enlace" href="registrar-comida.html">Registrar</a>
+     <a class="nav-app__enlace" href="progreso.html">Progreso</a>
+     <a class="nav-app__enlace" href="avatar.html">Avatar</a>
+   </nav>
+
+    <main class="contenido">
+      <header class="saludo">
+        <div> 
+          <h1>Hola, [Nombre del usuario]</h1>
+          <time datetime="[Fecha actual]">Hoy es [Fecha actual]</time>
+          </div>
+       <a href="perfil.html" class="avatar" aria-label="Ir a perfil">
+          <span class="saludo__avatar" aria-hidden="true">A</span>
+        </a>
+             <!-- ¿Por qué un <a> y no un <div> con onclick? Para no depender de javascript y permitir que el enlace funcione incluso si JS está deshabilitado--> 
+      </header>
+
+      <section class="checkin" aria-labelledby="___"><!-- Lección 2 --></section>
+      <section class="canasta" aria-labelledby="___"><!-- Lección 3 --></section>
+      <section class="mision"><!-- Lección 4 --></section>
+    </main>
+  </div>
+</body>
+</html>
