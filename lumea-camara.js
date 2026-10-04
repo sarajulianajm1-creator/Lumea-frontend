@@ -8,7 +8,11 @@
 //               btn-apagar, btn-subir
 //   Resultado:  backend-alimento, backend-precision, backend-energia,
 //               backend-sellos, backend-dato, backend-mensaje,
-//               backend-opciones (botones para confirmar), backend-estado
+//               backend-opciones (botones para confirmar), backend-estado,
+//               backend-foto (<img> con la foto que se analiza),
+//               backend-logros (<ul>: XP, misiones, nivel, meta del día)
+//   Sesión:     sin-sesion (aviso) y flujo-registro (la cámara): sin
+//               correo guardado se muestra el aviso y no se registra nada
 //
 // Flujo: getUserMedia -> <video> -> <canvas> -> JPEG -> File -> FormData
 //        (campo "file" + correo de la sesión) -> POST /predecir (api.js)
@@ -36,6 +40,13 @@
     { type: "file", accept: "image/*", hidden: true });
   document.body.appendChild(inputArchivo);
   const email = (typeof obtenerSesion === "function") ? obtenerSesion() : null;
+
+  // ---------- Sin sesión: nada se registra sin dueño (de registrar-comida.html) ----------
+  if (!email && $("sin-sesion")) {
+    $("sin-sesion").hidden = false;
+    if ($("flujo-registro")) $("flujo-registro").hidden = true;
+    return;
+  }
 
   // ---------- Estado de los botones (un solo lugar decide) ----------
   function actualizarBotones() {
@@ -110,7 +121,7 @@
     const caja = $("backend-sellos");
     if (!caja) return;
     caja.replaceChildren();
-    if (sellos === null || sellos === undefined) { caja.textContent = "Sin dato de sellos"; return; }
+    if (sellos === null || sellos === undefined) { caja.textContent = "—"; return; }   // null = no se sabe: no se afirma nada
     if (sellos.length === 0) { caja.textContent = "Sin sellos de advertencia"; return; }   // nunca «saludable»
     sellos.forEach((s) => {
       const el = document.createElement("span");
@@ -127,32 +138,80 @@
     const opciones = r.opciones_detalle ||
       (r.opciones_sugeridas || []).map((codigo) => ({ codigo, nombre: codigo.replace(/_/g, " ") }));
     if (!r.seleccion_manual || opciones.length === 0) return;
+    const grupos = new Map();                       // grupo -> opciones, en el orden en que llegan
     opciones.forEach((o) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "lumea-btn-pill";
-      b.textContent = o.nombre;
-      b.addEventListener("click", () => confirmar(o.codigo));
-      caja.appendChild(b);
+      const g = o.grupo || "";
+      if (!grupos.has(g)) grupos.set(g, []);
+      grupos.get(g).push(o);
+    });
+    grupos.forEach((lista, grupo) => {
+      if (grupos.size > 1 && grupo) {               // título solo si hay varios grupos
+        const t = document.createElement("p");
+        t.className = "opciones__grupo";
+        t.textContent = grupo;
+        caja.appendChild(t);
+      }
+      lista.forEach((o) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "lumea-btn-pill";
+        b.textContent = o.nombre;
+        b.addEventListener("click", () => confirmar(o.codigo));
+        caja.appendChild(b);
+      });
     });
   }
 
+  // XP, misiones, nivel y meta del día (contrato de gamificación). Nunca es un
+  // juicio sobre la comida: celebra lo que la persona hizo.
+  function mostrarLogros(g) {
+    const lista = $("backend-logros");
+    if (!lista) return false;
+    lista.replaceChildren();
+    if (!g) return true;
+    const frases = [];
+    if (g.xp_ganado > 0) frases.push(`+${g.xp_ganado} XP`);
+    (g.misiones_cumplidas || []).forEach((m) => frases.push(`Misión cumplida: ${m.nombre}`));
+    if (g.subio_de_nivel) frases.push(`¡Subiste al nivel ${g.nivel}!`);
+    if (g.meta_diaria && g.meta_diaria.recien_cumplida) frases.push("Cumpliste la meta de hoy");
+    frases.forEach((f) => {
+      const li = document.createElement("li");
+      li.textContent = f;
+      lista.appendChild(li);
+    });
+    return true;
+  }
+
+  // La foto queda quieta sobre el video mientras la IA la analiza
+  let urlFoto = null;
+  function mostrarFoto(archivo) {
+    const img = $("backend-foto");
+    if (!img) return;
+    if (urlFoto) URL.revokeObjectURL(urlFoto);
+    urlFoto = archivo ? URL.createObjectURL(archivo) : null;
+    if (urlFoto) img.src = urlFoto; else img.removeAttribute("src");
+    img.hidden = !urlFoto;
+  }
+
   function mostrar(r) {
-    poner("backend-alimento", r.alimento_app || r.alimento || "No identificado");
+    const opcionesDuda = r.seleccion_manual && (r.opciones_detalle || r.opciones_sugeridas || []).length > 0;
+    // IA duda con opciones: el título es la pregunta, no "No identificado"
+    poner("backend-alimento", opcionesDuda ? (r.mensaje || "¿Cuál de estos es?") : (r.alimento_app || r.alimento || "No identificado"));
     poner("backend-precision", r.certeza != null ? `${Math.round(r.certeza)}% seguridad` : "--% seguridad");
     const kcal = kcalDe(r);
-    poner("backend-energia", kcal != null ? `${kcal} kcal / 100 g` : "Sin dato");
+    poner("backend-energia", kcal != null ? `${kcal} kcal / 100 g` : "—");
     mostrarSellos(r.sellos_advertencia);
     poner("backend-dato", r.dato_curioso || "");
     let msg = r.mensaje_educativo || "";
     if (r.seleccion_manual && !(r.opciones_detalle || r.opciones_sugeridas || []).length) {
       msg = "La IA no está segura. Intenta con más luz o más cerca del plato.";
     } else if (r.seleccion_manual) {
-      msg = r.mensaje || "Estos alimentos se parecen. ¿Cuál es?";
+      msg = "Toca el que es para guardarlo en tu historial.";
     } else if (r.guardado_baseDatos) {
-      const xp = r.gamificacion && r.gamificacion.xp_ganado ? ` · +${r.gamificacion.xp_ganado} XP` : "";
-      msg = (msg ? msg + " " : "") + "Guardado en tu historial" + xp;
+      msg = (msg ? msg + " " : "") + "Guardado en tu historial.";
     }
+    const hayLista = mostrarLogros(r.gamificacion);
+    if (!hayLista && r.gamificacion && r.gamificacion.xp_ganado) msg += ` +${r.gamificacion.xp_ganado} XP`;
     poner("backend-mensaje", msg);
     mostrarOpciones(r);
   }
@@ -160,10 +219,11 @@
   // ---------- Acciones ----------
   async function analizar(archivo) {
     ocupado = true; actualizarBotones();
+    mostrarFoto(archivo);
     poner("backend-estado", "Analizando…");
     try {
       const { ok, cuerpo } = await predecirComida(archivo, email);   // api.js
-      if (!ok) throw new Error(cuerpo.error || "el servidor respondió con error");
+      if (!ok || cuerpo.error) throw new Error(cuerpo.error || "el servidor respondió con error");
       mostrar(cuerpo);
       poner("backend-estado", "");
     } catch (e) {
@@ -177,7 +237,7 @@
     ocupado = true; actualizarBotones();
     try {
       const { ok, cuerpo } = await confirmarAlimento(codigo, email);  // api.js
-      if (!ok) throw new Error(cuerpo.error || "error al confirmar");
+      if (!ok || cuerpo.error) throw new Error(cuerpo.error || "error al confirmar");
       mostrar(cuerpo);
     } catch (e) {
       poner("backend-estado", `No se pudo confirmar: ${e.message}`);
@@ -201,7 +261,7 @@
   al("btn-encender", encender);
   al("btn-apagar", apagar);
   al("btn-tomar", tomarFoto);
-  al("btn-otra", () => { poner("backend-estado", "Lista para otra foto."); });
+  al("btn-otra", () => { mostrarFoto(null); poner("backend-estado", "Lista para otra foto."); });
   al("btn-subir", () => inputArchivo.click());
   inputArchivo.addEventListener("change", async () => {
     const f = inputArchivo.files[0];
