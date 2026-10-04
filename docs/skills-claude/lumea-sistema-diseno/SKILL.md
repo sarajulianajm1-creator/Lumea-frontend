@@ -1,11 +1,11 @@
 ---
 name: lumea-sistema-diseno
-description: Amplía y documenta el sistema de diseño de Lumea (colores, tipografía, espacio, componentes, movimiento, accesibilidad) partiendo de estilos/tokens.css, y lo exporta como JSON para Figma, CSS y fichas de componentes. Úsala para cualquier decisión visual de Lumea.
+description: Amplía y documenta el sistema de diseño de Lumea (colores, tipografía, espacio, componentes, movimiento, accesibilidad) partiendo de estilos/tokens.css y de las 5 paletas generadas, y lo exporta como JSON para Figma, CSS y fichas de componentes. Úsala para cualquier decisión visual de Lumea.
 ---
 
 # Sistema de diseño de Lumea
 
-Actúa como arquitecta/o de sistemas de diseño. **No empiezas de cero**: Lumea ya tiene un sistema en `estilos/tokens.css` y `estilos/componentes.css`, con una página de referencia viva en `sistema-diseno.html`. Lees eso primero y lo amplías. Si algo del sistema actual te parece mal, lo dices y propones el cambio; no lo reemplazas en silencio.
+Actúa como arquitecta/o de sistemas de diseño. **No empiezas de cero**: Lumea ya tiene un sistema en `estilos/tokens.css` y `estilos/componentes.css`, con una página de referencia viva en `sistema-diseno.html`. Lees eso primero y lo amplías (si no tienes los archivos, pídeselos a Isabella). Si algo del sistema actual te parece mal, lo dices y propones el cambio; no lo reemplazas en silencio.
 
 ## Personalidad de marca
 Lee `MARCA.md` en la raíz del repo. Si no existe, haz estas 3 preguntas antes de seguir y guarda las respuestas en `MARCA.md`:
@@ -36,8 +36,8 @@ Lo que ya está decidido (ver `docs/investigacion-paletas.md`):
 7. **Accesibilidad WCAG 2.1 AA**: calcula el contraste con un script (fórmula de luminancia relativa de WCAG). **Nunca lo estimes a ojo.** Muestra la tabla de pares texto/fondo con su número. Objetivo de toque mínimo 44 px. Foco siempre visible.
 
 ## Formatos de salida
-- `estilos/tokens.json` en formato **W3C Design Tokens (DTCG)**: `{ "color": { "aguacate": { "500": { "$type": "color", "$value": "#7FB03F" } } } }`. Los semánticos referencian primitivos con `"{color.aguacate.800}"`. Este archivo se importa a Variables de Figma (con el conector de Figma y la skill figma-generate-library, o con un plugin como Tokens Studio).
-- `estilos/tokens.css` y `estilos/componentes.css` actualizados (mismos nombres que el JSON).
+- `estilos/tokens.json` en formato **W3C Design Tokens (DTCG)**, lo escribe el generador: `color.<paleta>.<modo>.<rol>` (ej. `color.neblina.oscuro.logro`). En Figma se importa como una colección de Variables con 10 modos (5 paletas × claro/oscuro), con el conector de Figma y la skill figma-generate-library, o con un plugin como Tokens Studio.
+- `estilos/tokens.css` (lo que no es color) y `estilos/componentes.css` actualizados, con los mismos nombres que el JSON.
 - `docs/componentes.md`: una ficha por componente (propósito, anatomía, variantes, estados, tokens que usa, qué NO hacer), escrita para copiar en la descripción del componente en Figma.
 - Actualiza `sistema-diseno.html` para que muestre lo nuevo.
 
