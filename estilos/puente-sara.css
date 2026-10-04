@@ -1,0 +1,199 @@
+/* =====================================================================
+   LUMEA · puente-sara.css — el diseño de Sara con la piel de Lumea
+   ---------------------------------------------------------------------
+   Va DESPUÉS de style.css. No cambia ni una línea de style.css: solo
+   reemplaza sus colores y su fuente por los tokens de paletas.css y
+   tokens.css. Así las páginas de Sara siguen las 5 paletas y el modo
+   oscuro sin perder su estructura (migración "higo estrangulador",
+   Fowler 2004: lo nuevo crece alrededor de lo viejo hasta reemplazarlo).
+
+   Comparar: agrega ?piel=sara a la dirección y ESA pestaña muestra el
+   original (tema.js pone data-piel="sara" en <html>); ?piel=lumea vuelve.
+   Por eso cada regla empieza con html:not([data-piel="sara"]).
+
+   Especificidad: html:not([data-piel="sara"]) .clase vale (0,2,1) y le
+   gana a .clase (0,1,0) de style.css. Donde Sara usó !important, aquí
+   también, porque !important solo lo vence otro !important.
+   ===================================================================== */
+
+/* ---------- 0. Piel original: que el modo oscuro de paletas.css no se cuele ---------- */
+html[data-piel="sara"] { color-scheme: light !important; }
+
+/* ---------- 1. Variables de Sara → tokens de Lumea ---------- */
+html:not([data-piel="sara"]) {
+  --lumea-primary: var(--c-marca);
+  --lumea-primary-hover: var(--c-marca-hover);
+  --lumea-primary-light: var(--c-marca-tinta);
+  --lumea-accent-soft: var(--c-comida-suave);
+  --lumea-accent-badge: var(--c-marca-suave);
+  --lumea-accent-border: var(--c-borde-fuerte);
+  --lumea-text-dark: var(--c-tinta);
+  --lumea-text-muted: var(--c-tinta-suave);
+  --lumea-bg-page: var(--c-fondo);
+  --lumea-card-bg: var(--c-superficie);
+  --lumea-border-subtle: var(--c-borde);
+  --lumea-shadow-sm: var(--s-1);
+  --lumea-shadow-hover: var(--s-2);
+  --lumea-dark: var(--c-marca-tinta);      /* Sara lo usa sobre todo como TEXTO */
+  --lumea-light: var(--c-marca-suave);
+  --lumea-gray: var(--c-tinta-suave);      /* style.css lo usa sin definirlo */
+  --lumea-gray-inactive: var(--c-borde-fuerte);
+  --lumea-border-bg: var(--c-borde);
+  --lumea-mint-glow: transparent;
+
+  /* ---------- 2. Bootstrap 5.3 → tokens ---------- */
+  --bs-body-bg: var(--c-fondo);
+  --bs-body-color: var(--c-tinta);
+  --bs-body-font-family: var(--f-familia);
+  --bs-emphasis-color: var(--c-tinta);
+  --bs-secondary-color: var(--c-tinta-suave);
+  --bs-tertiary-color: var(--c-tinta-suave);
+  --bs-secondary-bg: var(--c-superficie-2);
+  --bs-tertiary-bg: var(--c-superficie);
+  --bs-border-color: var(--c-borde);
+  --bs-heading-color: var(--c-tinta);
+}
+
+/* ---------- 3. Tipografía: una sola familia de marca ---------- */
+html:not([data-piel="sara"]) body { font-family: var(--f-familia); }
+
+/* ---------- 4. Superficies que style.css pintó de blanco a mano ---------- */
+html:not([data-piel="sara"]) .navbar-lumea,
+html:not([data-piel="sara"]) .footer-lumea,
+html:not([data-piel="sara"]) .quote-box,
+html:not([data-piel="sara"]) .auth-card,
+html:not([data-piel="sara"]) .card {
+  background-color: var(--c-superficie);
+  --bs-card-bg: var(--c-superficie);
+  --bs-card-border-color: var(--c-borde);
+}
+html:not([data-piel="sara"]) .lumea-dashboard-card {
+  background: var(--c-superficie) !important;
+  border: 1px solid var(--c-borde);
+  box-shadow: var(--s-2);
+}
+html:not([data-piel="sara"]) .step-card-highlight {
+  background: var(--c-superficie);
+  border-color: var(--c-comida) !important;
+}
+html:not([data-piel="sara"]) .btn-objective,
+html:not([data-piel="sara"]) .racha-badge,
+html:not([data-piel="sara"]) .meta-badge,
+html:not([data-piel="sara"]) .lumea-btn-secondary,
+html:not([data-piel="sara"]) .lumea-btn-pill {
+  background: var(--c-superficie-2);
+  border-color: var(--c-borde);
+}
+html:not([data-piel="sara"]) .lumea-btn-pill { color: var(--c-tinta-suave); }
+html:not([data-piel="sara"]) .profile-avatar-container img { border-color: var(--c-superficie); }
+html:not([data-piel="sara"]) .nav-item-custom:hover,
+html:not([data-piel="sara"]) .nav-item-custom[aria-current="page"] {
+  background-color: var(--c-superficie-2);
+  border-color: var(--c-superficie-2);
+}
+html:not([data-piel="sara"]) .btn-nav-health:hover { background-color: var(--c-marca-suave); }
+
+/* Los fondos con la imagen de hojas (Lumen.png) pasan a superficie plana:
+   las hojas verdes chocan con Carnaval o Colibrí y encandilan en oscuro. */
+html:not([data-piel="sara"]) .hero-section,
+html:not([data-piel="sara"]) .auth-container,
+html:not([data-piel="sara"]) .lumea-dashboard-screen {
+  background: var(--c-fondo);
+}
+
+/* Aviso legal o de salud: neutro y legible (no usa colores de rol) */
+html:not([data-piel="sara"]) .notice-box-warning {
+  background-color: var(--c-superficie-2);
+  border-color: var(--c-borde-fuerte) !important;
+  color: var(--c-tinta);
+}
+html:not([data-piel="sara"]) .notice-box-warning .alert-heading { color: var(--c-tinta); }
+
+/* ---------- 5. Verde usado como texto → la "tinta" de marca ---------- */
+html:not([data-piel="sara"]) .hero-title,
+html:not([data-piel="sara"]) .logo-brand,
+html:not([data-piel="sara"]) .hero-tag,
+html:not([data-piel="sara"]) .step-badge,
+html:not([data-piel="sara"]) .pillar-icon-box,
+html:not([data-piel="sara"]) .navbar .nav-link:hover,
+html:not([data-piel="sara"]) .footer-lumea a:hover { color: var(--c-marca-tinta) !important; }
+html:not([data-piel="sara"]) .btn-lumea-outline {
+  color: var(--c-marca-tinta) !important;
+  border-color: var(--c-marca);
+}
+html:not([data-piel="sara"]) .navbar .nav-link.active { color: var(--c-tinta) !important; }
+
+/* ---------- 6. Rellenos de marca: el texto encima es --c-sobre-marca ---------- */
+html:not([data-piel="sara"]) .btn-lumea { color: var(--c-sobre-marca) !important; }
+html:not([data-piel="sara"]) .step-badge-highlight {
+  background-color: var(--c-marca);
+  color: var(--c-sobre-marca) !important;
+}
+html:not([data-piel="sara"]) .lumea-btn-primary {
+  background: var(--c-marca);
+  color: var(--c-sobre-marca);
+  box-shadow: var(--s-1);
+}
+html:not([data-piel="sara"]) .lumea-btn-primary .btn-icon { color: currentColor; }
+html:not([data-piel="sara"]) .criterio-card.highlight {
+  background: var(--c-marca);
+  color: var(--c-sobre-marca);
+}
+html:not([data-piel="sara"]) .criterio-card.highlight .criterio-title,
+html:not([data-piel="sara"]) .criterio-card.highlight .criterio-desc,
+html:not([data-piel="sara"]) .criterio-card.highlight .criterio-icon-wrap { color: var(--c-sobre-marca); }
+
+/* ---------- 7. Gramática de color de Lumea ---------- */
+/* XP, nivel y logros = maracuyá (logro) */
+html:not([data-piel="sara"]) .nivel-badge {
+  background: var(--c-logro);
+  color: var(--c-sobre-logro);
+}
+html:not([data-piel="sara"]) .progress { background-color: var(--c-logro-suave); }
+html:not([data-piel="sara"]) .progress-bar { background: var(--c-logro) !important; }
+html:not([data-piel="sara"]) #xp-text { color: var(--c-tinta-suave); }
+html:not([data-piel="sara"]) #backend-logros li {
+  display: inline-block;
+  margin: 0 var(--e-1) var(--e-1) 0;
+  padding: 2px var(--e-3);
+  border-radius: var(--r-pildora);
+  background: var(--c-logro-suave);
+  color: var(--c-logro-tinta);
+}
+/* La IA duda = mango */
+html:not([data-piel="sara"]) .opciones__grupo { color: var(--c-duda-tinta); }
+
+/* El visor de la cámara es oscuro en todas las paletas */
+html:not([data-piel="sara"]) .camera-preview-container {
+  background: var(--c-visor);
+  border-color: var(--c-borde);
+}
+html:not([data-piel="sara"]) .camera-preview-container .corner { border-color: var(--c-sobre-visor); }
+
+/* Sellos: siempre negros (son legales). En oscuro, una placa clara alrededor
+   les devuelve el contraste de 3:1 (WCAG 1.4.11), como en componentes.css. */
+html:not([data-piel="sara"]) .sello,
+html:not([data-piel="sara"]) .sello-mini {
+  background: var(--c-sello);
+  filter: drop-shadow(2px 0 0 var(--c-sello-placa)) drop-shadow(-2px 0 0 var(--c-sello-placa))
+          drop-shadow(0 2px 0 var(--c-sello-placa)) drop-shadow(0 -2px 0 var(--c-sello-placa));
+}
+
+/* ---------- 8. Utilidades de Bootstrap con color fijo ---------- */
+html:not([data-piel="sara"]) .text-secondary,
+html:not([data-piel="sara"]) .text-muted { color: var(--c-tinta-suave) !important; }
+html:not([data-piel="sara"]) .text-success { color: var(--c-comida-tinta) !important; }
+html:not([data-piel="sara"]) .text-danger { color: var(--c-error) !important; }
+html:not([data-piel="sara"]) .bg-white,
+html:not([data-piel="sara"]) .bg-light { background-color: var(--c-superficie) !important; }
+
+/* ---------- 9. Foco visible con teclado (WCAG 2.4.7) ---------- */
+html:not([data-piel="sara"]) :focus-visible {
+  outline: 3px solid var(--c-foco);
+  outline-offset: 2px;
+}
+html:not([data-piel="sara"]) .form-control:focus,
+html:not([data-piel="sara"]) .form-select:focus {
+  border-color: var(--c-foco);
+  box-shadow: 0 0 0 3px var(--c-marca-suave);
+}

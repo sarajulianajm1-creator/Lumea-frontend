@@ -8,10 +8,13 @@
    Dos ejes independientes sobre <html>:
      data-paleta = laguna | neblina | carnaval | colibri | cosecha
      data-modo   = claro | oscuro   (sin atributo = sigue al sistema)
+   Y uno más, solo para comparar con el diseño original de Sara:
+     data-piel   = sara              (?piel=sara en la dirección; ver puente-sara.css)
 
    Uso desde otra página:
      LumeaTema.ponerPaleta('neblina');
      LumeaTema.ponerModo('oscuro');   // 'claro' | 'oscuro' | 'auto'
+     LumeaTema.ponerPiel('sara');     // 'sara' | 'lumea' (solo esta pestaña)
    ===================================================================== */
 (function () {
   var PALETAS = ['laguna', 'neblina', 'carnaval', 'colibri', 'cosecha'];
@@ -43,6 +46,26 @@
     return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro';
   }
 
+  // ---------- Piel de comparación (páginas de Sara + puente-sara.css) ----------
+  // ?piel=sara muestra el diseño original de Sara; ?piel=lumea vuelve.
+  // Se guarda en sessionStorage, que es de UNA pestaña: dos pestañas lado a
+  // lado pueden recorrer el mismo flujo con pieles distintas.
+  function leerPestana(clave) { try { return sessionStorage.getItem(clave); } catch (e) { return null; } }
+  function guardarPestana(clave, valor) {
+    try { if (valor == null) sessionStorage.removeItem(clave); else sessionStorage.setItem(clave, valor); } catch (e) {}
+  }
+  function ponerPiel(piel) {
+    if (piel === 'sara') { html.dataset.piel = 'sara'; guardarPestana('lumea-piel', 'sara'); }
+    else { delete html.dataset.piel; guardarPestana('lumea-piel', null); }
+    sincronizarBootstrap();
+  }
+  // Bootstrap tiene sus propios componentes oscuros (menú, flechas de select):
+  // se encienden solo con la piel de Lumea en modo oscuro.
+  function sincronizarBootstrap() {
+    if (html.dataset.piel === 'sara') html.removeAttribute('data-bs-theme');
+    else html.setAttribute('data-bs-theme', modoEfectivo() === 'oscuro' ? 'dark' : 'light');
+  }
+
   // Al cargar: aplicar lo guardado (si no hay nada, Laguna Verde y modo del sistema)
   var paleta = leer('lumea-paleta');
   if (RENOMBRADAS[paleta]) { paleta = RENOMBRADAS[paleta]; guardar('lumea-paleta', paleta); }
@@ -50,5 +73,17 @@
   if (PALETAS.indexOf(paleta) !== -1) html.dataset.paleta = paleta;
   if (modo === 'claro' || modo === 'oscuro') html.dataset.modo = modo;
 
-  window.LumeaTema = { PALETAS: PALETAS, ponerPaleta: ponerPaleta, ponerModo: ponerModo, modoEfectivo: modoEfectivo };
+  var pielPedida = null;
+  try { pielPedida = new URLSearchParams(location.search).get('piel'); } catch (e) {}
+  if (pielPedida === 'sara' || pielPedida === 'lumea') ponerPiel(pielPedida);
+  else ponerPiel(leerPestana('lumea-piel') === 'sara' ? 'sara' : 'lumea');
+
+  html.addEventListener('lumea:tema', sincronizarBootstrap);
+  if (window.matchMedia) {
+    var consulta = matchMedia('(prefers-color-scheme: dark)');
+    if (consulta.addEventListener) consulta.addEventListener('change', sincronizarBootstrap);
+  }
+
+  window.LumeaTema = { PALETAS: PALETAS, ponerPaleta: ponerPaleta, ponerModo: ponerModo,
+                       modoEfectivo: modoEfectivo, ponerPiel: ponerPiel };
 })();
