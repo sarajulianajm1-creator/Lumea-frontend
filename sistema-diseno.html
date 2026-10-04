@@ -28,7 +28,7 @@
     .ref__nota { color: var(--c-tinta-suave); max-width: 64ch; }
 
     .paletas { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--e-4); }
-    .paleta-tarjeta { display: grid; gap: var(--e-3); align-content: start; text-align: left; padding: var(--e-5); border: 2px solid var(--c-borde); border-radius: var(--r-tarjeta); background: var(--c-fondo); color: var(--c-tinta); font: inherit; cursor: pointer; transition: transform var(--m-rapido) var(--m-salida), border-color var(--m-rapido); }
+    .paleta-tarjeta { display: grid; gap: var(--e-3); align-content: start; text-align: left; padding: var(--e-4); min-width: 0; border: 2px solid var(--c-borde); border-radius: var(--r-tarjeta); background: var(--c-fondo); color: var(--c-tinta); font: inherit; cursor: pointer; transition: transform var(--m-rapido) var(--m-salida), border-color var(--m-rapido); }
     .paleta-tarjeta:hover { transform: translateY(-2px); }
     .paleta-tarjeta[aria-pressed="true"] { border-color: var(--c-marca); }
     .paleta-tarjeta__cabeza { display: flex; justify-content: space-between; align-items: center; }
@@ -36,8 +36,8 @@
     .paleta-tarjeta__marca { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--c-marca); color: var(--c-sobre-marca); opacity: 0; transform: scale(.6); transition: opacity var(--m-base), transform var(--m-base) var(--m-resorte); }
     .paleta-tarjeta[aria-pressed="true"] .paleta-tarjeta__marca { opacity: 1; transform: none; }
     .paleta-tarjeta__caracter { font-size: var(--t-s); color: var(--c-tinta-suave); }
-    .paleta-tarjeta__frutas { display: flex; gap: var(--e-1); }
-    .paleta-tarjeta__fruta { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; }
+    .paleta-tarjeta__frutas { display: flex; flex-wrap: wrap; gap: var(--e-1); }
+    .paleta-tarjeta__fruta { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; flex: none; }
     .paleta-tarjeta__origen { font-size: var(--t-xs); color: var(--c-tinta-suave); line-height: 1.4; }
     .icono--mini { width: 16px; height: 16px; }
 
