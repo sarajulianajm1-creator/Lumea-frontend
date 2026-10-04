@@ -42,7 +42,9 @@ Airbnb, Spotify, Raycast, Duolingo y la fluidez de macOS. Las referencias de col
 
 ## Las cinco paletas (nombres de trabajo)
 
-Laguna Verde (predeterminada), Neblina, Carnaval, Mopa-mopa y Potrerillo. Cada una con modo claro y oscuro.
+Laguna Verde (predeterminada), Neblina, Carnaval, Colibrí y Cosecha. Cada una con modo claro y oscuro. **Aprobadas el 4 de octubre de 2026.**
 Los valores salen de `herramientas/generar_paletas.py`, que mide contraste y daltonismo.
 
-**Pendiente:** votar los nombres con estudiantes y familias. Mopa-mopa solo se queda si un taller de barniz de Pasto está de acuerdo y aparece en los créditos.
+Colibrí reemplazó a Mopa-mopa y Cosecha a Potrerillo: usar el nombre del barniz de Pasto (patrimonio en salvaguardia urgente, UNESCO 2020) exigía el acuerdo de sus maestros, y una plaza concreta ataba la paleta a un lugar. Los nombres nuevos vienen de criaturas y cosechas, como pide la fraternidad con las criaturas del Cántico de Francisco de Asís.
+
+**Pendiente:** votar los nombres con estudiantes y familias.

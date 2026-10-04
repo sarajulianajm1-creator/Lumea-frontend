@@ -6,7 +6,7 @@
    navegador pinte y no hay un destello del tema equivocado.
 
    Dos ejes independientes sobre <html>:
-     data-paleta = laguna | neblina | carnaval | mopa | potrerillo
+     data-paleta = laguna | neblina | carnaval | colibri | cosecha
      data-modo   = claro | oscuro   (sin atributo = sigue al sistema)
 
    Uso desde otra página:
@@ -14,7 +14,9 @@
      LumeaTema.ponerModo('oscuro');   // 'claro' | 'oscuro' | 'auto'
    ===================================================================== */
 (function () {
-  var PALETAS = ['laguna', 'neblina', 'carnaval', 'mopa', 'potrerillo'];
+  var PALETAS = ['laguna', 'neblina', 'carnaval', 'colibri', 'cosecha'];
+  // Nombres viejos (4 oct 2026): quien los tenga guardados no pierde su elección
+  var RENOMBRADAS = { mopa: 'colibri', potrerillo: 'cosecha' };
   var html = document.documentElement;
 
   // localStorage puede fallar (modo privado, permisos): nunca rompe la app.
@@ -43,6 +45,7 @@
 
   // Al cargar: aplicar lo guardado (si no hay nada, Laguna Verde y modo del sistema)
   var paleta = leer('lumea-paleta');
+  if (RENOMBRADAS[paleta]) { paleta = RENOMBRADAS[paleta]; guardar('lumea-paleta', paleta); }
   var modo = leer('lumea-modo');
   if (PALETAS.indexOf(paleta) !== -1) html.dataset.paleta = paleta;
   if (modo === 'claro' || modo === 'oscuro') html.dataset.modo = modo;

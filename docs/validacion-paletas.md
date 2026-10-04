@@ -25,19 +25,19 @@ Generado por `herramientas/generar_paletas.py`. Contraste según WCAG 2.2 (texto
 - Pares medidos: 41. Peor caso: `sobre-mision` sobre `mision` = **6.22:1** (mínimo 4.5).
 - Distancia mínima entre frutas: normal 0.083 (duda–logro); protanopia 0.071 (comida–duda); deuteranopia 0.064 (duda–logro); tritanopia 0.053 (emocion–duda); grises 0.000 (comida–emocion)
 
-## Mopa-mopa · claro
+## Colibrí · claro
 - Pares medidos: 41. Peor caso: `sobre-comida` sobre `comida` = **4.62:1** (mínimo 4.5).
 - Distancia mínima entre frutas: normal 0.141 (duda–logro); protanopia 0.158 (duda–logro); deuteranopia 0.121 (duda–logro); tritanopia 0.125 (emocion–duda); grises 0.084 (comida–emocion)
 
-## Mopa-mopa · oscuro
+## Colibrí · oscuro
 - Pares medidos: 41. Peor caso: `tinta-suave` sobre `comida-contenedor` = **5.77:1** (mínimo 4.5).
 - Distancia mínima entre frutas: normal 0.080 (duda–logro); protanopia 0.029 (comida–duda); deuteranopia 0.062 (duda–logro); tritanopia 0.053 (emocion–duda); grises 0.003 (comida–emocion)
 
-## Potrerillo · claro
+## Cosecha · claro
 - Pares medidos: 41. Peor caso: `sobre-comida` sobre `comida` = **4.70:1** (mínimo 4.5).
 - Distancia mínima entre frutas: normal 0.145 (duda–logro); protanopia 0.120 (comida–emocion); deuteranopia 0.116 (duda–logro); tritanopia 0.116 (emocion–duda); grises 0.098 (comida–emocion)
 
-## Potrerillo · oscuro
+## Cosecha · oscuro
 - Pares medidos: 41. Peor caso: `tinta-suave` sobre `comida-contenedor` = **5.76:1** (mínimo 4.5).
 - Distancia mínima entre frutas: normal 0.093 (emocion–duda); protanopia 0.053 (comida–duda); deuteranopia 0.071 (emocion–duda); tritanopia 0.053 (emocion–duda); grises 0.013 (comida–emocion)
 

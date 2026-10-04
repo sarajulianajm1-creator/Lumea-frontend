@@ -4,7 +4,7 @@
    correrlo. Así cada color tiene una medición detrás.
 
    Dos ejes independientes en <html>:
-     data-paleta = laguna | neblina | carnaval | mopa | potrerillo
+     data-paleta = laguna | neblina | carnaval | colibri | cosecha
      data-modo   = claro | oscuro   (sin atributo = sigue al sistema)
    ===================================================================== */
 
@@ -468,8 +468,8 @@
 }
 }
 
-/* ---------- Mopa-mopa · Viva, de joya. Barniz de Pasto: capas de color translúcido sobre hoja de plata. ---------- */
-[data-paleta="mopa"] {
+/* ---------- Colibrí · Viva, iridiscente. Colombia tiene más especies de aves que ningún otro país; el brillo del colibrí no es pigmento, nace de capas microscópicas en sus plumas. ---------- */
+[data-paleta="colibri"] {
   --c-fondo: #F0F3FA;
   --c-superficie: #FDFDFF;
   --c-superficie-2: #FFFFFF;
@@ -518,8 +518,8 @@
   --c-sello-placa: transparent;
   color-scheme: light;
 }
-[data-paleta="mopa"][data-modo="oscuro"],
-:root[data-paleta="mopa"]:not([data-modo])[data-theme="dark"] {
+[data-paleta="colibri"][data-modo="oscuro"],
+:root[data-paleta="colibri"]:not([data-modo])[data-theme="dark"] {
   --c-fondo: #0C112C;
   --c-superficie: #141A38;
   --c-superficie-2: #1C2444;
@@ -569,7 +569,7 @@
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
-:root[data-paleta="mopa"]:not([data-modo]):not([data-theme="light"]) {
+:root[data-paleta="colibri"]:not([data-modo]):not([data-theme="light"]) {
   --c-fondo: #0C112C;
   --c-superficie: #141A38;
   --c-superficie-2: #1C2444;
@@ -620,8 +620,8 @@
 }
 }
 
-/* ---------- Potrerillo · Cálida, de mercado. La plaza de mercado de Pasto y la explosión de colores de las papas nativas. ---------- */
-[data-paleta="potrerillo"] {
+/* ---------- Cosecha · Cálida, de mercado. La cosecha de papas nativas de Nariño: amarillas, rojas y moradas. ---------- */
+[data-paleta="cosecha"] {
   --c-fondo: #F3F3E1;
   --c-superficie: #FEFEF8;
   --c-superficie-2: #FFFFFF;
@@ -670,8 +670,8 @@
   --c-sello-placa: transparent;
   color-scheme: light;
 }
-[data-paleta="potrerillo"][data-modo="oscuro"],
-:root[data-paleta="potrerillo"]:not([data-modo])[data-theme="dark"] {
+[data-paleta="cosecha"][data-modo="oscuro"],
+:root[data-paleta="cosecha"]:not([data-modo])[data-theme="dark"] {
   --c-fondo: #19120E;
   --c-superficie: #231B16;
   --c-superficie-2: #2D251F;
@@ -721,7 +721,7 @@
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
-:root[data-paleta="potrerillo"]:not([data-modo]):not([data-theme="light"]) {
+:root[data-paleta="cosecha"]:not([data-modo]):not([data-theme="light"]) {
   --c-fondo: #19120E;
   --c-superficie: #231B16;
   --c-superficie-2: #2D251F;

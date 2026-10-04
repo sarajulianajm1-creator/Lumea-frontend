@@ -85,17 +85,17 @@ PALETAS = {
         "claro":  {"h": 85, "c_fondo": 0.006, "L_fondo": 0.985, "L_marca": 0.24},
         "oscuro": {"h": 300, "c_fondo": 0.012, "L_fondo": 0.160},
     },
-    "mopa": {
-        "nombre": "Mopa-mopa", "caracter": "Viva, de joya",
-        "origen": "Barniz de Pasto: capas de color translúcido sobre hoja de plata.",
+    "colibri": {
+        "nombre": "Colibrí", "caracter": "Viva, iridiscente",
+        "origen": "Colombia tiene más especies de aves que ningún otro país; el brillo del colibrí no es pigmento, nace de capas microscópicas en sus plumas.",
         "h": {"aguacate": 146, "maracuya": 88, "mango": 63, "guayaba": 345, "mora": 305},
         "croma": 0.22, "croma_mango": 0.22, "croma_contenedor": 0.08,
         "claro":  {"h": 265, "c_fondo": 0.010, "L_fondo": 0.965, "L_marca": 0.40},
         "oscuro": {"h": 272, "c_fondo": 0.055, "L_fondo": 0.190},
     },
-    "potrerillo": {
-        "nombre": "Potrerillo", "caracter": "Cálida, de mercado",
-        "origen": "La plaza de mercado de Pasto y la explosión de colores de las papas nativas.",
+    "cosecha": {
+        "nombre": "Cosecha", "caracter": "Cálida, de mercado",
+        "origen": "La cosecha de papas nativas de Nariño: amarillas, rojas y moradas.",
         "h": {"aguacate": 132, "maracuya": 90, "mango": 54, "guayaba": 10, "mora": 318},
         "croma": 0.17, "croma_mango": 0.17, "croma_contenedor": 0.08,
         # fondo #F3F3E1: el ajuste que hizo Isabella a mano el 3 de octubre
@@ -369,7 +369,7 @@ def main():
         "   No lo edites a mano: cambia los números en el script y vuelve a\n"
         "   correrlo. Así cada color tiene una medición detrás.\n\n"
         "   Dos ejes independientes en <html>:\n"
-        "     data-paleta = laguna | neblina | carnaval | mopa | potrerillo\n"
+        "     data-paleta = laguna | neblina | carnaval | colibri | cosecha\n"
         "     data-modo   = claro | oscuro   (sin atributo = sigue al sistema)\n"
         "   ===================================================================== */\n"]
     for p in PALETAS:
