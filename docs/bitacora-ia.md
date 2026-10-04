@@ -1,6 +1,6 @@
 # Bitácora de uso de IA
 
-Acuerdo del equipo: 70 % trabajo humano, 30 % IA. Esta tabla es la evidencia para el criterio de uso ético de las TIC.
+Acuerdo del equipo (actualizado el 4 de octubre): al menos 60 % trabajo humano y como máximo 40 % IA. Esta tabla es la evidencia para el criterio de uso ético de las TIC.
 
 Las primeras filas se reconstruyeron el 4 de octubre de 2026 a partir de la conversación con la IA. **Isabella: revísalas y corrige lo que no sea exacto**, sobre todo la columna de lo que hiciste tú, porque la IA no ve todo tu trabajo.
 
@@ -13,5 +13,10 @@ Las primeras filas se reconstruyeron el 4 de octubre de 2026 a partir de la conv
 | 4 oct | Plan de pantallas | Pendiente: elegir navegación y variantes, diseñar en Figma, dibujar el logo | Plan, bosquejos grises, estrategia para integrar el trabajo de Sara | Doc "Plan de pantallas de Lumea", carpeta `bosquejos/` | Plan: IA. Diseño: por hacer (humano) |
 | 4 oct | Esqueleto de Inicio (lección 1) | Escribió `inicio.html` y `estilos/inicio.css`: estructura semántica, saludo neutro, avatar como enlace, `.gitignore`; decidió la navegación B | Explicó conceptos (cascada, variables, BEM, Elements) y revisó | Commit `6adef5b` | Humano |
 | 4 oct | Navegación de las páginas de Sara | Decidió: la parte pública sin Registrar ni Mis registros; el menú privado con los cinco destinos | Editó 8 archivos de Sara (menús, botón de inicio, estilo de pestaña activa) | Commit `57e8651` | Decisión: humano. Edición: IA (revisar el diff) |
+| 4 oct | Fusión de las dos páginas de cámara | Decidió que no podían existir dos páginas con la misma función | Fusionó `registrar-comida.html` en `alimentos.html` (aviso sin sesión, opciones agrupadas, logros, foto quieta al analizar) y la probó con respuestas simuladas | Commit `8c22482` | Decisión: humano. Código: IA (revisar el diff) |
+| 4 oct | Piel de Lumea para las páginas de Sara | Pidió dos opciones comparables sin perder el trabajo de Sara | Puente de estilos, `?piel=sara` por pestaña, medición de contraste con axe-core | Commit `3ac2c6b` | Decisión: humano. Código: IA |
+| 4 oct | Plan hasta el 9 de octubre y tickets para Claude Code | Pidió el plan, el reparto ético y trabajar en paralelo | Doc "Plan de trabajo de Lumea hasta el 9 de octubre", `CLAUDE.md` y 6 tickets en `docs/tickets/` | Commit de esta fila | Plan: IA. Decisiones abiertas: humano |
 
-**Balance honesto al 4 de octubre:** en decisiones de diseño la autoría es de Isabella; en código del frontend la IA supera el 30 %. Las pantallas que se diseñan y codifican entre el 5 y el 9 de octubre tienen que invertir esa proporción.
+**Balance medido el 4 de octubre** (líneas añadidas por commit; un commit cuenta como IA si dice `Co-Authored-By: Claude`): en código escrito a mano (HTML, CSS, JS y Python, sin archivos que genera un script) la IA suma 3.301 de 9.995 líneas, **33 %**. Con los archivos generados, **51 %**. Ojo: algunos commits viejos sin esa línea pudieron tener ayuda de IA, así que el número real de IA puede ser mayor.
+
+En decisiones de diseño la autoría es de Isabella. Lo que falta hasta el 9 de octubre (Inicio, bosquejos, top 3 en el backend, `balance_ia.py`, guion y pruebas con usuarios) tiene que inclinar la balanza hacia el trabajo humano.
