@@ -66,7 +66,7 @@ p { margin: 0; text-wrap: pretty; }
   border-radius: var(--r-control);
   font: inherit; font-weight: var(--t-peso-medio);
   cursor: pointer;
-  background: var(--c-marca); color: #fff;
+  background: var(--c-marca); color: var(--c-sobre-marca);
   transition: background var(--m-rapido) var(--m-salida),
               transform var(--m-rapido) var(--m-salida);
 }
@@ -74,11 +74,11 @@ p { margin: 0; text-wrap: pretty; }
 .boton:active { transform: scale(.97); }     /* se "hunde" al presionar */
 .boton:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 
-.boton--secundario { background: var(--c-superficie); color: var(--c-marca); border-color: var(--c-borde); }
+.boton--secundario { background: var(--c-superficie); color: var(--c-marca-tinta); border-color: var(--c-borde-fuerte); }
 .boton--secundario:hover { background: var(--c-marca-suave); }
 
 .boton--fantasma { background: transparent; color: var(--c-tinta-suave); }
-.boton--fantasma:hover { background: var(--c-marca-suave); color: var(--c-marca); }
+.boton--fantasma:hover { background: var(--c-marca-suave); color: var(--c-marca-tinta); }
 
 .boton__premio {                      /* lo que gana al hacer clic: dorado = logro */
   margin-left: var(--e-1); padding: 2px var(--e-2);
@@ -94,7 +94,7 @@ p { margin: 0; text-wrap: pretty; }
 .campo__entrada {
   min-height: 44px;
   padding: 0 var(--e-4);
-  border: 1.5px solid var(--c-borde);
+  border: 1.5px solid var(--c-borde-fuerte);
   border-radius: var(--r-control);
   background: var(--c-superficie);
   font: inherit; color: inherit;
@@ -121,11 +121,16 @@ p { margin: 0; text-wrap: pretty; }
 
 /* Tarjetas de color: el fondo dice de qué trata (como en la plaza,
    cada puesto tiene su color). Texto siempre en tinta: pasa AA en todas. */
-.tarjeta--aguacate { background: var(--c-tarjeta-aguacate); }
-.tarjeta--maracuya { background: var(--c-tarjeta-maracuya); }
-.tarjeta--mango    { background: var(--c-tarjeta-mango); }
-.tarjeta--guayaba  { background: var(--c-tarjeta-guayaba); }
-.tarjeta--mora     { background: var(--c-tarjeta-mora); }
+.tarjeta--comida { background: var(--c-comida-contenedor); }
+.tarjeta--logro { background: var(--c-logro-contenedor); }
+.tarjeta--duda    { background: var(--c-duda-contenedor); }
+.tarjeta--emocion  { background: var(--c-emocion-contenedor); }
+.tarjeta--mision     { background: var(--c-mision-contenedor); }
+.tarjeta--comida .icono  { color: var(--c-comida-tinta); }
+.tarjeta--logro .icono   { color: var(--c-logro-tinta); }
+.tarjeta--emocion .icono { color: var(--c-emocion-tinta); }
+.tarjeta--mision .icono  { color: var(--c-mision-tinta); }
+.tarjeta--duda .icono    { color: var(--c-duda-tinta); }
 .tarjeta--color { position: relative; overflow: hidden; box-shadow: none; display: grid; gap: var(--e-2); align-content: start; }
 .tarjeta__cifra { font-size: var(--t-2xl); font-weight: var(--t-peso-fuerte); line-height: 1; font-variant-numeric: tabular-nums; }
 .tarjeta__titulo { font-weight: var(--t-peso-fuerte); }
@@ -136,7 +141,7 @@ p { margin: 0; text-wrap: pretty; }
 .calcomania {
   position: absolute; right: -16px; top: -16px;
   width: 88px; aspect-ratio: 1;
-  background: var(--c-logro-fuerte);
+  background: var(--c-calcomania);
   clip-path: polygon(50% 0, 61% 18%, 82% 10%, 80% 32%, 100% 40%, 85% 56%, 96% 76%, 74% 78%, 68% 100%, 50% 87%, 32% 100%, 26% 78%, 4% 76%, 15% 56%, 0 40%, 20% 32%, 18% 10%, 39% 18%);
   opacity: .9;
   transform: rotate(-8deg);
@@ -148,11 +153,13 @@ p { margin: 0; text-wrap: pretty; }
   padding: var(--e-1) var(--e-3);
   border-radius: var(--r-pildora);
   font-size: var(--t-s); font-weight: var(--t-peso-medio);
-  background: var(--c-marca-suave); color: var(--c-marca);
+  background: var(--c-marca-suave); color: var(--c-marca-tinta);
 }
 .chip--logro   { background: var(--c-logro-suave);    color: var(--c-logro-tinta); }
-.chip--emocion { background: var(--c-emocion-suave);    color: var(--c-emocion); }
+.chip--emocion { background: var(--c-emocion-suave); color: var(--c-emocion-tinta); }
 .chip--duda    { background: var(--c-duda-suave); color: var(--c-duda-tinta); }
+.chip--mision  { background: var(--c-mision-suave); color: var(--c-mision-tinta); }
+.chip--comida  { background: var(--c-comida-suave); color: var(--c-comida-tinta); }
 
 /* ---------- 5. Sello de advertencia (Resolución 810 de 2021) ---------- */
 /* Octágono negro con borde blanco, como en el empaque real.
@@ -175,7 +182,14 @@ p { margin: 0; text-wrap: pretty; }
 .sello::before { inset: 4px; background: #fff; }
 .sello::after  { inset: 6px; background: var(--c-sello); }
 .sello { --octagono: polygon(29.3% 0, 70.7% 0, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0 70.7%, 0 29.3%); }
-.sellos { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+.sellos {
+  display: flex; flex-wrap: wrap; gap: var(--e-2);
+  /* En modo oscuro el negro se pierde (1.1–1.5:1). Una placa clara alrededor
+     del octágono le devuelve el contraste mínimo de 3:1 (WCAG 1.4.11) sin
+     tocar el sello, que es legal. En claro la placa es transparente. */
+  filter: drop-shadow(2px 0 0 var(--c-sello-placa)) drop-shadow(-2px 0 0 var(--c-sello-placa))
+          drop-shadow(0 2px 0 var(--c-sello-placa)) drop-shadow(0 -2px 0 var(--c-sello-placa));
+}
 
 /* ---------- 6. Barra de experiencia ---------- */
 .barra-xp { display: grid; gap: var(--e-2); }
@@ -195,13 +209,13 @@ p { margin: 0; text-wrap: pretty; }
 .animo { display: flex; gap: var(--e-2); flex-wrap: wrap; }
 .animo__opcion {
   min-height: 44px; padding: 0 var(--e-4);
-  border: 1.5px solid var(--c-borde); border-radius: var(--r-pildora);
+  border: 1.5px solid var(--c-borde-fuerte); border-radius: var(--r-pildora);
   background: var(--c-superficie); color: var(--c-tinta);
   font: inherit; cursor: pointer;
   transition: background var(--m-rapido), border-color var(--m-rapido);
 }
-.animo__opcion:hover { border-color: var(--c-emocion); }
-.animo__opcion[aria-pressed="true"] { background: var(--c-emocion); border-color: var(--c-emocion); color: var(--c-emocion-texto); }
+.animo__opcion:hover { border-color: var(--c-emocion-tinta); }
+.animo__opcion[aria-pressed="true"] { background: var(--c-emocion); border-color: var(--c-emocion); color: var(--c-sobre-emocion); }
 
 /* ---------- 8. LA ETIQUETA DE PLAZA (el resultado de la foto) ---------- */
 /* La pieza memorable de Lumea. Se inspira en la etiqueta colgante de
@@ -221,7 +235,7 @@ p { margin: 0; text-wrap: pretty; }
   left: 22px; top: 34px;
   width: 16px; height: 16px; border-radius: 50%;
   background: var(--c-fondo);
-  box-shadow: inset 0 1px 2px rgba(26, 42, 33, .25);
+  box-shadow: inset 0 1px 2px color-mix(in oklab, var(--c-tinta) 30%, transparent);
 }
 .etiqueta::after {                      /* la línea perforada */
   content: ""; position: absolute;
@@ -229,6 +243,8 @@ p { margin: 0; text-wrap: pretty; }
   border-left: 2px dashed var(--c-borde);
 }
 .etiqueta__pregunta { font-size: var(--t-s); color: var(--c-tinta-suave); }
+.etiqueta__pregunta--duda { display: flex; align-items: center; gap: var(--e-2); color: var(--c-tinta); font-weight: var(--t-peso-medio); }
+.etiqueta__pregunta--duda .icono { color: var(--c-duda-tinta); }
 .etiqueta__nombre {
   font-size: var(--t-3xl);
   font-weight: var(--t-peso-fuerte);
@@ -242,7 +258,7 @@ p { margin: 0; text-wrap: pretty; }
 }
 .etiqueta__medidor::after {
   content: ""; display: block; height: 100%;
-  width: var(--certeza, 0%); background: var(--c-marca-viva);
+  width: var(--certeza, 0%); background: var(--c-marca);
 }
 .etiqueta__datos {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--e-1) var(--e-2);
@@ -364,10 +380,10 @@ p { margin: 0; text-wrap: pretty; }
   position: relative;
   aspect-ratio: 4 / 3;
   border-radius: var(--r-panel);
-  background: var(--c-tinta);
+  background: var(--c-visor);
   overflow: hidden;
   display: grid; place-items: center;
-  color: #CFE0D3;
+  color: var(--c-sobre-visor);
 }
 .visor video, .visor img { width: 100%; height: 100%; object-fit: cover; }
 .visor__vacio { display: grid; justify-items: center; gap: var(--e-3); text-align: center; padding: var(--e-5); }

@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lumea | Registrar comida</title>
+  <script src="tema.js"></script>
   <link rel="stylesheet" href="estilos/tokens.css">
+  <link rel="stylesheet" href="estilos/paletas.css">
   <link rel="stylesheet" href="estilos/componentes.css">
 </head>
 <body>
@@ -73,5 +75,16 @@
       </section>
     </main>
   </div>
+  <script>
+    // Solo para la vista previa del sistema de diseño: recibe la paleta y el
+    // modo que elige la página que contiene este iframe.
+    window.addEventListener('message', function (e) {
+      var d = e.data;
+      if (!d || !d.lumeaTema) return;
+      var html = document.documentElement;
+      if (window.LumeaTema && LumeaTema.PALETAS.indexOf(d.paleta) !== -1) html.dataset.paleta = d.paleta;
+      if (d.modo === 'claro' || d.modo === 'oscuro') html.dataset.modo = d.modo;
+    });
+  </script>
 </body>
 </html>

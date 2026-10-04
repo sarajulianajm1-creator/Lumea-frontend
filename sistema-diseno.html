@@ -4,11 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lumea | Sistema de diseño</title>
+  <script src="tema.js"></script>
   <link rel="stylesheet" href="estilos/tokens.css">
+  <link rel="stylesheet" href="estilos/paletas.css">
   <link rel="stylesheet" href="estilos/componentes.css">
   <style>
     /* Estilos SOLO de esta página de referencia (no son parte de la app) */
-    .ref { max-width: var(--ancho-contenido); margin: 0 auto; padding: var(--e-8) var(--e-6); display: grid; gap: var(--e-8); }
+    .barra-tema { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-3) var(--e-5); padding: var(--e-3) var(--e-6); background: color-mix(in oklab, var(--c-superficie) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--c-borde); }
+    .barra-tema__grupo { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2); }
+    .barra-tema__nombre { font-size: var(--t-s); color: var(--c-tinta-suave); margin-right: var(--e-1); }
+    .opcion-tema { display: inline-flex; align-items: center; gap: var(--e-2); min-height: 40px; padding: 0 var(--e-3); border: 1.5px solid var(--c-borde); border-radius: var(--r-pildora); background: var(--c-superficie); color: var(--c-tinta); font: inherit; font-size: var(--t-s); font-weight: var(--t-peso-medio); cursor: pointer; transition: border-color var(--m-rapido), background var(--m-rapido); }
+    .opcion-tema:hover { border-color: var(--c-borde-fuerte); }
+    .opcion-tema[aria-pressed="true"] { background: var(--c-marca); border-color: var(--c-marca); color: var(--c-sobre-marca); }
+    .opcion-tema__punto { width: 16px; height: 16px; border-radius: 50%; background: conic-gradient(var(--c-marca) 0 34%, var(--c-logro) 0 67%, var(--c-emocion) 0); box-shadow: 0 0 0 1.5px var(--c-fondo); }
+    .opcion-tema[aria-pressed="true"] .opcion-tema__punto { box-shadow: 0 0 0 2px currentColor; }
+
+    .ref { max-width: var(--ancho-contenido); margin: 0 auto; padding: var(--e-7) var(--e-6) var(--e-8); display: grid; gap: var(--e-8); }
     .ref__intro { display: grid; gap: var(--e-4); max-width: 46rem; }
     .ref__intro h1 { font-size: var(--t-3xl); letter-spacing: -0.03em; }
     .ref__intro p { font-size: var(--t-l); color: var(--c-tinta-suave); }
@@ -16,130 +27,240 @@
     .ref__seccion > h2 { font-size: var(--t-xl); }
     .ref__nota { color: var(--c-tinta-suave); max-width: 64ch; }
 
-    .selector { display: inline-flex; align-items: center; gap: var(--e-1); padding: var(--e-1); background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-pildora); justify-self: start; }
-    .selector__nombre { padding: 0 var(--e-3); font-size: var(--t-s); color: var(--c-tinta-suave); }
-    .selector__opcion { min-height: 36px; padding: 0 var(--e-4); border: 0; border-radius: var(--r-pildora); background: transparent; font: inherit; font-weight: var(--t-peso-medio); color: var(--c-tinta); cursor: pointer; }
-    .selector__opcion[aria-pressed="true"] { background: var(--c-marca); color: #fff; }
-    .rampas { display: grid; gap: var(--e-4); }
-    .rampa { display: grid; grid-template-columns: 220px 1fr; gap: var(--e-4); align-items: center; }
-    .rampa__info { display: grid; }
-    .rampa__nombre { font-weight: var(--t-peso-fuerte); font-size: var(--t-l); }
-    .rampa__uso { font-size: var(--t-s); color: var(--c-tinta-suave); }
-    .rampa__tonos { display: grid; grid-template-columns: repeat(10, 1fr); border-radius: var(--r-tarjeta); overflow: hidden; }
-    .rampa__tono { height: 64px; display: flex; align-items: flex-end; padding: var(--e-1) var(--e-2); font-size: var(--t-xs); font-variant-numeric: tabular-nums; }
-    .rampa__tono:nth-child(-n+6) span { color: var(--c-tinta); opacity: .7; }
-    .rampa__tono:nth-child(n+7) span { color: #fff; opacity: .85; }
-    .rampa__tono--ancla { box-shadow: inset 0 0 0 3px var(--c-tinta); }
+    .paletas { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--e-4); }
+    .paleta-tarjeta { display: grid; gap: var(--e-3); align-content: start; text-align: left; padding: var(--e-5); border: 2px solid var(--c-borde); border-radius: var(--r-tarjeta); background: var(--c-fondo); color: var(--c-tinta); font: inherit; cursor: pointer; transition: transform var(--m-rapido) var(--m-salida), border-color var(--m-rapido); }
+    .paleta-tarjeta:hover { transform: translateY(-2px); }
+    .paleta-tarjeta[aria-pressed="true"] { border-color: var(--c-marca); }
+    .paleta-tarjeta__cabeza { display: flex; justify-content: space-between; align-items: center; }
+    .paleta-tarjeta__nombre { font-size: var(--t-l); font-weight: var(--t-peso-fuerte); }
+    .paleta-tarjeta__marca { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--c-marca); color: var(--c-sobre-marca); opacity: 0; transform: scale(.6); transition: opacity var(--m-base), transform var(--m-base) var(--m-resorte); }
+    .paleta-tarjeta[aria-pressed="true"] .paleta-tarjeta__marca { opacity: 1; transform: none; }
+    .paleta-tarjeta__caracter { font-size: var(--t-s); color: var(--c-tinta-suave); }
+    .paleta-tarjeta__frutas { display: flex; gap: var(--e-1); }
+    .paleta-tarjeta__fruta { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; }
+    .paleta-tarjeta__origen { font-size: var(--t-xs); color: var(--c-tinta-suave); line-height: 1.4; }
+    .icono--mini { width: 16px; height: 16px; }
+
+    .roles { display: grid; gap: var(--e-3); }
+    .rol { display: grid; grid-template-columns: 220px minmax(0, 1fr) auto; gap: var(--e-4); align-items: center; padding: var(--e-4); border-radius: var(--r-tarjeta); background: var(--c-superficie); box-shadow: var(--s-1); }
+    .rol__nombre { display: flex; align-items: center; gap: var(--e-3); }
+    .rol__nombre > span:last-child { display: grid; }
+    .rol__fruta { font-size: var(--t-s); color: var(--c-tinta-suave); }
+    .rol__icono { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-control); flex: none; }
+    .rol__uso { color: var(--c-tinta-suave); }
+    .rol__muestras { display: flex; gap: var(--e-2); flex-wrap: wrap; }
+    .rol__muestra { display: inline-flex; align-items: center; gap: var(--e-1); min-height: 36px; padding: 0 var(--e-3); border-radius: var(--r-control); font-size: var(--t-s); font-weight: var(--t-peso-medio); }
+
+    .tabla-envoltura { overflow-x: auto; border-radius: var(--r-tarjeta); background: var(--c-superficie); box-shadow: var(--s-1); }
+    .tabla { width: 100%; border-collapse: collapse; font-size: var(--t-s); }
+    .tabla th, .tabla td { padding: var(--e-3) var(--e-4); text-align: left; border-bottom: 1px solid var(--c-borde); white-space: nowrap; }
+    .tabla thead th { color: var(--c-tinta-suave); font-weight: var(--t-peso-medio); }
+    .tabla tbody th { font-weight: var(--t-peso-fuerte); }
+
     .tarjetas-color { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--e-4); }
     .tarjetas-color .tarjeta { min-height: 168px; }
-    .muestras { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--e-4); }
-    .muestra { border-radius: var(--r-tarjeta); overflow: hidden; background: var(--c-superficie); box-shadow: var(--s-1); }
-    .muestra__color { height: 88px; }
-    .muestra__texto { padding: var(--e-3) var(--e-4) var(--e-4); display: grid; gap: 2px; }
-    .muestra__nombre { font-weight: var(--t-peso-fuerte); }
-    .muestra__uso { font-size: var(--t-s); color: var(--c-tinta-suave); }
-    .muestra__hex { font-size: var(--t-xs); color: var(--c-tinta-suave); font-variant-numeric: tabular-nums; }
+    .tarjeta__titulo { display: flex; align-items: center; gap: var(--e-2); }
 
     .escala { display: grid; gap: var(--e-3); }
     .escala__fila { display: grid; grid-template-columns: 120px 1fr; align-items: baseline; gap: var(--e-4); padding-bottom: var(--e-3); border-bottom: 1px solid var(--c-borde); }
     .escala__token { font-size: var(--t-s); color: var(--c-tinta-suave); }
-
     .fila { display: flex; flex-wrap: wrap; gap: var(--e-4); align-items: center; }
-    .rejilla-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--e-6); align-items: start; }
-
+    .rejilla-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: var(--e-6); align-items: start; }
     .espacios { display: flex; align-items: flex-end; gap: var(--e-4); flex-wrap: wrap; }
     .espacio { display: grid; justify-items: center; gap: var(--e-2); font-size: var(--t-xs); color: var(--c-tinta-suave); }
-    .espacio__caja { background: var(--c-marca-suave); border: 1px solid var(--c-marca); }
+    .espacio__caja { background: var(--c-marca-suave); border: 1px solid var(--c-marca-tinta); }
     .radios { display: flex; gap: var(--e-5); flex-wrap: wrap; }
-    .radio { width: 120px; height: 84px; background: var(--c-superficie); border: 1.5px solid var(--c-borde); display: grid; place-content: center; text-align: center; font-size: var(--t-s); }
+    .radio { width: 120px; height: 84px; background: var(--c-superficie); border: 1.5px solid var(--c-borde-fuerte); display: grid; place-content: center; text-align: center; font-size: var(--t-s); }
 
     .pantallas { display: flex; gap: var(--e-6); align-items: flex-start; flex-wrap: wrap; }
-    .pantalla { display: grid; gap: var(--e-2); }
+    .pantalla { display: grid; gap: var(--e-2); max-width: 100%; }
     .pantalla__marco { border-radius: var(--r-tarjeta); overflow: hidden; box-shadow: var(--s-2); background: var(--c-superficie); }
-    .pantalla__marco--pc { width: 704px; height: 440px; }          /* 1280×800 al 55 % */
+    .pantalla__marco--pc { width: 704px; height: 440px; }
     .pantalla__marco--pc iframe { width: 1280px; height: 800px; transform: scale(.55); transform-origin: 0 0; border: 0; }
-    .pantalla__marco--cel { width: 300px; height: 600px; }          /* 390×780 al 77 % */
+    .pantalla__marco--cel { width: 300px; height: 600px; }
     .pantalla__marco--cel iframe { width: 390px; height: 780px; transform: scale(.7692); transform-origin: 0 0; border: 0; }
     .pantalla__pie { font-size: var(--t-s); color: var(--c-tinta-suave); }
 
+    @media (max-width: 960px) { .rol { grid-template-columns: 1fr; gap: var(--e-2); } }
     @media (max-width: 720px) {
-      .ref { padding: var(--e-6) var(--e-4); gap: var(--e-7); }
+      .barra-tema { padding: var(--e-2) var(--e-4); gap: var(--e-2); }
+      .barra-tema__grupo { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px; }
+      .opcion-tema { flex: none; }
+      .ref { padding: var(--e-6) var(--e-4) var(--e-7); gap: var(--e-7); }
       .ref__intro h1 { font-size: var(--t-2xl); }
       .escala__fila { grid-template-columns: 1fr; gap: var(--e-1); }
-      .rampa { grid-template-columns: 1fr; gap: var(--e-2); }
-      .rampa__tono { height: 48px; padding: 2px; font-size: .65rem; }
-      .pantalla__marco--pc { width: 100%; height: auto; aspect-ratio: 16 / 10; }
+      .pantalla__marco--pc { width: calc(100vw - 32px); height: calc((100vw - 32px) * .625); }
       .pantalla__marco--pc iframe { transform: scale(calc((100vw - 32px) / 1280px)); }
     }
   </style>
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-comida" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol>
+    <symbol id="i-logro" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="i-emocion" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></symbol>
+    <symbol id="i-mision" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></symbol>
+    <symbol id="i-duda" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+    <symbol id="i-luna" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-auto" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
     <symbol id="i-racha" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
   </svg>
 
+  <div class="barra-tema" role="region" aria-label="Apariencia">
+    <div class="barra-tema__grupo" role="group" aria-label="Paleta">
+      <span class="barra-tema__nombre">Paleta</span>
+      <button class="opcion-tema" type="button" data-elige-paleta="laguna" aria-pressed="false"><span class="opcion-tema__punto" data-paleta="laguna"></span>Laguna Verde</button><button class="opcion-tema" type="button" data-elige-paleta="neblina" aria-pressed="false"><span class="opcion-tema__punto" data-paleta="neblina"></span>Neblina</button><button class="opcion-tema" type="button" data-elige-paleta="carnaval" aria-pressed="false"><span class="opcion-tema__punto" data-paleta="carnaval"></span>Carnaval</button><button class="opcion-tema" type="button" data-elige-paleta="mopa" aria-pressed="false"><span class="opcion-tema__punto" data-paleta="mopa"></span>Mopa-mopa</button><button class="opcion-tema" type="button" data-elige-paleta="potrerillo" aria-pressed="false"><span class="opcion-tema__punto" data-paleta="potrerillo"></span>Potrerillo</button>
+    </div>
+    <div class="barra-tema__grupo" role="group" aria-label="Modo">
+      <span class="barra-tema__nombre">Modo</span>
+      <button class="opcion-tema" type="button" data-elige-modo="claro" aria-pressed="false"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-sol"/></svg>Claro</button>
+      <button class="opcion-tema" type="button" data-elige-modo="oscuro" aria-pressed="false"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-luna"/></svg>Oscuro</button>
+      <button class="opcion-tema" type="button" data-elige-modo="auto" aria-pressed="true"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-auto"/></svg>Automático</button>
+    </div>
+  </div>
+
   <main class="ref">
     <header class="ref__intro">
       <h1>Cómo se ve y se siente Lumea</h1>
-      <p>Una plaza de mercado colombiana: cada fruta es una familia de colores y cada familia significa una sola cosa. La etiqueta de precio del puesto se vuelve el resultado de la foto.</p>
-      <div class="selector" role="group" aria-label="Paleta">
-        <span class="selector__nombre">Paleta</span>
-        <button class="selector__opcion" type="button" data-paleta="viva" aria-pressed="true">Viva</button>
-        <button class="selector__opcion" type="button" data-paleta="original" aria-pressed="false">Original</button>
-      </div>
-      <p class="ref__nota">Cambia entre las dos y mira toda la página, incluida la pantalla de ejemplo del final. Las piezas son las mismas; solo cambian los colores.</p>
+      <p>Cinco paletas nacidas en Nariño, cada una con su modo claro y oscuro. Cambia la piel; la gramática es la misma: cada fruta significa siempre lo mismo y siempre va con su ícono.</p>
+      <p class="ref__nota">Los nombres son de trabajo. Antes de la versión final se votan con estudiantes y familias, y Mopa-mopa solo se queda si un taller de barniz de Pasto está de acuerdo y aparece en los créditos.</p>
     </header>
 
-    <section class="ref__seccion">
-      <h2>Color</h2>
-      <p class="ref__nota">Cinco frutas, diez tonos cada una. El tono con borde es el color “de verdad” de la fruta; los demás se calcularon en OKLCH para que cada paso se vea igual de grande en todas las familias. Los claros (50–200) son fondos, los vivos (300–500) son rellenos, y los oscuros (700–900) son texto.</p>
-      <div class="rampas">
-        <div class="rampa">
-          <div class="rampa__info"><span class="rampa__nombre">Aguacate</span><span class="rampa__uso">Marca, botones y todo lo de comida</span></div>
-          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--aguacate-50)" title="aguacate-50 #F2FAEA"><span>50</span></span><span class="rampa__tono" style="background:var(--aguacate-100)" title="aguacate-100 #E3F3D4"><span>100</span></span><span class="rampa__tono" style="background:var(--aguacate-200)" title="aguacate-200 #CEE9B3"><span>200</span></span><span class="rampa__tono" style="background:var(--aguacate-300)" title="aguacate-300 #B4DB8B"><span>300</span></span><span class="rampa__tono" style="background:var(--aguacate-400)" title="aguacate-400 #9AC964"><span>400</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--aguacate-500)" title="aguacate-500 #7FB03F"><span>500</span></span><span class="rampa__tono" style="background:var(--aguacate-600)" title="aguacate-600 #669326"><span>600</span></span><span class="rampa__tono" style="background:var(--aguacate-700)" title="aguacate-700 #4D7410"><span>700</span></span><span class="rampa__tono" style="background:var(--aguacate-800)" title="aguacate-800 #375505"><span>800</span></span><span class="rampa__tono" style="background:var(--aguacate-900)" title="aguacate-900 #223800"><span>900</span></span></div>
+    <section class="ref__seccion" id="paletas">
+      <h2>Cinco paletas, ninguna es “la normal”</h2>
+      <p class="ref__nota">Toca una para verla en toda la página. Cada tarjeta se pinta con su propia paleta, en el modo que tengas elegido.</p>
+      <div class="paletas">
+        <button class="paleta-tarjeta" type="button" data-paleta="laguna" data-elige-paleta="laguna" aria-pressed="false">
+          <span class="paleta-tarjeta__cabeza"><span class="paleta-tarjeta__nombre">Laguna Verde</span><span class="paleta-tarjeta__marca"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-check"/></svg></span></span>
+          <span class="paleta-tarjeta__caracter">Original, fresca</span>
+          <span class="paleta-tarjeta__frutas"><span class="paleta-tarjeta__fruta" style="background:var(--c-comida);color:var(--c-sobre-comida)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-comida"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-logro);color:var(--c-sobre-logro)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-logro"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-emocion);color:var(--c-sobre-emocion)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-emocion"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-mision);color:var(--c-sobre-mision)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-mision"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-duda);color:var(--c-sobre-duda)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-duda"/></svg></span></span>
+          <span class="paleta-tarjeta__origen">El verde de la Laguna Verde del volcán Azufral viene del azufre y las algas.</span>
+        </button>
+        <button class="paleta-tarjeta" type="button" data-paleta="neblina" data-elige-paleta="neblina" aria-pressed="false">
+          <span class="paleta-tarjeta__cabeza"><span class="paleta-tarjeta__nombre">Neblina</span><span class="paleta-tarjeta__marca"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-check"/></svg></span></span>
+          <span class="paleta-tarjeta__caracter">Pastel, tranquila</span>
+          <span class="paleta-tarjeta__frutas"><span class="paleta-tarjeta__fruta" style="background:var(--c-comida);color:var(--c-sobre-comida)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-comida"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-logro);color:var(--c-sobre-logro)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-logro"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-emocion);color:var(--c-sobre-emocion)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-emocion"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-mision);color:var(--c-sobre-mision)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-mision"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-duda);color:var(--c-sobre-duda)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-duda"/></svg></span></span>
+          <span class="paleta-tarjeta__origen">La bruma azul plomo de la Laguna de La Cocha, humedal Ramsar.</span>
+        </button>
+        <button class="paleta-tarjeta" type="button" data-paleta="carnaval" data-elige-paleta="carnaval" aria-pressed="false">
+          <span class="paleta-tarjeta__cabeza"><span class="paleta-tarjeta__nombre">Carnaval</span><span class="paleta-tarjeta__marca"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-check"/></svg></span></span>
+          <span class="paleta-tarjeta__caracter">Fuerte, de alto contraste</span>
+          <span class="paleta-tarjeta__frutas"><span class="paleta-tarjeta__fruta" style="background:var(--c-comida);color:var(--c-sobre-comida)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-comida"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-logro);color:var(--c-sobre-logro)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-logro"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-emocion);color:var(--c-sobre-emocion)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-emocion"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-mision);color:var(--c-sobre-mision)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-mision"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-duda);color:var(--c-sobre-duda)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-duda"/></svg></span></span>
+          <span class="paleta-tarjeta__origen">Talco y carbón del Carnaval de Negros y Blancos: la igualdad entre opuestos.</span>
+        </button>
+        <button class="paleta-tarjeta" type="button" data-paleta="mopa" data-elige-paleta="mopa" aria-pressed="false">
+          <span class="paleta-tarjeta__cabeza"><span class="paleta-tarjeta__nombre">Mopa-mopa</span><span class="paleta-tarjeta__marca"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-check"/></svg></span></span>
+          <span class="paleta-tarjeta__caracter">Viva, de joya</span>
+          <span class="paleta-tarjeta__frutas"><span class="paleta-tarjeta__fruta" style="background:var(--c-comida);color:var(--c-sobre-comida)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-comida"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-logro);color:var(--c-sobre-logro)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-logro"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-emocion);color:var(--c-sobre-emocion)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-emocion"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-mision);color:var(--c-sobre-mision)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-mision"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-duda);color:var(--c-sobre-duda)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-duda"/></svg></span></span>
+          <span class="paleta-tarjeta__origen">Barniz de Pasto: capas de color translúcido sobre hoja de plata.</span>
+        </button>
+        <button class="paleta-tarjeta" type="button" data-paleta="potrerillo" data-elige-paleta="potrerillo" aria-pressed="false">
+          <span class="paleta-tarjeta__cabeza"><span class="paleta-tarjeta__nombre">Potrerillo</span><span class="paleta-tarjeta__marca"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-check"/></svg></span></span>
+          <span class="paleta-tarjeta__caracter">Cálida, de mercado</span>
+          <span class="paleta-tarjeta__frutas"><span class="paleta-tarjeta__fruta" style="background:var(--c-comida);color:var(--c-sobre-comida)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-comida"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-logro);color:var(--c-sobre-logro)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-logro"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-emocion);color:var(--c-sobre-emocion)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-emocion"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-mision);color:var(--c-sobre-mision)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-mision"/></svg></span><span class="paleta-tarjeta__fruta" style="background:var(--c-duda);color:var(--c-sobre-duda)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-duda"/></svg></span></span>
+          <span class="paleta-tarjeta__origen">La plaza de mercado de Pasto y la explosión de colores de las papas nativas.</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="ref__seccion" id="gramatica">
+      <h2>La gramática que no cambia</h2>
+      <p class="ref__nota">Cada fruta ocupa siempre el mismo escalón de luz: mora la más oscura, maracuyá la más clara. Por eso se distinguen incluso con daltonismo en modo claro. En modo oscuro se acercan, y ahí el ícono es el que manda.</p>
+      <div class="roles">
+        <div class="rol">
+          <div class="rol__nombre"><span class="rol__icono" style="background:var(--c-comida);color:var(--c-sobre-comida)"><svg class="icono" aria-hidden="true"><use href="#i-comida"/></svg></span><span><strong>Comida y marca</strong><span class="rol__fruta">Aguacate</span></span></div>
+          <p class="rol__uso">Lo que comes, la navegación y los botones principales.</p>
+          <div class="rol__muestras">
+            <span class="rol__muestra" style="background:var(--c-comida);color:var(--c-sobre-comida)">Relleno</span>
+            <span class="rol__muestra" style="background:var(--c-comida-contenedor);color:var(--c-tinta)">Contenedor</span>
+            <span class="rol__muestra" style="background:var(--c-comida-suave);color:var(--c-comida-tinta)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-comida"/></svg> Texto</span>
+          </div>
         </div>
-        <div class="rampa">
-          <div class="rampa__info"><span class="rampa__nombre">Maracuyá</span><span class="rampa__uso">Logros: XP, racha, nivel</span></div>
-          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--maracuya-50)" title="maracuya-50 #FFF6E6"><span>50</span></span><span class="rampa__tono" style="background:var(--maracuya-100)" title="maracuya-100 #FFEAC6"><span>100</span></span><span class="rampa__tono" style="background:var(--maracuya-200)" title="maracuya-200 #FFD894"><span>200</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--maracuya-300)" title="maracuya-300 #FFBA18"><span>300</span></span><span class="rampa__tono" style="background:var(--maracuya-400)" title="maracuya-400 #ECAA00"><span>400</span></span><span class="rampa__tono" style="background:var(--maracuya-500)" title="maracuya-500 #CC9300"><span>500</span></span><span class="rampa__tono" style="background:var(--maracuya-600)" title="maracuya-600 #AA7900"><span>600</span></span><span class="rampa__tono" style="background:var(--maracuya-700)" title="maracuya-700 #855E00"><span>700</span></span><span class="rampa__tono" style="background:var(--maracuya-800)" title="maracuya-800 #624400"><span>800</span></span><span class="rampa__tono" style="background:var(--maracuya-900)" title="maracuya-900 #412C00"><span>900</span></span></div>
+        <div class="rol">
+          <div class="rol__nombre"><span class="rol__icono" style="background:var(--c-logro);color:var(--c-sobre-logro)"><svg class="icono" aria-hidden="true"><use href="#i-logro"/></svg></span><span><strong>Logros</strong><span class="rol__fruta">Maracuyá</span></span></div>
+          <p class="rol__uso">XP, racha y nivel. El dorado de las medallas.</p>
+          <div class="rol__muestras">
+            <span class="rol__muestra" style="background:var(--c-logro);color:var(--c-sobre-logro)">Relleno</span>
+            <span class="rol__muestra" style="background:var(--c-logro-contenedor);color:var(--c-tinta)">Contenedor</span>
+            <span class="rol__muestra" style="background:var(--c-logro-suave);color:var(--c-logro-tinta)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-logro"/></svg> Texto</span>
+          </div>
         </div>
-        <div class="rampa">
-          <div class="rampa__info"><span class="rampa__nombre">Guayaba</span><span class="rampa__uso">Emociones y avatar</span></div>
-          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--guayaba-50)" title="guayaba-50 #FFF3F6"><span>50</span></span><span class="rampa__tono" style="background:var(--guayaba-100)" title="guayaba-100 #FFE5EB"><span>100</span></span><span class="rampa__tono" style="background:var(--guayaba-200)" title="guayaba-200 #FFD0DA"><span>200</span></span><span class="rampa__tono" style="background:var(--guayaba-300)" title="guayaba-300 #FFB4C6"><span>300</span></span><span class="rampa__tono" style="background:var(--guayaba-400)" title="guayaba-400 #FF90AE"><span>400</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--guayaba-500)" title="guayaba-500 #E8608A"><span>500</span></span><span class="rampa__tono" style="background:var(--guayaba-600)" title="guayaba-600 #CF5078"><span>600</span></span><span class="rampa__tono" style="background:var(--guayaba-700)" title="guayaba-700 #A6395D"><span>700</span></span><span class="rampa__tono" style="background:var(--guayaba-800)" title="guayaba-800 #7C2743"><span>800</span></span><span class="rampa__tono" style="background:var(--guayaba-900)" title="guayaba-900 #55152B"><span>900</span></span></div>
+        <div class="rol">
+          <div class="rol__nombre"><span class="rol__icono" style="background:var(--c-emocion);color:var(--c-sobre-emocion)"><svg class="icono" aria-hidden="true"><use href="#i-emocion"/></svg></span><span><strong>Emociones</strong><span class="rol__fruta">Guayaba</span></span></div>
+          <p class="rol__uso">El check-in de ánimo y el avatar.</p>
+          <div class="rol__muestras">
+            <span class="rol__muestra" style="background:var(--c-emocion);color:var(--c-sobre-emocion)">Relleno</span>
+            <span class="rol__muestra" style="background:var(--c-emocion-contenedor);color:var(--c-tinta)">Contenedor</span>
+            <span class="rol__muestra" style="background:var(--c-emocion-suave);color:var(--c-emocion-tinta)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-emocion"/></svg> Texto</span>
+          </div>
         </div>
-        <div class="rampa">
-          <div class="rampa__info"><span class="rampa__nombre">Mora</span><span class="rampa__uso">Misiones y retos</span></div>
-          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--mora-50)" title="mora-50 #F8F5FF"><span>50</span></span><span class="rampa__tono" style="background:var(--mora-100)" title="mora-100 #EFE9FF"><span>100</span></span><span class="rampa__tono" style="background:var(--mora-200)" title="mora-200 #E2D7FF"><span>200</span></span><span class="rampa__tono" style="background:var(--mora-300)" title="mora-300 #D3C0FF"><span>300</span></span><span class="rampa__tono" style="background:var(--mora-400)" title="mora-400 #C2A4FF"><span>400</span></span><span class="rampa__tono" style="background:var(--mora-500)" title="mora-500 #AE80FF"><span>500</span></span><span class="rampa__tono" style="background:var(--mora-600)" title="mora-600 #9462E4"><span>600</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--mora-700)" title="mora-700 #7B4FC0"><span>700</span></span><span class="rampa__tono" style="background:var(--mora-800)" title="mora-800 #56338B"><span>800</span></span><span class="rampa__tono" style="background:var(--mora-900)" title="mora-900 #391E5F"><span>900</span></span></div>
+        <div class="rol">
+          <div class="rol__nombre"><span class="rol__icono" style="background:var(--c-mision);color:var(--c-sobre-mision)"><svg class="icono" aria-hidden="true"><use href="#i-mision"/></svg></span><span><strong>Misiones</strong><span class="rol__fruta">Mora</span></span></div>
+          <p class="rol__uso">Los retos del día y de la semana.</p>
+          <div class="rol__muestras">
+            <span class="rol__muestra" style="background:var(--c-mision);color:var(--c-sobre-mision)">Relleno</span>
+            <span class="rol__muestra" style="background:var(--c-mision-contenedor);color:var(--c-tinta)">Contenedor</span>
+            <span class="rol__muestra" style="background:var(--c-mision-suave);color:var(--c-mision-tinta)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-mision"/></svg> Texto</span>
+          </div>
         </div>
-        <div class="rampa">
-          <div class="rampa__info"><span class="rampa__nombre">Mango</span><span class="rampa__uso">Atención: la IA no está segura</span></div>
-          <div class="rampa__tonos"><span class="rampa__tono" style="background:var(--mango-50)" title="mango-50 #FFF4EE"><span>50</span></span><span class="rampa__tono" style="background:var(--mango-100)" title="mango-100 #FFE8DA"><span>100</span></span><span class="rampa__tono" style="background:var(--mango-200)" title="mango-200 #FFD4BB"><span>200</span></span><span class="rampa__tono" style="background:var(--mango-300)" title="mango-300 #FFBB92"><span>300</span></span><span class="rampa__tono" style="background:var(--mango-400)" title="mango-400 #FF9B5B"><span>400</span></span><span class="rampa__tono rampa__tono--ancla" style="background:var(--mango-500)" title="mango-500 #F27A1A"><span>500</span></span><span class="rampa__tono" style="background:var(--mango-600)" title="mango-600 #CA6100"><span>600</span></span><span class="rampa__tono" style="background:var(--mango-700)" title="mango-700 #9F4B00"><span>700</span></span><span class="rampa__tono" style="background:var(--mango-800)" title="mango-800 #763600"><span>800</span></span><span class="rampa__tono" style="background:var(--mango-900)" title="mango-900 #4F2200"><span>900</span></span></div>
+        <div class="rol">
+          <div class="rol__nombre"><span class="rol__icono" style="background:var(--c-duda);color:var(--c-sobre-duda)"><svg class="icono" aria-hidden="true"><use href="#i-duda"/></svg></span><span><strong>Atención</strong><span class="rol__fruta">Mango</span></span></div>
+          <p class="rol__uso">Cuando la IA no está segura y pide tu ayuda.</p>
+          <div class="rol__muestras">
+            <span class="rol__muestra" style="background:var(--c-duda);color:var(--c-sobre-duda)">Relleno</span>
+            <span class="rol__muestra" style="background:var(--c-duda-contenedor);color:var(--c-tinta)">Contenedor</span>
+            <span class="rol__muestra" style="background:var(--c-duda-suave);color:var(--c-duda-tinta)"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-duda"/></svg> Texto</span>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <section class="ref__seccion" id="medicion">
+      <h2>Medido, no estimado</h2>
+      <p class="ref__nota">Un script calcula el contraste de cada par de texto y fondo (WCAG 2.2: 4,5 : 1 para texto, 3 : 1 para bordes y foco) y simula protanopia, deuteranopia y tritanopia con el modelo de Machado y colegas (2009). La última columna es la distancia más corta entre dos frutas para una persona con daltonismo; desde 0,10 se separan solo por color.</p>
+      <div class="tabla-envoltura">
+        <table class="tabla">
+          <thead><tr><th scope="col">Paleta</th><th scope="col">Modo</th><th scope="col">Pares medidos</th><th scope="col">Texto, peor caso</th><th scope="col">Daltonismo, distancia mínima</th><th scope="col">Cómo se distinguen</th></tr></thead>
+          <tbody>
+<tr><th scope="row">Laguna Verde</th><td>Claro</td><td class="numero">41</td><td class="numero">4.66 : 1</td><td class="numero">0.099</td><td>en el límite: el ícono decide</td></tr>
+<tr><th scope="row">Laguna Verde</th><td>Oscuro</td><td class="numero">41</td><td class="numero">5.86 : 1</td><td class="numero">0.024</td><td>ícono y forma obligatorios</td></tr>
+<tr><th scope="row">Neblina</th><td>Claro</td><td class="numero">41</td><td class="numero">4.77 : 1</td><td class="numero">0.120</td><td>separadas por color</td></tr>
+<tr><th scope="row">Neblina</th><td>Oscuro</td><td class="numero">41</td><td class="numero">5.47 : 1</td><td class="numero">0.038</td><td>ícono y forma obligatorios</td></tr>
+<tr><th scope="row">Carnaval</th><td>Claro</td><td class="numero">41</td><td class="numero">4.62 : 1</td><td class="numero">0.118</td><td>separadas por color</td></tr>
+<tr><th scope="row">Carnaval</th><td>Oscuro</td><td class="numero">41</td><td class="numero">6.22 : 1</td><td class="numero">0.053</td><td>ícono y forma obligatorios</td></tr>
+<tr><th scope="row">Mopa-mopa</th><td>Claro</td><td class="numero">41</td><td class="numero">4.62 : 1</td><td class="numero">0.121</td><td>separadas por color</td></tr>
+<tr><th scope="row">Mopa-mopa</th><td>Oscuro</td><td class="numero">41</td><td class="numero">5.77 : 1</td><td class="numero">0.029</td><td>ícono y forma obligatorios</td></tr>
+<tr><th scope="row">Potrerillo</th><td>Claro</td><td class="numero">41</td><td class="numero">4.70 : 1</td><td class="numero">0.116</td><td>separadas por color</td></tr>
+<tr><th scope="row">Potrerillo</th><td>Oscuro</td><td class="numero">41</td><td class="numero">5.76 : 1</td><td class="numero">0.053</td><td>ícono y forma obligatorios</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
     <section class="ref__seccion">
       <h2>Tarjetas de color</h2>
-      <p class="ref__nota">Para inicio y progreso. El color del fondo ya te dice de qué habla la tarjeta antes de leerla. El texto siempre va en tinta oscura: así pasa el contraste mínimo en las cinco.</p>
+      <p class="ref__nota">Para inicio y progreso. El fondo dice de qué habla la tarjeta antes de leerla, y el ícono lo confirma.</p>
       <div class="tarjetas-color">
-        <article class="tarjeta tarjeta--color tarjeta--aguacate">
-          <span class="tarjeta__titulo">Esta semana</span>
+        <article class="tarjeta tarjeta--color tarjeta--comida">
+          <span class="tarjeta__titulo"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-comida"/></svg>Esta semana</span>
           <span class="tarjeta__cifra">12</span>
           <span class="tarjeta__nota">comidas registradas, 5 con fruta</span>
         </article>
-        <article class="tarjeta tarjeta--color tarjeta--maracuya">
-          <span class="tarjeta__titulo">Racha</span>
+        <article class="tarjeta tarjeta--color tarjeta--logro">
+          <span class="tarjeta__titulo"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-racha"/></svg>Racha</span>
           <span class="tarjeta__cifra">5 días</span>
           <span class="tarjeta__nota">Tu mejor racha hasta ahora</span>
           <span class="calcomania" aria-hidden="true"></span>
         </article>
-        <article class="tarjeta tarjeta--color tarjeta--guayaba">
-          <span class="tarjeta__titulo">Tu ánimo</span>
+        <article class="tarjeta tarjeta--color tarjeta--emocion">
+          <span class="tarjeta__titulo"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-emocion"/></svg>Tu ánimo</span>
           <span class="tarjeta__cifra">Tranquila</span>
           <span class="tarjeta__nota">4 de los últimos 7 días</span>
         </article>
-        <article class="tarjeta tarjeta--color tarjeta--mora">
-          <span class="tarjeta__titulo">Misión de hoy</span>
+        <article class="tarjeta tarjeta--color tarjeta--mision">
+          <span class="tarjeta__titulo"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-mision"/></svg>Misión de hoy</span>
           <span class="tarjeta__cifra">1 de 3</span>
           <span class="tarjeta__nota">Una fruta antes del almuerzo</span>
         </article>
@@ -212,8 +333,8 @@
             <div class="barra-xp__riel"><div class="barra-xp__relleno" style="--avance:64%"></div></div>
           </div>
           <div class="fila">
-            <span class="chip chip--logro"><svg class="icono" style="width:16px;height:16px"><use href="#i-racha"/></svg>Racha de 5 días</span>
-            <span class="chip">Comiste fruta hoy</span>
+            <span class="chip chip--logro"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-racha"/></svg>Racha de 5 días</span>
+            <span class="chip chip--comida"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-comida"/></svg>Comiste fruta hoy</span><span class="chip chip--mision"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-mision"/></svg>Misión 1 de 3</span>
           </div>
         </div>
 
@@ -235,7 +356,7 @@
             <span class="sello">Exceso en <span>sodio</span></span>
             <span class="sello">Exceso en <span>grasas saturadas</span></span>
           </div>
-          <p class="ref__nota" style="font-size:var(--t-s)">Negros y octagonales, como exige la Resolución 810 de 2021. Es el único lugar donde Lumea usa negro puro.</p>
+          <p class="ref__nota" style="font-size:var(--t-s)">Negros y octagonales, como exige la Resolución 810 de 2021. Es el único lugar donde Lumea usa negro puro; en modo oscuro llevan una placa clara para no desaparecer.</p>
         </div>
 
         <div class="tarjeta" style="display:grid;gap:var(--e-4)">
@@ -264,7 +385,7 @@
         </article>
 
         <article class="etiqueta etiqueta--duda">
-          <p class="etiqueta__pregunta">No estoy segura. ¿Cuál de estos es?</p>
+          <p class="etiqueta__pregunta etiqueta__pregunta--duda"><svg class="icono icono--mini" aria-hidden="true"><use href="#i-duda"/></svg>Tengo dudas con esta foto. ¿Me ayudas a confirmarla?</p>
           <div class="etiqueta__certeza"><span class="etiqueta__medidor" style="--certeza:32%"></span><span class="numero">Segura al 32 %</span></div>
           <div class="opciones">
             <button class="opciones__boton" type="button">Huevo <span class="opciones__pista numero">32 %</span></button>
@@ -292,19 +413,47 @@
     </section>
   </main>
   <script>
-    // Cambia la paleta en esta página y en las pantallas de ejemplo (iframes).
-    const botones = document.querySelectorAll('.selector__opcion');
-    function ponerPaleta(nombre) {
-      const docs = [document, ...[...document.querySelectorAll('iframe')].map(f => { try { return f.contentDocument; } catch (e) { return null; } })];
-      docs.forEach(d => { if (!d) return; if (nombre === 'viva') delete d.documentElement.dataset.paleta; else d.documentElement.dataset.paleta = nombre; });
-      botones.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.paleta === nombre)));
-    }
-    botones.forEach(b => b.addEventListener('click', () => ponerPaleta(b.dataset.paleta)));
-    // Si el iframe carga después del clic, que herede la paleta elegida.
-    document.querySelectorAll('iframe').forEach(f => f.addEventListener('load', () => {
-      const actual = document.documentElement.dataset.paleta;
-      if (actual) try { f.contentDocument.documentElement.dataset.paleta = actual; } catch (e) {}
-    }));
+    // Paleta y modo: dos ejes independientes en <html>. Se recuerdan en este
+    // navegador (si se puede) y se copian a las tarjetas y a los iframes.
+    (function () {
+      var html = document.documentElement;
+      function leer(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+      function guardar(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+      function modoEfectivo() {
+        if (html.dataset.modo) return html.dataset.modo;
+        var t = html.getAttribute('data-theme');
+        if (t === 'dark') return 'oscuro';
+        if (t === 'light') return 'claro';
+        return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro';
+      }
+      function pintar() {
+        var p = html.dataset.paleta || 'laguna', m = html.dataset.modo || 'auto', ef = modoEfectivo();
+        document.querySelectorAll('[data-elige-paleta]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.eligePaleta === p)); });
+        document.querySelectorAll('[data-elige-modo]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.eligeModo === m)); });
+        document.querySelectorAll('.paleta-tarjeta, .opcion-tema__punto').forEach(function (c) { c.dataset.modo = ef; });
+        // postMessage funciona aunque la página se abra desde un archivo (file://)
+        document.querySelectorAll('iframe').forEach(function (f) {
+          try { f.contentWindow.postMessage({ lumeaTema: true, paleta: p, modo: ef }, '*'); } catch (e) {}
+        });
+      }
+      var p0 = leer('lumea-paleta'), m0 = leer('lumea-modo');
+      if (p0) html.dataset.paleta = p0;
+      if (m0 === 'claro' || m0 === 'oscuro') html.dataset.modo = m0;
+      document.querySelectorAll('[data-elige-paleta]').forEach(function (b) {
+        b.addEventListener('click', function () { html.dataset.paleta = b.dataset.eligePaleta; guardar('lumea-paleta', b.dataset.eligePaleta); pintar(); });
+      });
+      document.querySelectorAll('[data-elige-modo]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var m = b.dataset.eligeModo;
+          if (m === 'auto') { delete html.dataset.modo; guardar('lumea-modo', null); } else { html.dataset.modo = m; guardar('lumea-modo', m); }
+          pintar();
+        });
+      });
+      document.querySelectorAll('iframe').forEach(function (f) { f.addEventListener('load', pintar); });
+      if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', pintar);
+      new MutationObserver(pintar).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+      pintar();
+    })();
   </script>
 </body>
 </html>

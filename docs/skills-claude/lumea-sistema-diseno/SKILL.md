@@ -13,15 +13,20 @@ Lee `MARCA.md` en la raíz del repo. Si no existe, haz estas 3 preguntas antes d
 2. ¿Qué NO debe parecer nunca? (ej. app de dieta, app de hospital, juego infantil)
 3. ¿Qué app o lugar real se parece al ambiente que buscas?
 
-Lo que ya está decidido:
-- Concepto **plaza de mercado colombiana**. Cinco frutas, cada una con un solo significado: aguacate = marca y comida, maracuyá = logros, guayaba = emociones, mora = misiones, mango = atención (la IA no está segura).
-- Cada fruta tiene una rampa de 10 tonos (50–900) calculada en OKLCH. Dos capas de tokens: **primitivos** (`--aguacate-500`) y **semánticos** (`--c-logro`). Las pantallas usan solo semánticos.
-- Tipografía: Bricolage Grotesque, archivo local en `estilos/fuentes/` (funciona sin internet). Si propones una segunda familia, justifica qué hace que la primera no pueda hacer.
-- Sellos de advertencia: negros y octagonales por la Resolución 810 de 2021. Esto no se rediseña.
+Lo que ya está decidido (ver `docs/investigacion-paletas.md`):
+- Concepto **plaza de mercado de Nariño**. Gramática fija en todas las paletas: comida = aguacate (hoja), logro = maracuyá (estrella), emoción = guayaba (cara), misión = mora (bandera), duda = mango (signo de pregunta; "la IA no está segura"). Cada significado va SIEMPRE con color + ícono + texto (WCAG 1.4.1).
+- **5 paletas × 2 modos**: Laguna Verde (predeterminada), Neblina (pastel), Carnaval (fuerte), Mopa-mopa (viva, de joya), Potrerillo (cálida, de mercado). Ninguna es "la normal". Nombres de trabajo: se validan con estudiantes y familias; Mopa-mopa requiere acuerdo y créditos de un taller de barniz de Pasto.
+- Los colores NO se escriben a mano: salen de `herramientas/generar_paletas.py`, que genera `estilos/paletas.css` y `estilos/tokens.json` y valida contraste WCAG y daltonismo (Machado et al., 2009). Para cambiar un color, cambia los parámetros del script y vuelve a correrlo; si falla, no se publica.
+- Escalones de luz fijos (OKLCH L) en claro: mora 0.44 < aguacate 0.54 < guayaba 0.67 < mango 0.79 < maracuyá 0.91. Bandas de tono: aguacate 130–155°, maracuyá 86–100°, mango 52–65°, guayaba 345–10° (nunca 20–40°, es el rojo), mora 300–325°.
+- Cada rol tiene 4 papeles: `--c-ROL` (relleno), `--c-sobre-ROL`, `--c-ROL-tinta`, `--c-ROL-suave` y `--c-ROL-contenedor`. Maracuyá y mango nunca como texto sobre claro (se vuelven café/oliva, el color menos querido); su tinta es la tinta neutra.
+- Dos ejes en `<html>`: `data-paleta` y `data-modo` (sin atributo = sigue al sistema). `tema.js` en el `<head>` evita el destello del tema equivocado.
+- Tipografía: Bricolage Grotesque, archivo local en `estilos/fuentes/`.
+- Sellos de advertencia: negros y octagonales por la Resolución 810 de 2021; en modo oscuro llevan placa clara (`--c-sello-placa`).
+- Mitos que no se afirman nunca (lista en el informe): "el rojo abre el apetito", "el azul calma", "el modo oscuro cuida los ojos", "60-30-10 es la proporción áurea".
 
 ## Qué producir (ajustado a Lumea)
 
-1. **Color**: primitivos + semánticos + **modo oscuro** (los semánticos redefinidos dentro de `@media (prefers-color-scheme: dark)` y `[data-tema="oscuro"]`; el modo oscuro NO es invertir: baja la saturación de los rellenos y sube la claridad del texto).
+1. **Color**: ya resuelto por el generador. Si te piden un cambio, edita los parámetros de `PALETAS` en `herramientas/generar_paletas.py`, córrelo y muestra la tabla de `docs/validacion-paletas.md`. El modo oscuro NO es invertir: cada paleta tiene su oscuro como par.
 2. **Tipografía en 9 niveles**: amplía la escala actual 1,25 (hoy xs–3xl, 7 niveles) a 9 sin romper los existentes. Para cada nivel: tamaño, peso, interlineado, uso.
 3. **Espacio**: retícula de 8 px con medios pasos de 4 px (ya existe `--e-1` a `--e-8`). Explica cuándo se usa 4.
 4. **Componentes**: solo los que Lumea usa o va a usar esta versión (máximo unos 20; no inventes 30 para llenar). Lista base: botón (primario, secundario, fantasma, grande), campo, selector de ánimo, chip, tarjeta, tarjeta de color, panel, etiqueta de plaza (resultado de la foto, con variante de duda), opciones top-3, sello, barra de XP, calcomanía de logro, menú lateral/barra inferior, esqueleto de carga, aviso de error, estado vacío, diálogo de confirmación, avatar.
