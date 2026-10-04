@@ -42,7 +42,7 @@
   --mora-500: #AE80FF; --mora-600: #9462E4; --mora-700: #7B4FC0; --mora-800: #56338B; --mora-900: #391E5F;
 
   /* ---------- 2. Semánticos: paleta "viva" (la nueva) ---------- */
-  --c-fondo:        #F6F6E6;              /* crema con un toque de limón */
+  --c-fondo:        #f3f3e1;              /* crema con un toque de limón */
   --c-superficie:   #FFFEF8;              /* tarjetas: blanco tibio, no blanco hospital */
   --c-tinta:        #1E2A12;              /* texto: verde-oliva casi negro */
   --c-tinta-suave:  #586048;              /* texto secundario */
