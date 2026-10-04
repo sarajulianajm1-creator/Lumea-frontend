@@ -39,12 +39,6 @@
               <a class="nav-link active px-3" href="index.html">Inicio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link px-3" href="registrar-comida.html">Registrar Comida</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link px-3" href="mis-registros.html">Mis Registros</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link px-3" href="conocenos.html">Conócenos</a>
             </li>
             <li class="nav-item">
@@ -239,11 +233,12 @@
   <script src="api.js"></script>
   <script src="sesion-nav.js"></script>
   <script>
-    // Si ya hay sesión, "Comenzar Ahora" lleva directo a registrar una comida.
+    // Si ya hay sesión, "Comenzar Ahora" lleva a la app (el menú privado
+    // tiene Registrar y Mis registros; la parte pública ya no los muestra).
     if (obtenerSesion()) {
       const btn = document.getElementById("btnComenzar");
-      btn.href = "registrar-comida.html";
-      btn.innerHTML = '<i class="bi bi-camera me-2"></i> Registrar Comida';
+      btn.href = "index-ingresado.html";
+      btn.innerHTML = '<i class="bi bi-house-door me-2"></i> Entrar a mi Lumea';
     }
   </script>
 </body>

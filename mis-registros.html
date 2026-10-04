@@ -21,39 +21,35 @@
 
   <!-- Barra de Navegación Global -->
   <header>
-    <nav class="navbar navbar-expand-lg navbar-lumea sticky-top py-3 shadow-sm">
-      <div class="container">
-        <a class="navbar-brand fw-bold d-flex align-items-center gap-2 logo-brand" href="index.html">
-          <span>🌿</span> LUMEA
-        </a>
-        <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarLumea" aria-controls="navbarLumea" aria-expanded="false" aria-label="Abrir navegación">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarLumea">
-          <ul class="navbar-nav me-auto ms-lg-4 mb-2 mb-lg-0 align-items-lg-center gap-lg-2 pt-3 pt-lg-0">
-            <li class="nav-item">
-              <a class="nav-link px-3" href="index.html">Inicio</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link px-3" href="registrar-comida.html">Registrar Comida</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active px-3" href="mis-registros.html">Mis Registros</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link px-3" href="conocenos.html">Conócenos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link px-3" href="guialumea.html">Guía LUMEA</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link px-3" href="terminos.html">Términos</a>
-            </li>
-          </ul>
-          <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mt-3 mt-lg-0" id="navSesion"></div>
-        </div>
-      </div>
-    </nav>
+    <div class="container fixed-bottom d-flex justify-content-center mb-4">
+        <nav class="custom-navbar d-flex align-items-center justify-content-around px-3 py-2 shadow-lg" aria-label="Principal">
+            <!-- Los cinco destinos de la app (navegación B, 4 oct 2026) -->
+            <a href="index-ingresado.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-house-door-fill fs-4" aria-hidden="true"></i>
+                <span>Inicio</span>
+            </a>
+
+            <a href="mis-registros.html" class="nav-item-custom text-center text-decoration-none" aria-current="page">
+                <i class="bi bi-basket-fill fs-4" aria-hidden="true"></i>
+                <span>Mis registros</span>
+            </a>
+
+            <a href="alimentos.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-camera-fill fs-4" aria-hidden="true"></i>
+                <span>Registrar</span>
+            </a>
+
+            <a href="progreso.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-graph-up-arrow fs-4" aria-hidden="true"></i>
+                <span>Progreso</span>
+            </a>
+
+            <a href="avatar.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-person-fill fs-4" aria-hidden="true"></i>
+                <span>Avatar</span>
+            </a>
+        </nav>
+    </div>
   </header>
 
   <main class="py-5">
@@ -86,7 +82,7 @@
         <div id="sinRegistros" class="text-center text-secondary py-5 d-none">
           <i class="bi bi-inbox fs-1 d-block mb-2"></i>
           Todavía no tienes comidas registradas.
-          <a href="registrar-comida.html" class="d-block mt-2">Registra tu primera comida</a>
+          <a href="alimentos.html" class="d-block mt-2">Registra tu primera comida</a>
         </div>
 
         <div id="listaRegistros" class="row row-cols-1 row-cols-md-2 g-3"></div>
@@ -94,6 +90,8 @@
 
     </div>
   </main>
+
+  <div class="espacio-barra-inferior" aria-hidden="true"></div>
 
   <!-- Pie de Página Unificado -->
   <footer class="footer-lumea py-4 mt-auto">

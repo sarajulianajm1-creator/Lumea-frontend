@@ -777,3 +777,13 @@ main {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* ---- Navegación privada (4 oct 2026) ----
+   La pestaña de la página actual se marca con aria-current="page":
+   así lo entiende también un lector de pantalla. */
+.nav-item-custom[aria-current="page"] {
+    background-color: #ffffff;
+    color: var(--lumea-dark);
+}
+/* Deja espacio al final para que la barra fija no tape el contenido */
+.espacio-barra-inferior { height: 120px; }
