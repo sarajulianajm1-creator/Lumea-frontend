@@ -1,140 +1,930 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LUMEA | Guía de Uso</title>
-<!-- Favicon -->
-<link rel="icon" type="image/png" href="lumeaaa.png">
-<!-- Google Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- Bootstrap 5.3.3 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<!-- Hoja de Estilos Unificada -->
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LUMEA | Cámara de Alimentos</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="lumeaaa.png">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Hoja de Estilos Unificada -->
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-    <!-- Barra de Navegación Global -->
-<header>
-        <div class="container fixed-bottom d-flex justify-content-center mb-4">
-        <nav class="custom-navbar d-flex align-items-center justify-content-around px-3 py-2 shadow-lg">
+
+<body class="lumea-screen-wrapper">
+
+  <div class="lumea-desktop-layout">
+
+    <!-- ============================================================
+         MENÚ LATERAL DESKTOP (1280px)
+         ============================================================ -->
+    <aside class="lumea-desktop-sidebar d-none d-lg-flex">
+      <div>
+        <a href="index-ingresado.html" class="sidebar-logo">
+          <span style="font-size: 1.6rem;">🌿</span> LUMEA
+        </a>
+
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="index-ingresado.html">
+              <i class="bi bi-house-door-fill fs-5"></i>
+              <span>Inicio</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="alimentos.html" class="active">
+              <i class="bi bi-egg-fried fs-5"></i>
+              <span>Mis comidas</span>
+              <span class="nav-badge-pill lumea-bind-comidas-count">-- de --</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="alimentos.html" style="background: var(--lumea-accent-badge); color: var(--lumea-primary); font-weight: 700;">
+              <i class="bi bi-camera-fill fs-5"></i>
+              <span>Registrar comida</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="progreso.html">
+              <i class="bi bi-bar-chart-line-fill fs-5"></i>
+              <span>Progreso</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="avatar.html">
+              <i class="bi bi-person-badge-fill fs-5"></i>
+              <span>Avatar & Armario</span>
+            </a>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="emociones.html">
+              <i class="bi bi-emoji-smile-fill fs-5"></i>
+              <span>Ánimo</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Tarjeta Usuario Lateral -->
+      <div class="sidebar-user-card">
+        <div class="sidebar-user-avatar">
+          <span class="lumea-avatar-mini-emoji">🙂</span>
+        </div>
+        <div class="flex-grow-1 overflow-hidden">
+          <h6 class="mb-0 fw-bold text-truncate lumea-bind-nombre">Cargando...</h6>
+          <small class="text-muted d-block fw-semibold"><span class="lumea-bind-nivel">Nivel --</span> • <span class="lumea-bind-racha">--</span> 🔥</small>
+        </div>
+        <a href="avatar.html" class="btn btn-sm btn-light rounded-circle shadow-sm">
+          <i class="bi bi-gear"></i>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ============================================================
+         ÁREA PRINCIPAL: REGISTRAR COMIDA CON CÁMARA DIRECTA
+         ============================================================ -->
+    <main class="lumea-main-area">
+
+      <!-- Barra de navegación y regreso -->
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center gap-3">
+          <a href="index-ingresado.html" class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Volver a Inicio">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+          <div>
+            <span class="badge rounded-pill text-uppercase px-2.5 py-1 fw-bold" style="background: var(--lumea-accent-badge); color: var(--lumea-primary); font-size: 0.72rem;">
+              Cámara en vivo • Reconocimiento IA
+            </span>
+            <h1 class="user-greeting-title mb-0" style="font-size: 1.55rem;">Registrar comida</h1>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <!-- Indicador del estado de ánimo actual -->
+          <div class="d-none d-sm-flex align-items-center gap-1 badge rounded-pill bg-light text-secondary border px-2.5 py-1.5" style="font-size: 0.76rem;" title="Tu ánimo de hoy">
+            <span class="text-muted">Ánimo:</span>
+            <strong class="lumea-bind-animo-hoy text-success">Sin registrar</strong>
+          </div>
+
+          <a href="emociones.html" class="avatar-header-btn" title="Ver o gestionar tu estado de ánimo">
+            <div class="avatar-header-icon" style="width: 36px; height: 36px; font-size: 1.2rem;">
+              <span class="lumea-avatar-mini-emoji">🙂</span>
+            </div>
+            <span class="d-none d-md-inline fw-bold text-success pe-2" style="font-size: 0.82rem;">+10 XP por comida</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           LAYOUT DE REGISTRO:
+           En móvil: Visor grande arriba + Etiqueta que sube como hoja abajo.
+           En computador (1280px): Visor a la izquierda + Etiqueta al lado.
+           ============================================================ -->
+      <div class="registrar-comida-layout mb-5">
+
+        <!-- 1. VISOR GRANDE DE LA CÁMARA (ACCESO DIRECTO) -->
+        <section class="camera-section-wrapper">
+          <div class="camera-visor-box position-relative" id="visor-contenedor">
+
+            <!-- Video real en vivo de la cámara -->
+            <video id="webcam" autoplay playsinline muted class="camera-visor-video"></video>
             
-            <!-- Elemento 1: Inicio -->
-            <a href="index-ingresado.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-house-door-fill fs-4"></i>
-                <span>Inicio</span>
-            </a>
+            <!-- Foto congelada al capturar -->
+            <img id="foto-congelada" alt="Foto capturada" class="camera-visor-video" style="display: none; object-fit: cover;" />
 
-            <!-- Elemento 2: Ejercicios -->
-            <a href="alimentos.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-image-fill"></i>
-                <span>Alimentos</span>
-            </a>
+            <!-- Canvas oculto para capturar el frame -->
+            <canvas id="captura-canvas" style="display: none;"></canvas>
 
-            
-            <a href="#" class="nav-item-custom text-center text-decoration-none ">
-                <i class="bi bi-emoji-smile-fill"></i>
-                <span>Emociones</span>
-            </a>
+            <!-- Mensaje si la cámara está apagada o sin permisos -->
+            <div id="camara-placeholder" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center p-4" style="background: radial-gradient(circle, #1a3a2a 0%, #0d1a14 100%); display: none;">
+              <div class="fs-1 mb-2 text-success">📷</div>
+              <h5 class="text-white fw-bold mb-1">Cámara en espera</h5>
+              <p class="text-white-50 small mb-3">Activa tu visor en vivo o toma una foto directa con el celular.</p>
+              <div class="d-flex flex-wrap gap-2 justify-content-center">
+                <button type="button" class="btn btn-sm btn-success rounded-pill px-4 fw-bold" onclick="abrirCamaraNativa()">
+                  <i class="bi bi-camera me-1"></i> Cámara del celular
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="iniciarCamara()">
+                  <i class="bi bi-camera-video me-1"></i> Reintentar en vivo
+                </button>
+              </div>
+            </div>
 
-            <!-- Elemento 4: Diario -->
-            <a href="#" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-calendar-check fs-4"></i>
-                <span>Experiencia</span>
-            </a>
+            <!-- Línea de escaneo láser IA -->
+            <div id="scanline-ia" class="camera-visor-scanline"></div>
 
-            <!-- Elemento 5: Mío -->
-            <a href="#" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-person-fill fs-4"></i>
-                <span>Avatar</span>
-            </a>
-        </nav>
-        </div>
-        
-    
-    <div class="lumea-dashboard-screen">
-  
-  <div class="lumea-dashboard-card">
-    
-    <!-- Título de la sección -->
-    <div class="card-section-title">
-      <span>1. MUÉSTRALE TU PLATO</span>
-    </div>
+            <!-- Esquinas de enfoque estilo visor profesional -->
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
 
-    <!-- Visor de la Cámara -->
-    <div class="camera-preview-container">
-      <video id="webcam" autoplay playsinline class="camera-video-stream"></video>
-      
-      <!-- Esquinas decorativas de enfoque -->
-      <div class="corner top-left"></div>
-      <div class="corner top-right"></div>
-      <div class="corner bottom-left"></div>
-      <div class="corner bottom-right"></div>
-    </div>
+            <!-- Badge indicador en la esquina superior izquierda (sin estorbar el centro) -->
+            <div id="visor-status-badge" class="position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill" style="background: rgba(0, 0, 0, 0.75); border: 1px solid #74c69d; color: #d8f3dc; font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(4px); white-space: nowrap; z-index: 5;">
+              <span id="visor-status-text"><i class="bi bi-record-circle text-danger me-1 animate-pulse"></i> Cámara en vivo</span>
+            </div>
 
-    <!-- Botones principales de acción -->
-    <div class="camera-actions-main">
-      <button id="btn-encender" class="lumea-btn-secondary">
-        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Encender cámara
-      </button>
-      <button id="btn-tomar" class="lumea-btn-primary">
-        <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-        Tomar foto (espacio)
-      </button>
-    </div>
+            <!-- Botón flotante para alternar cámara en esquina superior derecha -->
+            <button type="button" class="btn btn-sm btn-dark bg-opacity-75 text-white rounded-circle position-absolute top-0 end-0 m-3 border-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; z-index: 5;" onclick="alternarCamara()" title="Girar cámara (frontal / trasera)">
+              <i class="bi bi-arrow-repeat fs-6"></i>
+            </button>
 
-    <!-- Botones secundarios de control -->
-    <div class="camera-actions-sub">
-      <button id="btn-otra" class="lumea-btn-pill">
-        <svg class="pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        Otra foto
-      </button>
-      <button id="btn-apagar" class="lumea-btn-pill">
-        <svg class="pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
-        Apagar
-      </button>
-      <button id="btn-subir" class="lumea-btn-pill">
-        <svg class="pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Subir foto
-      </button>
-    </div>
+          </div>
 
-    <!-- Criterios inferiores preparados para recibir datos del backend -->
-    <div class="criterios-grid-nuevos">
-      
-      <!-- 1. Sellos de advertencia -->
-      <div class="criterio-card">
-        <div class="criterio-icon-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        </div>
-        <div class="criterio-title">Sellos</div>
-        <div id="backend-sellos" class="criterio-desc">Esperando análisis...</div>
+          <!-- DOCK DE CONTROLES: Limpio, Espacioso y Sin Amontonamiento -->
+          <div id="dock-camara-activo" class="camera-controls-dock d-flex align-items-center justify-content-around mt-3">
+            <!-- Opción 1: Cámara del celular directa -->
+            <div class="text-center">
+              <button type="button" class="btn-camera-dock-action mx-auto mb-1" onclick="abrirCamaraNativa()" title="Tomar foto con la cámara nativa del celular">
+                <i class="bi bi-phone"></i>
+              </button>
+              <small class="text-muted fw-bold d-block" style="font-size: 0.72rem;">Celular</small>
+            </div>
+
+            <!-- Opción 2: Obturador Principal Central -->
+            <div class="text-center">
+              <button type="button" id="shutter-circle-btn" class="camera-shutter-circle-btn mx-auto mb-1" onclick="capturarFotoDeCamara()" title="Capturar foto del plato">
+                <div class="shutter-circle-inner"></div>
+              </button>
+              <small class="text-success fw-bold d-block" style="font-size: 0.75rem;">Capturar</small>
+            </div>
+
+            <!-- Opción 3: Subir foto de galería -->
+            <div class="text-center">
+              <label class="btn-camera-dock-action mx-auto mb-1" style="cursor: pointer;" title="Subir foto de galería o archivo">
+                <i class="bi bi-image"></i>
+                <input type="file" id="input-archivo-foto" accept="image/*" style="display: none;" onchange="procesarArchivoSubido(event)">
+              </label>
+              <small class="text-muted fw-bold d-block" style="font-size: 0.72rem;">Galería</small>
+            </div>
+
+            <!-- Input invisible con capture="environment" para móviles -->
+            <input type="file" id="input-camara-nativa" accept="image/*" capture="environment" style="display: none;" onchange="procesarArchivoSubido(event)">
+          </div>
+
+          <!-- Botón cuando ya se capturó la foto -->
+          <div id="dock-otra-foto" class="text-center mt-3" style="display: none;">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold" onclick="reiniciarCamara()">
+              <i class="bi bi-arrow-repeat me-1"></i> Tomar otra foto
+            </button>
+          </div>
+        </section>
+
+        <!-- 2. LA ETIQUETA HOJA NUTRICIONAL
+             Entra colgando y se balancea. Antes de la foto muestra el estado de espera -->
+        <section class="etiqueta-section-wrapper">
+          <div class="etiqueta-sheet-card" id="etiqueta-hoja">
+
+            <!-- Calcomanía flotante de XP que salta al confirmar [Wow] -->
+            <div id="calcomania-xp" class="calcomania-xp-sticker position-absolute top-0 end-0 translate-middle-y me-3">
+              <span>🎉</span> +10 XP ¡Ganado!
+            </div>
+
+            <!-- ESTADO INICIAL: ESPERANDO FOTOGRAFÍA (Sin alimento precargado) -->
+            <div id="estado-esperando-foto" class="text-center py-4">
+              <div class="fs-1 mb-2 text-success">🍽️</div>
+              <span class="detector-ia-chip">
+                <i class="bi bi-stars"></i> Reconocimiento de alimentos
+              </span>
+              <h3 class="fw-bold text-dark mt-2 mb-2" style="font-size: 1.4rem;">Apunta a tu comida</h3>
+              <p class="text-muted small mb-4 px-2">
+                Toma una foto de tu plato para que LUMEA identifique los alimentos, verifique los sellos de advertencia y calcule sus nutrientes.
+              </p>
+              <button class="btn btn-outline-success rounded-pill px-4 py-2 fw-bold btn-sm" onclick="capturarFotoDeCamara()">
+                <i class="bi bi-camera me-1"></i> Capturar plato ahora
+              </button>
+            </div>
+
+            <!-- ESTADO EN ANÁLISIS: ESCANEANDO CON IA -->
+            <div id="estado-analizando" class="text-center py-5" style="display: none;">
+              <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+              <h5 class="fw-bold text-dark mb-1">Consultando al backend...</h5>
+              <p class="text-muted small mb-0">Enviando captura a tu modelo en el servidor</p>
+            </div>
+
+            <!-- ESTADO ERROR BACKEND: Si el servidor falla o no responde -->
+            <div id="estado-error-backend" class="text-center py-4" style="display: none;">
+              <div class="fs-1 mb-2 text-danger">⚠️</div>
+              <h4 class="fw-bold text-dark mb-1">No se pudo obtener predicción</h4>
+              <p id="texto-error-backend" class="text-muted small mb-4 px-2">
+                Hubo un problema al conectar con el endpoint <code>/predecir</code> de tu backend.
+              </p>
+              <div class="d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" onclick="reiniciarCamara()">
+                  <i class="bi bi-camera me-1"></i> Otra foto
+                </button>
+                <button type="button" class="btn btn-success rounded-pill px-4 btn-sm fw-bold" onclick="reintentarUltimaFoto()">
+                  <i class="bi bi-arrow-repeat me-1"></i> Reintentar
+                </button>
+              </div>
+            </div>
+
+            <!-- ESTADO ANALIZADO: RESULTADO DE LA FOTOGRAFÍA -->
+            <div id="estado-resultado-foto" style="display: none;">
+
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="detector-ia-chip">
+                  <i class="bi bi-stars"></i>
+                  <span>Alimento identificado:</span>
+                </div>
+                <button class="btn btn-link btn-sm text-muted p-0 text-decoration-none" onclick="editarNombreAlimento()">
+                  <i class="bi bi-pencil me-1"></i>Editar
+                </button>
+              </div>
+
+              <!-- Nombre del alimento -->
+              <h2 id="alimento-nombre" class="alimento-detectado-nombre">Plato analizado</h2>
+
+              <!-- Certeza de la IA -->
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span id="alimento-certeza" class="seguridad-ia-badge mb-0">Seguro al 92 %</span>
+                <div class="progress flex-grow-1" style="height: 6px; max-width: 140px; background: #e2e8e4;">
+                  <div id="alimento-certeza-bar" class="progress-bar bg-success" style="width: 92%;"></div>
+                </div>
+              </div>
+
+              <!-- Sellos de advertencia según la norma -->
+              <div class="mb-3">
+                <div class="text-muted fw-bold mb-2" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                  Sellos de advertencia frontales
+                </div>
+                <div id="sellos-wrap" class="sellos-container">
+                  <span class="sello-sin-sellos">
+                    <i class="bi bi-shield-check text-success fs-6"></i>
+                    <span>Sin sellos de advertencia</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Información Nutricional -->
+              <div class="info-nutri-highlight">
+                <div class="d-flex justify-content-between align-items-baseline mb-1">
+                  <span class="nutri-calorias" id="alimento-calorias">-- kcal</span>
+                  <span class="text-muted fw-semibold" style="font-size: 0.78rem;">por porción estimada</span>
+                </div>
+                <p class="nutri-beneficio mb-0" id="alimento-beneficio">
+                  Aporte nutricional equilibrado para tu día de estudio.
+                </p>
+              </div>
+
+              <!-- Botones de Confirmación -->
+              <div class="d-flex flex-column gap-2" id="acciones-confirmar">
+                <button id="btn-confirmar-si" class="lumea-btn-primary w-100 py-3" onclick="confirmarAlimentoActual()" style="font-size: 1rem;">
+                  <i class="bi bi-check-circle-fill me-1"></i>
+                  Sí, confirmar (+10 XP)
+                </button>
+                <button id="btn-corregir" class="lumea-btn-secondary w-100" onclick="editarNombreAlimento()">
+                  <i class="bi bi-pencil-square me-1"></i>
+                  Corregir nombre del alimento
+                </button>
+              </div>
+
+              <!-- Mensaje de éxito tras confirmar -->
+              <div id="mensaje-confirmado" class="mt-3 p-3 rounded-4 bg-light text-center border border-success-subtle" style="display: none;">
+                <span class="fs-4">🎉</span>
+                <h5 class="fw-bold text-success mb-1">¡Comida registrada con éxito!</h5>
+                <p class="text-muted small mb-3">Se sumaron +10 XP y se actualizó tu canasta diaria.</p>
+                <div class="d-flex justify-content-center gap-2">
+                  <a href="index-ingresado.html" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                    <i class="bi bi-house me-1"></i>Ver en Inicio
+                  </a>
+                  <button class="btn btn-sm btn-success rounded-pill px-3" onclick="reiniciarCamara()">
+                    <i class="bi bi-plus-circle me-1"></i>Registrar otra
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
       </div>
 
-      <!-- 2. Energía -->
-      <div class="criterio-card">
-        <div class="criterio-icon-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <!-- ============================================================
+           MIS COMIDAS DE HOY (Historial)
+           ============================================================ -->
+      <section class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="h5 fw-bold text-dark mb-0">
+            <span>🍽️</span> Mis comidas registradas hoy
+          </h3>
+          <span class="badge rounded-pill bg-light text-success border px-3 py-1.5 fw-bold">
+            <span class="lumea-bind-comidas-count">-- de --</span> registradas
+          </span>
         </div>
-        <div class="criterio-title">Energía</div>
-        <div id="backend-energia" class="criterio-desc">-- kcal</div>
-      </div>
 
-      <!-- 3. Precisión -->
-      <div class="criterio-card highlight">
-        <div class="criterio-icon-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <div id="lista-comidas-hoy" class="row row-cols-1 row-cols-md-2 g-3">
+          <!-- Inyectado dinámicamente -->
         </div>
-        <div class="criterio-title">Precisión IA</div>
-        <div id="backend-precision" class="criterio-desc">--% seguridad</div>
-      </div>
+      </section>
 
-    </div>
+    </main>
 
   </div>
-</div>
+
+  <!-- Modal para corregir o ingresar nombre manual del alimento -->
+  <div class="modal fade" id="modalEditarAlimento" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 p-3 shadow-lg">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold text-dark">
+            <i class="bi bi-pencil-square text-success me-1"></i> ¿Qué comida es?
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small mb-3">Escribe el nombre del alimento que capturaste con la cámara:</p>
+          <div class="mb-3">
+            <label for="input-nombre-manual" class="form-label small fw-semibold text-secondary">Nombre del plato o fruta</label>
+            <input type="text" id="input-nombre-manual" class="form-control rounded-pill px-3" placeholder="Ej. Ensalada de frutas, Arroz con huevo..." />
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-sm btn-light border rounded-pill" onclick="establecerAlimentoRapido('Manzana fresca', 52, true, [])">🍎 Manzana</button>
+            <button type="button" class="btn btn-sm btn-light border rounded-pill" onclick="establecerAlimentoRapido('Arroz con pollo', 210, false, [])">🍗 Arroz con pollo</button>
+            <button type="button" class="btn btn-sm btn-light border rounded-pill" onclick="establecerAlimentoRapido('Ensalada verde', 65, false, [])">🥗 Ensalada</button>
+            <button type="button" class="btn btn-sm btn-light border rounded-pill" onclick="establecerAlimentoRapido('Yogur con cereal', 140, false, ['EXCESO EN AZÚCARES'])">🥛 Yogur cereal</button>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-sm btn-success rounded-pill px-4" onclick="guardarNombreManual()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BARRA INFERIOR FLOTANTE MÓVIL (< 992px)
+       ============================================================ -->
+  <div class="lumea-bottom-nav-container d-lg-none">
+    <nav class="lumea-pill-nav">
+      <a href="index-ingresado.html" class="nav-link-item">
+        <i class="bi bi-house-door"></i>
+        <span>Inicio</span>
+      </a>
+
+      <a href="alimentos.html" class="nav-link-item active">
+        <i class="bi bi-egg-fried"></i>
+        <span>Comidas</span>
+      </a>
+
+      <!-- Botón Cámara Grande al Centro (Ley de Fitts) -->
+      <a href="alimentos.html" class="nav-camera-fab active" title="Cámara activa">
+        <i class="bi bi-camera-fill"></i>
+        <span>Cámara</span>
+      </a>
+
+      <!-- Emociones / Ánimo -->
+      <a href="emociones.html" class="nav-link-item">
+        <i class="bi bi-emoji-smile"></i>
+        <span>Emociones</span>
+      </a>
+
+      <a href="progreso.html" class="nav-link-item">
+        <i class="bi bi-bar-chart-line"></i>
+        <span>Progreso</span>
+      </a>
+
+      <a href="avatar.html" class="nav-link-item">
+        <i class="bi bi-person"></i>
+        <span>Avatar</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Scripts Globales de Lumea -->
+  <script src="lumea-state.js"></script>
+  <script src="lumea-ui.js"></script>
+  <script>
+    let videoStream = null;
+    let modoCamaraTrasera = true;
+    let modalEditar = null;
+
+    // Alimento detectado actualmente tras la foto
+    let alimentoDetectado = {
+      nombre: "Plato detectado",
+      certeza: 92,
+      calorias: 180,
+      beneficio: "Energía balanceada para tu jornada académica.",
+      esFruta: false,
+      sellos: []
+    };
+
+    // 1. ACCESO DIRECTO A LA CÁMARA AL CARGAR LA PÁGINA
+    async function iniciarCamara() {
+      const video = document.getElementById("webcam");
+      const placeholder = document.getElementById("camara-placeholder");
+      const scanline = document.getElementById("scanline-ia");
+      const fotoCongelada = document.getElementById("foto-congelada");
+
+      fotoCongelada.style.display = "none";
+      video.style.display = "block";
+      scanline.style.display = "block";
+
+      if (videoStream) {
+        videoStream.getTracks().forEach(t => t.stop());
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.warn("getUserMedia no soportado o bloqueado por el protocolo actual");
+        video.style.display = "none";
+        placeholder.style.display = "flex";
+        actualizarBadgeVisor("Usa cámara directa", "text-warning");
+        return;
+      }
+
+      const constraints = {
+        video: {
+          facingMode: modoCamaraTrasera ? { ideal: "environment" } : { ideal: "user" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      };
+
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = videoStream;
+        await video.play().catch(() => {});
+        placeholder.style.display = "none";
+        actualizarBadgeVisor("Cámara en vivo", "text-danger");
+      } catch (err) {
+        console.warn("Fallo con constraints ideales, probando fallback básico:", err);
+        try {
+          videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          video.srcObject = videoStream;
+          await video.play().catch(() => {});
+          placeholder.style.display = "none";
+          actualizarBadgeVisor("Cámara en vivo", "text-danger");
+        } catch (err2) {
+          console.warn("No se pudo iniciar webcam automáticamente:", err2);
+          video.style.display = "none";
+          placeholder.style.display = "flex";
+          actualizarBadgeVisor("Cámara en espera", "text-warning");
+        }
+      }
+    }
+
+    function alternarCamara() {
+      modoCamaraTrasera = !modoCamaraTrasera;
+      iniciarCamara();
+    }
+
+    function abrirCamaraNativa() {
+      document.getElementById("input-camara-nativa").click();
+    }
+
+    // 2. CAPTURAR FOTO DESDE LA CÁMARA
+    function capturarFotoDeCamara() {
+      const video = document.getElementById("webcam");
+      const canvas = document.getElementById("captura-canvas");
+      const fotoCongelada = document.getElementById("foto-congelada");
+
+      if (videoStream && video.videoWidth && video.style.display !== "none") {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+
+        fotoCongelada.src = dataUrl;
+        fotoCongelada.style.display = "block";
+        video.style.display = "none";
+
+        procesarImagenCapturada(dataUrl);
+      } else {
+        abrirCamaraNativa();
+      }
+    }
+
+    function procesarArchivoSubido(event) {
+      const file = event.target.files && event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const dataUrl = e.target.result;
+          const video = document.getElementById("webcam");
+          const fotoCongelada = document.getElementById("foto-congelada");
+          fotoCongelada.src = dataUrl;
+          fotoCongelada.style.display = "block";
+          video.style.display = "none";
+
+          procesarImagenCapturada(dataUrl);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    let ultimaFotoCapturada = null;
+
+    // 3. ANÁLISIS DE LA FOTOGRAFÍA (Conexión directa con POST /predecir del Backend)
+    async function procesarImagenCapturada(imageDataUrl) {
+      ultimaFotoCapturada = imageDataUrl;
+
+      document.getElementById("estado-esperando-foto").style.display = "none";
+      document.getElementById("estado-resultado-foto").style.display = "none";
+      document.getElementById("estado-error-backend").style.display = "none";
+      document.getElementById("estado-analizando").style.display = "block";
+
+      actualizarBadgeVisor("Consultando backend...", "text-warning");
+
+      const dockActivo = document.getElementById("dock-camara-activo");
+      const dockOtraFoto = document.getElementById("dock-otra-foto");
+      if (dockActivo) dockActivo.style.display = "none";
+      if (dockOtraFoto) dockOtraFoto.style.display = "block";
+
+      const baseUrls = [
+        "http://127.0.0.1:5001",
+        "http://localhost:5001",
+        "http://127.0.0.1:5000",
+        "http://localhost:5000",
+        ""
+      ];
+
+      const base64Puro = imageDataUrl.includes(",") ? imageDataUrl.split(",")[1] : imageDataUrl;
+
+      const payloadJson = {
+        image: imageDataUrl,
+        imagen: imageDataUrl,
+        image_base64: base64Puro,
+        imagen_base64: base64Puro
+      };
+
+      let respuestaJson = null;
+      let errorDetalle = "";
+
+      // 1. Probar petición JSON
+      for (const base of baseUrls) {
+        const url = `${base}/predecir`;
+        try {
+          const resp = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payloadJson)
+          });
+
+          if (resp.ok) {
+            respuestaJson = await resp.json();
+            window.LUMEA_BACKEND_ACTIVO = base;
+            console.info(`Conexión exitosa con backend en: ${url}`);
+            break;
+          } else {
+            const errTxt = await resp.text().catch(() => "");
+            errorDetalle = `El servidor en ${url} respondió con código ${resp.status}: ${errTxt}`;
+          }
+        } catch (e) {
+          errorDetalle = `No se pudo conectar a ${url}: ${e.message}`;
+        }
+      }
+
+      // 2. Si falló JSON, intentar multipart/form-data (por si el backend usa request.files)
+      if (!respuestaJson) {
+        try {
+          const blob = await (await fetch(imageDataUrl)).blob();
+          for (const base of baseUrls) {
+            const url = `${base}/predecir`;
+            try {
+              const formData = new FormData();
+              formData.append("image", blob, "plato.jpg");
+              formData.append("file", blob, "plato.jpg");
+              formData.append("imagen", blob, "plato.jpg");
+
+              const respForm = await fetch(url, {
+                method: "POST",
+                body: formData
+              });
+
+              if (respForm.ok) {
+                respuestaJson = await respForm.json();
+                window.LUMEA_BACKEND_ACTIVO = base;
+                console.info(`Conexión exitosa FormData con backend en: ${url}`);
+                break;
+              }
+            } catch (errF) {}
+          }
+        } catch (errBlob) {}
+      }
+
+      // 3. SI EL BACKEND FALLA: Mostrar error real sin inventar resultados
+      if (!respuestaJson) {
+        document.getElementById("estado-analizando").style.display = "none";
+        document.getElementById("estado-error-backend").style.display = "block";
+        document.getElementById("texto-error-backend").innerHTML = `
+          ${errorDetalle || "No se recibió respuesta del servidor backend."}<br>
+          <span class="d-block mt-2">Asegúrate de que tu servidor Python esté iniciado (puerto 5001 o 5000) con el endpoint <code>/predecir</code> activo.</span>
+        `;
+        actualizarBadgeVisor("Error en backend", "text-danger");
+        return;
+      }
+
+      // 4. Extraer ÚNICAMENTE los datos devueltos por tu backend
+      const data = (respuestaJson.data || respuestaJson.resultado || respuestaJson.prediccion_info || respuestaJson);
+      const nombreDetectado = data.alimento || data.nombre || data.clase || data.label || data.prediccion || (typeof respuestaJson.prediccion === 'string' ? respuestaJson.prediccion : null);
+
+      if (!nombreDetectado) {
+        document.getElementById("estado-analizando").style.display = "none";
+        document.getElementById("estado-error-backend").style.display = "block";
+        document.getElementById("texto-error-backend").textContent = `El backend respondió pero no devolvió el campo 'alimento' o 'clase'. Respuesta recibida: ${JSON.stringify(respuestaJson)}`;
+        actualizarBadgeVisor("Respuesta sin alimento", "text-warning");
+        return;
+      }
+
+      let certeza = data.certeza ?? data.confianza ?? data.score ?? data.probabilidad ?? data.confidence ?? 90;
+      if (typeof certeza === 'number' && certeza <= 1) {
+        certeza = Math.round(certeza * 100);
+      }
+
+      const calorias = data.calorias ?? data.calories ?? data.kcal ?? (data.nutrientes ? data.nutrientes.calorias : null) ?? "--";
+      const beneficio = data.beneficio ?? data.descripcion ?? data.info ?? (data.nutrientes ? data.nutrientes.beneficio : "") ?? "Información nutricional del backend.";
+      const sellos = data.sellos || data.sellos_advertencia || data.octogonos || [];
+      const esFruta = Boolean(data.esFruta ?? data.es_fruta ?? false);
+
+      mostrarResultadoNutricional({
+        alimento: nombreDetectado,
+        certeza: certeza,
+        calorias: calorias,
+        beneficio: beneficio,
+        sellos: sellos,
+        esFruta: esFruta
+      });
+    }
+
+    function reintentarUltimaFoto() {
+      if (ultimaFotoCapturada) {
+        procesarImagenCapturada(ultimaFotoCapturada);
+      } else {
+        reiniciarCamara();
+      }
+    }
+
+    // 4. MOSTRAR RESULTADOS EN LA ETIQUETA DIRECTAMENTE DEL BACKEND
+    function mostrarResultadoNutricional(data) {
+      alimentoDetectado = {
+        nombre: data.alimento,
+        certeza: data.certeza,
+        calorias: data.calorias,
+        beneficio: data.beneficio,
+        esFruta: data.esFruta,
+        sellos: data.sellos
+      };
+
+      document.getElementById("estado-analizando").style.display = "none";
+      document.getElementById("estado-error-backend").style.display = "none";
+      document.getElementById("estado-resultado-foto").style.display = "block";
+
+      document.getElementById("alimento-nombre").textContent = alimentoDetectado.nombre;
+      document.getElementById("alimento-certeza").textContent = `Seguro al ${alimentoDetectado.certeza} %`;
+      document.getElementById("alimento-certeza-bar").style.width = `${alimentoDetectado.certeza}%`;
+      document.getElementById("alimento-calorias").textContent = typeof alimentoDetectado.calorias === 'number' ? `${alimentoDetectado.calorias} kcal` : alimentoDetectado.calorias;
+      document.getElementById("alimento-beneficio").textContent = alimentoDetectado.beneficio;
+
+      // Sellos de advertencia en octágonos negros según la norma
+      const sellosWrap = document.getElementById("sellos-wrap");
+      if (alimentoDetectado.sellos && alimentoDetectado.sellos.length > 0) {
+        sellosWrap.innerHTML = alimentoDetectado.sellos.map(sello => `
+          <div class="sello-octogono-negro">
+            <span>⚫ ${sello}</span>
+          </div>
+        `).join("");
+      } else {
+        sellosWrap.innerHTML = `
+          <span class="sello-sin-sellos">
+            <i class="bi bi-shield-check text-success fs-6"></i>
+            <span>Sin sellos de advertencia</span>
+          </span>
+        `;
+      }
+
+      // Animación de balanceo de la etiqueta
+      const etiqueta = document.getElementById("etiqueta-hoja");
+      etiqueta.style.animation = "none";
+      void etiqueta.offsetWidth;
+      etiqueta.style.animation = "sway-in 0.85s cubic-bezier(0.25, 1, 0.5, 1)";
+
+      actualizarBadgeVisor("Plato identificado", "text-success");
+    }
+
+    // 5. CONFIRMAR ALIMENTO (+10 XP) Y SINCRONIZAR CON BACKEND
+    async function confirmarAlimentoActual() {
+      if (!window.lumeaStore) return;
+
+      // Calcomanía de XP que salta [Wow]
+      const calcomania = document.getElementById("calcomania-xp");
+      calcomania.style.display = "inline-flex";
+
+      // Guardar en el store local
+      window.lumeaStore.registrarComida({
+        nombre: alimentoDetectado.nombre,
+        tipo: "Comida registrada",
+        calorias: alimentoDetectado.calorias,
+        esFruta: alimentoDetectado.esFruta,
+        icono: alimentoDetectado.esFruta ? "🍎" : "🍽️"
+      });
+
+      // Sincronizar con el backend POST /confirmar-alimento
+      const email = window.lumeaStore.obtenerEmailUsuario() || localStorage.getItem("lumea_usuario_email");
+      if (email) {
+        const payload = {
+          email: email,
+          alimento: alimentoDetectado.nombre,
+          calorias: alimentoDetectado.calorias,
+          esFruta: alimentoDetectado.esFruta
+        };
+
+        const baseUrls = [
+          window.LUMEA_BACKEND_ACTIVO || "http://127.0.0.1:5001",
+          "http://127.0.0.1:5001",
+          "http://localhost:5001",
+          "http://127.0.0.1:5000",
+          ""
+        ];
+
+        for (const base of baseUrls) {
+          try {
+            const resp = await fetch(`${base}/confirmar-alimento`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            if (resp.ok) {
+              const resJson = await resp.json();
+              if (resJson.progreso) {
+                window.lumeaStore.aplicarProgresoBackend(resJson.progreso);
+              }
+              break;
+            }
+          } catch (e) {}
+        }
+
+        // Refrescar estado completo desde /progreso
+        await window.lumeaStore.cargarDesdeBackend(email);
+      }
+
+      document.getElementById("acciones-confirmar").style.display = "none";
+      document.getElementById("mensaje-confirmado").style.display = "block";
+      renderizarListaComidasHoy();
+    }
+
+    function reiniciarCamara() {
+      document.getElementById("estado-esperando-foto").style.display = "block";
+      document.getElementById("estado-analizando").style.display = "none";
+      document.getElementById("estado-resultado-foto").style.display = "none";
+      document.getElementById("estado-error-backend").style.display = "none";
+      document.getElementById("mensaje-confirmado").style.display = "none";
+      document.getElementById("calcomania-xp").style.display = "none";
+      document.getElementById("acciones-confirmar").style.display = "flex";
+
+      const dockActivo = document.getElementById("dock-camara-activo");
+      const dockOtraFoto = document.getElementById("dock-otra-foto");
+      if (dockActivo) dockActivo.style.display = "flex";
+      if (dockOtraFoto) dockOtraFoto.style.display = "none";
+
+      iniciarCamara();
+    }
+
+    function editarNombreAlimento() {
+      document.getElementById("input-nombre-manual").value = alimentoDetectado.nombre;
+      if (!modalEditar) {
+        modalEditar = new bootstrap.Modal(document.getElementById("modalEditarAlimento"));
+      }
+      modalEditar.show();
+    }
+
+    function guardarNombreManual() {
+      const nombre = document.getElementById("input-nombre-manual").value.trim();
+      if (nombre) {
+        alimentoDetectado.nombre = nombre;
+        document.getElementById("alimento-nombre").textContent = nombre;
+        if (modalEditar) modalEditar.hide();
+      }
+    }
+
+    function establecerAlimentoRapido(nombre, kcal, esFruta, sellos) {
+      document.getElementById("input-nombre-manual").value = nombre;
+      alimentoDetectado.nombre = nombre;
+      alimentoDetectado.calorias = kcal;
+      alimentoDetectado.esFruta = esFruta;
+      alimentoDetectado.sellos = sellos;
+      mostrarResultadoNutricional(alimentoDetectado);
+      if (modalEditar) modalEditar.hide();
+    }
+
+    function actualizarBadgeVisor(texto, claseColor = "text-success") {
+      const statusText = document.getElementById("visor-status-text");
+      if (statusText) {
+        statusText.innerHTML = `<i class="bi bi-record-circle ${claseColor} me-1"></i> ${texto}`;
+      }
+    }
+
+    function renderizarListaComidasHoy() {
+      const container = document.getElementById("lista-comidas-hoy");
+      if (!container || !window.lumeaStore) return;
+
+      const comidas = window.lumeaStore.obtener().comidas_hoy;
+      if (!comidas || comidas.length === 0) {
+        container.innerHTML = `<div class="col-12"><p class="text-muted p-3 mb-0">Aún no has registrado comidas hoy. ¡Usa la cámara arriba para capturar tu primer plato!</p></div>`;
+        return;
+      }
+
+      container.innerHTML = comidas.map(c => `
+        <div class="col">
+          <div class="p-3 rounded-4 bg-light d-flex align-items-center justify-content-between border">
+            <div class="d-flex align-items-center gap-3">
+              <span class="fs-2">${c.icono || "🍽️"}</span>
+              <div>
+                <h6 class="mb-0 fw-bold text-dark">${c.nombre}</h6>
+                <small class="text-muted">${c.tipo} • ${c.hora} ${c.esFruta ? '• <span class="badge text-bg-warning">Fruta</span>' : ''}</small>
+              </div>
+            </div>
+            <div class="text-end">
+              <span class="badge text-bg-success rounded-pill fw-bold">${c.calorias} kcal</span>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Inicialización automática de la cámara en vivo
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+
+      // 1. Si viene una foto temporal capturada desde el acceso directo de Inicio
+      const fotoTemp = sessionStorage.getItem("lumea_foto_temporal");
+      if (fotoTemp) {
+        sessionStorage.removeItem("lumea_foto_temporal");
+        const video = document.getElementById("webcam");
+        const fotoCongelada = document.getElementById("foto-congelada");
+        const shutterBtn = document.getElementById("shutter-circle-btn");
+        fotoCongelada.src = fotoTemp;
+        fotoCongelada.style.display = "block";
+        video.style.display = "none";
+        if (shutterBtn) shutterBtn.style.display = "none";
+        procesarImagenCapturada(fotoTemp);
+        renderizarListaComidasHoy();
+        return;
+      }
+
+      // 2. Si viene con instrucción de disparar la cámara nativa del celular
+      if (params.get("modo") === "nativa" || params.get("directo") === "1") {
+        abrirCamaraNativa();
+      }
+
+      // 3. Iniciar cámara en vivo
+      iniciarCamara();
+      renderizarListaComidasHoy();
+    });
+  </script>
+</body>
+
+</html>

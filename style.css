@@ -777,3 +777,1264 @@ main {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* ============================================================
+   LUMEA - NUEVOS COMPONENTES (WIREFRAME V1.1 & DISEÑO 1280px)
+   ============================================================ */
+
+/* --- Layout Principal & Responsive Desktop 1280px --- */
+.lumea-screen-wrapper {
+  background: linear-gradient(135deg, rgba(232, 245, 233, 0.45) 0%, rgba(248, 250, 248, 0.95) 100%),
+    url("Lumen.png") center/cover no-repeat fixed;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.lumea-desktop-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Menú Lateral para Desktop (>= 992px / 1280px) */
+.lumea-desktop-sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: #ffffff;
+  border-right: 1px solid var(--lumea-border-subtle);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 18px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.03);
+}
+
+.sidebar-logo {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--lumea-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 8px;
+  margin-bottom: 30px;
+}
+
+.sidebar-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-nav-item a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  color: var(--lumea-text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav-item a:hover {
+  background-color: var(--lumea-accent-soft);
+  color: var(--lumea-primary);
+  transform: translateX(4px);
+}
+
+.sidebar-nav-item a.active {
+  background-color: var(--lumea-primary);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(30, 94, 58, 0.25);
+}
+
+.sidebar-nav-item a.active i {
+  color: #ffffff !important;
+}
+
+.sidebar-nav-item .nav-badge-pill {
+  margin-left: auto;
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: var(--lumea-accent-badge);
+  color: var(--lumea-primary);
+  font-weight: 700;
+}
+
+.sidebar-user-card {
+  background: var(--lumea-light);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--lumea-accent-border);
+}
+
+.sidebar-user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Área de Contenido Principal Desktop */
+.lumea-main-area {
+  flex: 1;
+  padding: 24px 20px 100px 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .lumea-main-area {
+    padding: 36px 40px;
+  }
+}
+
+/* Encabezado Superior de Usuario */
+.lumea-user-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.user-greeting-title {
+  color: var(--lumea-dark);
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 2px;
+}
+
+.user-greeting-sub {
+  color: var(--lumea-text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.avatar-header-btn {
+  background: #ffffff;
+  border: 2px solid var(--lumea-accent-border);
+  border-radius: 50rem;
+  padding: 6px 14px 6px 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(30, 94, 58, 0.08);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.avatar-header-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 94, 58, 0.15);
+  border-color: var(--lumea-primary);
+}
+
+.avatar-header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--lumea-accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+
+/* --- Layout en 2 Columnas para 1280px (Inicio Computador) --- */
+.inicio-desktop-cols {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+@media (min-width: 992px) {
+  .inicio-desktop-cols {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 28px;
+    align-items: start;
+  }
+}
+
+/* --- Canasta de Hoy (Variante A) --- */
+.canasta-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 26px;
+  border: 2px dashed #b7e4c7;
+  box-shadow: 0 8px 24px rgba(30, 94, 58, 0.06);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.canasta-card:hover {
+  border-color: var(--lumea-primary);
+  box-shadow: 0 12px 30px rgba(30, 94, 58, 0.1);
+}
+
+.canasta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.canasta-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--lumea-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-wow {
+  background: linear-gradient(135deg, #ffd166 0%, #f4a261 100%);
+  color: #5c3800;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 50rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(244, 162, 97, 0.3);
+}
+
+.canasta-grid-shapes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 1200px) {
+  .canasta-grid-shapes {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+.shape-item-box {
+  background: var(--lumea-bg-page);
+  border-radius: 20px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: var(--lumea-text-dark);
+  border: 1.5px solid var(--lumea-border-subtle);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.shape-item-box:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 24px rgba(30, 94, 58, 0.12);
+  border-color: var(--lumea-accent-border);
+  color: var(--lumea-primary);
+}
+
+.shape-icon-visual {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease;
+}
+
+.shape-item-box:hover .shape-icon-visual {
+  transform: scale(1.12) rotate(4deg);
+}
+
+/* Formas Geométricas Específicas de la Canasta */
+.shape-organic-leaf {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #d8f3dc 0%, #74c69d 100%);
+  border-radius: 4px 50px 4px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(116, 198, 157, 0.35);
+  font-size: 1.8rem;
+}
+
+.shape-star-badge {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #fff3b0 0%, #ffd166 100%);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 14px rgba(255, 209, 102, 0.4);
+}
+
+.shape-flag-banner {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #e3f0eb 0%, #b7e4c7 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  border-radius: 8px 8px 0 0;
+}
+
+.shape-face-circle {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #fceade 0%, #f4a261 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 4px 14px rgba(244, 162, 97, 0.3);
+}
+
+.shape-metric-number {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--lumea-dark);
+  line-height: 1.2;
+}
+
+.shape-label-text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--lumea-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Rebote al registrar algo [Wow] */
+@keyframes shape-bounce-fill {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.animate-shape-bounce {
+  animation: shape-bounce-fill 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- Card: ¿Cómo llegas hoy? (Check-in de Ánimo Rápido) --- */
+.card-animo-checkin {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 22px;
+  border: 1px solid var(--lumea-border-subtle);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+.animo-checkin-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--lumea-dark);
+  margin-bottom: 4px;
+}
+
+.animo-checkin-sub {
+  font-size: 0.82rem;
+  color: var(--lumea-text-muted);
+  margin-bottom: 16px;
+}
+
+.animo-faces-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.btn-face-mood {
+  flex: 1;
+  background: var(--lumea-bg-page);
+  border: 1.5px solid var(--lumea-border-subtle);
+  border-radius: 16px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-face-mood:hover {
+  background: var(--lumea-accent-soft);
+  border-color: var(--lumea-accent-border);
+  transform: translateY(-3px);
+}
+
+.btn-face-mood.active {
+  background: var(--lumea-accent-badge) !important;
+  border-color: var(--lumea-primary) !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(30, 94, 58, 0.15);
+}
+
+.face-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.face-name-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--lumea-text-dark);
+}
+
+.face-xp-tag {
+  font-size: 0.65rem;
+  color: var(--lumea-primary);
+  font-weight: 700;
+}
+
+/* --- Card: Próxima Misión --- */
+.card-proxima-mision {
+  background: linear-gradient(135deg, #ffffff 0%, #f4fbf5 100%);
+  border-radius: 22px;
+  padding: 22px;
+  border: 1.5px solid #b7e4c7;
+  box-shadow: 0 8px 20px rgba(30, 94, 58, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mision-tag-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--lumea-primary);
+  background: var(--lumea-accent-badge);
+  padding: 4px 10px;
+  border-radius: 50rem;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.mision-text-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--lumea-dark);
+  margin-bottom: 2px;
+}
+
+.mision-xp-highlight {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2d6a4f;
+}
+
+.btn-abrir-camara-mision {
+  background: var(--lumea-primary);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 50rem;
+  padding: 10px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(30, 94, 58, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-abrir-camara-mision:hover {
+  background: var(--lumea-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(30, 94, 58, 0.35);
+}
+
+/* --- Card: Racha y Nivel --- */
+.card-racha-nivel {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 22px;
+  border: 1px solid var(--lumea-border-subtle);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* --- Barra de Navegación Inferior (Móvil con Botón Central Fitts's Law) --- */
+.lumea-bottom-nav-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 14px 16px;
+  pointer-events: none;
+}
+
+.lumea-pill-nav {
+  pointer-events: auto;
+  background: #ffffff;
+  border-radius: 50rem;
+  box-shadow: 0 10px 30px rgba(27, 67, 50, 0.16);
+  border: 1.5px solid var(--lumea-accent-border);
+  width: 100%;
+  max-width: 520px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 6px;
+  position: relative;
+}
+
+.nav-link-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--lumea-text-muted);
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 4px 4px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  min-width: 44px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.nav-link-item i {
+  font-size: 1.18rem;
+  margin-bottom: 2px;
+  transition: transform 0.2s ease;
+}
+
+.nav-link-item:hover,
+.nav-link-item.active {
+  color: var(--lumea-primary);
+}
+
+.nav-link-item.active i {
+  transform: scale(1.15);
+  color: var(--lumea-primary);
+}
+
+/* Botón Central Grande de la Cámara (Ley de Fitts) */
+.nav-camera-fab {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--lumea-dark) 0%, var(--lumea-primary) 100%);
+  color: #ffffff !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transform: translateY(-18px);
+  box-shadow: 0 8px 20px rgba(27, 67, 50, 0.4), 0 0 0 5px #ffffff;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-size: 1.5rem;
+}
+
+.nav-camera-fab:hover {
+  transform: translateY(-24px) scale(1.08);
+  box-shadow: 0 12px 28px rgba(27, 67, 50, 0.5), 0 0 0 5px #ffffff;
+}
+
+.nav-camera-fab span {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: -2px;
+}
+
+/* ============================================================
+   REGISTRAR COMIDA (ALIMENTOS.HTML) - VARIANTE A & ETIQUETA HOJA
+   ============================================================ */
+.registrar-comida-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 992px) {
+  .registrar-comida-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 30px;
+    align-items: start;
+  }
+}
+
+.camera-visor-box {
+  background: #0d1a14;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(116, 198, 157, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.camera-visor-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-visor-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #74c69d, transparent);
+  animation: camera-scan 2.8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes camera-scan {
+  0% { top: 5%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 95%; opacity: 0; }
+}
+
+/* Etiqueta Nutricional que Sube como Hoja */
+@keyframes sway-in {
+  0% {
+    transform: translateY(40px) rotate(-6deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+  75% {
+    transform: translateY(2px) rotate(-1.5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.etiqueta-sheet-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 26px;
+  border: 2px solid var(--lumea-accent-border);
+  box-shadow: 0 14px 34px rgba(30, 94, 58, 0.12);
+  animation: sway-in 0.85s cubic-bezier(0.25, 1, 0.5, 1);
+  position: relative;
+}
+
+/* Detalle de Hoja Colgante Superior */
+.etiqueta-sheet-card::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 12px;
+  background: #74c69d;
+  border-radius: 6px 6px 0 0;
+}
+
+.detector-ia-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--lumea-primary);
+  background: var(--lumea-accent-soft);
+  padding: 4px 12px;
+  border-radius: 50rem;
+  margin-bottom: 8px;
+}
+
+.alimento-detectado-nombre {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--lumea-dark);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.seguridad-ia-badge {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--lumea-primary-light);
+  margin-bottom: 16px;
+}
+
+/* Sellos Negros de Advertencia (Norma Oficial) */
+.sellos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sello-octogono-negro {
+  background: #000000;
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  letter-spacing: 0.3px;
+  min-height: 38px;
+}
+
+.sello-sin-sellos {
+  background: var(--lumea-accent-soft);
+  color: var(--lumea-primary);
+  border: 1px solid var(--lumea-accent-border);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 50rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Información Nutricional Destacada */
+.info-nutri-highlight {
+  background: var(--lumea-light);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.nutri-calorias {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--lumea-dark);
+}
+
+.nutri-beneficio {
+  font-size: 0.85rem;
+  color: var(--lumea-primary-light);
+  font-weight: 500;
+}
+
+/* Calcomanía de XP que Salta al Confirmar [Wow] */
+@keyframes calcomania-pop {
+  0% {
+    transform: scale(0.3) rotate(-15deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.25) rotate(8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.calcomania-xp-sticker {
+  display: none;
+  background: linear-gradient(135deg, #ffd166 0%, #f4a261 100%);
+  color: #4a2800;
+  border: 2px dashed #ffffff;
+  padding: 8px 16px;
+  border-radius: 50rem;
+  font-size: 0.95rem;
+  font-weight: 900;
+  box-shadow: 0 8px 24px rgba(244, 162, 97, 0.45);
+  animation: calcomania-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ============================================================
+   AVATAR Y MISIONES (AVATAR.HTML) - VARIANTE A: LA VITRINA
+   ============================================================ */
+.vitrina-avatar-card {
+  background: linear-gradient(180deg, #ffffff 0%, var(--lumea-light) 100%);
+  border-radius: 26px;
+  padding: 28px 20px;
+  text-align: center;
+  border: 2px solid rgba(45, 106, 79, 0.12);
+  box-shadow: 0 12px 30px rgba(30, 94, 58, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Saltito del avatar al ponerse algo nuevo [Wow] */
+@keyframes avatar-saltito {
+  0% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-24px) scale(1.06); }
+  65% { transform: translateY(4px) scale(0.97); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.animate-avatar-jump {
+  animation: avatar-saltito 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.avatar-display-stage {
+  width: 190px;
+  height: 220px;
+  margin: 0 auto 16px auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Pestañas Misiones | Armario */
+.nav-pills-lumea {
+  background: var(--lumea-border-bg);
+  padding: 4px;
+  border-radius: 50rem;
+  display: flex;
+  margin-bottom: 20px;
+  border: 1px solid var(--lumea-border-subtle);
+}
+
+.nav-pills-lumea .nav-link {
+  flex: 1;
+  border-radius: 50rem;
+  color: var(--lumea-text-muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-pills-lumea .nav-link.active {
+  background: #ffffff;
+  color: var(--lumea-primary) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Tarjetas de Misiones */
+.mision-card-item {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--lumea-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.mision-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.mision-card-item.cumplida {
+  background: #f4fbf5;
+  border-color: #74c69d;
+}
+
+.sticker-cumplida {
+  background: linear-gradient(135deg, #ffd166 0%, #f4a261 100%);
+  color: #4a2800;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 50rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(244, 162, 97, 0.3);
+}
+
+/* Grid del Armario */
+.armario-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (min-width: 576px) {
+  .armario-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.armario-item-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 12px;
+  border: 1.5px solid var(--lumea-border-subtle);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.armario-item-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--lumea-primary);
+  box-shadow: 0 8px 18px rgba(30, 94, 58, 0.1);
+}
+
+.armario-item-card.equipado {
+  background: var(--lumea-accent-soft);
+  border-color: var(--lumea-primary);
+}
+
+.armario-item-card.bloqueado {
+  opacity: 0.65;
+  cursor: not-allowed;
+  background: #f8faf8;
+}
+
+.candado-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #4f6458;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* ============================================================
+   PROGRESO (PROGRESO.HTML) - CÓMO VAS EN LA SEMANA, SIN JUZGAR
+   ============================================================ */
+.grafica-semanal-container {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 24px;
+  border: 1px solid var(--lumea-border-subtle);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+}
+
+.bars-chart-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 170px;
+  padding-top: 30px;
+  margin-top: 10px;
+}
+
+.bar-col-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.bar-fill-body {
+  width: 26px;
+  background: linear-gradient(180deg, #74c69d 0%, var(--lumea-primary) 100%);
+  border-radius: 8px 8px 4px 4px;
+  transition: height 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+}
+
+.bar-fruit-floating-icon {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.1rem;
+}
+
+.bar-day-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--lumea-text-muted);
+}
+
+.bar-col-item.today .bar-day-name {
+  color: var(--lumea-primary);
+  font-weight: 800;
+}
+
+/* Ánimo de la Semana */
+.animo-semana-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.animo-day-pill {
+  flex: 1;
+  background: var(--lumea-bg-page);
+  border-radius: 14px;
+  padding: 10px 4px;
+  text-align: center;
+  border: 1px solid var(--lumea-border-subtle);
+}
+
+.animo-day-pill.today {
+  border-color: var(--lumea-primary);
+  background: var(--lumea-accent-soft);
+}
+
+/* Mensaje Cálido de Regreso (Nunca penaliza) */
+.card-bienvenida-calida {
+  background: linear-gradient(135deg, #fff9db 0%, #fff3b0 100%);
+  border-radius: 20px;
+  padding: 18px 22px;
+  border: 1.5px solid #ffe066;
+  color: #5c4400;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ============================================================
+   ÁNIMO (EMOCIONES.HTML) - CHECK-IN DE 10 SEGUNDOS & ÉTICA
+   ============================================================ */
+.animo-stage-box {
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 32px 20px;
+  text-align: center;
+  border: 2px dashed #b7e4c7;
+  box-shadow: 0 10px 28px rgba(30, 94, 58, 0.08);
+  margin-bottom: 24px;
+}
+
+.cara-live-avatar {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fceade 0%, #f4a261 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  box-shadow: 0 8px 24px rgba(244, 162, 97, 0.35);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Decisión Ética: Orientación Escolar */
+.card-apoyo-orientacion {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  border-left: 5px solid #52796f;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.btn-hablar-apoyo {
+  background: var(--lumea-light);
+  color: var(--lumea-dark) !important;
+  border: 1px solid var(--lumea-accent-border);
+  border-radius: 50rem;
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-hablar-apoyo:hover {
+  background: var(--lumea-accent-soft);
+  color: var(--lumea-primary) !important;
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   ACCESO DIRECTO A LA CÁMARA (INDEX-INGRESADO)
+   ============================================================ */
+.card-acceso-directo-camara {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 100%);
+  border: 1.5px solid #a7f3d0;
+  border-radius: 20px;
+  padding: 16px 20px;
+  box-shadow: 0 6px 18px rgba(30, 94, 58, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-acceso-directo-camara:hover {
+  box-shadow: 0 10px 24px rgba(30, 94, 58, 0.1);
+  transform: translateY(-1px);
+}
+
+.camara-quick-icon-circle {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--lumea-primary) 0%, #2d6a4f 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  box-shadow: 0 6px 14px rgba(30, 94, 58, 0.25);
+}
+
+/* Esquinas de enfoque del visor de cámara */
+.camera-visor-box .corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: #74c69d;
+  border-style: solid;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.camera-visor-box .corner.top-left {
+  top: 14px;
+  left: 14px;
+  border-width: 3px 0 0 3px;
+  border-top-left-radius: 8px;
+}
+
+.camera-visor-box .corner.top-right {
+  top: 14px;
+  right: 14px;
+  border-width: 3px 3px 0 0;
+  border-top-right-radius: 8px;
+}
+
+.camera-visor-box .corner.bottom-left {
+  bottom: 14px;
+  left: 14px;
+  border-width: 0 0 3px 3px;
+  border-bottom-left-radius: 8px;
+}
+
+.camera-visor-box .corner.bottom-right {
+  bottom: 14px;
+  right: 14px;
+  border-width: 0 3px 3px 0;
+  border-bottom-right-radius: 8px;
+}
+
+/* Dock de Controles de Cámara (Espacioso y sin amontonamiento) */
+.camera-controls-dock {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 14px 28px;
+  border: 1.5px solid var(--lumea-border-subtle);
+  box-shadow: 0 8px 24px rgba(30, 94, 58, 0.06);
+}
+
+.btn-camera-dock-action {
+  background: #f4f7f5;
+  border: 1.5px solid var(--lumea-border-subtle);
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lumea-dark);
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+  padding: 0;
+  text-decoration: none;
+}
+
+.btn-camera-dock-action:hover {
+  background: var(--lumea-accent-soft);
+  color: var(--lumea-primary);
+  transform: translateY(-2px);
+  border-color: var(--lumea-primary);
+}
+
+.camera-shutter-circle-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 4px solid var(--lumea-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(30, 94, 58, 0.25);
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.camera-shutter-circle-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(30, 94, 58, 0.35);
+}
+
+.camera-shutter-circle-btn:active {
+  transform: scale(0.94);
+}
+
+.shutter-circle-inner {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--lumea-primary);
+  transition: transform 0.15s ease;
+}
+
+.camera-shutter-circle-btn:active .shutter-circle-inner {
+  transform: scale(0.88);
+}
+
+

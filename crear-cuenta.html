@@ -306,45 +306,64 @@
       `;
 
       try {
-        // 5. Enviamos la petición POST al backend con fetch
-        const response = await fetch('http://127.0.0.1:5001/perfil', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(datosUsuario)
-        });
+        const baseUrls = [
+          'http://127.0.0.1:5001',
+          'http://localhost:5001',
+          'http://127.0.0.1:5000',
+          'http://localhost:5000',
+          ''
+        ];
 
-        // Intentamos leer la respuesta JSON del servidor
+        let response = null;
         let resultado = {};
+        let conexionExitosa = false;
+        let errorConexion = '';
+
+        for (const base of baseUrls) {
+          try {
+            response = await fetch(`${base}/perfil`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(datosUsuario)
+            });
+            conexionExitosa = true;
+            window.LUMEA_BACKEND_ACTIVO = base;
+            break;
+          } catch (e) {
+            errorConexion = e.message;
+          }
+        }
+
+        if (!conexionExitosa || !response) {
+          throw new Error(errorConexion || 'No se pudo contactar al servidor.');
+        }
+
         try {
           resultado = await response.json();
-        } catch (e) {
-          // Si el servidor no devolvió JSON, dejamos resultado vacío
-        }
+        } catch (e) {}
 
         // 6. Verificamos si la respuesta fue exitosa (código HTTP 200 a 299)
         if (response.ok) {
           const mensajeServidor = resultado.mensaje || resultado.message || '¡Tu perfil ha sido registrado con éxito!';
           mostrarAlerta('success', `${mensajeServidor} Ya puedes ingresar.`);
 
-          // Opcional: limpiar el formulario tras éxito
+          // Guardamos datos del usuario para el inicio de sesión y consulta al backend
+          localStorage.setItem('lumea_usuario_email', datosUsuario.email);
+          localStorage.setItem('lumea_usuario_nombre', datosUsuario.nombre);
+
           registerForm.reset();
 
-          // Opcional: redirigir a iniciar sesión tras 2.5 segundos
           setTimeout(() => {
-            window.location.href = 'iniciar-sesion.html';
-          }, 2500);
+            window.location.href = 'index-ingresado.html';
+          }, 1200);
         } else {
-          // Si el servidor respondió con un error (ej. 400, 500)
           const errorServidor = resultado.error || resultado.mensaje || resultado.message || `Error del servidor (código ${response.status})`;
           mostrarAlerta('danger', `No se pudo registrar: ${errorServidor}`);
         }
 
       } catch (error) {
-        // Si no hay conexión (ej. el backend no está encendido o hay bloqueo CORS)
         console.error('Error al conectar con el backend:', error);
-        mostrarAlerta('danger', 'No se pudo conectar con el servidor backend en http://127.0.0.1:5001. Asegúrate de tenerlo encendido.');
+        mostrarAlerta('danger', `No se pudo conectar con el servidor backend (${error.message}). Asegúrate de tener tu servidor ejecutándose.`);
       } finally {
         // Restauramos el botón
         btnSubmit.disabled = false;
