@@ -1,0 +1,52 @@
+{
+  "success": true,
+  "ganadas": 3,
+  "total": 10,
+  "calcomanias": [
+    {
+      "id": "primera_foto",
+      "nombre": "Primera foto",
+      "descripcion": "Registraste tu primera comida.",
+      "como_se_gana": "Registra tu primera comida.",
+      "rol": "comida",
+      "ganada": true,
+      "fecha": "2026-10-03"
+    },
+    {
+      "id": "primera_fruta",
+      "nombre": "Primera fruta",
+      "descripcion": "Registraste una fruta.",
+      "como_se_gana": "Registra una fruta.",
+      "rol": "comida",
+      "ganada": true,
+      "fecha": "2026-10-05"
+    },
+    {
+      "id": "check_in",
+      "nombre": "Cómo llegas",
+      "descripcion": "Contaste cómo llegabas.",
+      "como_se_gana": "Haz tu primer check-in de ánimo.",
+      "rol": "emocion",
+      "ganada": true,
+      "fecha": "2026-10-04"
+    },
+    {
+      "id": "racha_3",
+      "nombre": "Tres días seguidos",
+      "descripcion": "Volviste tres días seguidos.",
+      "como_se_gana": "Registra algo tres días seguidos.",
+      "rol": "logro",
+      "ganada": false,
+      "fecha": null
+    },
+    {
+      "id": "mision_tres",
+      "nombre": "Tres comidas",
+      "descripcion": "Cumpliste la misión de tres comidas.",
+      "como_se_gana": "Cumple la misión Registra 3 comidas.",
+      "rol": "mision",
+      "ganada": false,
+      "fecha": null
+    }
+  ]
+}

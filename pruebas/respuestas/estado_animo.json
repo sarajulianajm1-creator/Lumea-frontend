@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "cantidad": 2,
+  "historial": [
+    {
+      "id": 2,
+      "estado": "bien",
+      "fecha": "Mon, 05 Oct 2026 00:00:00 GMT"
+    },
+    {
+      "id": 1,
+      "estado": "neutral",
+      "fecha": "Sun, 04 Oct 2026 00:00:00 GMT"
+    }
+  ]
+}

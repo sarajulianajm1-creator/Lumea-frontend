@@ -1,0 +1,58 @@
+{
+  "success": true,
+  "progreso": {
+    "xp_total": 20,
+    "nivel": 2,
+    "xp_inicio_nivel": 15,
+    "xp_siguiente_nivel": 55,
+    "xp_faltante_siguiente_nivel": 35,
+    "racha_actual": 3,
+    "racha_maxima": 5,
+    "ultima_fecha_actividad": "2026-10-05",
+    "xp_perdido_desde_ultima_visita": 0,
+    "mensaje_regreso": null,
+    "meta_diaria": {
+      "xp_hoy": 20,
+      "meta": 15,
+      "cumplida": true
+    },
+    "avatar": {
+      "id": "sol",
+      "nombre": "Sol",
+      "url": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=default",
+      "estado_animo_hoy": "bien",
+      "url_con_animo": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=smile",
+      "urls_por_estado": {
+        "muy_mal": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=sad",
+        "mal": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=concerned",
+        "neutral": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=serious",
+        "bien": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=smile",
+        "muy_bien": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=twinkle"
+      }
+    },
+    "misiones": [
+      {
+        "id": "fruta",
+        "nombre": "Registra una fruta",
+        "xp": 10,
+        "cumplida": true
+      },
+      {
+        "id": "tres_comidas",
+        "nombre": "Registra 3 comidas",
+        "xp": 10,
+        "cumplida": false
+      },
+      {
+        "id": "check_in_animo",
+        "nombre": "Haz tu check-in de ánimo",
+        "xp": 10,
+        "cumplida": false
+      }
+    ],
+    "calcomanias": {
+      "ganadas": 3,
+      "total": 10
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "success": true,
+  "cantidad_registros": 3,
+  "historial": [
+    {
+      "id": 3,
+      "alimento_codigo": "banano",
+      "alimento_detectado": "Banano",
+      "balanceado": 1,
+      "calorias_aprox": 89,
+      "certeza_ia": 97.0,
+      "fecha": "Mon, 05 Oct 2026 00:00:00 GMT",
+      "sellos_advertencia": [],
+      "es_fruta": true
+    },
+    {
+      "id": 2,
+      "alimento_codigo": "arepa",
+      "alimento_detectado": "Arepa",
+      "balanceado": 1,
+      "calorias_aprox": 120,
+      "certeza_ia": 91.0,
+      "fecha": "Sun, 04 Oct 2026 00:00:00 GMT",
+      "sellos_advertencia": [],
+      "es_fruta": false
+    },
+    {
+      "id": 1,
+      "alimento_codigo": "cocacola_original",
+      "alimento_detectado": "Coca-Cola Original",
+      "balanceado": 0,
+      "calorias_aprox": 30,
+      "certeza_ia": 100.0,
+      "fecha": "Sat, 03 Oct 2026 00:00:00 GMT",
+      "sellos_advertencia": [
+        "azucares",
+        "edulcorantes"
+      ],
+      "es_fruta": false
+    }
+  ]
+}

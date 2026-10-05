@@ -1,0 +1,105 @@
+{
+  "success": true,
+  "nivel_maximo": 2,
+  "imagenes_listas": false,
+  "base": {
+    "id": "base_1",
+    "nombre": "Base 1",
+    "archivo": "base_1.png",
+    "imagen_lista": false,
+    "url": "http://127.0.0.1:5002/static/avatar/base_1.png"
+  },
+  "puesto": {
+    "ropa": null,
+    "accesorio": {
+      "id": "gafas",
+      "tipo": "accesorio",
+      "nombre": "Gafas",
+      "archivo": "accesorio_gafas.png",
+      "imagen_lista": false,
+      "nivel_requerido": 2,
+      "desbloqueado": true,
+      "niveles_faltantes": 0,
+      "puesto": true,
+      "url": "http://127.0.0.1:5002/static/avatar/accesorio_gafas.png"
+    }
+  },
+  "capas": [
+    {
+      "tipo": "base",
+      "id": "base_1",
+      "archivo": "base_1.png",
+      "imagen_lista": false,
+      "url": "http://127.0.0.1:5002/static/avatar/base_1.png"
+    }
+  ],
+  "bases": [
+    {
+      "id": "base_1",
+      "nombre": "Base 1",
+      "archivo": "base_1.png",
+      "imagen_lista": false,
+      "seleccionada": true,
+      "url": "http://127.0.0.1:5002/static/avatar/base_1.png"
+    }
+  ],
+  "objetos": {
+    "ropa": [
+      {
+        "id": "buzo_verde",
+        "tipo": "ropa",
+        "nombre": "Buzo verde",
+        "archivo": "ropa_buzo_verde.png",
+        "imagen_lista": false,
+        "nivel_requerido": 1,
+        "desbloqueado": true,
+        "niveles_faltantes": 0,
+        "puesto": false,
+        "url": "http://127.0.0.1:5002/static/avatar/ropa_buzo_verde.png"
+      },
+      {
+        "id": "camiseta_lumea",
+        "tipo": "ropa",
+        "nombre": "Camiseta Lumea",
+        "archivo": "ropa_camiseta_lumea.png",
+        "imagen_lista": false,
+        "nivel_requerido": 3,
+        "desbloqueado": false,
+        "niveles_faltantes": 1,
+        "puesto": false,
+        "url": "http://127.0.0.1:5002/static/avatar/ropa_camiseta_lumea.png"
+      }
+    ],
+    "accesorio": [
+      {
+        "id": "gafas",
+        "tipo": "accesorio",
+        "nombre": "Gafas",
+        "archivo": "accesorio_gafas.png",
+        "imagen_lista": false,
+        "nivel_requerido": 2,
+        "desbloqueado": true,
+        "niveles_faltantes": 0,
+        "puesto": true,
+        "url": "http://127.0.0.1:5002/static/avatar/accesorio_gafas.png"
+      },
+      {
+        "id": "audifonos",
+        "tipo": "accesorio",
+        "nombre": "Audífonos",
+        "archivo": "accesorio_audifonos.png",
+        "imagen_lista": false,
+        "nivel_requerido": 4,
+        "desbloqueado": false,
+        "niveles_faltantes": 2,
+        "puesto": false,
+        "url": "http://127.0.0.1:5002/static/avatar/accesorio_audifonos.png"
+      }
+    ]
+  },
+  "respaldo_dicebear": {
+    "id": "sol",
+    "nombre": "Sol",
+    "url": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=default"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "success": true,
+  "alimento": "ajiaco",
+  "alimento_app": "Ajiaco",
+  "alimento_codigo": "ajiaco",
+  "certeza": 100.0,
+  "seleccion_manual": false,
+  "guardado_baseDatos": true,
+  "sellos_advertencia": [],
+  "gamificacion": {
+    "accion": "comida_registrada",
+    "xp_ganado": 20,
+    "detalle_xp": [
+      {
+        "motivo": "comida_registrada",
+        "xp": 10
+      }
+    ],
+    "tope_diario_alcanzado": false,
+    "misiones_cumplidas": [
+      {
+        "id": "tres_comidas",
+        "nombre": "Registra 3 comidas",
+        "xp": 10
+      }
+    ],
+    "xp_total": 30,
+    "nivel": 3,
+    "nivel_anterior": 2,
+    "subio_de_nivel": true,
+    "racha_actual": 3,
+    "meta_diaria": {
+      "xp_hoy": 30,
+      "meta": 15,
+      "cumplida": true,
+      "recien_cumplida": false
+    },
+    "desbloqueos": [
+      {
+        "tipo": "accesorio",
+        "id": "audifonos",
+        "nombre": "Audífonos",
+        "nivel_requerido": 4
+      }
+    ],
+    "calcomanias_nuevas": [
+      {
+        "id": "mision_tres",
+        "nombre": "Tres comidas",
+        "descripcion": "Cumpliste la misión de tres comidas.",
+        "rol": "mision"
+      }
+    ]
+  }
+}

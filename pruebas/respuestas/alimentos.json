@@ -1,0 +1,12 @@
+{
+  "alimentos": [
+    {
+      "alimento_codigo": "banano",
+      "calorias": 89
+    },
+    {
+      "alimento_codigo": "arepa",
+      "calorias": 120
+    }
+  ]
+}

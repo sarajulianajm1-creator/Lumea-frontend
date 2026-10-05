@@ -1,0 +1,37 @@
+{
+  "success": true,
+  "alimento": "arepa",
+  "alimento_app": "Arepa",
+  "alimento_codigo": "arepa",
+  "certeza": 94.0,
+  "seleccion_manual": false,
+  "guardado_baseDatos": true,
+  "sellos_advertencia": [],
+  "dato_curioso": "La arepa es de maíz.",
+  "mensaje_educativo": null,
+  "gamificacion": {
+    "accion": "comida_registrada",
+    "xp_ganado": 10,
+    "detalle_xp": [
+      {
+        "motivo": "comida_registrada",
+        "xp": 10
+      }
+    ],
+    "tope_diario_alcanzado": false,
+    "misiones_cumplidas": [],
+    "xp_total": 30,
+    "nivel": 2,
+    "nivel_anterior": 2,
+    "subio_de_nivel": false,
+    "racha_actual": 3,
+    "meta_diaria": {
+      "xp_hoy": 30,
+      "meta": 15,
+      "cumplida": true,
+      "recien_cumplida": false
+    },
+    "desbloqueos": [],
+    "calcomanias_nuevas": []
+  }
+}

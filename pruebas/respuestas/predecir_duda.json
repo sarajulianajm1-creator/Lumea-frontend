@@ -1,0 +1,25 @@
+{
+  "success": true,
+  "alimento": "sopas",
+  "certeza": 41.0,
+  "seleccion_manual": true,
+  "guardado_baseDatos": false,
+  "mensaje": "¿Cuál de estos es?",
+  "opciones_sugeridas": [
+    "ajiaco",
+    "sancocho"
+  ],
+  "gamificacion": null,
+  "opciones_detalle": [
+    {
+      "codigo": "ajiaco",
+      "nombre": "Ajiaco",
+      "grupo": "Sopas"
+    },
+    {
+      "codigo": "sancocho",
+      "nombre": "Sancocho",
+      "grupo": "Sopas"
+    }
+  ]
+}

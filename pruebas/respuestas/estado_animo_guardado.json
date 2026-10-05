@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "estado": "bien",
+  "avatar_url": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=smile",
+  "gamificacion": {
+    "accion": "estado_animo",
+    "xp_ganado": 5,
+    "misiones_cumplidas": [],
+    "xp_total": 25,
+    "nivel": 2,
+    "nivel_anterior": 2,
+    "subio_de_nivel": false,
+    "racha_actual": 3,
+    "meta_diaria": {
+      "xp_hoy": 25,
+      "meta": 15,
+      "cumplida": true,
+      "recien_cumplida": false
+    },
+    "desbloqueos": [],
+    "calcomanias_nuevas": []
+  }
+}
