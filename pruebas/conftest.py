@@ -96,6 +96,7 @@ class Backend:
     def __init__(self):
         self.respuestas = {}
         self.llamadas = []
+        self.peticiones = []          # (método, dirección completa, cuerpo): para ver con qué correo se pidió
         self.cuerpos = {}                 # (método, ruta) -> el último cuerpo que se le mandó
 
     def poner(self, metodo, ruta, cuerpo, estado=200):
@@ -110,7 +111,9 @@ class Backend:
         pet = route.request
         ruta = pet.url.split("5002", 1)[1].split("?")[0]
         self.llamadas.append((pet.method, ruta))
-        self.cuerpos[(pet.method, ruta)] = pet.post_data
+        cuerpo = pet.post_data_buffer
+        self.peticiones.append((pet.method, pet.url, cuerpo.decode('utf-8', 'replace') if cuerpo else None))   # fotos: bytes que no son texto
+        self.cuerpos[(pet.method, ruta)] = cuerpo.decode('utf-8', 'replace') if cuerpo else None
         if pet.method == "OPTIONS":
             return route.fulfill(status=204, headers=_CORS)
         if (pet.method, ruta) in self.respuestas:
@@ -149,12 +152,22 @@ def pagina(page, backend, servidor):
         route.fulfill(status=200, content_type=_TIPOS.get(sufijo, "text/css"), body="")
     page.route(lambda url: not url.startswith(("http://127.0.0.1", "data:", "blob:")), sin_internet)
 
-    page.add_init_script(f"localStorage.setItem('lumea_email', '{CORREO_PRUEBA}')")
+    # La sesión se siembra UNA vez por pestaña (este script corre en cada página): así lo que la
+    # app haga después, como cerrar sesión, no se deshace al cambiar de página.
+    page.add_init_script(f"""if (!sessionStorage.getItem('sesion-sembrada')) {{
+        sessionStorage.setItem('sesion-sembrada', '1'); localStorage.setItem('lumea_email', '{CORREO_PRUEBA}'); }}""")
     page.servidor = servidor
     page.errores = []
     page.on("console", lambda m: m.type == "error" and page.errores.append(m.text))
     page.on("pageerror", lambda e: page.errores.append(str(e)))
     return page
+
+
+def sin_sesion(pagina):
+    """Quita la sesión de prueba SOLO en la primera página: si la prueba navega (por ejemplo, tras
+    iniciar sesión), lo que la app guarde después no se borra otra vez."""
+    pagina.add_init_script("""if (!sessionStorage.getItem('sesion-quitada')) {
+        sessionStorage.setItem('sesion-quitada', '1'); localStorage.clear(); }""")
 
 
 def foto_de_prueba(tmp_path):
