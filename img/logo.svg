@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 36" width="120" height="36" role="img" aria-label="Lumea">
+  <!-- MARCADOR: el logo de Isabella lo reemplaza. Mientras tanto dice «Lumea» en texto.
+       Dentro de un <img> el SVG no hereda el color de la página, por eso se adapta con la
+       preferencia de color del sistema. Para cambiarlo: reemplaza este archivo o la ruta LOGO
+       de herramientas/menu_privado.py. -->
+  <style>
+    text { fill: #1f4d2f; font: 700 28px "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: -0.5px; }
+    @media (prefers-color-scheme: dark) { text { fill: #d9efdf; } }
+  </style>
+  <text x="0" y="27">Lumea</text>
+</svg>

@@ -1,21 +1,27 @@
-"""Pone el MISMO menú en las pantallas privadas: el lateral de Sara con los cinco destinos.
+"""Pone el MISMO menú en las seis pantallas privadas: el armazón `.nav-app` de componentes.css.
 
 Uso, desde la carpeta del proyecto:  python3 herramientas/menu_privado.py
-Es idempotente: si el menú ya está, solo lo vuelve a escribir igual (así las cinco páginas
-no se desvían). El menú sale de las plantillas de abajo; para cambiarlo, cambia esta
+Es idempotente: reescribe lo que hay entre las marcas `menu-privado:nav` de cada página, así
+las seis no se desvían. El menú sale de la plantilla de abajo; para cambiarlo, cambia esta
 herramienta y vuelve a correrla, no cada página.
 
 Los cinco destinos son la navegación B (decisión de Isabella): Inicio, Mis registros,
 Registrar, Progreso y Avatar. Ánimo NO está en el menú: se abre desde Inicio y desde Progreso.
 
-En computador (>= 992 px) el menú es la barra lateral de Sara; en celular, su barra inferior
-con la cámara al centro. La tarjeta con el nombre y el nivel solo está en las pantallas que
-cargan lumea-state.js (Inicio, Progreso y Ánimo).
+Es UN solo <nav>: en el computador es una barra lateral de 248 px (logo arriba, destinos, y
+abajo el nombre, el nivel y «Cerrar sesión»); en el celular (<= 720 px) el mismo <nav> es una
+barra inferior con Registrar al centro. Qué es lateral y qué es inferior lo decide el CSS
+(componentes.css y app.css), no hay dos menús que mantener.
+
+El logo es UNA imagen: img/logo.svg. Si llega el logo de Isabella en PNG, se cambia la ruta
+en LOGO (abajo) y se vuelve a correr la herramienta; las páginas públicas usan la misma ruta.
 """
 import pathlib
 import re
 
-DESTINOS = [  # (nombre, archivo, ícono de Bootstrap Icons, rótulo corto para el celular)
+LOGO = "img/logo.svg"
+
+DESTINOS = [  # (nombre, archivo, ícono de Bootstrap Icons, rótulo corto para la barra del celular)
     ("Inicio", "index-ingresado.html", "bi-house-door-fill", "Inicio"),
     ("Mis registros", "mis-registros.html", "bi-journal-text", "Registros"),
     ("Registrar", "alimentos.html", "bi-camera-fill", "Registrar"),
@@ -23,113 +29,56 @@ DESTINOS = [  # (nombre, archivo, ícono de Bootstrap Icons, rótulo corto para 
     ("Avatar", "avatar.html", "bi-person-badge-fill", "Avatar"),
 ]
 
-# página -> (destino marcado, ¿lleva la tarjeta del usuario?, ¿ya tiene el armazón de Sara?)
+# página -> (destino marcado, ¿lleva nombre y nivel?)
+# El nombre y el nivel los llena lumea-ui.js: solo están donde la página carga lumea-state.js.
 PAGINAS = {
-    "index-ingresado.html": ("Inicio", True, True),
-    "progreso.html": ("Progreso", True, True),
-    "emociones.html": (None, True, True),            # Ánimo no es un destino del menú
-    "mis-registros.html": ("Mis registros", False, False),
-    "alimentos.html": ("Registrar", False, False),
-    "avatar.html": ("Avatar", False, False),
+    "index-ingresado.html": ("Inicio", True),
+    "mis-registros.html": ("Mis registros", False),
+    "alimentos.html": ("Registrar", False),
+    "progreso.html": ("Progreso", True),
+    "avatar.html": ("Avatar", False),
+    "emociones.html": (None, True),            # Ánimo no es un destino del menú
 }
 
-TARJETA = """      <div class="sidebar-user-card">
-        <div class="sidebar-user-avatar"><span class="lumea-cara" data-cara="hoy"></span></div>
-        <div class="flex-grow-1 overflow-hidden">
-          <p class="mb-0 fw-bold text-truncate lumea-bind-nombre">Cargando...</p>
-          <small class="text-muted d-block fw-semibold"><span class="lumea-bind-nivel">Nivel --</span> &bull; <i class="bi bi-fire" aria-hidden="true"></i> <span class="lumea-bind-racha">--</span></small>
-        </div>
-        <a href="avatar.html" class="btn btn-sm btn-light rounded-circle shadow-sm" aria-label="Editar mi avatar"><i class="bi bi-gear" aria-hidden="true"></i></a>
+USUARIO = """      <div class="nav-app__usuario">
+        <p class="nav-app__nombre lumea-bind-nombre">Cargando...</p>
+        <p class="nav-app__nivel lumea-bind-nivel">Nivel --</p>
       </div>
 """
 
 
-def lateral(activo, con_tarjeta):
-    items = []
-    for nombre, archivo, icono, _ in DESTINOS:
-        marca = ' class="active" aria-current="page"' if nombre == activo else ""
-        items.append(f'          <li class="sidebar-nav-item"><a href="{archivo}"{marca}>'
-                     f'<i class="bi {icono} fs-5" aria-hidden="true"></i><span>{nombre}</span></a></li>')
-    return f"""<!-- menu-privado:lateral (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
-    <aside class="lumea-desktop-sidebar d-none d-lg-flex">
-      <div>
-        <a href="index-ingresado.html" class="sidebar-logo"><i class="bi bi-flower2" aria-hidden="true"></i> LUMEA</a>
-        <nav aria-label="Principal">
-          <ul class="sidebar-nav-list">
-{chr(10).join(items)}
-          </ul>
-        </nav>
-      </div>
-      <div class="menu-pie">
-{TARJETA if con_tarjeta else ""}        <button type="button" class="menu-pie__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
-      </div>
-    </aside>
-    <!-- /menu-privado:lateral -->"""
-
-
-def celular(activo):
+def menu(activo, con_usuario):
     enlaces = []
     for nombre, archivo, icono, corto in DESTINOS:
         actual = ' aria-current="page"' if nombre == activo else ""
-        if nombre == "Registrar":        # la cámara va al centro, grande y cerca del pulgar
-            enlaces.append(f'      <a href="{archivo}" class="nav-camera-fab" aria-label="{nombre}"{actual}>'
-                           f'<i class="bi {icono}" aria-hidden="true"></i><span>{corto}</span></a>')
+        clase = "nav-app__enlace nav-app__enlace--registrar" if nombre == "Registrar" else "nav-app__enlace"
+        # En el celular el rótulo largo no cabe («Mis registros»): se muestra el corto. El nombre
+        # accesible es siempre el largo (aria-label).
+        if corto != nombre:
+            texto = f'<span class="nav-app__largo">{nombre}</span><span class="nav-app__corto" aria-hidden="true">{corto}</span>'
         else:
-            clase = "nav-link-item active" if nombre == activo else "nav-link-item"
-            enlaces.append(f'      <a href="{archivo}" class="{clase}" aria-label="{nombre}"{actual}>'
-                           f'<i class="bi {icono}" aria-hidden="true"></i><span>{corto}</span></a>')
-    return f"""<!-- menu-privado:celular (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
-  <div class="lumea-bottom-nav-container d-lg-none">
-    <nav class="lumea-pill-nav" aria-label="Principal en celular">
+            texto = f"<span>{nombre}</span>"
+        enlaces.append(f'      <a class="{clase}" href="{archivo}" aria-label="{nombre}"{actual}>'
+                       f'<i class="bi {icono}" aria-hidden="true"></i>{texto}</a>')
+    return f"""<!-- menu-privado:nav (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
+    <nav class="nav-app" aria-label="Principal">
+      <div class="nav-app__marca"><img class="marca" src="{LOGO}" alt="Lumea"></div>
 {chr(10).join(enlaces)}
+      <div class="nav-app__pie">
+{USUARIO if con_usuario else ""}        <button type="button" class="nav-app__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
+      </div>
     </nav>
-  </div>
-  <!-- /menu-privado:celular -->"""
+    <!-- /menu-privado:nav -->"""
 
 
-MARCAS_LATERAL = re.compile(r"<!-- menu-privado:lateral.*?<!-- /menu-privado:lateral -->", re.S)
-MARCAS_CELULAR = re.compile(r"<!-- menu-privado:celular.*?<!-- /menu-privado:celular -->", re.S)
-ASIDE_DE_SARA = re.compile(r'<aside class="lumea-desktop-sidebar.*?</aside>', re.S)
-CELULAR_DE_SARA = re.compile(r'<div class="lumea-bottom-nav-container.*?</nav>\s*</div>', re.S)
-BARRA_VIEJA = re.compile(r'[ \t]*<!-- Barra de Navegación Global[^>]*-->\s*<header>\s*<div class="container fixed-bottom.*?</header>\s*', re.S)
-ESPACIO = re.compile(r'[ \t]*<div class="espacio-barra-inferior" aria-hidden="true"></div>\s*')
+MARCAS = re.compile(r"<!-- menu-privado:nav.*?<!-- /menu-privado:nav -->", re.S)
 
-
-def armar_armazon(texto, nombre):
-    """Páginas que todavía no tienen el armazón de Sara: lo crea alrededor de su <main>."""
-    texto, n = BARRA_VIEJA.subn("@@LATERAL@@\n", texto, count=1)
-    assert n == 1, f"{nombre}: no encontré la barra de navegación vieja"
-    texto = ESPACIO.sub("", texto)
-    texto = re.sub(r"<body[^>]*>", '<body class="lumea-screen-wrapper">\n<div class="lumea-desktop-layout">', texto, count=1)
-    texto = texto.replace("@@LATERAL@@", "    @@LATERAL@@\n    <div class=\"lumea-main-area\">", 1)
-    # el contenido (<main> y, si lo hay, el pie) queda dentro de lumea-main-area; se cierra antes de los <script>
-    primero = re.search(r"\n\s*(<!-- Bootstrap[^\n]*-->\s*)?<script", texto[texto.index("lumea-main-area"):])
-    assert primero, f"{nombre}: no encontré dónde cierra el contenido"
-    corte = texto.index("lumea-main-area") + primero.start()
-    return texto[:corte] + "\n    </div>\n  </div>\n  @@CELULAR@@\n" + texto[corte:]
-
-
-for nombre, (activo, tarjeta, con_armazon) in PAGINAS.items():
+for nombre, (activo, usuario) in PAGINAS.items():
     p = pathlib.Path(nombre)
     s = p.read_text(encoding="utf-8")
-    if con_armazon:
-        if MARCAS_LATERAL.search(s):
-            s = MARCAS_LATERAL.sub(lambda m: lateral(activo, tarjeta), s)
-            s = MARCAS_CELULAR.sub(lambda m: celular(activo), s)
-        else:
-            s, a = ASIDE_DE_SARA.subn(lambda m: lateral(activo, tarjeta), s, count=1)
-            s, b = CELULAR_DE_SARA.subn(lambda m: celular(activo), s, count=1)
-            assert a == 1 and b == 1, f"{nombre}: no encontré el menú de Sara"
-    elif MARCAS_LATERAL.search(s):
-        s = MARCAS_LATERAL.sub(lambda m: lateral(activo, tarjeta), s)
-        s = MARCAS_CELULAR.sub(lambda m: celular(activo), s)
-    else:
-        s = armar_armazon(s, nombre)
-        s = s.replace("@@LATERAL@@", lateral(activo, tarjeta)).replace("@@CELULAR@@", celular(activo))
+    assert MARCAS.search(s), f"{nombre}: no tiene las marcas menu-privado:nav (la página debe tener el armazón .app)"
+    s = MARCAS.sub(lambda m: menu(activo, usuario), s)
     if "menu-privado.js" not in s:
         s = s.replace("</body>", '  <script src="menu-privado.js"></script>\n</body>', 1)
-    if "pantallas-sara.css" not in s:
-        s = re.sub(r'([ \t]*)(<link rel="stylesheet" href="estilos/puente-sara.css">)',
-                   r'\1\2\n\1<link rel="stylesheet" href="estilos/pantallas-sara.css">', s, count=1)
     p.write_text(s, encoding="utf-8")
     print(f"{nombre}: menú escrito ({activo or 'ningún destino marcado'})")
