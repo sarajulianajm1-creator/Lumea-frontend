@@ -37,6 +37,11 @@ RUTAS = {
 }
 
 
+def cargar_respuesta(nombre):
+    """El JSON de pruebas/respuestas/<nombre>.json, para modificarlo en un test."""
+    return json.loads((RESPUESTAS / f"{nombre}.json").read_text(encoding="utf-8"))
+
+
 class _Silencioso(SimpleHTTPRequestHandler):
     def log_message(self, *args):
         pass
@@ -91,15 +96,15 @@ def pagina(page, backend, servidor):
     """Página con backend simulado, sin internet y con sesión iniciada."""
     page.route("http://127.0.0.1:5002/**", backend._responder)
 
-    def sin_internet(route):                      # CDN de Bootstrap, Google Fonts, DiceBear…
+    def sin_internet(route):                      # Google Fonts, DiceBear…
         ruta = route.request.url.split("?")[0]
         sufijo = Path(ruta).suffix
         if route.request.resource_type == "image":
             return route.fulfill(status=200, content_type="image/svg+xml",
                                  body='<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>')
-        # De todo Bootstrap solo se conserva lo que las páginas usan para ocultar cosas
-        cuerpo = ".d-none{display:none!important}" if "bootstrap.min.css" in ruta else ""
-        route.fulfill(status=200, content_type=_TIPOS.get(sufijo, "text/css"), body=cuerpo)
+        # Bootstrap y Bootstrap Icons ya viven en vendor/ (se sirven desde el proyecto):
+        # lo que llega aquí es lo que queda afuera, como las fuentes de Google.
+        route.fulfill(status=200, content_type=_TIPOS.get(sufijo, "text/css"), body="")
     page.route(lambda url: not url.startswith(("http://127.0.0.1", "data:", "blob:")), sin_internet)
 
     page.add_init_script(f"localStorage.setItem('lumea_email', '{CORREO_PRUEBA}')")

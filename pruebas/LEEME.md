@@ -14,5 +14,5 @@ Correr:
     .venv/bin/pytest pruebas -m capturas     # pantallas en 5 paletas x claro/oscuro -> pruebas/capturas/
 
 Las respuestas simuladas están en `pruebas/respuestas/*.json`.
-Internet tampoco hace falta: Bootstrap y las fuentes de Google se reemplazan por vacío,
-así que las páginas de Sara se miden sin Bootstrap (solo se conserva `.d-none`).
+Internet tampoco hace falta: Bootstrap y Bootstrap Icons están en `vendor/` (copia local, MIT) y las
+pruebas miden con ellos de verdad. Lo que viene de fuera (fuentes de Google, caras de DiceBear) se reemplaza por vacío.
