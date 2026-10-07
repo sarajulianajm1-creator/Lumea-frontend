@@ -73,7 +73,8 @@ def test_el_texto_del_servidor_nunca_es_html(pagina, backend):
     abrir(pagina, backend, historial=[registro])
     assert pagina.locator("#listaRegistros img, #listaRegistros b, #listaRegistros i.raro").count() == 0
     assert malo in pagina.locator("#listaRegistros h3").inner_text()
-    assert "<i>raro</i>" in pagina.locator(".sello-mini").inner_text()
+    # text_content y no inner_text: el sello va en mayúsculas por CSS (Res. 810) y inner_text devuelve lo que se ve
+    assert "<i>raro</i>" in pagina.locator(".sello-mini").text_content()
     assert pagina.evaluate("window.hackeado") is None
 
 

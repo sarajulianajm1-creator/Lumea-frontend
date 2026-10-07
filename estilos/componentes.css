@@ -37,9 +37,10 @@ p { margin: 0; text-wrap: pretty; }
 
 /* Foco visible SOLO cuando se navega con teclado */
 :focus-visible {
-  outline: 3px solid var(--c-marca);
+  outline: 3px solid var(--c-foco);   /* --c-foco lo mide generar_paletas.py (3:1 sobre fondo y superficie) */
   outline-offset: 2px;
-  border-radius: var(--r-control);
+  /* Sin border-radius aquí: el contorno sigue la forma del elemento, y un radio a la fuerza
+     deformaba los círculos y las píldoras justo al enfocarlos. */
 }
 
 /* Transición suave al cambiar de página (Chrome 126+, Safari 18.2+).
@@ -108,15 +109,15 @@ p { margin: 0; text-wrap: pretty; }
 /* ---------- 3. Superficies: tarjeta < panel ---------- */
 .tarjeta {
   background: var(--c-superficie);
+  border: 1px solid var(--c-borde);     /* se separa con un borde, no con sombra */
   border-radius: var(--r-tarjeta);
   padding: var(--e-5);
-  box-shadow: var(--s-1);
 }
 .panel {
   background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
   border-radius: var(--r-panel);
   padding: var(--e-6);
-  box-shadow: var(--s-2);
 }
 
 /* Tarjetas de color: el fondo dice de qué trata (como en la plaza,
@@ -131,7 +132,7 @@ p { margin: 0; text-wrap: pretty; }
 .tarjeta--emocion .icono { color: var(--c-emocion-tinta); }
 .tarjeta--mision .icono  { color: var(--c-mision-tinta); }
 .tarjeta--duda .icono    { color: var(--c-duda-tinta); }
-.tarjeta--color { position: relative; overflow: hidden; box-shadow: none; display: grid; gap: var(--e-2); align-content: start; }
+.tarjeta--color { position: relative; overflow: hidden; display: grid; gap: var(--e-2); align-content: start; }
 .tarjeta__cifra { font-size: var(--t-2xl); font-weight: var(--t-peso-fuerte); line-height: 1; font-variant-numeric: tabular-nums; }
 .tarjeta__titulo { font-weight: var(--t-peso-fuerte); }
 .tarjeta__nota { font-size: var(--t-s); color: var(--c-tinta-suave); }
@@ -163,25 +164,30 @@ p { margin: 0; text-wrap: pretty; }
 
 /* ---------- 5. Sello de advertencia (Resolución 810 de 2021) ---------- */
 /* Octágono negro con borde blanco, como en el empaque real.
-   Mayúsculas porque así lo exige la norma, no por estilo. */
-.sello {
+   Excepción a «nada en mayúsculas»: la Resolución 810 define el sello en mayúsculas
+   (decisión de Isabella, 7 oct 2026). Por eso es la única regla con text-transform: uppercase
+   y la prueba de mayúsculas (test_rediseno.py) exceptúa .sello.
+   El octágono mide 148 px para que el texto llegue a 12,8 px (--t-xs), el mínimo de la app.
+   .sello-mini es el mismo sello en Mis registros (hasta que R6 rehaga esa pantalla). */
+.sello, .sello-mini {
+  --tam-sello: 148px;
+  --octagono: polygon(29.3% 0, 70.7% 0, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0 70.7%, 0 29.3%);
   position: relative; isolation: isolate;
   display: inline-grid; place-content: center;
-  width: 84px; aspect-ratio: 1;
+  width: var(--tam-sello); aspect-ratio: 1;
   padding: var(--e-3);
   background: var(--c-sello); color: #fff;
   clip-path: var(--octagono);
   text-align: center; text-transform: uppercase;
-  font-size: 0.62rem; font-weight: var(--t-peso-fuerte); line-height: 1.05;
+  font-size: var(--t-xs); font-weight: var(--t-peso-fuerte); line-height: 1.15;
 }
 /* El filete blanco interior: un octágono blanco y encima otro negro, más pequeño */
-.sello::before, .sello::after {
+.sello::before, .sello::after, .sello-mini::before, .sello-mini::after {
   content: ""; position: absolute; z-index: -1;
   clip-path: var(--octagono);
 }
-.sello::before { inset: 4px; background: #fff; }
-.sello::after  { inset: 6px; background: var(--c-sello); }
-.sello { --octagono: polygon(29.3% 0, 70.7% 0, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0 70.7%, 0 29.3%); }
+.sello::before, .sello-mini::before { inset: 4px; background: #fff; }
+.sello::after, .sello-mini::after   { inset: 6px; background: var(--c-sello); }
 .sellos {
   display: flex; flex-wrap: wrap; gap: var(--e-2);
   /* En modo oscuro el negro se pierde (1.1–1.5:1). Una placa clara alrededor
@@ -227,8 +233,8 @@ p { margin: 0; text-wrap: pretty; }
   display: grid; gap: var(--e-4);
   padding: var(--e-6) var(--e-6) var(--e-6) calc(var(--e-6) + 40px);
   background: var(--c-superficie);
+  border: 1px solid var(--c-borde);
   border-radius: var(--r-panel);
-  box-shadow: var(--s-2);
 }
 .etiqueta::before {                     /* el agujero del cordel */
   content: ""; position: absolute;
@@ -271,7 +277,7 @@ p { margin: 0; text-wrap: pretty; }
 .etiqueta__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); }
 
 /* Variante: la IA no está segura → plátano (atención amable, no error) */
-.etiqueta--duda { box-shadow: var(--s-2), inset 0 6px 0 var(--c-duda); }
+.etiqueta--duda { box-shadow: inset 0 6px 0 var(--c-duda); }   /* la franja de «la IA duda»: es un adorno de color, no una elevación */
 .etiqueta--duda .etiqueta__medidor::after { background: var(--c-duda); }
 .opciones { display: grid; gap: var(--e-2); }
 .opciones__boton {
@@ -352,6 +358,7 @@ p { margin: 0; text-wrap: pretty; }
     flex-direction: row; justify-content: space-around; gap: 0;
     padding: var(--e-1) var(--e-2) max(var(--e-1), env(safe-area-inset-bottom));
     border-right: 0; border-top: 1px solid var(--c-borde);
+    box-shadow: var(--s-2);               /* flota sobre el contenido */
   }
   .nav-app__marca, .nav-app__pie { display: none; }
   .nav-app__enlace {
