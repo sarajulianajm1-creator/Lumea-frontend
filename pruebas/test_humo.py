@@ -7,7 +7,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 PAGINAS = sorted(p.name for p in RAIZ.glob("*.html"))
 
 # Páginas que todavía no existen (se construyen en F3 y F4 de la misión).
-VACIAS = {"progreso.html": "se construye en la fase F3", "avatar.html": "se construye en la fase F4"}
+VACIAS = {"avatar.html": "se construye en la fase F4"}
 # Reglas que fallan hoy en páginas de Sara (se reportan, no se arreglan aquí).
 XFAIL = {
     ("inicio.html", "errores"): "borrador de Isabella: enlaza estilos/___.css, que aún no existen",

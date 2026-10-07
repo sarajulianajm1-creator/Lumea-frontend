@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Paleta, modo y piel (?piel=sara muestra el original) -->
+<script src="tema.js"></script>
+<title>LUMEA | Progreso</title>
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="lumeaaa.png">
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Bootstrap 5.3.3 CSS (copia local en vendor/: funciona sin internet) -->
+<link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
+<!-- Hoja de Estilos Unificada: la barra de navegación es la de las demás pantallas privadas -->
+<link rel="stylesheet" href="estilos/tokens.css">
+<link rel="stylesheet" href="estilos/paletas.css">
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="estilos/puente-sara.css">
+<!-- Las piezas de Lumea (tarjetas, chips, barra de XP) y las propias de esta pantalla -->
+<link rel="stylesheet" href="estilos/componentes.css">
+<link rel="stylesheet" href="estilos/progreso.css">
+</head>
+<body>
+
+<!-- Barra de Navegación Global (la misma en las cinco pantallas privadas) -->
+<header>
+    <div class="container fixed-bottom d-flex justify-content-center mb-4">
+        <nav class="custom-navbar d-flex align-items-center justify-content-around px-3 py-2 shadow-lg" aria-label="Principal">
+            <a href="index-ingresado.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-house-door-fill fs-4" aria-hidden="true"></i>
+                <span>Inicio</span>
+            </a>
+
+            <a href="mis-registros.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-basket-fill fs-4" aria-hidden="true"></i>
+                <span>Mis registros</span>
+            </a>
+
+            <a href="alimentos.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-camera-fill fs-4" aria-hidden="true"></i>
+                <span>Registrar</span>
+            </a>
+
+            <a href="progreso.html" class="nav-item-custom text-center text-decoration-none" aria-current="page">
+                <i class="bi bi-graph-up-arrow fs-4" aria-hidden="true"></i>
+                <span>Progreso</span>
+            </a>
+
+            <a href="avatar.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-person-fill fs-4" aria-hidden="true"></i>
+                <span>Avatar</span>
+            </a>
+        </nav>
+    </div>
+</header>
+
+<main class="contenido">
+  <header>
+    <h1 class="contenido__titulo">Tu progreso</h1>
+    <p class="contenido__subtitulo">Cómo vas en la semana, sin compararte con nadie.</p>
+  </header>
+
+  <!-- Estados: cargando, error y sin sesión (progreso.js muestra uno a la vez) -->
+  <div id="estado-cargando" class="estado" role="status" hidden>
+    <div class="esqueleto esqueleto--linea"></div>
+    <div class="esqueleto esqueleto--bloque"></div>
+    <p>Cargando tu progreso…</p>
+  </div>
+
+  <div id="estado-error" class="estado" role="alert" hidden>
+    <p>No pudimos cargar tu progreso. Revisa que la app esté encendida e inténtalo otra vez.</p>
+    <button type="button" id="estado-reintentar" class="boton">Intentar otra vez</button>
+  </div>
+
+  <div id="sin-sesion" class="estado estado--sesion" hidden>
+    <p>Inicia sesión para ver tu progreso.</p>
+    <a class="boton" href="iniciar-sesion.html">Iniciar sesión</a>
+  </div>
+
+  <div id="progreso-contenido" class="progreso" hidden>
+    <!-- Cuando alguien vuelve después de días: una bienvenida, nunca un «perdiste XP» -->
+    <p id="bienvenida" class="progreso__bienvenida tarjeta tarjeta--emocion" role="status" hidden></p>
+
+    <!-- 1. Nivel y XP, con el número escrito -->
+    <section class="progreso__nivel tarjeta tarjeta--logro" aria-labelledby="nivel-titulo">
+      <div class="progreso__nivel-cabeza">
+        <h2 id="nivel-titulo">Nivel</h2>
+        <span id="nivel-xp" class="chip chip--logro numero"></span>
+      </div>
+      <div class="barra-xp">
+        <div class="barra-xp__riel" id="nivel-riel" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia el siguiente nivel">
+          <div class="barra-xp__relleno" id="nivel-relleno"></div>
+        </div>
+      </div>
+      <p id="nivel-faltan" class="progreso__faltan"></p>
+    </section>
+
+    <!-- Racha, mejor racha y meta del día -->
+    <section class="progreso__racha tarjeta tarjeta--logro tarjeta--color" aria-labelledby="racha-titulo">
+      <h2 id="racha-titulo" class="tarjeta__titulo">Racha actual</h2>
+      <p id="racha-actual" class="tarjeta__cifra numero"></p>
+      <p id="racha-nota" class="tarjeta__nota"></p>
+    </section>
+    <section class="progreso__mejor tarjeta tarjeta--logro tarjeta--color" aria-labelledby="mejor-titulo">
+      <h2 id="mejor-titulo" class="tarjeta__titulo">Tu mejor racha</h2>
+      <p id="racha-mejor" class="tarjeta__cifra numero"></p>
+      <p class="tarjeta__nota">hasta ahora</p>
+    </section>
+    <section class="progreso__meta tarjeta tarjeta--logro tarjeta--color" aria-labelledby="meta-titulo">
+      <h2 id="meta-titulo" class="tarjeta__titulo">Meta de hoy</h2>
+      <p id="meta-hoy" class="tarjeta__cifra numero"></p>
+      <p id="meta-nota" class="tarjeta__nota"></p>
+    </section>
+
+    <!-- 2. Comidas de la semana (lunes a domingo); la fruta lleva su ícono -->
+    <section id="semana-comidas-caja" class="progreso__semana tarjeta" aria-labelledby="semana-titulo">
+      <h2 id="semana-titulo">Comidas de la semana</h2>
+      <ol id="semana-comidas" class="semana"></ol>
+    </section>
+
+    <!-- 3. Ánimo de la semana, con las caras del avatar. Es tuyo: no se compara con nadie -->
+    <section id="semana-animo-caja" class="progreso__animo tarjeta tarjeta--emocion" aria-labelledby="animo-titulo">
+      <h2 id="animo-titulo">Tu ánimo de la semana</h2>
+      <ol id="semana-animo" class="animo-semana"></ol>
+    </section>
+
+    <!-- Álbum de calcomanías -->
+    <p class="progreso__album">
+      <a id="album-enlace" class="boton boton--secundario" href="avatar.html#calcomanias" hidden></a>
+    </p>
+  </div>
+</main>
+
+<div class="espacio-barra-inferior" aria-hidden="true"></div>
+
+<!-- api.js (dirección y llamadas al backend) + progreso.js (llena esta pantalla) -->
+<script src="api.js"></script>
+<script src="progreso.js"></script>
+</body>
+</html>

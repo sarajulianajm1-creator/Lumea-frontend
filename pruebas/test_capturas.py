@@ -15,7 +15,7 @@ from test_humo import PAGINAS, VACIAS
 CARPETA = Path(__file__).resolve().parent / "capturas"
 PALETAS = ["laguna", "neblina", "carnaval", "colibri", "cosecha"]
 MODOS = ["claro", "oscuro"]
-ESTRICTAS = set()      # F5: aquí entran las pantallas nuevas (progreso, avatar)
+ESTRICTAS = {"progreso.html"}      # pantallas nuevas: 0 errores de contraste (avatar.html entra en F4)
 
 pytestmark = pytest.mark.capturas
 _resumen = []
