@@ -88,16 +88,36 @@ Rama `gamificacion-100`. Actualizado al cerrar cada fase.
     python3 app.py
     # y abrir el frontend con un servidor estático, con lumea_email = demo@lumea.co en localStorage
 
-## Integración con `origin/main`: PENDIENTE DE DECISIÓN (7 oct 2026, 14:23)
+## F2.5 · Integración con las pantallas de Sara: LISTA (7 oct 2026)
 
-Mientras corrían las capturas, alguien (no fui yo; parece la sincronización con la rama base de la aplicación) empezó en este mismo worktree un `merge origin/main` hacia `gamificacion-100`, y se quedó a medias con **9 archivos en conflicto**. **Lo cancelé con `git merge --abort`** (reversible: no se perdió nada; los cambios de documentación que tenía en el área de preparación en ese momento los restauré desde una copia, y todo el trabajo de F1 a F5 está en los commits).
+Isabella decidió el 7 de oct (la unión estaba pendiente de esa decisión). Rama de trabajo: `integracion-sara` (sale de `gamificacion-100`).
 
-**Por qué no lo resolví yo.** `origin/main` no es una versión nueva de esta misma rama: es otra línea de trabajo. Su último commit es `b89dc7d` de Laura Jiménez (5 oct, «Realize toda la pagina que ve el usuario cuando ya está registrado»), que parte del commit `902a653` del 2 de octubre. No tiene nada de lo nuestro (ni `vendor/`, ni `tokens.css`/`paletas.css`, ni `tema.js`, ni `pruebas/`, ni la celebración) y trae **su propia versión** de `progreso.html` y `avatar.html` (más `animo.html`, `emociones.html`, `lumea-ui.js` y `lumea-state.js`), cambios en `alimentos.html`, `index.html`, `index-ingresado.html`, `crear-cuenta.html`, `iniciar-sesion.html`, `indexx.js` y un `style.css` reescrito (+2.800 líneas). Resolver los conflictos sería elegir entre dos versiones de Progreso, Avatar y la cámara: una decisión de Isabella, Laura y Sara, no un arreglo técnico.
+**Cómo se unió.** Con `git merge origin/main` (commit `2a360e4`), sin copiar archivos: el commit `b89dc7d` queda en la historia con su autoría (git lo muestra como «Laura Jiménez» con el correo de Sara: **revisar que la autoría quede como Isabella quiere**). Conflictos resueltos como pidió Isabella: la cámara (`alimentos.html`) y el Avatar, los nuestros; Inicio, Progreso, Ánimo, login y `style.css`, los de Sara. Los cambios van en commits aparte para que se vean uno por uno.
 
-**Para tener en cuenta antes de unir:**
-- Sus páginas guardan la sesión como `lumea_usuario_email` (con `window.lumeaStore`); las nuestras (y `api.js`) usan `lumea_email`. Si conviven, hay que unificar la clave o nadie entrará a la mitad de las pantallas.
-- Sus pantallas no usan `LumeaCelebrar`, `obtenerCalcomanias` ni los campos nuevos del contrato (`desbloqueos`, `calcomanias_nuevas`, `es_fruta`).
-- Se puede ver todo lo que traen sin tocar nada con `git diff gamificacion-100...origin/main --stat`, y volver a intentar la unión con `git merge origin/main` desde este worktree (los conflictos son los 9 de arriba).
+**Qué cambió (todo sobre el diseño de Sara, que sigue siendo suyo)**
+- **Una sola conexión:** todo por `api.js` (puerto 5002). Se quitó `LUMEA_BACKEND_URLS` (5001/5000) y los `fetch` escritos a mano de `lumea-state.js`, `indexx.js`, `emociones.html`, `crear-cuenta.html` e `iniciar-sesion.html`. Una prueba revisa el código fuente: ningún archivo de Sara tiene `fetch(`, `127.0.0.1`, `5001`, `5000`, `?email=` ni `innerHTML`.
+- **Una sola sesión:** `obtenerSesion()` también lee `lumea_usuario_email` (quien ya la tenía no pierde la sesión) y `guardarSesion()` deja una sola clave. El correo ya no se lee de la dirección (`?email=`): hay una prueba. Crear cuenta ahora manda la contraseña a la API y entra directo a Inicio.
+- **Contrato real:** `lumea-state.js` lee `GET /progreso`, `GET /historial` (con `es_fruta`) y `GET /estado-animo?dias=7`. Ya no inventa XP ni niveles en el navegador (antes sumaba XP local y subía de nivel de a 100).
+- **Arreglos que pidió Isabella:** «0 de 15 comidas» (15 es la meta de XP: ahora «N de 3»), «210/250 XP del día» (era el XP total del nivel: ahora «10 de 15 XP hoy» o «Meta cumplida: 20 XP hoy»), «+20 XP» por misión (son +10, y sale del backend), los rótulos «Versión 1.1», y los errores `lumeaStore.suscribir is not a function` y `null.style` (había un banner y un modal que no existían en la página).
+- **Caras de ánimo:** los emojis pasaron a las caras DiceBear del avatar (`avatar.urls_por_estado`), que cambian en vivo al elegir en Ánimo. El nombre del estado siempre está escrito; sin internet se quita la imagen y queda el nombre. Los emojis de ícono (racha, estrella, hoja, bandera, canasta, corazón) pasaron a Bootstrap Icons.
+- **Celebración:** `LumeaCelebrar` se llama con la respuesta de `POST /estado-animo` desde el estado compartido, así que celebra igual en Ánimo y en el check-in rápido de Inicio.
+- **Menú:** el lateral de Sara con los cinco destinos (Inicio, Mis registros, Registrar, Progreso, Avatar) en las seis pantallas privadas, y su barra inferior con la cámara al centro en celular. Ánimo no está en el menú: se abre desde Inicio y desde Progreso. Lo escribe `herramientas/menu_privado.py` (idempotente) para que las páginas no se desvíen.
+- **Paletas:** `conectar_puente.py` cubre las pantallas nuevas y Bootstrap local (`vendor/`); `puente-sara.css` (sección 10) pasa cada color fijo y degradado de Sara a tokens por rol (comida = aguacate, logro = maracuyá, emoción = guayaba, misión = mora) y apaga el movimiento con `prefers-reduced-motion`. Piezas nuevas en `estilos/pantallas-sara.css`.
+- **Textos del servidor:** `textContent` en todas las páginas de Sara (también la alerta de `crear-cuenta.html`).
+- **Progreso (F3) sobre la base de Sara:** `progreso.html` es el de Sara; `progreso.js` solo dibuja la semana (comidas con fruta, ánimo con caras), el álbum y los estados de carga/error. Las cuentas puras (semana, plural, meta) están en `formato.js` y las comparten Inicio, Progreso y Ánimo.
+
+**Cómo probarlo**
+
+    .venv/bin/pytest pruebas                                   # todas verdes
+    .venv/bin/pytest pruebas -m capturas                       # contraste: Inicio, Progreso, Ánimo y Avatar con 0 errores en 5 paletas × claro/oscuro
+
+**Lo que no se hizo / hay que saber**
+- `inicio.html` y `estilos/inicio.css` (de Isabella): no se tocaron.
+- Avatar (F4) sigue el bosquejo 06: `bosquejos/laura/` todavía no existe.
+- Se descartó el rediseño de la cámara de Sara (`alimentos.html`: dock de controles, esquinas de enfoque, variante «hoja») porque no maneja IA duda ni el contrato; quedó la nuestra con el menú de Sara.
+- `sesion-nav.js` (ejercicio de Isabella) escribe el correo con `innerHTML`: no se tocó.
+- En celular el menú no tiene «Cerrar sesión» (en computador está al pie del menú lateral): falta decidir dónde va.
+- `animo.html` (de Sara) es solo un atajo a `emociones.html`; se le agregó un `h1` y un enlace.
 
 ## Decisiones provisionales para Isabella
 
@@ -122,4 +142,9 @@ Elegí la opción más sobria y reversible cuando algo no estaba en el bosquejo 
 17. **Lo bloqueado** dice «Se abre en el nivel N» (como pedía T5) y el botón «Nivel N» es `aria-disabled`; no se esconde ni se desactiva con `disabled` para que el lector de pantalla pueda leerlo.
 18. **En computador** (≥ 840 px) Avatar usa dos columnas: la vitrina queda fija a la izquierda y las pestañas a la derecha. En celular, una debajo de la otra, como el bosquejo.
 19. **Textos nuevos que escribí y tú debes revisar** (no estaban en los bosquejos): subtítulo de Progreso «Cómo vas en la semana, sin compararte con nadie.», de Avatar «Cámbiale la ropa, mira tus misiones y tu álbum de calcomanías.», nota del armario «Lo que se abre al subir de nivel es tuyo para siempre.», «Todavía no te pusiste nada.», «Puesto: …», «Cumplida hoy» / «Para hoy», «Mi álbum», «Intentar otra vez», y los avisos «Te pusiste …» / «Te quitaste …».
-20. **Cancelé la unión con `origin/main`** (ver la sección de arriba) en vez de resolverla, porque implica escoger entre la versión de Laura y la mía de Progreso, Avatar y la cámara.
+20. **Ánimo sin estado preseleccionado:** Sara dejaba «Bien» elegido; ahora hay que elegir para poder guardar (así nadie guarda un «Bien» sin querer).
+21. **Textos de Ánimo sin género:** «Tranquila…» y «eres valiosa» pasaron a «Con calma y buena disposición…» y «lo que sientes importa». Revisar.
+22. **Se quitó «Hablar con orientación escolar»** (el botón y el modal no existían en la página y «Mensaje enviado» era falso: no hay a dónde enviarlo). Quedó la frase del bosquejo 11 como texto: «Si te sientes mal varios días, hablar con alguien ayuda.» La decisión ética sigue siendo tuya.
+23. **Se quitó «LUMEA no te penaliza ni quita experiencia si te ausentas»:** el backend sí descuenta XP por inactividad; la pantalla solo muestra `mensaje_regreso` como bienvenida.
+24. **Textos nuevos que escribí:** «Cómo vas en la semana, sin compararte con nadie.», «Un check-in de diez segundos.», «Hoy cumpliste tus tres misiones», «Hoy llegaste: Bien. Tu check-in ya está registrado.», «Tu ánimo de hoy ya está registrado», «Meta del día», «Misiones del día», «Ver mi armario», «Cerrar sesión».
+25. **«Registra 3 comidas» usa 3 como constante** en el frontend (el backend no publica ese número en `reglas`).
