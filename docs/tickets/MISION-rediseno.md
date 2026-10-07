@@ -12,11 +12,39 @@
 - [x] **Caras del check-in.**
   - Se usan las caras de DiceBear 10.x por la API. Depender de internet está aceptado.
   - Solo cambian los cinco botones del check-in, en Inicio y en Ánimo. La semana de ánimo, Progreso y Avatar siguen con la cara del avatar.
-  - El estilo elegido es `gaze`. La alternativa `moods` queda lista para cambiarla con una palabra (ver R3).
+  - **Cada persona elige su set de caras, igual que su paleta.** Los sets son `gaze` (solo ojos) y `moods` (ojos y boca). Los nombres provisionales para la pantalla son «Miradas» y «Gestos».
+  - Ningún set es predeterminado: mientras no elija, los botones del check-in muestran solo la palabra (ver R3 y R4).
 - [x] **Logo.** Isabella lo entrega esta noche. Déjale un solo lugar donde ponerlo (ver R1).
 - [x] **Navegación.** Sigue la navegación B: Inicio · Mis registros · Registrar · Progreso · Avatar. Ánimo se abre desde Inicio y desde Progreso.
 - [x] **Cámara.** Se conserva `alimentos.html` con `lumea-camara.js`, con los estados «IA segura» e «IA duda». Solo cambia su aspecto.
-- [ ] **Calorías en el resultado de la cámara.** Isabella todavía no decide. Hoy se muestran y así quedan, controladas por una sola constante (ver R5).
+- [x] **Calorías en el resultado de la cámara: se muestran.** Van controladas por una sola constante (ver R5).
+
+## Respuestas de Isabella al plan R0 (7 de octubre)
+
+El plan está aprobado, con estas respuestas a tus dudas.
+
+**Antes de seguir:**
+- Corre `git merge --ff-only gamificacion-100` en esta carpeta. Trae esta versión de la misión y `docs/rediseno/inicio-nuevo.md`.
+- Vuelve a leer las secciones de decisiones, R3, R4 y R5, que cambiaron.
+
+**Respuestas a tus nueve dudas:**
+
+1. **El documento «Rediseño».** Es un documento de Claude, no de Drive. Lo que necesitas está exportado en `docs/rediseno/inicio-nuevo.md` (la dirección y el Inicio nuevo), con el dibujo en `docs/rediseno/inicio-nuevo.png`.
+2. **Estado neutro.** Aprobado: casi blanco (h 85, croma ≤ 0,006), que no se lea ni como crema ni como gris. El botón principal va en aguacate.
+3. **Sellos.** Aprobada la excepción, porque el sello en mayúsculas es el diseño oficial de la Resolución 810 de 2021.
+   - Exceptúa `.sello` de la prueba de mayúsculas.
+   - Agranda el octágono hasta que su texto mida al menos 12,8 px.
+   - Dale un nombre accesible escrito en minúsculas normales, por ejemplo `aria-label="Exceso en azúcares"`, para que el lector de pantalla no lo deletree.
+4. **«Cerrar sesión» en el celular.** Aprobado como botón de texto al final de Avatar, siempre visible. Esto también resuelve la decisión 24.
+5. **Ánimo.** Aprobado: sin flecha de volver, sin la píldora «+5 XP para todos los ánimos» y sin «(+5 XP)» en el botón. Esos textos van a la lista de revisión.
+6. **«Foto directa».** Aprobado como botón de texto dentro de «Tu día».
+7. **Bootstrap.** Aprobado. Si una pantalla privada usa un componente JavaScript de Bootstrap (modal, collapse, dropdown), reemplázalo por `<dialog>` o por `[hidden]` y anótalo en el ESTADO.
+8. **Preferencias en el navegador.** Aprobado: la paleta y el set de caras se guardan en el navegador, no en la cuenta. Anótalo en `docs/defensa/` como un límite conocido.
+9. **`data-cara-checkin`.** Tu lectura es correcta: los botones del check-in ya no usan `data-cara`.
+
+**Además:**
+- `--r-panel` se queda en 28 px. No cambies `tokens.css` sin preguntar antes, con una captura.
+- Arreglar en R1 la prueba de Avatar que ya fallaba está bien.
 
 ## Qué no se toca
 
@@ -133,7 +161,7 @@ De arriba abajo:
 5. **Fila plana «Nivel y racha»:** enlaza a Progreso.
 
 Además:
-- Pasa de 13 cajas a cuatro superficies como máximo, sin contar el aviso de regreso ni la tarjeta de colores de R4. Pasa también de 11 textos con «XP» a tres como máximo.
+- Pasa de 13 cajas a cuatro superficies como máximo, sin contar el aviso de regreso ni la tarjeta de colores y caras de R4. Pasa también de 11 textos con «XP» a tres como máximo.
 - Conserva las clases `lumea-bind-*` para que `lumea-ui.js` y sus pruebas sigan funcionando.
 
 ### R3 · Caras del check-in con DiceBear (Inicio y Ánimo)
@@ -141,10 +169,9 @@ Además:
 **Configuración.** Crea `caras-checkin.js` con un solo objeto de configuración que Isabella pueda leer y editar:
 
 ```js
-// Estilo de las caras del check-in. Isabella eligió "gaze"; "moods" también tiene boca.
-// Para cambiarlo basta con cambiar esta palabra.
-const ESTILO = "gaze";
-
+// Sets de caras del check-in. Cada persona elige el suyo, igual que la paleta: ninguno es predeterminado.
+// La elección se guarda en localStorage con la clave "lumea-caras" ("gaze" o "moods").
+// Mientras no haya elección, los botones muestran solo la palabra.
 const ESTILOS = {
   gaze: {
     base: "https://api.dicebear.com/10.x/gaze/svg",
@@ -182,6 +209,9 @@ const ESTILOS = {
 - Antes de cerrar la fase, verifica en el navegador que las diez URL cargan.
 
 **Comportamiento.**
+- **Elección del set.**
+  - `LumeaCaras.poner("gaze" | "moods")` guarda la elección en `localStorage` con try/catch, como hace `tema.js`, y emite el evento `lumea:caras`. Las caras se vuelven a dibujar.
+  - Sin elección, o con un valor desconocido, no hay imagen: queda la palabra. Así eran los botones del `inicio.html` de Isabella.
 - **Color:** el color del cuerpo sale de `--c-emocion` de la paleta activa, leído con `getComputedStyle`. Las caras se vuelven a dibujar con el evento `lumea:tema`.
 - **Quietas por defecto:** en los botones van con `animationVariant=none`.
   - Solo la cara elegida se anima (`animationVariant=medium`): el movimiento responde a la acción y nunca hay cinco caras moviéndose a la vez.
@@ -194,10 +224,11 @@ const ESTILOS = {
   - no hay rojo ni verde por ánimo;
   - ningún botón muestra «+XP»;
   - ningún texto juzga lo que se marcó.
+- **Pruebas (`test_caras_checkin.py`).** Cubren los tres estados: sin elección (ninguna imagen, solo la palabra), con `gaze` y con `moods`. En los tres comprueban la URL sin datos personales, `alt=""`, `aria-pressed`, el respaldo sin internet y el redibujo con `lumea:tema` y con `lumea:caras`.
 - **Privacidad:** la URL no lleva ningún dato de la persona: la semilla es fija. Anótalo en `docs/defensa/`, porque es una buena respuesta para el jurado.
 - **Créditos:** agrega en la pantalla de créditos o en el README «Caras del check-in: DiceBear (CC0)».
 
-### R4 · Paleta sin predeterminada
+### R4 · Paleta y caras, sin predeterminados
 
 - **Estado neutro.**
   - Hoy `:root` sin `data-paleta` cae en Laguna (verde). Cambia `generar_paletas.py` para que ese caso sea un estado neutro:
@@ -206,13 +237,17 @@ const ESTILOS = {
     - pasa las mismas pruebas de contraste y daltonismo que hace el generador.
   - El estado neutro no aparece en el selector. Regenera `paletas.css` y `tokens.json` con la herramienta.
 - **Selector en Inicio.**
-  - Mientras no haya paleta guardada, Inicio muestra arriba una tarjeta «Elige tus colores».
-  - Las cinco paletas van como un `radiogroup`. Cada opción es una tira con sus colores de rol y su nombre: Laguna, Neblina, Carnaval, Colibrí, Cosecha.
-  - También se elige Claro, Oscuro o Como mi dispositivo.
-  - Al elegir, se aplica y se guarda al instante con `LumeaTema.ponerPaleta` y `ponerModo`. El botón «Listo» cierra la tarjeta.
-  - «Ahora no» la esconde solo durante esta sesión.
+  - Mientras falte la paleta o el set de caras, Inicio muestra arriba una tarjeta «Elige tus colores y tus caras».
+  - **Colores.**
+    - Las cinco paletas van como un `radiogroup`. Cada opción es una tira con sus colores de rol y su nombre: Laguna, Neblina, Carnaval, Colibrí, Cosecha.
+    - También se elige Claro, Oscuro o Como mi dispositivo.
+    - Al elegir, se aplica y se guarda al instante con `LumeaTema.ponerPaleta` y `ponerModo`.
+  - **Caras.**
+    - Los dos sets van como otro `radiogroup`. Cada opción muestra sus cinco caras quietas (`animationVariant=none`) y su nombre: «Miradas» y «Gestos».
+    - Al elegir, se aplica y se guarda al instante con `LumeaCaras.poner`. Las caras toman el color de emoción de la paleta, así que el cambio de paleta se ve también en ellas.
+  - El botón «Listo» cierra la tarjeta. «Ahora no» la esconde solo durante esta sesión.
   - No es un diálogo modal: no impide registrar una comida.
-- **Selector en Avatar.** El mismo componente va en una sección «Mis colores», para cambiar la paleta cuando sea.
+- **Selector en Avatar.** El mismo componente va en una sección «Mis colores y caras», para cambiarlos cuando sea.
 - **Páginas públicas:** se ven en el estado neutro, o en la paleta que ese navegador ya tenga guardada (`tema.js` ya la aplica).
 - **Crear cuenta:** no le agregues ningún paso. Ese archivo es de Isabella.
 
@@ -228,7 +263,7 @@ La lógica de `lumea-camara.js` no cambia: solo cambia el aspecto.
   - Los sellos de advertencia siguen en negro.
 - **Texto:** los criterios hoy están a 10 px y pasan al tamaño del cuerpo. Los tres títulos en mayúsculas pasan a minúsculas normales.
 - **Calorías.**
-  - Pon `const MOSTRAR_CALORIAS = true;` arriba de `lumea-camara.js`, con un comentario que diga que lo decide Isabella.
+  - Pon `const MOSTRAR_CALORIAS = true;` arriba de `lumea-camara.js`, con un comentario que diga «Decisión de Isabella, 7 oct 2026: se muestran».
   - En `true`, las calorías van en una sola línea secundaria: «Calorías aproximadas: 60 kcal», sin color de alerta ni juicio.
   - En `false`, no se dibujan.
 - **Celebración:** sigue llamándose igual.
@@ -291,7 +326,7 @@ La lógica de `lumea-camara.js` no cambia: solo cambia el aspecto.
 - **Commits.**
   - Un commit por idea, en español, con `Co-Authored-By: Claude …`.
   - El código debe ser simple y comentado: Isabella tiene que poder explicarlo.
-- **Textos nuevos.** Todo texto de interfaz que escribas («Elige tus colores», «Listo», «Ahora no», «Mis colores», «Lo que reconoció Lumea»…) va en una lista del ESTADO llamada «Textos nuevos para que Isabella revise». Ella decide la versión final.
+- **Textos nuevos.** Todo texto de interfaz que escribas («Elige tus colores y tus caras», «Miradas», «Gestos», «Listo», «Ahora no», «Mis colores y caras», «Lo que reconoció Lumea»…) va en una lista del ESTADO llamada «Textos nuevos para que Isabella revise». Ella decide la versión final.
 - **Si el uso se acaba:** termina el commit en curso y deja el ESTADO al día. La siguiente sesión arranca con `claude --continue` en esta misma carpeta.
 - **Si algo no está aquí ni en el documento,** pregunta. No inventes pantallas ni textos de marca.
 - **No hagas push.** El viernes, Isabella une `gamificacion-100` (sus textos) dentro de `rediseno`, corre las pruebas y después pasa todo a `main`.
