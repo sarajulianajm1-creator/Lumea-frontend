@@ -33,7 +33,7 @@ Escritas por Claude Code (7 oct 2026). Cada pregunta dice en qué archivo y func
    Respuesta de Isabella:
 
 8. **¿Por qué todo texto que llega del servidor se escribe con `textContent` y no con `innerHTML`?**
-   Dónde: `celebracion.js` → `crear`, `avatar.js` → `crear`, `mis-registros.html` → `elemento` y `tarjetaDeRegistro`. Pruebas: `test_el_texto_del_servidor_nunca_es_html` en `test_celebracion.py`, `test_avatar.py`, `test_progreso.py` (si aplica) y `test_mis_registros.py`.
+   Dónde: `celebracion.js` → `crear`, `avatar.js` → `crear`, `mis-registros.html` → `elemento` y `tarjetaDeRegistro`. Pruebas: `test_el_texto_del_servidor_nunca_es_html` en `test_celebracion.py`, `test_avatar.py` y `test_mis_registros.py`.
    Respuesta de Isabella:
 
 9. **¿Cómo saben que los colores se leen bien en las cinco paletas, en claro y en oscuro?**

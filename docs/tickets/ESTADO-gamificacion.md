@@ -13,16 +13,16 @@ Rama `gamificacion-100`. Actualizado al cerrar cada fase.
     .venv/bin/pytest pruebas                 # 38 pasan, 9 xfail, ~25 s
     .venv/bin/pytest pruebas -m capturas     # ~2 min -> pruebas/capturas/ y contraste.txt
 
-**Errores reales que encontraron (no se arreglaron; no eran de este ticket)**
-1. `alimentos.html`: sin sesión se muestra el aviso, pero la cámara también, porque `.lumea-dashboard-screen` (`style.css`) anula el atributo `hidden`. Prueba `xfail(strict)`: cuando se arregle, avisará.
-2. `index-ingresado.html` no tiene `h1`.
-3. `inicio.html` (de Isabella) enlaza `estilos/___.css`, que no existe (404), y su menú apunta a `registrar-comida.html`, que ya no existe.
-4. `mis-registros.html` escribe texto del servidor con `innerHTML` (regla de CLAUDE.md: `textContent`). Código de Sara; Isabella decide si se corrige.
-5. `progreso.html` y `avatar.html` están vacías (`xfail` hasta F3 y F4).
+**Errores reales que encontraron** (estado al 7 oct)
+1. `alimentos.html`: sin sesión se mostraban el aviso y la cámara (`[hidden]` anulado por `style.css`). **Arreglado en F2** (regla `[hidden]` en su `<style>`).
+2. `index-ingresado.html` no tenía `h1`. **Arreglado en F5** (el saludo es el `h1`, con el mismo aspecto: se comparó el estilo calculado antes y después).
+3. `inicio.html` (de Isabella) enlaza `estilos/___.css` (404) y apunta a `registrar-comida.html`. **Se ignora**: Isabella ya lo corrigió en su copia (por eso la prueba sigue como `xfail`).
+4. `mis-registros.html` escribía texto del servidor con `innerHTML`. **Arreglado en F5** (createElement y textContent; una prueba compara cada tarjeta con la que armaba la plantilla anterior).
+5. `progreso.html` y `avatar.html` estaban vacías. **Construidas en F3 y F4.**
 
 **Límites**
-- Sin internet en las pruebas: Bootstrap y fuentes se reemplazan por vacío (solo queda `.d-none`), así que el contraste de las páginas de Sara se mide sin Bootstrap.
-- El contraste de las 14 páginas actuales se reporta en `pruebas/capturas/contraste.txt` sin fallar; en F5 las pantallas nuevas pasan a `ESTRICTAS` y deben dar 0.
+- Sin internet en las pruebas: las fuentes de Google y las caras de DiceBear se reemplazan por vacío. Bootstrap y Bootstrap Icons ya no: están en `vendor/` y las pruebas miden con ellos de verdad (desde F2).
+- El contraste de todas las páginas se reporta en `pruebas/capturas/contraste.txt`; Progreso y Avatar son `ESTRICTAS` y deben dar 0 (dan 0).
 
 ## F2 · Celebración: LISTA (7 oct 2026)
 
@@ -58,6 +58,35 @@ Rama `gamificacion-100`. Actualizado al cerrar cada fase.
 - `formato.js`: plural, porcentaje y texto del nivel, compartidos con Progreso.
 
 **Cómo probarlo:** `.venv/bin/pytest pruebas` (32 pruebas de `test_avatar.py`) y `.venv/bin/pytest pruebas -m capturas -k avatar` (las tres pestañas, en 5 paletas × claro/oscuro, 0 errores de contraste).
+
+## F5 · Integración y cierre: LISTA (7 oct 2026)
+
+**Qué quedó listo**
+- **Navegación privada igual** en las cinco pantallas (Inicio, Mis registros, Registrar, Progreso, Avatar), con `aria-current="page"` en la actual: `pruebas/test_navegacion.py`.
+- **Pruebas:** `.venv/bin/pytest pruebas` → 142 pasan, 1 `xfail` (el borrador de Inicio de Isabella). `.venv/bin/pytest pruebas -m capturas` → 176 capturas en 5 paletas × claro/oscuro: **0 errores de contraste en todas las páginas, también con Bootstrap real**; solo la piel original de Sara (`?piel=sara`, que no se arregla) tiene 1 a 3 elementos de contraste bajo en 7 páginas. Progreso y Avatar (las tres pestañas) están en `ESTRICTAS`.
+- **Para la demo y el video sin internet:** Bootstrap 5.3.3 y Bootstrap Icons 1.11.3 en `vendor/`, enlazados desde las 9 páginas de Sara y también desde Progreso y Avatar.
+- **Errores que pidió arreglar Isabella:** `[hidden]` de `alimentos.html` (F2), `h1` de `index-ingresado.html` y `innerHTML` de `mis-registros.html` (F5). `inicio.html`, ignorado.
+- **Probado contra el backend real** (rama `gamificacion-100`, cuenta de demostración `demo@lumea.co`): Progreso (nivel 4, racha de 7, 6 de 10 calcomanías, la semana y el ánimo), Avatar (ponerse y quitar de verdad, bloqueado, álbum, misiones) y la cámara con una foto de arepa (+15 XP, «Meta de hoy cumplida» y la calcomanía «Diez registros», sin errores de consola).
+- `docs/defensa/preguntas-gamificacion.md`: 10 preguntas de jurado con el archivo y la función donde está la respuesta. **Sin respuestas:** las escribe Isabella.
+- Una fila en `docs/bitacora-ia.md` por cada fase (F1 a F5).
+
+**Un hallazgo importante del backend (ya arreglado, ver `ESTADO_GAMIFICACION.md` del backend):** la primera vez que se probó contra el backend real, el servidor se cayó. Progreso y Avatar piden 3 cosas a la vez y el backend compartía UNA conexión MySQL entre hilos: la conexión se corrompía y el proceso a veces moría con un segmentation fault. Se arregló en `Backend/app.py` con un candado que atiende las peticiones de a una, con su prueba (`pruebas/test_concurrencia.py`). **Sin ese arreglo la demo se habría caído al abrir Progreso.** Está en la rama `gamificacion-100` del backend, sin push.
+
+**Errores que encontré y NO arreglé** (no eran de esta misión o son de Isabella)
+- `crear-cuenta.html`, función `mostrarAlerta`: escribe el mensaje con `innerHTML`. Si el mensaje viniera del servidor sería el mismo problema que había en Mis registros (se puede arreglar igual: createElement y textContent).
+- `sesion-nav.js` (ejercicio de Isabella): escribe el correo guardado con `innerHTML`.
+- `index-ingresado.html` usa emojis como íconos (🔥, 🎯), que `CLAUDE.md` prohíbe; es de Sara.
+- Las fuentes de Google de las páginas de Sara siguen en línea (sin internet caen a la fuente del sistema).
+- No se hizo T2 (rediseño de Registrar con la piel de Lumea) ni T6 (movimiento entre pantallas): no estaban en esta misión.
+
+**Cómo probarlo todo**
+
+    .venv/bin/pytest pruebas
+    .venv/bin/pytest pruebas -m capturas        # ~3 min
+    # contra el backend real (desde ~/Python_proyects/Lumea/Backend, en otra terminal):
+    python3 herramientas/crear_usuario_demo.py --borrar     # imprime la contraseña; el correo es demo@lumea.co
+    python3 app.py
+    # y abrir el frontend con un servidor estático, con lumea_email = demo@lumea.co en localStorage
 
 ## Decisiones provisionales para Isabella
 
