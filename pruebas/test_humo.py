@@ -11,7 +11,6 @@ VACIAS = {}
 # Reglas que fallan hoy en páginas de Sara (se reportan, no se arreglan aquí).
 XFAIL = {
     ("inicio.html", "errores"): "borrador de Isabella: enlaza estilos/___.css, que aún no existen",
-    ("index-ingresado.html", "estructura"): "la página de Sara no tiene h1 (reportado, no se arregla en F1)",
 }
 
 
