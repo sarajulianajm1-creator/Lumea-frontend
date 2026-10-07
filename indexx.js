@@ -45,13 +45,16 @@ try {
     
       // Racha (si es 0, muestra un mensaje motivador sin reproches)
     const textoRacha = p.racha_actual > 0 
-        ? `${p.racha_actual} días de racha` 
+        ? `${p.racha_actual} ${p.racha_actual === 1 ? "día" : "días"} de racha` 
         : "Registra algo hoy para empezar una racha";
     poner('user-racha', textoRacha);
 
       // Meta del día
     const metaCumplida = p.meta_diaria.cumplida;
-    poner('meta-texto', `${p.meta_diaria.xp_hoy} de ${p.meta_diaria.meta} XP hoy`);
+    // Si ya pasó la meta no se dice «20 de 15 XP hoy»: se dice que se cumplió.
+    poner('meta-texto', metaCumplida
+      ? `Meta cumplida: ${p.meta_diaria.xp_hoy} XP hoy`
+      : `${p.meta_diaria.xp_hoy} de ${p.meta_diaria.meta} XP hoy`);
     if (metaCumplida) {
         poner('meta-mensaje', "¡Meta cumplida por hoy! 🎉");
     }
