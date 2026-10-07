@@ -15,36 +15,41 @@ from test_humo import PAGINAS, VACIAS
 CARPETA = Path(__file__).resolve().parent / "capturas"
 PALETAS = ["laguna", "neblina", "carnaval", "colibri", "cosecha"]
 MODOS = ["claro", "oscuro"]
-ESTRICTAS = {"progreso.html"}      # pantallas nuevas: 0 errores de contraste (avatar.html entra en F4)
+ESTRICTAS = {"progreso.html", "avatar.html"}      # pantallas nuevas: 0 errores de contraste
 
 pytestmark = pytest.mark.capturas
 _resumen = []
 
 
+# Avatar tiene tres pestañas y solo se ve una a la vez: se mide cada una
+ANCLAS = {"avatar.html": ["", "#armario", "#calcomanias"]}
+
+
 def _combinaciones():
     for nombre in PAGINAS:
-        for paleta in PALETAS:
-            for modo in MODOS:
-                yield nombre, paleta, modo, False
-        yield nombre, "laguna", "claro", True          # el diseño original de Sara
+        for ancla in ANCLAS.get(nombre, [""]):
+            for paleta in PALETAS:
+                for modo in MODOS:
+                    yield nombre, paleta, modo, False, ancla
+            yield nombre, "laguna", "claro", True, ancla          # el diseño original de Sara
 
 
-@pytest.mark.parametrize("nombre,paleta,modo,sara", list(_combinaciones()))
-def test_captura(pagina, nombre, paleta, modo, sara):
+@pytest.mark.parametrize("nombre,paleta,modo,sara,ancla", list(_combinaciones()))
+def test_captura(pagina, nombre, paleta, modo, sara, ancla):
     if nombre in VACIAS:
         pytest.skip(f"página vacía: {VACIAS[nombre]}")
     pagina.add_init_script(
         f"localStorage.setItem('lumea-paleta', '{paleta}'); localStorage.setItem('lumea-modo', '{modo}')")
-    pagina.goto(f"{pagina.servidor}/{nombre}" + ("?piel=sara" if sara else ""))
+    pagina.goto(f"{pagina.servidor}/{nombre}" + ("?piel=sara" if sara else "") + ancla)
     pagina.wait_for_load_state("networkidle")
-    etiqueta = "sara" if sara else f"{paleta}-{modo}"
+    etiqueta = ("sara" if sara else f"{paleta}-{modo}") + (f"-{ancla[1:]}" if ancla else "")
     CARPETA.mkdir(exist_ok=True)
     pagina.screenshot(path=str(CARPETA / f"{nombre[:-5]}__{etiqueta}.png"), full_page=True)
 
     resultado = Axe().run(pagina, options={"runOnly": ["color-contrast"]})
     errores = resultado.response["violations"]
     nodos = sum(len(v["nodes"]) for v in errores)
-    _resumen.append(f"{nombre:26} {etiqueta:18} {nodos} elementos con contraste bajo")
+    _resumen.append(f"{nombre:26} {etiqueta:30} {nodos} elementos con contraste bajo")
     if nombre in ESTRICTAS and not sara:
         assert nodos == 0, f"{nombre} ({etiqueta}): {nodos} errores de contraste"
 

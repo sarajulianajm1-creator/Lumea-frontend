@@ -1,0 +1,132 @@
+/* =====================================================================
+   LUMEA · avatar.css — la pantalla de Avatar (bosquejo 06, variante A «la vitrina»)
+   ---------------------------------------------------------------------
+   Solo tokens. Las piezas generales (.tarjeta, .chip, .boton, .barra-xp…) vienen
+   de componentes.css y las calcomanías de pegatinas.css.
+   Color: el avatar y el ánimo = emoción (guayaba); las misiones = misión (mora);
+   nivel = logro. Maracuyá y mango nunca como texto.
+   ===================================================================== */
+
+/* Texto que solo oye el lector de pantalla (no depende de Bootstrap) */
+.solo-lector {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.avatar-pantalla { display: grid; gap: var(--e-5); grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 840px) {
+  .avatar-pantalla { grid-template-columns: minmax(280px, 5fr) minmax(0, 7fr); }
+  .avatar-vitrina { position: sticky; top: var(--e-5); }
+}
+.avatar-pantalla[hidden], .estado[hidden] { display: none; }
+
+/* ---------- La vitrina ---------- */
+.avatar-vitrina { display: grid; gap: var(--e-3); }
+.avatar-vitrina__cabeza { display: flex; align-items: center; justify-content: space-between; gap: var(--e-2); }
+.avatar-vitrina__cabeza h2 { font-size: var(--t-l); }
+.avatar-vitrina .barra-xp__riel { background: var(--c-superficie); }
+.avatar-vitrina__puesto { font-weight: var(--t-peso-medio); overflow-wrap: anywhere; }
+
+.avatar-figura {
+  position: relative;
+  width: min(100%, 280px); aspect-ratio: 1; margin: 0 auto;
+  border-radius: var(--r-panel);
+  background: var(--c-superficie);
+  display: grid; place-items: center; overflow: hidden;
+}
+.avatar-figura__capa { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.avatar-figura__cara { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.avatar-figura__silueta { display: grid; place-items: center; color: var(--c-emocion-tinta); }
+.avatar-figura__silueta .icono { width: 96px; height: 96px; stroke-width: 1.25; }
+/* Al ponerse algo: un saltico (un solo movimiento, con rebote porque es un logro) */
+.avatar-figura--saltico { animation: avatar-saltico var(--m-lento) var(--m-resorte); }
+@keyframes avatar-saltico {
+  0%   { transform: none; }
+  40%  { transform: translateY(-14px); }
+  100% { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .avatar-figura--saltico { animation: none; } }
+
+/* ---------- Pestañas ---------- */
+.avatar-panel { display: grid; gap: var(--e-4); }
+.pestanas {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--e-1);
+  padding: var(--e-1);
+  border-radius: var(--r-pildora);
+  background: var(--c-superficie-2);
+  border: 1.5px solid var(--c-borde);
+}
+.pestana {
+  min-height: 44px; padding: 0 var(--e-2);
+  border: 0; border-radius: var(--r-pildora);
+  background: transparent; color: var(--c-tinta);
+  font: inherit; font-weight: var(--t-peso-medio); cursor: pointer;
+  transition: background var(--m-rapido) var(--m-salida);
+}
+.pestana:hover { background: var(--c-marca-suave); }
+.pestana[aria-selected="true"] { background: var(--c-marca); color: var(--c-sobre-marca); font-weight: var(--t-peso-fuerte); }
+.pestana:focus-visible, .panel-pestana:focus-visible { outline: 3px solid var(--c-foco); outline-offset: 2px; }
+
+.panel-pestana { display: grid; gap: var(--e-3); align-content: start; }
+.panel-pestana[hidden] { display: none; }
+.panel-pestana__titulo { font-size: var(--t-l); }
+.panel-pestana__nota { color: var(--c-tinta-suave); font-size: var(--t-s); }
+.estado-vacio { color: var(--c-tinta-suave); }
+
+/* ---------- Misiones ---------- */
+.misiones { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-3); }
+.mision { display: flex; align-items: center; justify-content: space-between; gap: var(--e-4); }
+.mision__cuerpo { display: grid; gap: var(--e-2); min-width: 0; }
+.mision__nombre { font-size: var(--t-m); font-weight: var(--t-peso-fuerte); overflow-wrap: anywhere; }
+.mision__fila { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2) var(--e-3); }
+.mision__estado { display: inline-flex; align-items: center; gap: var(--e-1); font-size: var(--t-s); color: var(--c-tinta); }
+.mision--cumplida .mision__estado { font-weight: var(--t-peso-fuerte); }
+.mision__pegatina .pegatina { width: 56px; }
+
+/* ---------- Armario ---------- */
+.armario { display: grid; gap: var(--e-5); }
+.armario__titulo { font-size: var(--t-m); margin-bottom: var(--e-3); }
+.armario__lista {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: var(--e-3); grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.prenda {
+  display: grid; gap: var(--e-2); justify-items: center; text-align: center; align-content: start;
+  padding: var(--e-4);
+  border-radius: var(--r-tarjeta);
+  background: var(--c-superficie);
+  border: 1.5px solid var(--c-borde);
+}
+.prenda--puesta { border-color: var(--c-emocion-tinta); background: var(--c-emocion-suave); }
+.prenda--bloqueada { border-style: dashed; border-color: var(--c-borde-fuerte); background: transparent; }
+.prenda__imagen {
+  display: grid; place-items: center;
+  width: 64px; aspect-ratio: 1; border-radius: var(--r-tarjeta);
+  background: var(--c-emocion-contenedor); color: var(--c-emocion-tinta);
+}
+.prenda--bloqueada .prenda__imagen { background: transparent; border: 1.5px dashed var(--c-borde-fuerte); color: var(--c-tinta-suave); }
+.prenda__imagen img { width: 100%; height: 100%; object-fit: contain; }
+.prenda__imagen .icono { width: 28px; height: 28px; }
+.prenda__nombre { font-weight: var(--t-peso-fuerte); overflow-wrap: anywhere; }
+.prenda__estado { font-size: var(--t-s); color: var(--c-tinta); }
+.prenda__boton { width: 100%; padding: 0 var(--e-3); }
+.prenda__boton[aria-disabled="true"] { opacity: 1; cursor: not-allowed; color: var(--c-tinta); background: transparent; border-style: dashed; }
+.prenda__boton[aria-disabled="true"]:hover { background: transparent; }
+
+/* ---------- Álbum ---------- */
+.album {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: var(--e-4); grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.album__item { display: grid; gap: var(--e-1); justify-items: center; text-align: center; align-content: start; padding: var(--e-3); }
+.album__item .pegatina { width: 88px; margin-bottom: var(--e-2); }
+.album__nombre { font-size: var(--t-m); font-weight: var(--t-peso-fuerte); overflow-wrap: anywhere; }
+.album__texto { font-size: var(--t-s); color: var(--c-tinta); overflow-wrap: anywhere; }
+.album__fecha { font-size: var(--t-s); color: var(--c-tinta-suave); }
+.album__item--vacia .album__nombre { color: var(--c-tinta); }
+
+/* ---------- Estados ---------- */
+.estado { display: grid; justify-items: center; gap: var(--e-3); padding: var(--e-6) 0; text-align: center; color: var(--c-tinta-suave); }
+.estado--sesion { color: var(--c-tinta); }
+.esqueleto--bloque { height: 160px; width: min(100%, 420px); }
+.boton { text-decoration: none; }

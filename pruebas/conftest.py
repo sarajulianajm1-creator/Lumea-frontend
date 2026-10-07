@@ -42,6 +42,41 @@ def cargar_respuesta(nombre):
     return json.loads((RESPUESTAS / f"{nombre}.json").read_text(encoding="utf-8"))
 
 
+_ROPA = [("buzo_verde", "Buzo verde", 1), ("camiseta_lumea", "Camiseta Lumea", 3), ("ruana", "Ruana", 6)]
+_ACCESORIOS = [("gafas", "Gafas", 2), ("audifonos", "Audífonos", 4), ("sombrero_vueltiao", "Sombrero vueltiao", 8)]
+
+
+def avatar_estado(nivel=2, ropa=None, accesorio=None, imagenes=False):
+    """El cuerpo de GET /avatar (y de equipar/quitar, que responden igual) como lo arma el backend
+    real: 3 prendas y 3 accesorios que se abren por nivel máximo, y las capas en orden de apilado."""
+    def url(archivo):
+        return f"http://127.0.0.1:5002/static/avatar/{archivo}"
+
+    def objeto(tipo, id_, nombre, nivel_requerido):
+        archivo = f"{tipo}_{id_}.png"
+        return {"id": id_, "tipo": tipo, "nombre": nombre, "archivo": archivo, "imagen_lista": imagenes,
+                "nivel_requerido": nivel_requerido, "desbloqueado": nivel >= nivel_requerido,
+                "niveles_faltantes": max(0, nivel_requerido - nivel),
+                "puesto": id_ in (ropa, accesorio), "url": url(archivo)}
+
+    objetos = {"ropa": [objeto("ropa", *o) for o in _ROPA], "accesorio": [objeto("accesorio", *o) for o in _ACCESORIOS]}
+    base = {"id": "base_1", "nombre": "Base 1", "archivo": "base_1.png", "imagen_lista": imagenes, "url": url("base_1.png")}
+    capas = [{"tipo": "base", "id": "base_1", "archivo": "base_1.png", "imagen_lista": imagenes, "url": url("base_1.png")}]
+    puesto = {"ropa": None, "accesorio": None}
+    for tipo, id_ in (("ropa", ropa), ("accesorio", accesorio)):
+        if id_:
+            o = next(x for x in objetos[tipo] if x["id"] == id_)
+            puesto[tipo] = {k: o[k] for k in ("id", "nombre", "archivo", "imagen_lista", "url")}
+            capas.append({"tipo": tipo, "id": id_, "archivo": o["archivo"], "imagen_lista": imagenes, "url": o["url"]})
+    return {
+        "success": True, "nivel_maximo": nivel, "imagenes_listas": imagenes, "base": base, "puesto": puesto, "capas": capas,
+        "bases": [dict(base, seleccionada=True), {"id": "base_2", "nombre": "Base 2", "archivo": "base_2.png", "imagen_lista": imagenes,
+                                                   "seleccionada": False, "url": url("base_2.png")}],
+        "objetos": objetos,
+        "respaldo_dicebear": {"id": "sol", "nombre": "Sol", "url": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=default"},
+    }
+
+
 class _Silencioso(SimpleHTTPRequestHandler):
     def log_message(self, *args):
         pass
@@ -61,14 +96,21 @@ class Backend:
     def __init__(self):
         self.respuestas = {}
         self.llamadas = []
+        self.cuerpos = {}                 # (método, ruta) -> el último cuerpo que se le mandó
 
     def poner(self, metodo, ruta, cuerpo, estado=200):
         self.respuestas[(metodo, ruta)] = (estado, cuerpo)
+
+    def cuerpo_enviado(self, metodo, ruta):
+        """El JSON que la página mandó en la última llamada, o None si no hubo."""
+        enviado = self.cuerpos.get((metodo, ruta))
+        return json.loads(enviado) if enviado else None
 
     def _responder(self, route):
         pet = route.request
         ruta = pet.url.split("5002", 1)[1].split("?")[0]
         self.llamadas.append((pet.method, ruta))
+        self.cuerpos[(pet.method, ruta)] = pet.post_data
         if pet.method == "OPTIONS":
             return route.fulfill(status=204, headers=_CORS)
         if (pet.method, ruta) in self.respuestas:

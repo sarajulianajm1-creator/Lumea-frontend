@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Paleta, modo y piel (?piel=sara muestra el original) -->
+<script src="tema.js"></script>
+<title>LUMEA | Avatar</title>
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="lumeaaa.png">
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Bootstrap 5.3.3 CSS (copia local en vendor/: funciona sin internet) -->
+<link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
+<!-- Hoja de Estilos Unificada: la barra de navegación es la de las demás pantallas privadas -->
+<link rel="stylesheet" href="estilos/tokens.css">
+<link rel="stylesheet" href="estilos/paletas.css">
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="estilos/puente-sara.css">
+<!-- Las piezas de Lumea (tarjetas, chips, barra de XP) y las propias de esta pantalla -->
+<link rel="stylesheet" href="estilos/componentes.css">
+<link rel="stylesheet" href="estilos/pegatinas.css">
+<link rel="stylesheet" href="estilos/avatar.css">
+</head>
+<body>
+
+<!-- Barra de Navegación Global (la misma en las cinco pantallas privadas) -->
+<header>
+    <div class="container fixed-bottom d-flex justify-content-center mb-4">
+        <nav class="custom-navbar d-flex align-items-center justify-content-around px-3 py-2 shadow-lg" aria-label="Principal">
+            <a href="index-ingresado.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-house-door-fill fs-4" aria-hidden="true"></i>
+                <span>Inicio</span>
+            </a>
+
+            <a href="mis-registros.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-basket-fill fs-4" aria-hidden="true"></i>
+                <span>Mis registros</span>
+            </a>
+
+            <a href="alimentos.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-camera-fill fs-4" aria-hidden="true"></i>
+                <span>Registrar</span>
+            </a>
+
+            <a href="progreso.html" class="nav-item-custom text-center text-decoration-none">
+                <i class="bi bi-graph-up-arrow fs-4" aria-hidden="true"></i>
+                <span>Progreso</span>
+            </a>
+
+            <a href="avatar.html" class="nav-item-custom text-center text-decoration-none" aria-current="page">
+                <i class="bi bi-person-fill fs-4" aria-hidden="true"></i>
+                <span>Avatar</span>
+            </a>
+        </nav>
+    </div>
+</header>
+
+<main class="contenido">
+  <header>
+    <h1 class="contenido__titulo">Tu avatar</h1>
+    <p class="contenido__subtitulo">Cámbiale la ropa, mira tus misiones y tu álbum de calcomanías.</p>
+  </header>
+
+  <!-- Estados: cargando, error y sin sesión (avatar.js muestra uno a la vez) -->
+  <div id="estado-cargando" class="estado" role="status" hidden>
+    <div class="esqueleto esqueleto--bloque"></div>
+    <p>Cargando tu avatar…</p>
+  </div>
+
+  <div id="estado-error" class="estado" role="alert" hidden>
+    <p>No pudimos cargar tu avatar. Revisa que la app esté encendida e inténtalo otra vez.</p>
+    <button type="button" id="estado-reintentar" class="boton">Intentar otra vez</button>
+  </div>
+
+  <div id="sin-sesion" class="estado estado--sesion" hidden>
+    <p>Inicia sesión para ver tu avatar.</p>
+    <a class="boton" href="iniciar-sesion.html">Iniciar sesión</a>
+  </div>
+
+  <div id="avatar-contenido" class="avatar-pantalla" hidden>
+    <!-- La vitrina: tu avatar en grande, con tu nivel -->
+    <section class="avatar-vitrina tarjeta tarjeta--emocion" aria-labelledby="vitrina-titulo">
+      <div class="avatar-vitrina__cabeza">
+        <h2 id="vitrina-titulo">Tu avatar</h2>
+        <span id="avatar-nivel" class="chip chip--logro numero"></span>
+      </div>
+      <div id="avatar-figura" class="avatar-figura" role="img" aria-label="Tu avatar"></div>
+      <p id="avatar-puesto" class="avatar-vitrina__puesto"></p>
+      <div class="barra-xp">
+        <div class="barra-xp__riel" id="avatar-riel" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia el siguiente nivel">
+          <div class="barra-xp__relleno" id="avatar-relleno"></div>
+        </div>
+      </div>
+      <p id="avatar-faltan" class="avatar-vitrina__faltan"></p>
+    </section>
+
+    <!-- Misiones | Armario | Calcomanías (abren con #misiones, #armario y #calcomanias) -->
+    <section class="avatar-panel" aria-label="Misiones, armario y calcomanías">
+      <div id="pestanas" class="pestanas" role="tablist" aria-label="Tu avatar">
+        <button type="button" role="tab" id="pestana-misiones" class="pestana" aria-controls="panel-misiones" aria-selected="true">Misiones</button>
+        <button type="button" role="tab" id="pestana-armario" class="pestana" aria-controls="panel-armario" aria-selected="false" tabindex="-1">Armario</button>
+        <button type="button" role="tab" id="pestana-calcomanias" class="pestana" aria-controls="panel-calcomanias" aria-selected="false" tabindex="-1">Calcomanías</button>
+      </div>
+
+      <div role="tabpanel" id="panel-misiones" class="panel-pestana" aria-labelledby="pestana-misiones" tabindex="0">
+        <h2 class="panel-pestana__titulo">Misiones de hoy</h2>
+        <ul id="misiones-lista" class="misiones"></ul>
+        <p id="misiones-vacio" class="estado-vacio" hidden>Hoy no hay misiones para mostrar.</p>
+      </div>
+
+      <div role="tabpanel" id="panel-armario" class="panel-pestana" aria-labelledby="pestana-armario" tabindex="0" hidden>
+        <h2 class="panel-pestana__titulo">Tu armario</h2>
+        <p class="panel-pestana__nota">Lo que se abre al subir de nivel es tuyo para siempre.</p>
+        <div id="armario-grupos" class="armario"></div>
+      </div>
+
+      <div role="tabpanel" id="panel-calcomanias" class="panel-pestana" aria-labelledby="pestana-calcomanias" tabindex="0" hidden>
+        <h2 class="panel-pestana__titulo">Mi álbum</h2>
+        <p id="album-resumen" class="panel-pestana__nota numero" hidden></p>
+        <p id="album-error" class="estado-vacio" hidden>No pudimos cargar tu álbum. Vuelve a abrir esta pantalla en un momento.</p>
+        <ul id="album-lista" class="album"></ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- Lo que se acaba de hacer en el armario («Te pusiste Gafas»), para el lector de pantalla -->
+  <p id="avatar-aviso" class="solo-lector" role="status" aria-live="polite"></p>
+</main>
+
+<div class="espacio-barra-inferior" aria-hidden="true"></div>
+
+<!-- api.js (dirección y llamadas al backend), formato.js (textos), pegatinas.js (calcomanías) y avatar.js (llena esta pantalla) -->
+<script src="api.js"></script>
+<script src="formato.js"></script>
+<script src="pegatinas.js"></script>
+<script src="avatar.js"></script>
+</body>
+</html>

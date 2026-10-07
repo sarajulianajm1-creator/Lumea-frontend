@@ -6,8 +6,8 @@ import pytest
 RAIZ = Path(__file__).resolve().parent.parent
 PAGINAS = sorted(p.name for p in RAIZ.glob("*.html"))
 
-# Páginas que todavía no existen (se construyen en F3 y F4 de la misión).
-VACIAS = {"avatar.html": "se construye en la fase F4"}
+# Páginas que todavía no existen (ya no queda ninguna: Progreso y Avatar se construyeron en F3 y F4).
+VACIAS = {}
 # Reglas que fallan hoy en páginas de Sara (se reportan, no se arreglan aquí).
 XFAIL = {
     ("inicio.html", "errores"): "borrador de Isabella: enlaza estilos/___.css, que aún no existen",
