@@ -1,0 +1,52 @@
+/* =====================================================================
+   LUMEA · pantallas-sara.css — piezas NUEVAS de las pantallas de Sara (Inicio, Progreso,
+   Ánimo) y del menú privado. Solo tokens (--c-*, --e-*, --r-*, --m-*): ningún color a mano.
+   Lo que son colores de las clases de Sara (style.css) se reemplaza en puente-sara.css.
+   Nombres BEM; no depende de componentes.css (esa hoja no se carga aquí).
+   ===================================================================== */
+
+/* Solo para el lector de pantalla */
+.solo-lector {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- Pie del menú lateral: tarjeta de usuario + cerrar sesión ---------- */
+.menu-pie { display: grid; gap: var(--e-3); }
+.menu-pie__salir {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
+  min-height: 44px; padding: 0 var(--e-4);
+  border: 1.5px solid var(--c-borde-fuerte); border-radius: var(--r-control);
+  background: transparent; color: var(--c-tinta-suave);
+  font: inherit; font-weight: var(--t-peso-medio); cursor: pointer;
+  transition: background var(--m-rapido) var(--m-salida), color var(--m-rapido) var(--m-salida);
+}
+.menu-pie__salir:hover { background: var(--c-marca-suave); color: var(--c-marca-tinta); }
+
+/* ---------- Cara del avatar (DiceBear) o su silueta ---------- */
+.lumea-cara {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+}
+.lumea-cara__img { width: 100%; height: 100%; object-fit: cover; }
+.lumea-cara__silueta { font-size: 60%; color: var(--c-emocion-tinta); }
+
+/* ---------- Aviso corto (toast) ---------- */
+.lumea-toast-container {
+  position: fixed; right: var(--e-4); bottom: calc(var(--alto-barra-inferior, 80px) + var(--e-4));
+  z-index: 1200; display: grid; gap: var(--e-2); max-width: min(92vw, 360px);
+}
+.lumea-toast-item {
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--r-tarjeta);
+  background: var(--c-marca-tinta); color: var(--c-superficie);
+  font-weight: var(--t-peso-medio); font-size: var(--t-s);
+  box-shadow: var(--s-2);
+  animation: lumea-toast-entra var(--m-base) var(--m-salida);
+}
+@keyframes lumea-toast-entra { from { opacity: 0; transform: translateY(var(--e-2)); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lumea-toast-item { animation: none; } }
+
+/* ---------- Estados de la pantalla: cargando, error, sin datos ---------- */
+.estado-pantalla { display: grid; gap: var(--e-3); justify-items: start; padding: var(--e-5); }
+.estado-pantalla[hidden] { display: none; }

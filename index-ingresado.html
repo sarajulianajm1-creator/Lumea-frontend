@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="style.css" />
   <!-- Piel de Lumea sobre el diseño de Sara (no cambia style.css) -->
   <link rel="stylesheet" href="estilos/puente-sara.css">
+  <link rel="stylesheet" href="estilos/pantallas-sara.css">
 </head>
 
 <body class="lumea-screen-wrapper">
@@ -33,67 +34,33 @@
          MENÚ LATERAL DESKTOP (>= 992px / 1280px)
          En 1280px la barra inferior se convierte en este menú lateral
          ============================================================ -->
+    <!-- menu-privado:lateral (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
     <aside class="lumea-desktop-sidebar d-none d-lg-flex">
       <div>
-        <a href="index-ingresado.html" class="sidebar-logo">
-          <span style="font-size: 1.6rem;">🌿</span> LUMEA
-        </a>
-
-        <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item">
-            <a href="index-ingresado.html" class="active">
-              <i class="bi bi-house-door-fill fs-5"></i>
-              <span>Inicio</span>
-              <span class="nav-badge-pill">Hoy</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="alimentos.html">
-              <i class="bi bi-egg-fried fs-5"></i>
-              <span>Mis comidas</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="alimentos.html" style="background: var(--lumea-accent-soft); color: var(--lumea-primary);">
-              <i class="bi bi-camera-fill fs-5 text-success"></i>
-              <span>Registrar comida</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="progreso.html">
-              <i class="bi bi-bar-chart-line-fill fs-5"></i>
-              <span>Progreso</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="avatar.html">
-              <i class="bi bi-person-badge-fill fs-5"></i>
-              <span>Avatar & Armario</span>
-            </a>
-          </li>
-          <li class="sidebar-nav-item">
-            <a href="emociones.html">
-              <i class="bi bi-emoji-smile-fill fs-5"></i>
-              <span>Ánimo</span>
-            </a>
-          </li>
-        </ul>
+        <a href="index-ingresado.html" class="sidebar-logo"><i class="bi bi-flower2" aria-hidden="true"></i> LUMEA</a>
+        <nav aria-label="Principal">
+          <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item"><a href="index-ingresado.html" class="active" aria-current="page"><i class="bi bi-house-door-fill fs-5" aria-hidden="true"></i><span>Inicio</span></a></li>
+          <li class="sidebar-nav-item"><a href="mis-registros.html"><i class="bi bi-journal-text fs-5" aria-hidden="true"></i><span>Mis registros</span></a></li>
+          <li class="sidebar-nav-item"><a href="alimentos.html"><i class="bi bi-camera-fill fs-5" aria-hidden="true"></i><span>Registrar</span></a></li>
+          <li class="sidebar-nav-item"><a href="progreso.html"><i class="bi bi-bar-chart-line-fill fs-5" aria-hidden="true"></i><span>Progreso</span></a></li>
+          <li class="sidebar-nav-item"><a href="avatar.html"><i class="bi bi-person-badge-fill fs-5" aria-hidden="true"></i><span>Avatar</span></a></li>
+          </ul>
+        </nav>
       </div>
-
-      <!-- Usuario y Racha en Menú Lateral -->
+      <div class="menu-pie">
       <div class="sidebar-user-card">
-        <div class="sidebar-user-avatar">
-          <span class="lumea-avatar-mini-emoji">🙂</span>
-        </div>
+        <div class="sidebar-user-avatar"><span class="lumea-cara" data-cara="hoy"></span></div>
         <div class="flex-grow-1 overflow-hidden">
-          <h6 class="mb-0 fw-bold text-truncate lumea-bind-nombre">Cargando...</h6>
-          <small class="text-muted d-block fw-semibold"><span class="lumea-bind-nivel">Nivel --</span> • 🔥 <span class="lumea-bind-racha">--</span></small>
+          <p class="mb-0 fw-bold text-truncate lumea-bind-nombre">Cargando...</p>
+          <small class="text-muted d-block fw-semibold"><span class="lumea-bind-nivel">Nivel --</span> &bull; <i class="bi bi-fire" aria-hidden="true"></i> <span class="lumea-bind-racha">--</span></small>
         </div>
-        <a href="avatar.html" class="btn btn-sm btn-light rounded-circle shadow-sm" title="Editar Apariencia">
-          <i class="bi bi-gear"></i>
-        </a>
+        <a href="avatar.html" class="btn btn-sm btn-light rounded-circle shadow-sm" aria-label="Editar mi avatar"><i class="bi bi-gear" aria-hidden="true"></i></a>
+      </div>
+        <button type="button" class="menu-pie__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
       </div>
     </aside>
+    <!-- /menu-privado:lateral -->
 
     <!-- ============================================================
          ÁREA PRINCIPAL DE CONTENIDO
@@ -380,47 +347,17 @@
        BARRA INFERIOR FLOTANTE MÓVIL (< 992px)
        Con Botón Central de Cámara Elevado (Ley de Fitts)
        ============================================================ -->
+  <!-- menu-privado:celular (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
   <div class="lumea-bottom-nav-container d-lg-none">
-    <nav class="lumea-pill-nav">
-
-      <!-- Item 1: Inicio (Activo) -->
-      <a href="index-ingresado.html" class="nav-link-item active">
-        <i class="bi bi-house-door-fill"></i>
-        <span>Inicio</span>
-      </a>
-
-      <!-- Item 2: Mis comidas -->
-      <a href="alimentos.html" class="nav-link-item">
-        <i class="bi bi-egg-fried"></i>
-        <span>Comidas</span>
-      </a>
-
-      <!-- Item 3: Cámara al Centro (Ley de Fitts: Grande y cercana al pulgar) -->
-      <a href="alimentos.html" class="nav-camera-fab" title="Registrar comida con cámara">
-        <i class="bi bi-camera-fill"></i>
-        <span>Cámara</span>
-      </a>
-
-      <!-- Item 4: Emociones / Ánimo -->
-      <a href="emociones.html" class="nav-link-item">
-        <i class="bi bi-emoji-smile-fill"></i>
-        <span>Emociones</span>
-      </a>
-
-      <!-- Item 5: Progreso -->
-      <a href="progreso.html" class="nav-link-item">
-        <i class="bi bi-bar-chart-line-fill"></i>
-        <span>Progreso</span>
-      </a>
-
-      <!-- Item 6: Avatar -->
-      <a href="avatar.html" class="nav-link-item">
-        <i class="bi bi-person-fill"></i>
-        <span>Avatar</span>
-      </a>
-
+    <nav class="lumea-pill-nav" aria-label="Principal en celular">
+      <a href="index-ingresado.html" class="nav-link-item active" aria-label="Inicio" aria-current="page"><i class="bi bi-house-door-fill" aria-hidden="true"></i><span>Inicio</span></a>
+      <a href="mis-registros.html" class="nav-link-item" aria-label="Mis registros"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Registros</span></a>
+      <a href="alimentos.html" class="nav-camera-fab" aria-label="Registrar"><i class="bi bi-camera-fill" aria-hidden="true"></i><span>Registrar</span></a>
+      <a href="progreso.html" class="nav-link-item" aria-label="Progreso"><i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i><span>Progreso</span></a>
+      <a href="avatar.html" class="nav-link-item" aria-label="Avatar"><i class="bi bi-person-badge-fill" aria-hidden="true"></i><span>Avatar</span></a>
     </nav>
   </div>
+  <!-- /menu-privado:celular -->
 
   <!-- Scripts Globales de Lumea -->
   <script src="lumea-state.js"></script>
@@ -503,6 +440,7 @@
       }
     });
   </script>
+  <script src="menu-privado.js"></script>
 </body>
 
 </html>

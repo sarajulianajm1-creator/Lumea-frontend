@@ -21,45 +21,35 @@
 <link rel="stylesheet" href="estilos/paletas.css">
 <link rel="stylesheet" href="style.css" />
 <link rel="stylesheet" href="estilos/puente-sara.css">
+<link rel="stylesheet" href="estilos/pantallas-sara.css">
 <!-- Las piezas de Lumea (tarjetas, chips, barra de XP) y las propias de esta pantalla -->
 <link rel="stylesheet" href="estilos/componentes.css">
 <link rel="stylesheet" href="estilos/pegatinas.css">
 <link rel="stylesheet" href="estilos/avatar.css">
 </head>
-<body>
+<body class="lumea-screen-wrapper">
+<div class="lumea-desktop-layout">
 
-<!-- Barra de Navegación Global (la misma en las cinco pantallas privadas) -->
-<header>
-    <div class="container fixed-bottom d-flex justify-content-center mb-4">
-        <nav class="custom-navbar d-flex align-items-center justify-content-around px-3 py-2 shadow-lg" aria-label="Principal">
-            <a href="index-ingresado.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-house-door-fill fs-4" aria-hidden="true"></i>
-                <span>Inicio</span>
-            </a>
-
-            <a href="mis-registros.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-basket-fill fs-4" aria-hidden="true"></i>
-                <span>Mis registros</span>
-            </a>
-
-            <a href="alimentos.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-camera-fill fs-4" aria-hidden="true"></i>
-                <span>Registrar</span>
-            </a>
-
-            <a href="progreso.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-graph-up-arrow fs-4" aria-hidden="true"></i>
-                <span>Progreso</span>
-            </a>
-
-            <a href="avatar.html" class="nav-item-custom text-center text-decoration-none" aria-current="page">
-                <i class="bi bi-person-fill fs-4" aria-hidden="true"></i>
-                <span>Avatar</span>
-            </a>
+    <!-- menu-privado:lateral (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
+    <aside class="lumea-desktop-sidebar d-none d-lg-flex">
+      <div>
+        <a href="index-ingresado.html" class="sidebar-logo"><i class="bi bi-flower2" aria-hidden="true"></i> LUMEA</a>
+        <nav aria-label="Principal">
+          <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item"><a href="index-ingresado.html"><i class="bi bi-house-door-fill fs-5" aria-hidden="true"></i><span>Inicio</span></a></li>
+          <li class="sidebar-nav-item"><a href="mis-registros.html"><i class="bi bi-journal-text fs-5" aria-hidden="true"></i><span>Mis registros</span></a></li>
+          <li class="sidebar-nav-item"><a href="alimentos.html"><i class="bi bi-camera-fill fs-5" aria-hidden="true"></i><span>Registrar</span></a></li>
+          <li class="sidebar-nav-item"><a href="progreso.html"><i class="bi bi-bar-chart-line-fill fs-5" aria-hidden="true"></i><span>Progreso</span></a></li>
+          <li class="sidebar-nav-item"><a href="avatar.html" class="active" aria-current="page"><i class="bi bi-person-badge-fill fs-5" aria-hidden="true"></i><span>Avatar</span></a></li>
+          </ul>
         </nav>
-    </div>
-</header>
-
+      </div>
+      <div class="menu-pie">
+        <button type="button" class="menu-pie__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
+      </div>
+    </aside>
+    <!-- /menu-privado:lateral -->
+    <div class="lumea-main-area">
 <main class="contenido">
   <header>
     <h1 class="contenido__titulo">Tu avatar</h1>
@@ -132,12 +122,25 @@
   <p id="avatar-aviso" class="solo-lector" role="status" aria-live="polite"></p>
 </main>
 
-<div class="espacio-barra-inferior" aria-hidden="true"></div>
-
 <!-- api.js (dirección y llamadas al backend), formato.js (textos), pegatinas.js (calcomanías) y avatar.js (llena esta pantalla) -->
+    </div>
+  </div>
+  <!-- menu-privado:celular (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
+  <div class="lumea-bottom-nav-container d-lg-none">
+    <nav class="lumea-pill-nav" aria-label="Principal en celular">
+      <a href="index-ingresado.html" class="nav-link-item" aria-label="Inicio"><i class="bi bi-house-door-fill" aria-hidden="true"></i><span>Inicio</span></a>
+      <a href="mis-registros.html" class="nav-link-item" aria-label="Mis registros"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Registros</span></a>
+      <a href="alimentos.html" class="nav-camera-fab" aria-label="Registrar"><i class="bi bi-camera-fill" aria-hidden="true"></i><span>Registrar</span></a>
+      <a href="progreso.html" class="nav-link-item" aria-label="Progreso"><i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i><span>Progreso</span></a>
+      <a href="avatar.html" class="nav-link-item active" aria-label="Avatar" aria-current="page"><i class="bi bi-person-badge-fill" aria-hidden="true"></i><span>Avatar</span></a>
+    </nav>
+  </div>
+  <!-- /menu-privado:celular -->
+
 <script src="api.js"></script>
 <script src="formato.js"></script>
 <script src="pegatinas.js"></script>
 <script src="avatar.js"></script>
+  <script src="menu-privado.js"></script>
 </body>
 </html>

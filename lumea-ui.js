@@ -48,18 +48,24 @@
     return a.url_con_animo || a.url || null;
   }
 
+  // Una silueta de Bootstrap Icons para cuando no hay cara (sin avatar o sin internet)
+  function siluetaDeCara() {
+    const icono = crear("i", "bi bi-person-fill lumea-cara__silueta");
+    icono.setAttribute("aria-hidden", "true");
+    return icono;
+  }
+
   // Dibuja la cara de `estado` (o la del ánimo de hoy si no se pasa) dentro de `contenedor`.
-  // Sin URL o sin internet no queda nada: el nombre del estado va escrito al lado.
+  // Sin URL o sin internet queda la silueta: el nombre del estado va siempre escrito al lado.
   function ponerCara(contenedor, estado) {
-    contenedor.replaceChildren();
     const url = urlDeCara(estado);
-    if (!url) return;
+    if (!url) { contenedor.replaceChildren(siluetaDeCara()); return; }
     const img = document.createElement("img");
     img.alt = "";
     img.src = url;
     img.className = "lumea-cara__img";
-    img.addEventListener("error", () => img.remove());
-    contenedor.appendChild(img);
+    img.addEventListener("error", () => contenedor.replaceChildren(siluetaDeCara()));
+    contenedor.replaceChildren(img);
   }
 
   // ---------- Sincronizar todo con el estado ----------
