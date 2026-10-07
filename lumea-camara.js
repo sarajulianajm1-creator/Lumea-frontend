@@ -284,6 +284,20 @@
   });
   window.addEventListener("beforeunload", apagar);
 
+  // «Foto directa» de Inicio: la foto llega UNA vez en sessionStorage (ya reducida) y se borra al leerla
+  async function fotoDeInicio() {
+    let url = null;
+    try { url = sessionStorage.getItem("lumea_foto_temporal"); sessionStorage.removeItem("lumea_foto_temporal"); } catch (e) {}
+    if (!url) return;
+    try {
+      const blob = await (await fetch(url)).blob();
+      await analizar(new File([blob], "foto.jpg", { type: blob.type || "image/jpeg" }));
+    } catch (e) {
+      poner("backend-estado", "No se pudo abrir la foto que tomaste en Inicio. Usa «Subir foto».");
+    }
+  }
+
   actualizarBotones();
   cargarCatalogo();
+  fotoDeInicio();
 })();

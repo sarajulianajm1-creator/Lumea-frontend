@@ -24,6 +24,8 @@
   <!-- Piel de Lumea sobre el diseño de Sara (no cambia style.css) -->
   <link rel="stylesheet" href="estilos/puente-sara.css">
   <link rel="stylesheet" href="estilos/pantallas-sara.css">
+  <link rel="stylesheet" href="estilos/pegatinas.css">
+  <link rel="stylesheet" href="estilos/celebracion.css">
 </head>
 
 <body class="lumea-screen-wrapper">
@@ -71,7 +73,7 @@
       <header class="lumea-user-topbar">
         <div>
           <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="badge rounded-pill px-2.5 py-1 fw-bold text-uppercase lumea-bind-fecha" style="background: var(--lumea-accent-badge); color: var(--lumea-primary); font-size: 0.72rem;">
+            <span class="badge rounded-pill px-2.5 py-1 fw-bold lumea-bind-fecha" style="background: var(--lumea-accent-badge); color: var(--lumea-primary); font-size: 0.72rem;">
               <i class="bi bi-calendar-event me-1"></i> Cargando fecha...
             </span>
             <small class="text-muted d-none d-sm-inline fw-semibold lumea-bind-hora">• --:--</small>
@@ -83,23 +85,20 @@
         <!-- Botón Top-Right (1): Avatar con la cara del ánimo de hoy. Al tocarlo abre Perfil y apariencia -->
         <a href="avatar.html" class="avatar-header-btn" title="Ver mi avatar y apariencia">
           <div class="avatar-header-icon">
-            <span class="lumea-avatar-mini-emoji">🙂</span>
+            <span class="lumea-cara" data-cara="hoy"></span>
           </div>
           <div class="d-none d-sm-block text-start pe-2">
             <div class="fw-bold" style="font-size: 0.82rem; color: var(--lumea-dark);"><span class="lumea-bind-nivel">Nivel --</span></div>
-            <div style="font-size: 0.72rem; color: var(--lumea-text-muted);">Ver Vitrina</div>
+            <div style="font-size: 0.72rem; color: var(--lumea-text-muted);">Ver mi avatar</div>
           </div>
         </a>
       </header>
 
       <!-- Mensaje de bienvenida cálido cuando vuelve después de días (se activa si el backend lo envía) -->
-      <div id="aviso-regreso" class="card-bienvenida-calida mb-4 shadow-sm" style="display: none;">
-        <span style="font-size: 1.8rem;">💛</span>
-        <div class="flex-grow-1">
-          <div class="fw-bold" style="font-size: 0.95rem;">¡Te extrañamos! Tu nivel sigue siendo tuyo.</div>
-          <small class="opacity-75">Tu racha te espera hoy para seguir creciendo a tu propio ritmo.</small>
-        </div>
-        <button type="button" class="btn-close btn-sm" onclick="this.parentElement.style.display='none'" aria-label="Cerrar"></button>
+      <div id="aviso-regreso" class="card-bienvenida-calida mb-4 shadow-sm" style="display: none;" role="status">
+        <i class="bi bi-heart-fill fs-3" aria-hidden="true"></i>
+        <p class="flex-grow-1 mb-0 fw-bold lumea-bind-regreso"></p>
+        <button type="button" class="btn-close btn-sm" data-cerrar-aviso aria-label="Cerrar el mensaje"></button>
       </div>
 
       <!-- ============================================================
@@ -132,7 +131,7 @@
             <label class="lumea-btn-secondary px-3 py-2 mb-0 d-inline-flex align-items-center gap-2 text-nowrap" style="cursor: pointer; font-size: 0.88rem;">
               <i class="bi bi-phone-fill text-success"></i>
               <span>Foto directa</span>
-              <input type="file" id="input-foto-directa-home" accept="image/*" capture="environment" style="display: none;" onchange="procesarFotoDirectaHome(event)">
+              <input type="file" id="input-foto-directa-home" accept="image/*" capture="environment" class="visually-hidden">
             </label>
           </div>
         </div>
@@ -152,12 +151,12 @@
             <div class="canasta-header">
               <div>
                 <h2 class="canasta-title mb-1">
-                  <span>🧺</span> Tu canasta de hoy
+                  <i class="bi bi-basket2-fill" aria-hidden="true"></i> Tu canasta de hoy
                 </h2>
                 <p class="text-muted small mb-0">Un vistazo a tu día.</p>
               </div>
               <span class="badge rounded-pill bg-light text-secondary border px-3 py-2 fw-bold" style="font-size: 0.75rem;">
-                <i class="bi bi-hand-index-thumb me-1"></i> Toca una forma
+                <i class="bi bi-hand-index-thumb me-1" aria-hidden="true"></i> Toca una forma
               </span>
             </div>
 
@@ -172,7 +171,7 @@
               <a href="alimentos.html" class="shape-item-box" id="shape-comidas" title="Ver mis comidas registradas">
                 <div class="shape-icon-visual">
                   <div class="shape-organic-leaf">
-                    <span>🍃</span>
+                    <i class="bi bi-egg-fried" aria-hidden="true"></i>
                   </div>
                 </div>
                 <div class="shape-metric-number lumea-bind-comidas-count">-- de --</div>
@@ -186,13 +185,13 @@
               <a href="progreso.html" class="shape-item-box" id="shape-xp" title="Ver mi experiencia acumulada">
                 <div class="shape-icon-visual">
                   <div class="shape-star-badge">
-                    <span>⭐</span>
+                    <i class="bi bi-star-fill" aria-hidden="true"></i>
                   </div>
                 </div>
                 <div class="shape-metric-number lumea-bind-xp-valor">--/--</div>
-                <div class="shape-label-text">XP del día</div>
+                <div class="shape-label-text">Meta del día</div>
                 <small class="text-muted mt-1 fw-semibold" style="font-size: 0.72rem;">
-                  Experiencia diaria
+                  Experiencia de hoy
                 </small>
               </a>
 
@@ -200,13 +199,13 @@
               <a href="avatar.html" class="shape-item-box" id="shape-misiones" title="Ver misiones diarias">
                 <div class="shape-icon-visual">
                   <div class="shape-flag-banner">
-                    <span>🚩</span>
+                    <i class="bi bi-flag-fill" aria-hidden="true"></i>
                   </div>
                 </div>
                 <div class="shape-metric-number lumea-bind-misiones-count">-- de --</div>
                 <div class="shape-label-text">Misiones listas</div>
-                <small class="text-warning mt-1 fw-bold" style="font-size: 0.72rem; color: #b78103 !important;">
-                  Misiones activas
+                <small class="mt-1 fw-bold shape-nota shape-nota--mision">
+                  Misiones del día
                 </small>
               </a>
 
@@ -214,7 +213,7 @@
               <a href="emociones.html" class="shape-item-box" id="shape-animo" title="Ver o cambiar mi estado de ánimo">
                 <div class="shape-icon-visual">
                   <div class="shape-face-circle">
-                    <span class="lumea-avatar-mini-emoji">🙂</span>
+                    <span class="lumea-cara" data-cara="hoy"></span>
                   </div>
                 </div>
                 <div class="shape-metric-number lumea-bind-animo-hoy">--</div>
@@ -228,7 +227,7 @@
 
             <!-- Mini Tip debajo de la canasta -->
             <div class="mt-4 p-3 rounded-4 bg-light d-flex align-items-center gap-3 border border-light-subtle">
-              <span class="fs-4">✨</span>
+              <i class="bi bi-stars fs-4" aria-hidden="true"></i>
               <small class="text-muted">
                 <strong>¿Sabías que?</strong> Al registrar cualquier alimento o tu emoción, su forma en la canasta se llena y da un rebote de celebración.
               </small>
@@ -242,7 +241,7 @@
           <!-- CARD 2: ¿Cómo llegas hoy? (Check-in rápido de ánimo) -->
           <div class="card-animo-checkin" id="card-checkin-inicio">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <h3 class="animo-checkin-title">¿Cómo llegas hoy?</h3>
+              <h2 class="animo-checkin-title">¿Cómo llegas hoy?</h2>
               <span class="badge rounded-pill text-bg-success px-2.5 py-1" style="font-size: 0.7rem; font-weight: 700;">+5 XP</span>
             </div>
             <p class="animo-checkin-sub">
@@ -250,51 +249,47 @@
             </p>
 
             <div class="animo-faces-row">
-              <button type="button" class="btn-face-mood" onclick="marcarAnimoRapido('muy_mal')" data-estado="muy_mal" title="Muy mal">
-                <span class="face-emoji">😢</span>
+              <button type="button" class="btn-face-mood" data-estado="muy_mal">
+                <span class="face-cara lumea-cara" data-cara="muy_mal"></span>
                 <span class="face-name-label">Muy mal</span>
                 <span class="face-xp-tag">+5 XP</span>
               </button>
 
-              <button type="button" class="btn-face-mood" onclick="marcarAnimoRapido('mal')" data-estado="mal" title="Mal">
-                <span class="face-emoji">🙁</span>
+              <button type="button" class="btn-face-mood" data-estado="mal">
+                <span class="face-cara lumea-cara" data-cara="mal"></span>
                 <span class="face-name-label">Mal</span>
                 <span class="face-xp-tag">+5 XP</span>
               </button>
 
-              <button type="button" class="btn-face-mood" onclick="marcarAnimoRapido('neutral')" data-estado="neutral" title="Neutral">
-                <span class="face-emoji">😐</span>
+              <button type="button" class="btn-face-mood" data-estado="neutral">
+                <span class="face-cara lumea-cara" data-cara="neutral"></span>
                 <span class="face-name-label">Neutral</span>
                 <span class="face-xp-tag">+5 XP</span>
               </button>
 
-              <button type="button" class="btn-face-mood" onclick="marcarAnimoRapido('bien')" data-estado="bien" title="Bien">
-                <span class="face-emoji">🙂</span>
+              <button type="button" class="btn-face-mood" data-estado="bien">
+                <span class="face-cara lumea-cara" data-cara="bien"></span>
                 <span class="face-name-label">Bien</span>
                 <span class="face-xp-tag">+5 XP</span>
               </button>
 
-              <button type="button" class="btn-face-mood" onclick="marcarAnimoRapido('muy_bien')" data-estado="muy_bien" title="Muy bien">
-                <span class="face-emoji">😄</span>
+              <button type="button" class="btn-face-mood" data-estado="muy_bien">
+                <span class="face-cara lumea-cara" data-cara="muy_bien"></span>
                 <span class="face-name-label">Muy bien</span>
                 <span class="face-xp-tag">+5 XP</span>
               </button>
             </div>
 
             <!-- Feedback de registro completado -->
-            <div id="checkin-confirmado" class="mt-3 text-center p-2 rounded-3 bg-light text-success fw-bold" style="font-size: 0.8rem; display: none;">
-              ✓ ¡Ánimo registrado! Se actualizó tu avatar y tu canasta.
-            </div>
+            <p id="checkin-confirmado" class="mt-3 text-center p-2 rounded-3 bg-light text-success fw-bold small mb-0" role="status" hidden></p>
           </div>
 
           <!-- CARD 3: Próxima misión sugerida (Siempre la más cercana a cumplirse) -->
           <div class="card-proxima-mision">
             <div>
               <span class="mision-tag-pill">Próxima misión</span>
-              <h4 class="mision-text-title" id="proxima-mision-titulo">Cargando misión...</h4>
-              <div class="mision-xp-highlight" id="proxima-mision-xp">
-                <span class="badge text-bg-warning text-dark me-1 fw-bold">+20 XP</span> Consulta tus misiones del día
-              </div>
+              <h3 class="mision-text-title" id="proxima-mision-titulo">Cargando misión...</h3>
+              <div class="mision-xp-highlight" id="proxima-mision-xp">Tus misiones del día</div>
             </div>
             <div>
               <!-- Botón "Abrir cámara" lleva directamente a alimentos.html -->
@@ -314,22 +309,22 @@
 
             <!-- Barra de Progreso XP -->
             <div class="progress mb-3" style="height: 14px;">
-              <div class="progress-bar lumea-bind-xp-bar" role="progressbar" style="width: 0%;"></div>
+              <div class="progress-bar lumea-bind-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia el siguiente nivel" style="width: 0%;"></div>
             </div>
 
             <!-- Badges de Racha -->
             <div class="d-flex gap-2">
               <div class="flex-grow-1 p-2.5 rounded-3 bg-light border d-flex align-items-center gap-2">
-                <span class="fs-4">🔥</span>
+                <i class="bi bi-fire fs-4" aria-hidden="true"></i>
                 <div>
-                  <small class="text-muted d-block" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Racha actual</small>
+                  <small class="text-muted d-block fw-bold racha-rotulo">Racha actual</small>
                   <strong class="lumea-bind-racha" style="color: var(--lumea-dark); font-size: 0.95rem;">--</strong>
                 </div>
               </div>
               <div class="flex-grow-1 p-2.5 rounded-3 bg-light border d-flex align-items-center gap-2">
-                <span class="fs-4">⭐</span>
+                <i class="bi bi-star-fill fs-4" aria-hidden="true"></i>
                 <div>
-                  <small class="text-muted d-block" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Mejor racha</small>
+                  <small class="text-muted d-block fw-bold racha-rotulo">Mejor racha</small>
                   <strong class="lumea-bind-mejor-racha" style="color: var(--lumea-dark); font-size: 0.95rem;">--</strong>
                 </div>
               </div>
@@ -359,87 +354,15 @@
   </div>
   <!-- /menu-privado:celular -->
 
-  <!-- Scripts Globales de Lumea -->
+  <!-- Scripts: api.js (único lugar con la dirección del backend), formato.js (textos), el estado y la
+       interfaz de Sara, la celebración y la lógica de esta pantalla (indexx.js) -->
+  <script src="api.js"></script>
+  <script src="formato.js"></script>
+  <script src="pegatinas.js"></script>
+  <script src="celebracion.js"></script>
   <script src="lumea-state.js"></script>
   <script src="lumea-ui.js"></script>
-  <script>
-    // Actualizar interfaz para reflejar si el ánimo ya fue registrado hoy (solo 1 vez al día)
-    function actualizarEstadoBotonesAnimo() {
-      const store = window.lumeaStore ? window.lumeaStore.obtener() : null;
-      if (!store || !store.animo_hoy) return;
-      const registrado = Boolean(store.animo_hoy.registrado);
-      const estadoActual = store.animo_hoy.estado;
-
-      document.querySelectorAll(".btn-face-mood").forEach(btn => {
-        const esActivo = btn.getAttribute("data-estado") === estadoActual;
-        btn.classList.toggle("active", esActivo);
-        if (registrado) {
-          btn.disabled = true;
-          btn.style.cursor = "default";
-          if (!esActivo) {
-            btn.style.opacity = "0.4";
-            btn.style.filter = "grayscale(60%)";
-          } else {
-            btn.style.opacity = "1";
-            btn.style.filter = "none";
-          }
-        }
-      });
-
-      const confirmBox = document.getElementById("checkin-confirmado");
-      if (confirmBox && registrado) {
-        confirmBox.style.display = "block";
-        confirmBox.innerHTML = `✓ ¡Check-in completado por hoy! Solo se registra una vez al día.`;
-      }
-    }
-
-    // Manejo del check-in rápido de ánimo desde Inicio (solo 1 vez por día)
-    function marcarAnimoRapido(estado) {
-      if (!window.lumeaStore) return;
-      const store = window.lumeaStore.obtener();
-      if (store && store.animo_hoy && store.animo_hoy.registrado) {
-        window.lumeaStore.mostrarNotificacion("Ya completaste tu check-in de ánimo de hoy. Solo se puede registrar una vez al día.");
-        return;
-      }
-
-      const res = window.lumeaStore.registrarAnimo(estado);
-      if (res === false) return;
-
-      actualizarEstadoBotonesAnimo();
-
-      // Animación de rebote en la forma de la canasta
-      const shapeAnimo = document.getElementById("shape-animo");
-      if (shapeAnimo) {
-        shapeAnimo.classList.add("animate-shape-bounce");
-        setTimeout(() => shapeAnimo.classList.remove("animate-shape-bounce"), 700);
-      }
-    }
-
-    // Acceso directo a la cámara desde Inicio
-    function procesarFotoDirectaHome(event) {
-      const file = event.target.files && event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          sessionStorage.setItem("lumea_foto_temporal", e.target.result);
-          window.location.href = "alimentos.html";
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    // Sincronización automática con el backend
-    document.addEventListener("DOMContentLoaded", async () => {
-      const email = window.lumeaStore ? window.lumeaStore.obtenerEmailUsuario() : localStorage.getItem("lumea_usuario_email");
-      if (window.lumeaStore && email) {
-        await window.lumeaStore.cargarDesdeBackend(email);
-      }
-      actualizarEstadoBotonesAnimo();
-      if (window.lumeaStore) {
-        window.lumeaStore.suscribir(() => actualizarEstadoBotonesAnimo());
-      }
-    });
-  </script>
+  <script src="indexx.js"></script>
   <script src="menu-privado.js"></script>
 </body>
 
