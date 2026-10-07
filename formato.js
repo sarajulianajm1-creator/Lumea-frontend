@@ -5,6 +5,11 @@
 //   LumeaFormato.plural(3, "día", "días")   -> "3 días"
 //   LumeaFormato.porcentajeNivel(progreso)  -> 0 a 100
 //   LumeaFormato.textoNivel(progreso)       -> "Te faltan 35 XP para el nivel 3"
+//   LumeaFormato.textoRacha(3)              -> "3 días"      notaRacha(0) -> invita, sin reproche
+//   LumeaFormato.textoMeta(meta_diaria)     -> "10 de 15 XP hoy" / "Meta cumplida: 20 XP hoy"
+//   LumeaFormato.semanaDe(hoy)              -> los 7 días (lunes a domingo) de esa semana
+//   LumeaFormato.comidasPorDia(historial, semana), animoPorDia(registros, semana)
+//   LumeaFormato.NOMBRE_ANIMO               -> { muy_mal: "Muy mal", ... }
 // =====================================================================
 (function () {
   "use strict";
@@ -29,5 +34,74 @@
       : `Te faltan ${p.xp_faltante_siguiente_nivel} XP para el nivel ${p.nivel + 1}`;
   }
 
-  window.LumeaFormato = { plural, porcentajeNivel, textoNivel };
+  function textoRacha(n) {
+    return plural(n, "día", "días");
+  }
+
+  // Lo que va debajo de la cifra de la racha: nunca un reproche si no hay racha
+  function notaRacha(n) {
+    if (n === 0) return "Registra algo hoy para empezar una racha";
+    return n === 1 ? "¡Empezó tu racha!" : "seguidos con actividad";
+  }
+
+  // La meta del día es de XP (no de comidas). Si ya pasó la meta: «Meta cumplida: 20 XP hoy»
+  function textoMeta(m) {
+    return m.cumplida ? `Meta cumplida: ${m.xp_hoy} XP hoy` : `${m.xp_hoy} de ${m.meta} XP hoy`;
+  }
+
+  const NOMBRE_ANIMO = { muy_mal: "Muy mal", mal: "Mal", neutral: "Neutral", bien: "Bien", muy_bien: "Muy bien" };
+  const DIAS_CORTO = ["L", "M", "M", "J", "V", "S", "D"];
+  const DIAS_LARGO = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
+  const clave = (a, m, d) => `${a}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+  function claveDeHoy(hoy) {
+    return clave(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  }
+
+  // La semana (lunes a domingo) que contiene a `hoy`: [{ clave: "2026-10-05", indice: 0..6 }]
+  function semanaDe(hoy) {
+    const dia = (hoy.getDay() + 6) % 7;                    // lunes = 0
+    return DIAS_LARGO.map((_, i) => {
+      const f = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - dia + i);
+      return { clave: clave(f.getFullYear(), f.getMonth(), f.getDate()), indice: i };
+    });
+  }
+
+  // El backend manda la fecha como «Mon, 05 Oct 2026 00:00:00 GMT»: medianoche en UTC.
+  // Se lee con los campos UTC; con los locales, en Colombia (UTC-5) saldría el día anterior.
+  function claveDeFechaDelServidor(texto) {
+    const f = new Date(texto);
+    if (Number.isNaN(f.getTime())) return null;
+    return clave(f.getUTCFullYear(), f.getUTCMonth(), f.getUTCDate());
+  }
+
+  // Por cada día de la semana: cuántas comidas y si hubo alguna fruta (`es_fruta` de /historial)
+  function comidasPorDia(historial, semana) {
+    const dias = {};
+    semana.forEach((d) => { dias[d.clave] = { comidas: 0, fruta: false }; });
+    (historial || []).forEach((r) => {
+      const c = claveDeFechaDelServidor(r.fecha);
+      if (c && dias[c]) {
+        dias[c].comidas += 1;
+        if (r.es_fruta === true) dias[c].fruta = true;
+      }
+    });
+    return semana.map((d) => ({ ...d, ...dias[d.clave] }));
+  }
+
+  // El último estado de ánimo de cada día de la semana (la lista llega del más reciente al más antiguo)
+  function animoPorDia(registros, semana) {
+    const porDia = {};
+    (registros || []).forEach((r) => {
+      const c = claveDeFechaDelServidor(r.fecha);
+      if (c && !(c in porDia)) porDia[c] = r.estado;
+    });
+    return semana.map((d) => ({ ...d, estado: porDia[d.clave] || null }));
+  }
+
+  window.LumeaFormato = {
+    plural, porcentajeNivel, textoNivel, textoRacha, notaRacha, textoMeta,
+    NOMBRE_ANIMO, DIAS_CORTO, DIAS_LARGO, claveDeHoy, semanaDe, claveDeFechaDelServidor, comidasPorDia, animoPorDia,
+  };
 })();
