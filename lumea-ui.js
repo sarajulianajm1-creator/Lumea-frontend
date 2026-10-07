@@ -68,6 +68,27 @@
     contenedor.replaceChildren(img);
   }
 
+  // La fila de los 7 días con la cara del avatar de cada uno (Progreso y Ánimo). El nombre siempre va escrito.
+  function dibujarSemanaAnimo(fila, semana) {
+    fila.replaceChildren();
+    semana.forEach((d) => {
+      const dia = crear("div", "animo-day-pill" + (d.esHoy ? " today" : ""));
+      dia.setAttribute("role", "listitem");
+      if (d.esHoy) dia.setAttribute("aria-current", "date");
+      const cara = crear("span", "lumea-cara animo-day-pill__cara");
+      cara.setAttribute("aria-hidden", "true");
+      if (d.estado) ponerCara(cara, d.estado);
+      const nombre = d.estado ? (F.NOMBRE_ANIMO[d.estado] || d.estado) : "";
+      const letra = crear("small", "animo-day-pill__letra fw-bold d-block", d.dia);
+      letra.setAttribute("aria-hidden", "true");
+      const rotulo = crear("span", "animo-day-pill__nombre", nombre);
+      rotulo.setAttribute("aria-hidden", "true");
+      const lector = d.futuro ? "todavía no llega" : (nombre || "sin check-in");
+      dia.append(cara, letra, rotulo, crear("span", "solo-lector", `${d.nombre}${d.esHoy ? " (hoy)" : ""}: ${lector}`));
+      fila.appendChild(dia);
+    });
+  }
+
   // ---------- Sincronizar todo con el estado ----------
 
   function sincronizarLumeaUI() {
@@ -141,7 +162,7 @@
 
   window.sincronizarLumeaUI = sincronizarLumeaUI;
   window.actualizarFechaActual = actualizarFechaActual;
-  window.LumeaUI = { crear, ponerCara, urlDeCara, sincronizar: sincronizarLumeaUI };
+  window.LumeaUI = { crear, ponerCara, urlDeCara, dibujarSemanaAnimo, sincronizar: sincronizarLumeaUI };
 
   document.addEventListener("DOMContentLoaded", () => {
     sincronizarLumeaUI();

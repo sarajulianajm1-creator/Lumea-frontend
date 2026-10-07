@@ -70,24 +70,30 @@
       <!-- Encabezado Superior -->
       <div class="d-flex align-items-center justify-content-between mb-4">
         <div class="d-flex align-items-center gap-3">
-          <a href="index-ingresado.html" class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Volver a Inicio">
-            <i class="bi bi-arrow-left"></i>
+          <a href="index-ingresado.html" class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Volver a Inicio" aria-label="Volver a Inicio">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
           </a>
           <div>
-            <span class="badge rounded-pill text-uppercase px-2.5 py-1 fw-bold" style="background: var(--lumea-accent-badge); color: var(--lumea-primary); font-size: 0.72rem;">
-              Versión 1.1 
-            </span>
+            <p class="progreso-subtitulo mb-0">Cómo vas en la semana, sin compararte con nadie.</p>
             <h1 class="user-greeting-title mb-0" style="font-size: 1.6rem;">Tu progreso</h1>
           </div>
         </div>
 
         <a href="avatar.html" class="avatar-header-btn">
           <div class="avatar-header-icon" style="width: 36px; height: 36px; font-size: 1.2rem;">
-            <span class="lumea-avatar-mini-emoji">🙂</span>
+            <span class="lumea-cara" data-cara="hoy"></span>
           </div>
           <span class="d-none d-sm-inline fw-bold text-success pe-2" style="font-size: 0.82rem;">Ver mi avatar</span>
         </a>
       </div>
+
+      <div id="estado-cargando" class="estado-pantalla" role="status">Cargando tu progreso…</div>
+      <div id="estado-error" class="estado-pantalla" role="alert" hidden>
+        <p class="mb-0">No pudimos cargar tu progreso. Revisa que el servidor esté encendido.</p>
+        <button type="button" id="estado-reintentar" class="btn btn-lumea rounded-pill px-4">Intentar otra vez</button>
+      </div>
+
+      <div id="progreso-contenido" hidden>
 
       <!-- ============================================================
            1. NIVEL Y XP CON EL NÚMERO ESCRITO
@@ -97,70 +103,68 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <div>
             <span class="nivel-badge lumea-bind-nivel">Nivel --</span>
-          
           </div>
-          <a href="avatar.html" class="text-success small fw-bold text-decoration-none">
-            Ver armario desbloqueado <i class="bi bi-arrow-right"></i>
-          </a>
+          <a href="avatar.html#armario" class="text-success small fw-bold text-decoration-none">Ver mi armario</a>
         </div>
 
-        <h4 class="fw-bold text-dark mb-1" style="font-size: 1.25rem;">
-          <span class="lumea-bind-xp-text">Cargando XP...</span>
-        </h4>
+        <p class="fw-bold text-dark mb-1 progreso-faltan lumea-bind-xp-text">Cargando XP...</p>
         <small class="text-muted d-block mb-3">
           Cada registro de comida, check-in emocional y fruta suma a tu camino.
         </small>
 
         <!-- Barra de Progreso XP -->
         <div class="progress mb-4" style="height: 14px;">
-          <div class="progress-bar lumea-bind-xp-bar" role="progressbar" style="width: 0%;"></div>
+          <div class="progress-bar lumea-bind-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia el siguiente nivel" style="width: 0%;"></div>
         </div>
 
         <!-- Tarjetas de Racha -->
         <div class="row g-3">
           <div class="col-6">
             <div class="p-3 rounded-4 bg-light d-flex align-items-center gap-3 border">
-              <span class="fs-2">🔥</span>
+              <i class="bi bi-fire fs-2" aria-hidden="true"></i>
               <div>
-                <small class="text-muted d-block fw-bold" style="font-size: 0.72rem; text-transform: uppercase;">Racha actual</small>
-                <h5 class="fw-bold text-dark mb-0 lumea-bind-racha">--</h5>
+                <small class="text-muted d-block fw-bold racha-rotulo">Racha actual</small>
+                <p class="fw-bold text-dark mb-0 h5 lumea-bind-racha">--</p>
+                <small class="text-muted lumea-bind-racha-nota"></small>
               </div>
             </div>
           </div>
           <div class="col-6">
             <div class="p-3 rounded-4 bg-light d-flex align-items-center gap-3 border">
-              <span class="fs-2">⭐</span>
+              <i class="bi bi-star-fill fs-2" aria-hidden="true"></i>
               <div>
-                <small class="text-muted d-block fw-bold" style="font-size: 0.72rem; text-transform: uppercase;">Mejor racha</small>
-                <h5 class="fw-bold text-dark mb-0 lumea-bind-mejor-racha">--</h5>
+                <small class="text-muted d-block fw-bold racha-rotulo">Mejor racha</small>
+                <p class="fw-bold text-dark mb-0 h5 lumea-bind-mejor-racha">--</p>
               </div>
             </div>
           </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+          <span class="pildora pildora--logro" id="meta-hoy-chip"><i class="bi bi-lightning-charge-fill" aria-hidden="true"></i> <span class="lumea-bind-xp-valor">--</span></span>
+          <a id="album-enlace" href="avatar.html#calcomanias" class="text-success small fw-bold text-decoration-none" hidden></a>
         </div>
       </div>
 
       <!-- ============================================================
            2. COMIDAS DE LA SEMANA
            ============================================================ -->
-      <section class="grafica-semanal-container mb-4">
+      <section class="grafica-semanal-container mb-4" id="semana-comidas-caja">
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <h3 class="h5 fw-bold text-dark mb-0">Comidas de la semana</h3>
+          <h2 class="h5 fw-bold text-dark mb-0">Comidas de la semana</h2>
         </div>
-        <p class="text-muted small mb-3">Registros realizados en cada jornada de la semana:</p>
+        <p class="text-muted small mb-3">Cuántas comidas registraste cada día. La manzana marca los días con fruta.</p>
 
         <!-- Contenedor dinámico de barras desde el Backend -->
-        <div class="bars-chart-wrapper" id="grafica-barras-semana">
-          <div class="w-100 text-center py-4 text-muted small">Cargando comidas de la semana desde el backend...</div>
-        </div>
+        <div class="bars-chart-wrapper" id="grafica-barras-semana" role="list" aria-label="Comidas de cada día de la semana"></div>
       </section>
 
       <!-- ============================================================
            3. TU ÁNIMO DE LA SEMANA CON LAS CARAS DE TU AVATAR
            "Es tuyo y no se compara con nadie."
            ============================================================ -->
-      <section class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4">
+      <section class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4" id="semana-animo-caja">
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <h3 class="h5 fw-bold text-dark mb-0">Tu ánimo de la semana</h3>
+          <h2 class="h5 fw-bold text-dark mb-0">Tu ánimo de la semana</h2>
           <span class="badge rounded-pill bg-light text-success border px-2.5 py-1" style="font-size: 0.75rem;">
             Es tuyo y no se compara con nadie
           </span>
@@ -168,13 +172,11 @@
         <p class="text-muted small mb-3">Las caras de tu avatar reflejadas a lo largo de los días:</p>
 
         <!-- Fila dinámica de caras de los 7 días desde el Backend -->
-        <div class="animo-semana-row" id="animo-semana-fila">
-          <div class="w-100 text-center py-3 text-muted small">Cargando historial de ánimo desde el backend...</div>
-        </div>
+        <div class="animo-semana-row" id="animo-semana-fila" role="list" aria-label="Tu ánimo de cada día de la semana"></div>
 
         <div class="mt-3 text-center">
           <a href="emociones.html" class="btn btn-sm btn-outline-success rounded-pill px-3">
-            <i class="bi bi-emoji-smile me-1"></i> Actualizar mi check-in de hoy
+            <i class="bi bi-emoji-smile me-1" aria-hidden="true"></i> <span id="checkin-enlace-texto">Hacer mi check-in de hoy</span>
           </a>
         </div>
       </section>
@@ -184,15 +186,12 @@
            "Cuando vuelves después de días sin usarla, el backend manda mensaje_regreso.
            Va como bienvenida cálida, nunca como 'perdiste XP'."
            ============================================================ -->
-      <div id="aviso-regreso" class="card-bienvenida-calida mb-5" style="display: none;">
-        <span class="fs-1">💛</span>
-        <div>
-          <h5 class="fw-bold mb-1" style="font-size: 1.05rem;">¡Te extrañamos! Tu nivel sigue siendo tuyo.</h5>
-          <p class="mb-0 small opacity-90">
-            LUMEA no te penaliza ni quita experiencia si te ausentas. Tu bienestar no es una carrera con nadie: cada día que vuelves es una oportunidad para conectar contigo.
-          </p>
-        </div>
+      <div id="aviso-regreso" class="card-bienvenida-calida mb-5" style="display: none;" role="status">
+        <i class="bi bi-heart-fill fs-3" aria-hidden="true"></i>
+        <p class="mb-0 fw-bold lumea-bind-regreso"></p>
       </div>
+
+      </div><!-- /progreso-contenido -->
 
     </main>
 
@@ -213,77 +212,13 @@
   </div>
   <!-- /menu-privado:celular -->
 
-  <!-- Scripts Globales de Lumea -->
+  <!-- Scripts: api.js (único lugar con la dirección del backend), formato.js (textos y cuentas de la semana),
+       el estado y la interfaz de Sara, y progreso.js (dibuja la semana) -->
+  <script src="api.js"></script>
+  <script src="formato.js"></script>
   <script src="lumea-state.js"></script>
   <script src="lumea-ui.js"></script>
-  <script>
-    // Renderizar datos reales del Backend
-    async function renderizarProgresoSemana() {
-      const email = window.lumeaStore ? window.lumeaStore.obtenerEmailUsuario() : localStorage.getItem("lumea_usuario_email");
-      if (window.lumeaStore && email) {
-        await window.lumeaStore.cargarDesdeBackend(email);
-      }
-      
-      const estado = window.lumeaStore ? window.lumeaStore.obtener() : null;
-      if (!estado) return;
-
-      // 1. Barras de la semana
-      const contenedorBarras = document.getElementById("grafica-barras-semana");
-      if (contenedorBarras && estado.comidas_semana) {
-        const maxComidas = Math.max(3, ...estado.comidas_semana.map(d => d.comidas || 0));
-        contenedorBarras.innerHTML = estado.comidas_semana.map(d => {
-          const comidas = d.comidas || 0;
-          const altura = comidas === 0 ? 12 : Math.min(150, Math.round((comidas / maxComidas) * 130) + 20);
-          const estiloHoy = d.esHoy ? 'background: linear-gradient(180deg, #ffd166 0%, #2d6a4f 100%);' : '';
-          const iconoFruta = d.tieneFruta ? `<span class="bar-fruit-floating-icon" title="Fruta registrada">🍎</span>` : '';
-          
-          return `
-            <div class="bar-col-item ${d.esHoy ? 'today' : ''}">
-              <div class="bar-fill-body" style="height: ${altura}px; ${estiloHoy}" title="${comidas} comidas registradas">
-                ${iconoFruta}
-              </div>
-              <span class="bar-day-name">${d.dia}${d.esHoy ? ' (Hoy)' : ''}</span>
-            </div>
-          `;
-        }).join("");
-      }
-
-      // 2. Fila de ánimo de la semana
-      const contenedorAnimo = document.getElementById("animo-semana-fila");
-      if (contenedorAnimo && estado.animo_hoy && estado.animo_hoy.historial_semana) {
-        const mapaCaras = {
-          muy_bien: { emoji: "😄", label: "Muy bien" },
-          bien: { emoji: "🙂", label: "Bien" },
-          neutral: { emoji: "😐", label: "Neutral" },
-          mal: { emoji: "🙁", label: "Mal" },
-          muy_mal: { emoji: "😢", label: "Muy mal" }
-        };
-
-        contenedorAnimo.innerHTML = estado.animo_hoy.historial_semana.map(dia => {
-          const info = mapaCaras[dia.estado] || { emoji: "•", label: "Sin registro" };
-          const esHoy = Boolean(dia.esHoy);
-          return `
-            <div class="animo-day-pill ${esHoy ? 'today' : ''}">
-              <div class="fs-2 mb-1">${dia.estado ? info.emoji : '•'}</div>
-              <small class="fw-bold ${esHoy ? 'text-success' : 'text-muted'} d-block" style="font-size: 0.72rem;">
-                ${dia.dia || ''}${esHoy ? ' (Hoy)' : ''}
-              </small>
-              <span class="badge ${esHoy ? 'text-bg-success' : 'text-bg-light border text-muted'}" style="font-size: 0.62rem;">
-                ${dia.estado ? info.label : 'Sin registro'}
-              </span>
-            </div>
-          `;
-        }).join("");
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      renderizarProgresoSemana();
-      if (window.lumeaStore) {
-        window.lumeaStore.suscribir(() => renderizarProgresoSemana());
-      }
-    });
-  </script>
+  <script src="progreso.js"></script>
   <script src="menu-privado.js"></script>
 </body>
 

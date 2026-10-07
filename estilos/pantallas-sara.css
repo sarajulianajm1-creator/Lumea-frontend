@@ -50,3 +50,13 @@
 /* ---------- Estados de la pantalla: cargando, error, sin datos ---------- */
 .estado-pantalla { display: grid; gap: var(--e-3); justify-items: start; padding: var(--e-5); }
 .estado-pantalla[hidden] { display: none; }
+
+/* ---------- Píldora: un dato corto con el color de su rol (logro = maracuyá) ---------- */
+.pildora {
+  display: inline-flex; align-items: center; gap: var(--e-1);
+  padding: var(--e-1) var(--e-3);
+  border-radius: var(--r-pildora);
+  font-size: var(--t-s); font-weight: var(--t-peso-medio);
+  background: var(--c-marca-suave); color: var(--c-marca-tinta);
+}
+.pildora--logro { background: var(--c-logro-suave); color: var(--c-logro-tinta); }
