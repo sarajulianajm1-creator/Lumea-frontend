@@ -39,7 +39,7 @@
         fruta.setAttribute("aria-hidden", "true");
         barra.appendChild(fruta);
       }
-      const letra = UI.crear("span", "bar-day-name", d.dia);
+      const letra = UI.crear("span", "bar-day-name", d.dia + (d.esHoy ? " (hoy)" : ""));
       letra.setAttribute("aria-hidden", "true");
       const detalle = d.futuro ? "todavía no llega"
         : `${F.plural(d.comidas, "comida", "comidas")}${d.tieneFruta ? ", con fruta" : ""}`;

@@ -8,7 +8,7 @@
  *   - Las caras de ánimo son las DiceBear del avatar (avatar.urls_por_estado). Sin internet
  *     la imagen se quita y queda el nombre del estado, que siempre está escrito.
  *   - Se quitó el avatar SVG de ejemplo: el avatar real vive en avatar.html.
- *   - Texto del servidor: textContent, nunca innerHTML.
+ *   - Texto del servidor: textContent, nunca HTML armado a mano.
  * Necesita formato.js y lumea-state.js antes.
  */
 (function () {
@@ -79,7 +79,7 @@
       cara.setAttribute("aria-hidden", "true");
       if (d.estado) ponerCara(cara, d.estado);
       const nombre = d.estado ? (F.NOMBRE_ANIMO[d.estado] || d.estado) : "";
-      const letra = crear("small", "animo-day-pill__letra fw-bold d-block", d.dia);
+      const letra = crear("small", "animo-day-pill__letra fw-bold d-block", d.dia + (d.esHoy ? " (hoy)" : ""));
       letra.setAttribute("aria-hidden", "true");
       const rotulo = crear("span", "animo-day-pill__nombre", nombre);
       rotulo.setAttribute("aria-hidden", "true");
