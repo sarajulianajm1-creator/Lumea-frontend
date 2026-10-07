@@ -22,7 +22,22 @@
 <link rel="stylesheet" href="style.css" />
 <!-- Piel de Lumea sobre el diseño de Sara (no cambia style.css) -->
 <link rel="stylesheet" href="estilos/puente-sara.css">
+<!-- Celebración de XP, misiones, calcomanías y nivel (lógica en celebracion.js) -->
+<link rel="stylesheet" href="estilos/pegatinas.css">
+<link rel="stylesheet" href="estilos/celebracion.css">
 <style>
+  /* style.css le da display a .lumea-dashboard-screen y eso anulaba el atributo hidden:
+     sin sesión se veía el aviso Y la cámara. Antes solo se ocultaba gracias a Bootstrap
+     (que trae su propia regla [hidden]); sin internet se rompía. */
+  #flujo-registro[hidden], #sin-sesion[hidden] { display: none; }
+  /* Opciones para confirmar: los nombres pueden ser largos («Arepa paisa (de maíz
+     precocido, con sal)») y el botón crece hacia abajo en vez de romperse. */
+  #backend-opciones .lumea-btn-pill {
+    flex: 1 1 100%; max-width: 100%;
+    height: auto; min-height: 44px; padding: 8px 16px;
+    border-radius: 1.25rem; line-height: 1.25;
+    white-space: normal; overflow-wrap: anywhere; text-align: left; justify-content: flex-start;
+  }
   /* Sello de advertencia: octágono negro con letras blancas, como en la norma
      (Res. 810 de 2021). Viene de registrar-comida.html, que se fusionó aquí. */
   .sello {
@@ -195,6 +210,8 @@
 
   <!-- api.js (dirección y llamadas al backend) + lógica de la cámara, sin diseño -->
   <script src="api.js"></script>
+  <script src="pegatinas.js"></script>
+  <script src="celebracion.js"></script>
   <script src="lumea-camara.js"></script>
 </body>
 </html>

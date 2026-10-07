@@ -13,38 +13,83 @@
       "fecha": "2026-10-03"
     },
     {
-      "id": "primera_fruta",
-      "nombre": "Primera fruta",
-      "descripcion": "Registraste una fruta.",
-      "como_se_gana": "Registra una fruta.",
+      "id": "diez_registros",
+      "nombre": "Diez registros",
+      "descripcion": "Llevas 10 comidas registradas.",
+      "como_se_gana": "Registra 10 comidas.",
       "rol": "comida",
+      "ganada": false,
+      "fecha": null
+    },
+    {
+      "id": "tres_al_dia",
+      "nombre": "Tres al día",
+      "descripcion": "Registraste 3 comidas en un mismo día.",
+      "como_se_gana": "Cumple la misión de registrar 3 comidas en un día.",
+      "rol": "mision",
+      "ganada": false,
+      "fecha": null
+    },
+    {
+      "id": "fruta",
+      "nombre": "Fruta del día",
+      "descripcion": "Registraste una fruta.",
+      "como_se_gana": "Cumple la misión de registrar una fruta.",
+      "rol": "mision",
       "ganada": true,
       "fecha": "2026-10-05"
     },
     {
-      "id": "check_in",
+      "id": "como_llegas",
       "nombre": "Cómo llegas",
-      "descripcion": "Contaste cómo llegabas.",
+      "descripcion": "Hiciste tu primer check-in de ánimo.",
       "como_se_gana": "Haz tu primer check-in de ánimo.",
       "rol": "emocion",
       "ganada": true,
       "fecha": "2026-10-04"
     },
     {
+      "id": "ayudaste_ia",
+      "nombre": "Le ayudaste a la IA",
+      "descripcion": "Confirmaste un plato cuando la IA dudó.",
+      "como_se_gana": "Confirma un plato cuando la IA no esté segura.",
+      "rol": "duda",
+      "ganada": false,
+      "fecha": null
+    },
+    {
       "id": "racha_3",
       "nombre": "Tres días seguidos",
-      "descripcion": "Volviste tres días seguidos.",
-      "como_se_gana": "Registra algo tres días seguidos.",
+      "descripcion": "Registraste actividad 3 días seguidos.",
+      "como_se_gana": "Llega a una racha de 3 días.",
       "rol": "logro",
       "ganada": false,
       "fecha": null
     },
     {
-      "id": "mision_tres",
-      "nombre": "Tres comidas",
-      "descripcion": "Cumpliste la misión de tres comidas.",
-      "como_se_gana": "Cumple la misión Registra 3 comidas.",
-      "rol": "mision",
+      "id": "racha_7",
+      "nombre": "Una semana",
+      "descripcion": "Registraste actividad 7 días seguidos.",
+      "como_se_gana": "Llega a una racha de 7 días.",
+      "rol": "logro",
+      "ganada": false,
+      "fecha": null
+    },
+    {
+      "id": "volviste",
+      "nombre": "Volviste",
+      "descripcion": "Regresaste después de unos días sin actividad.",
+      "como_se_gana": "Vuelve después de 3 o más días sin actividad.",
+      "rol": "logro",
+      "ganada": false,
+      "fecha": null
+    },
+    {
+      "id": "nivel_5",
+      "nombre": "Nivel 5",
+      "descripcion": "Llegaste al nivel 5.",
+      "como_se_gana": "Llega al nivel 5.",
+      "rol": "logro",
       "ganada": false,
       "fecha": null
     }

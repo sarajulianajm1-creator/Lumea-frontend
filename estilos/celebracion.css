@@ -1,0 +1,123 @@
+/* =====================================================================
+   LUMEA · celebracion.css — los momentos de celebración
+   ---------------------------------------------------------------------
+   Solo tokens de tokens.css y paletas.css (y las pegatinas de
+   pegatinas.css). Es autónomo a propósito: se carga también en las
+   páginas de Sara sin necesitar componentes.css, que cambiaría sus
+   márgenes. Las piezas imitan .chip, .tarjeta y .boton de componentes.css.
+
+   Reglas: 420 ms o menos; el rebote (--m-resorte) solo para logros; un
+   momento a la vez; con prefers-reduced-motion solo aparecen.
+   Color: XP y nivel = logro (maracuyá); misión = mora; la calcomanía
+   toma el color de su rol. Maracuyá y mango nunca como texto: el texto
+   usa --c-ROL-tinta o --c-tinta.
+   ===================================================================== */
+.celebracion {
+  position: fixed; left: 50%; top: var(--e-4); z-index: 1100;
+  transform: translateX(-50%);
+  width: min(92vw, 420px);
+  display: grid; gap: var(--e-2); justify-items: center;
+  pointer-events: none;                     /* no tapa lo que hay debajo… */
+  font-family: var(--f-familia);
+}
+.celebracion > * { pointer-events: auto; }  /* …pero sus botones sí funcionan */
+
+/* ---------- 1. XP y meta: un chip que se va solo ---------- */
+.celebracion__chip {
+  display: inline-flex; align-items: center; gap: var(--e-1);
+  padding: var(--e-2) var(--e-4);
+  border-radius: var(--r-pildora);
+  background: var(--c-logro-suave); color: var(--c-logro-tinta);
+  border: 1.5px solid var(--c-logro);
+  font-size: var(--t-l); font-weight: var(--t-peso-fuerte);
+  font-variant-numeric: tabular-nums;
+  box-shadow: var(--s-2);
+}
+.celebracion__chip--meta { font-size: var(--t-s); font-weight: var(--t-peso-medio); }
+
+/* ---------- 2. y 3. Misión cumplida y calcomanía nueva: una tarjeta ---------- */
+.celebracion__tarjeta {
+  width: 100%;
+  display: grid; grid-template-columns: auto 1fr; gap: var(--e-1) var(--e-4); align-items: center;
+  padding: var(--e-4);
+  border-radius: var(--r-tarjeta);
+  background: var(--c-superficie); color: var(--c-tinta);
+  box-shadow: var(--s-2);
+}
+.celebracion__tarjeta--mision  { background: var(--c-mision-contenedor); }
+.celebracion__tarjeta--comida  { background: var(--c-comida-contenedor); }
+.celebracion__tarjeta--logro   { background: var(--c-logro-contenedor); }
+.celebracion__tarjeta--emocion { background: var(--c-emocion-contenedor); }
+.celebracion__tarjeta--duda    { background: var(--c-duda-contenedor); }
+.celebracion__tarjeta > .pegatina { grid-row: span 3; width: 72px; }
+.celebracion__tarjeta:not(:has(> .pegatina)) { grid-template-columns: 1fr; }
+.celebracion__titulo { font-weight: var(--t-peso-fuerte); overflow-wrap: anywhere; }
+.celebracion__texto  { font-size: var(--t-s); overflow-wrap: anywhere; }
+.celebracion__acciones { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--e-2); margin-top: var(--e-2); }
+
+.celebracion__boton {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 var(--e-5);
+  border: 1.5px solid transparent; border-radius: var(--r-control);
+  font: inherit; font-weight: var(--t-peso-medio); text-decoration: none; cursor: pointer;
+  background: var(--c-marca); color: var(--c-sobre-marca);
+  transition: background var(--m-rapido) var(--m-salida), transform var(--m-rapido) var(--m-salida);
+}
+.celebracion__boton:hover  { background: var(--c-marca-hover); }
+.celebracion__boton:active { transform: scale(.97); }
+.celebracion__boton--secundario { background: var(--c-superficie); color: var(--c-marca-tinta); border-color: var(--c-borde-fuerte); }
+.celebracion__boton--secundario:hover { background: var(--c-marca-suave); }
+.celebracion__boton:focus-visible,
+.celebracion__tarjeta :focus-visible,
+.celebracion__nivel :focus-visible { outline: 3px solid var(--c-foco); outline-offset: 2px; }
+
+/* Entrada y salida de los momentos pequeños (los únicos que se mueven solos) */
+/* «backwards» (y no «both»): al terminar, la animación no fija opacity y la salida puede apagarlo */
+.momento { animation: momento-entra var(--m-lento) var(--m-salida) backwards; }
+.momento--saliendo { opacity: 0; transform: translateY(-6px); transition: opacity var(--m-base), transform var(--m-base); }
+@keyframes momento-entra {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: none; }
+}
+.momento--logro { animation-timing-function: var(--m-resorte); }   /* el rebote es solo para logros */
+
+/* ---------- 4. Subida de nivel: el momento grande (un <dialog> modal) ---------- */
+.celebracion__nivel {
+  width: min(92vw, 420px);
+  padding: var(--e-6);
+  border: 0; border-radius: var(--r-panel);
+  background: var(--c-superficie); color: var(--c-tinta);
+  box-shadow: var(--s-2);
+  font-family: var(--f-familia);
+  text-align: center;
+}
+.celebracion__nivel[open] { animation: nivel-entra var(--m-lento) var(--m-resorte) both; }
+.celebracion__nivel::backdrop { background: color-mix(in oklab, var(--c-tinta) 55%, transparent); }
+@keyframes nivel-entra {
+  from { opacity: 0; transform: scale(.92); }
+  to   { opacity: 1; transform: none; }
+}
+/* (con .celebracion__nivel delante para ganarle a «.celebracion__nivel p» sin !important) */
+.celebracion__nivel .celebracion__numero {
+  display: grid; place-items: center;
+  width: 96px; aspect-ratio: 1; margin: 0 auto var(--e-4);
+  border-radius: 50%;
+  background: var(--c-logro); color: var(--c-sobre-logro);
+  font-size: var(--t-3xl); font-weight: var(--t-peso-fuerte); line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.celebracion__nivel h2 { margin: 0 0 var(--e-3); font-size: var(--t-xl); line-height: var(--t-interlineado-titulo); }
+.celebracion__nivel p  { margin: 0 0 var(--e-2); }
+.celebracion__lista { margin: var(--e-3) 0 var(--e-5); padding: 0; list-style: none; display: grid; gap: var(--e-2); justify-items: center; }
+.celebracion__lista li {
+  padding: var(--e-1) var(--e-4); border-radius: var(--r-pildora);
+  background: var(--c-logro-suave); color: var(--c-logro-tinta);
+  font-weight: var(--t-peso-medio); overflow-wrap: anywhere;
+}
+.celebracion__nivel .celebracion__acciones { justify-content: center; margin-top: 0; }
+
+/* Quien pide menos movimiento: todo aparece de golpe */
+@media (prefers-reduced-motion: reduce) {
+  .momento, .celebracion__nivel[open] { animation: none; }
+  .momento--saliendo { transition: none; transform: none; }
+}

@@ -1,0 +1,39 @@
+{
+  "success": false,
+  "seleccion_manual": true,
+  "guardado_baseDatos": false,
+  "mensaje": "La certeza de la IA es muy baja para guardarse automáticamente.",
+  "certeza": 65.11,
+  "alimento": "Arepa paisa (de maíz precocido, con sal)",
+  "alimento_codigo": "arepa",
+  "dato_curioso": "La arepa es tan antigua que ya la comían los pueblos indígenas.",
+  "modelo_usado": "regional_26",
+  "opciones_sugeridas": [
+    "arepa",
+    "huevo",
+    "llapingachos"
+  ],
+  "opciones_detalle": [
+    {
+      "codigo": "arepa",
+      "nombre": "Arepa paisa (de maíz precocido, con sal)",
+      "nombre_pantalla": "Arepa paisa (de maíz precocido, con sal)",
+      "marca": null,
+      "grupo": null
+    },
+    {
+      "codigo": "huevo",
+      "nombre": "Huevo de gallina, entero, cocido",
+      "nombre_pantalla": "Huevo de gallina, entero, cocido",
+      "marca": null,
+      "grupo": null
+    },
+    {
+      "codigo": "llapingachos",
+      "nombre": "Llapingachos (sin relleno)",
+      "nombre_pantalla": "Llapingachos (sin relleno)",
+      "marca": null,
+      "grupo": null
+    }
+  ]
+}

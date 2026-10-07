@@ -14,6 +14,10 @@
       {
         "motivo": "comida_registrada",
         "xp": 10
+      },
+      {
+        "motivo": "mision_tres_comidas",
+        "xp": 10
       }
     ],
     "tope_diario_alcanzado": false,
@@ -37,18 +41,30 @@
     },
     "desbloqueos": [
       {
-        "tipo": "accesorio",
-        "id": "audifonos",
-        "nombre": "Audífonos",
-        "nivel_requerido": 4
+        "tipo": "ropa",
+        "id": "camiseta_lumea",
+        "nombre": "Camiseta Lumea",
+        "nivel_requerido": 3
+      },
+      {
+        "tipo": "avatar",
+        "id": "rio",
+        "nombre": "Río",
+        "nivel_requerido": 3
       }
     ],
     "calcomanias_nuevas": [
       {
-        "id": "mision_tres",
-        "nombre": "Tres comidas",
-        "descripcion": "Cumpliste la misión de tres comidas.",
+        "id": "tres_al_dia",
+        "nombre": "Tres al día",
+        "descripcion": "Registraste 3 comidas en un mismo día.",
         "rol": "mision"
+      },
+      {
+        "id": "ayudaste_ia",
+        "nombre": "Le ayudaste a la IA",
+        "descripcion": "Confirmaste un plato cuando la IA dudó.",
+        "rol": "duda"
       }
     ]
   }

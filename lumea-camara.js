@@ -10,7 +10,10 @@
 //               backend-sellos, backend-dato, backend-mensaje,
 //               backend-opciones (botones para confirmar), backend-estado,
 //               backend-foto (<img> con la foto que se analiza),
-//               backend-logros (<ul>: XP, misiones, nivel, meta del día)
+//               backend-logros (<ul>: XP, misiones, calcomanías, nivel, meta del día)
+//   Celebración: si la página carga pegatinas.js y celebracion.js (en ese
+//               orden), después de cada resultado se llama a
+//               LumeaCelebrar(r.gamificacion). Si no están, no pasa nada.
 //   Sesión:     sin-sesion (aviso) y flujo-registro (la cámara): sin
 //               correo guardado se muestra el aviso y no se registra nada
 //
@@ -172,6 +175,7 @@
     const frases = [];
     if (g.xp_ganado > 0) frases.push(`+${g.xp_ganado} XP`);
     (g.misiones_cumplidas || []).forEach((m) => frases.push(`Misión cumplida: ${m.nombre}`));
+    (g.calcomanias_nuevas || []).forEach((c) => frases.push(`Calcomanía nueva: ${c.nombre}`));
     if (g.subio_de_nivel) frases.push(`¡Subiste al nivel ${g.nivel}!`);
     if (g.meta_diaria && g.meta_diaria.recien_cumplida) frases.push("Cumpliste la meta de hoy");
     frases.forEach((f) => {
@@ -196,7 +200,7 @@
   function mostrar(r) {
     const opcionesDuda = r.seleccion_manual && (r.opciones_detalle || r.opciones_sugeridas || []).length > 0;
     // IA duda con opciones: el título es la pregunta, no "No identificado"
-    poner("backend-alimento", opcionesDuda ? (r.mensaje || "¿Cuál de estos es?") : (r.alimento_app || r.alimento || "No identificado"));
+    poner("backend-alimento", opcionesDuda ? "¿Cuál de estos es?" : (r.alimento_app || r.alimento || "No identificado"));
     poner("backend-precision", r.certeza != null ? `${Math.round(r.certeza)}% seguridad` : "--% seguridad");
     const kcal = kcalDe(r);
     poner("backend-energia", kcal != null ? `${kcal} kcal / 100 g` : "—");
@@ -206,7 +210,11 @@
     if (r.seleccion_manual && !(r.opciones_detalle || r.opciones_sugeridas || []).length) {
       msg = "La IA no está segura. Intenta con más luz o más cerca del plato.";
     } else if (r.seleccion_manual) {
-      msg = "Toca el que es para guardarlo en tu historial.";
+      // Grupo de confusión: el backend explica por qué hay que elegir. Si la IA
+      // dudó (opciones sin grupo), el texto del backend es técnico: se reemplaza.
+      const detalle = r.opciones_detalle || [];
+      const iaDudo = detalle.length > 0 && detalle.every((o) => !o.grupo);
+      msg = ((iaDudo ? "La IA no está segura." : (r.mensaje || "")) + " Toca el que es para guardarlo en tu historial.").trim();
     } else if (r.guardado_baseDatos) {
       msg = (msg ? msg + " " : "") + "Guardado en tu historial.";
     }
@@ -214,6 +222,7 @@
     if (!hayLista && r.gamificacion && r.gamificacion.xp_ganado) msg += ` +${r.gamificacion.xp_ganado} XP`;
     poner("backend-mensaje", msg);
     mostrarOpciones(r);
+    if (window.LumeaCelebrar) LumeaCelebrar(r.gamificacion);
   }
 
   // ---------- Acciones ----------
