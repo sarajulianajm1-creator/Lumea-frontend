@@ -122,13 +122,24 @@ function registrarEstadoAnimo(email, estado) {
   return _postJSON("/estado-animo", { email, estado });
 }
 
-function obtenerEstadosAnimo(email) {
-  return _getJSON("/estado-animo", { email });
+// `dias` es opcional: con 7 solo llegan los registros de los últimos 7 días
+// (hoy cuenta), aunque haya muchos. Sin `dias` llegan los últimos 30.
+// Respuesta: { historial: [{ id, fecha: "Mon, 05 Oct 2026 00:00:00 GMT", estado }] }
+function obtenerEstadosAnimo(email, dias) {
+  const parametros = { email };
+  if (dias) parametros.dias = dias;
+  return _getJSON("/estado-animo", parametros);
 }
 
 // ===== Gamificación (Backend/CONTRATO_GAMIFICACION.md) =====
 function obtenerProgreso(email) {
   return _getJSON("/progreso", { email });
+}
+
+// Calcomanías (el álbum): las 10, con `ganada` y `fecha`. 404 si el correo no tiene perfil.
+// Respuesta: { ganadas, total, calcomanias: [{ id, nombre, descripcion, como_se_gana, rol, ganada, fecha }] }
+function obtenerCalcomanias(email) {
+  return _getJSON("/calcomanias", { email });
 }
 
 // Avatar por capas (Figma): base + ropa + accesorio.
