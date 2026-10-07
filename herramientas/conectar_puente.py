@@ -8,12 +8,22 @@ import re
 
 PAGINAS = ["index.html", "conocenos.html", "guialumea.html", "terminos.html",
            "iniciar-sesion.html", "crear-cuenta.html", "index-ingresado.html",
-           "mis-registros.html", "alimentos.html"]
+           "mis-registros.html", "alimentos.html", "progreso.html", "emociones.html", "avatar.html"]
+
+# Bootstrap y sus íconos se sirven desde vendor/ (la demo y el video funcionan sin internet)
+CDN_A_VENDOR = [
+    ("https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css", "vendor/bootstrap/bootstrap.min.css"),
+    ("https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js", "vendor/bootstrap/bootstrap.bundle.min.js"),
+    ("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css", "vendor/bootstrap-icons/bootstrap-icons.min.css"),
+]
 
 for nombre in PAGINAS:
     p = pathlib.Path(nombre)
     s = p.read_text(encoding="utf-8")
+    for cdn, local in CDN_A_VENDOR:
+        s = s.replace(cdn, local)
     if "estilos/puente-sara.css" in s:
+        p.write_text(s, encoding="utf-8")
         print(f"{nombre}: ya estaba conectada")
         continue
 
