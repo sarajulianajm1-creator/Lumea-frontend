@@ -160,10 +160,42 @@
       edulcorantes: "CONTIENE EDULCORANTES",
     };
 
-    function htmlSellos(sellos) {
-      if (sellos === null || sellos === undefined) return "";
-      if (sellos.length === 0) return '<p class="small text-secondary mb-1">Sin sellos de advertencia</p>';
-      return `<div class="d-flex flex-wrap gap-1 mb-1">${sellos.map((s) => `<span class="sello-mini">${TEXTO_SELLO[s] ?? s}</span>`).join("")}</div>`;
+    // Se arma con createElement y textContent (nunca innerHTML): lo que llega del
+    // servidor es texto, no HTML. El resultado es el mismo que antes.
+    function elemento(etiqueta, clase, texto) {
+      const el = document.createElement(etiqueta);
+      if (clase) el.className = clase;
+      if (texto !== undefined) el.textContent = texto;
+      return el;
+    }
+
+    function nodoSellos(sellos) {
+      if (sellos === null || sellos === undefined) return null;
+      if (sellos.length === 0) return elemento("p", "small text-secondary mb-1", "Sin sellos de advertencia");
+      const caja = elemento("div", "d-flex flex-wrap gap-1 mb-1");
+      sellos.forEach((s) => caja.appendChild(elemento("span", "sello-mini", TEXTO_SELLO[s] ?? s)));
+      return caja;
+    }
+
+    // Una línea con su ícono de Bootstrap Icons delante
+    function lineaConIcono(clase, icono, texto) {
+      const p = elemento("p", clase);
+      p.appendChild(elemento("i", `bi ${icono} me-1`));
+      p.appendChild(document.createTextNode(texto));
+      return p;
+    }
+
+    function tarjetaDeRegistro(registro) {
+      const columna = elemento("div", "col");
+      const tarjeta = elemento("div", "card h-100 rounded-4 shadow-sm p-3");
+      tarjeta.appendChild(elemento("h3", "h6 fw-bold hero-title mb-1", registro.alimento_detectado ?? "Alimento"));
+      tarjeta.appendChild(lineaConIcono("small text-secondary mb-1", "bi-calendar3", formatearFecha(registro.fecha)));
+      const sellos = nodoSellos(registro.sellos_advertencia);
+      if (sellos) tarjeta.appendChild(sellos);
+      tarjeta.appendChild(lineaConIcono("small text-secondary mb-1", "bi-fire", `${registro.calorias_aprox ?? "—"} kcal aprox.`));
+      tarjeta.appendChild(lineaConIcono("small text-secondary mb-0", "bi-bullseye", `Certeza IA: ${Number(registro.certeza_ia ?? 0).toFixed(1)}%`));
+      columna.appendChild(tarjeta);
+      return columna;
     }
 
     function formatearFecha(fechaISO) {
@@ -185,20 +217,10 @@
           return;
         }
 
-        listaRegistros.innerHTML = cuerpo.historial.map((registro) => `
-          <div class="col">
-            <div class="card h-100 rounded-4 shadow-sm p-3">
-              <h3 class="h6 fw-bold hero-title mb-1">${registro.alimento_detectado ?? "Alimento"}</h3>
-              <p class="small text-secondary mb-1"><i class="bi bi-calendar3 me-1"></i>${formatearFecha(registro.fecha)}</p>
-              ${htmlSellos(registro.sellos_advertencia)}
-              <p class="small text-secondary mb-1"><i class="bi bi-fire me-1"></i>${registro.calorias_aprox ?? "—"} kcal aprox.</p>
-              <p class="small text-secondary mb-0"><i class="bi bi-bullseye me-1"></i>Certeza IA: ${Number(registro.certeza_ia ?? 0).toFixed(1)}%</p>
-            </div>
-          </div>
-        `).join("");
+        listaRegistros.replaceChildren(...cuerpo.historial.map(tarjetaDeRegistro));
       } catch (error) {
         cargando.classList.add("d-none");
-        listaRegistros.innerHTML = `<div class="alert alert-danger">No se pudo conectar con el servidor. ¿Está corriendo app.py en ${API_BASE_URL}?</div>`;
+        listaRegistros.replaceChildren(elemento("div", "alert alert-danger", `No se pudo conectar con el servidor. ¿Está corriendo app.py en ${API_BASE_URL}?`));
       }
     }
   </script>
