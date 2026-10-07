@@ -38,6 +38,8 @@ Rama `gamificacion-100`. Actualizado al cerrar cada fase.
 
 ## F3 · Progreso: LISTA (7 oct 2026)
 
+> **Rehecho sobre la pantalla de Sara en F2.5** (decisión de Isabella: la base de Progreso es la de Sara). Lo que sigue describe la primera versión; `progreso.html` ahora es el diseño de Sara conectado, `estilos/progreso.css` ya no existe y `progreso.js` solo dibuja la semana, el álbum y los estados. Ver la sección F2.5.
+
 **Qué quedó listo**
 - `progreso.html` + `progreso.js` + `estilos/progreso.css` (bosquejo 10, solo la vista «Semana»): nivel con `.barra-xp` y el número escrito («Te faltan 35 XP para el nivel 3», «Llegaste al nivel máximo»), racha actual y mejor racha (plural correcto), meta de hoy, comidas de la semana de lunes a domingo (barras; la fruta lleva un ícono de manzana, no solo color), ánimo de la semana con las caras del avatar (si no hay internet para DiceBear queda el nombre escrito), `mensaje_regreso` como bienvenida y el enlace «Mi álbum: 3 de 10 calcomanías». Estados: cargando, error con «Intentar otra vez» y sin sesión.
 - Si un dato nuevo no llega (backend viejo), esa parte se omite y la pantalla funciona igual.
