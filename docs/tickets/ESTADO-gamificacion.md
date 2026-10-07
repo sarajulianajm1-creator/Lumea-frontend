@@ -36,6 +36,17 @@ Rama `gamificacion-100`. Actualizado al cerrar cada fase.
 
 **Cómo probarlo:** `.venv/bin/pytest pruebas` (63 pasan, 8 xfail esperados).
 
+## F3 · Progreso: LISTA (7 oct 2026)
+
+**Qué quedó listo**
+- `progreso.html` + `progreso.js` + `estilos/progreso.css` (bosquejo 10, solo la vista «Semana»): nivel con `.barra-xp` y el número escrito («Te faltan 35 XP para el nivel 3», «Llegaste al nivel máximo»), racha actual y mejor racha (plural correcto), meta de hoy, comidas de la semana de lunes a domingo (barras; la fruta lleva un ícono de manzana, no solo color), ánimo de la semana con las caras del avatar (si no hay internet para DiceBear queda el nombre escrito), `mensaje_regreso` como bienvenida y el enlace «Mi álbum: 3 de 10 calcomanías». Estados: cargando, error con «Intentar otra vez» y sin sesión.
+- Si un dato nuevo no llega (backend viejo), esa parte se omite y la pantalla funciona igual.
+- `api.js`: `obtenerCalcomanias(email)` y `obtenerEstadosAnimo(email, dias)` (con `dias=7`).
+- `indexx.js` (Inicio de Sara), solo esas líneas: «1 día» en singular y «Meta cumplida: 20 XP hoy» en vez de «20 de 15 XP hoy».
+- La navegación inferior es la misma de las demás pantallas privadas, con `aria-current="page"` en Progreso.
+
+**Cómo probarlo:** `.venv/bin/pytest pruebas` (20 pruebas de `test_progreso.py`, que corren en hora de Colombia y con el reloj fijo en el miércoles 7 de octubre; 4 de `test_index_ingresado.py`) y `.venv/bin/pytest pruebas -m capturas -k progreso` (0 errores de contraste en las 5 paletas × claro/oscuro).
+
 ## Decisiones provisionales para Isabella
 
 Elegí la opción más sobria y reversible cuando algo no estaba en el bosquejo ni en la misión. Dime si alguna no te gusta.
@@ -49,3 +60,8 @@ Elegí la opción más sobria y reversible cuando algo no estaba en el bosquejo 
 7. **Arte de las calcomanías por lista, no por archivo.** En vez de «si existe `img/calcomanias/<id>.svg`» (que pide archivos que no existen y llena la consola de 404), la lista `ARTE_PROPIO` de `pegatinas.js` dice cuáles tienen dibujo propio.
 8. **`celebracion.css` es autónomo** (no carga `componentes.css`): en las páginas de Sara `componentes.css` cambiaría los márgenes de los títulos y párrafos.
 9. **La fila de la bitácora de F1 la redacté yo** (no tenía a mano la que se había propuesto en el chat); revísala.
+10. **Progreso y Avatar usan el cascarón de las páginas de Sara** (Bootstrap local + `style.css` + `puente-sara.css` + la barra inferior) con piezas de Lumea (`componentes.css`) por dentro. Así la navegación es idéntica en las cinco pantallas privadas, como pide F5. Reversible cuando T2 rediseñe Registrar con la piel de Lumea: se cambia el encabezado de las dos páginas.
+11. **«Meta de hoy» se agregó a Progreso** como tercera tarjeta junto a las rachas (los datos llegan en `/progreso`; en el bosquejo no hay una tarjeta para ella). Se puede borrar sin tocar nada más (`.progreso__meta` en `progreso.html`).
+12. **Racha en cero:** la tarjeta dice «0 días» y «Registra algo hoy para empezar una racha»; con 1 día, «¡Empezó tu racha!».
+13. **Semana de lunes a domingo según la fecha del dispositivo.** Los días que todavía no llegan salen con borde punteado y sin cifra.
+14. **No agregué** la sugerencia de «hablar con alguien» del bosquejo 11 (es la decisión ética tuya que el bosquejo deja abierta; además esa pantalla no está en estas fases).
