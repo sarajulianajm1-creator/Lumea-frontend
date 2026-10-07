@@ -88,6 +88,17 @@ Rama `gamificacion-100`. Actualizado al cerrar cada fase.
     python3 app.py
     # y abrir el frontend con un servidor estático, con lumea_email = demo@lumea.co en localStorage
 
+## Integración con `origin/main`: PENDIENTE DE DECISIÓN (7 oct 2026, 14:23)
+
+Mientras corrían las capturas, alguien (no fui yo; parece la sincronización con la rama base de la aplicación) empezó en este mismo worktree un `merge origin/main` hacia `gamificacion-100`, y se quedó a medias con **9 archivos en conflicto**. **Lo cancelé con `git merge --abort`** (reversible: no se perdió nada; los cambios de documentación que tenía en el área de preparación en ese momento los restauré desde una copia, y todo el trabajo de F1 a F5 está en los commits).
+
+**Por qué no lo resolví yo.** `origin/main` no es una versión nueva de esta misma rama: es otra línea de trabajo. Su último commit es `b89dc7d` de Laura Jiménez (5 oct, «Realize toda la pagina que ve el usuario cuando ya está registrado»), que parte del commit `902a653` del 2 de octubre. No tiene nada de lo nuestro (ni `vendor/`, ni `tokens.css`/`paletas.css`, ni `tema.js`, ni `pruebas/`, ni la celebración) y trae **su propia versión** de `progreso.html` y `avatar.html` (más `animo.html`, `emociones.html`, `lumea-ui.js` y `lumea-state.js`), cambios en `alimentos.html`, `index.html`, `index-ingresado.html`, `crear-cuenta.html`, `iniciar-sesion.html`, `indexx.js` y un `style.css` reescrito (+2.800 líneas). Resolver los conflictos sería elegir entre dos versiones de Progreso, Avatar y la cámara: una decisión de Isabella, Laura y Sara, no un arreglo técnico.
+
+**Para tener en cuenta antes de unir:**
+- Sus páginas guardan la sesión como `lumea_usuario_email` (con `window.lumeaStore`); las nuestras (y `api.js`) usan `lumea_email`. Si conviven, hay que unificar la clave o nadie entrará a la mitad de las pantallas.
+- Sus pantallas no usan `LumeaCelebrar`, `obtenerCalcomanias` ni los campos nuevos del contrato (`desbloqueos`, `calcomanias_nuevas`, `es_fruta`).
+- Se puede ver todo lo que traen sin tocar nada con `git diff gamificacion-100...origin/main --stat`, y volver a intentar la unión con `git merge origin/main` desde este worktree (los conflictos son los 9 de arriba).
+
 ## Decisiones provisionales para Isabella
 
 Elegí la opción más sobria y reversible cuando algo no estaba en el bosquejo ni en la misión. Dime si alguna no te gusta.
@@ -111,3 +122,4 @@ Elegí la opción más sobria y reversible cuando algo no estaba en el bosquejo 
 17. **Lo bloqueado** dice «Se abre en el nivel N» (como pedía T5) y el botón «Nivel N» es `aria-disabled`; no se esconde ni se desactiva con `disabled` para que el lector de pantalla pueda leerlo.
 18. **En computador** (≥ 840 px) Avatar usa dos columnas: la vitrina queda fija a la izquierda y las pestañas a la derecha. En celular, una debajo de la otra, como el bosquejo.
 19. **Textos nuevos que escribí y tú debes revisar** (no estaban en los bosquejos): subtítulo de Progreso «Cómo vas en la semana, sin compararte con nadie.», de Avatar «Cámbiale la ropa, mira tus misiones y tu álbum de calcomanías.», nota del armario «Lo que se abre al subir de nivel es tuyo para siempre.», «Todavía no te pusiste nada.», «Puesto: …», «Cumplida hoy» / «Para hoy», «Mi álbum», «Intentar otra vez», y los avisos «Te pusiste …» / «Te quitaste …».
+20. **Cancelé la unión con `origin/main`** (ver la sección de arriba) en vez de resolverla, porque implica escoger entre la versión de Laura y la mía de Progreso, Avatar y la cámara.
