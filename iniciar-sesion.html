@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Paleta, modo y piel (?piel=sara muestra el original) -->
-  <script src="tema.js"></script>
   <title>LUMEA | Iniciar Sesión</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="lumeaaa.png">
@@ -12,16 +10,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Bootstrap 5.3.3 CSS (copia local en vendor/: funciona sin internet) -->
-  <link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Hoja de Estilos Unificada -->
-  <link rel="stylesheet" href="estilos/tokens.css">
-  <link rel="stylesheet" href="estilos/paletas.css">
   <link rel="stylesheet" href="style.css" />
-  <!-- Piel de Lumea sobre el diseño de Sara (no cambia style.css) -->
-  <link rel="stylesheet" href="estilos/puente-sara.css">
 </head>
 <body>
 
@@ -75,7 +69,7 @@
         <p class="text-secondary small mb-0">Ingresa a tu perfil para gestionar tus registros nutricionales.</p>
       </div>
 
-      <form action="iniciar-sesion.html" method="post" id="loginForm">
+      <form action="index-ingresado.html" method="get" id="loginForm">
         
         <!-- Correo Electrónico -->
         <div class="mb-3">
@@ -102,14 +96,11 @@
         <!-- Recordarme -->
         <div class="d-flex justify-content-between align-items-center mb-4 small">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="recordarme" />
+            <input class="form-check-input" type="checkbox" id="recordarme" checked />
             <label class="form-check-label text-secondary" for="recordarme">Recordar mi sesión</label>
           </div>
           <a href="#" class="text-decoration-none text-success fw-medium">¿Olvidaste tu contraseña?</a>
         </div>
-
-        <!-- Mensaje de error / éxito (lo llena api.js) -->
-        <div id="mensajeLogin" class="alert d-none small mb-3" role="alert"></div>
 
         <!-- Botón de Envío -->
         <button type="submit" class="btn btn-lumea w-100 rounded-pill py-2 mb-3">
@@ -151,36 +142,12 @@
   </footer>
 
   <!-- Bootstrap 5.3.3 Bundle JS -->
-  <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
-  <script src="api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.getElementById("loginForm").addEventListener("submit", async (evento) => {
-      evento.preventDefault();
-      const mensaje = document.getElementById("mensajeLogin");
-      const email = document.getElementById("correo").value.trim();
-      const contrasena = document.getElementById("contrasena").value;
-
-      try {
-        // POST /login: el backend compara la contraseña con el hash de bcrypt.
-        const { ok, cuerpo } = await iniciarSesion(email, contrasena);
-        mensaje.classList.remove("d-none", "alert-success", "alert-danger");
-        if (ok && cuerpo.success) {
-          guardarSesion(email);
-          mensaje.classList.add("alert-success");
-          mensaje.textContent = "¡Bienvenida de nuevo, " + (cuerpo.perfil.nombre || "") + "!";
-          // Al inicio del estudiante (nivel, XP, racha, meta del día)
-          setTimeout(() => { window.location.href = "index-ingresado.html"; }, 800);
-        } else {
-          // 401: el mismo mensaje si el correo no existe o la contraseña está mal
-          // (así nadie averigua qué correos están registrados). "ayuda" explica
-          // qué hacer si la cuenta es de antes de las contraseñas.
-          mensaje.classList.add("alert-danger");
-          mensaje.textContent = (cuerpo.error || "No se pudo iniciar sesión.") + (cuerpo.ayuda ? " " + cuerpo.ayuda : "");
-        }
-      } catch (error) {
-        mensaje.classList.remove("d-none");
-        mensaje.classList.add("alert-danger");
-        mensaje.textContent = "No se pudo conectar con el servidor. ¿Está corriendo app.py en " + API_BASE_URL + "?";
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      const correo = document.getElementById('correo').value.trim();
+      if (correo) {
+        localStorage.setItem('lumea_usuario_email', correo);
       }
     });
   </script>

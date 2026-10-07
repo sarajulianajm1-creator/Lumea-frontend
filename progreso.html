@@ -1,146 +1,340 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- Paleta, modo y piel (?piel=sara muestra el original) -->
-<script src="tema.js"></script>
-<title>LUMEA | Progreso</title>
-<!-- Favicon -->
-<link rel="icon" type="image/png" href="lumeaaa.png">
-<!-- Google Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- Bootstrap 5.3.3 CSS (copia local en vendor/: funciona sin internet) -->
-<link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
-<!-- Hoja de Estilos Unificada: la barra de navegación es la de las demás pantallas privadas -->
-<link rel="stylesheet" href="estilos/tokens.css">
-<link rel="stylesheet" href="estilos/paletas.css">
-<link rel="stylesheet" href="style.css" />
-<link rel="stylesheet" href="estilos/puente-sara.css">
-<!-- Las piezas de Lumea (tarjetas, chips, barra de XP) y las propias de esta pantalla -->
-<link rel="stylesheet" href="estilos/componentes.css">
-<link rel="stylesheet" href="estilos/progreso.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LUMEA | Tu Progreso Semanal</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="lumeaaa.png">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Hoja de Estilos Unificada -->
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
 
-<!-- Barra de Navegación Global (la misma en las cinco pantallas privadas) -->
-<header>
-    <div class="container fixed-bottom d-flex justify-content-center mb-4">
-        <nav class="custom-navbar d-flex align-items-center justify-content-around px-3 py-2 shadow-lg" aria-label="Principal">
-            <a href="index-ingresado.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-house-door-fill fs-4" aria-hidden="true"></i>
-                <span>Inicio</span>
+<body class="lumea-screen-wrapper">
+
+  <div class="lumea-desktop-layout">
+
+    <!-- ============================================================
+         MENÚ LATERAL DESKTOP (1280px)
+         ============================================================ -->
+    <aside class="lumea-desktop-sidebar d-none d-lg-flex">
+      <div>
+        <a href="index-ingresado.html" class="sidebar-logo">
+          <span style="font-size: 1.6rem;">🌿</span> LUMEA
+        </a>
+
+        <ul class="sidebar-nav-list">
+          <li class="sidebar-nav-item">
+            <a href="index-ingresado.html">
+              <i class="bi bi-house-door-fill fs-5"></i>
+              <span>Inicio</span>
             </a>
-
-            <a href="mis-registros.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-basket-fill fs-4" aria-hidden="true"></i>
-                <span>Mis registros</span>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="alimentos.html">
+              <i class="bi bi-egg-fried fs-5"></i>
+              <span>Mis comidas</span>
             </a>
-
-            <a href="alimentos.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-camera-fill fs-4" aria-hidden="true"></i>
-                <span>Registrar</span>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="alimentos.html" style="background: var(--lumea-accent-soft); color: var(--lumea-primary);">
+              <i class="bi bi-camera-fill fs-5"></i>
+              <span>Registrar comida</span>
             </a>
-
-            <a href="progreso.html" class="nav-item-custom text-center text-decoration-none" aria-current="page">
-                <i class="bi bi-graph-up-arrow fs-4" aria-hidden="true"></i>
-                <span>Progreso</span>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="progreso.html" class="active">
+              <i class="bi bi-bar-chart-line-fill fs-5"></i>
+              <span>Progreso</span>
+              <span class="nav-badge-pill">Semana</span>
             </a>
-
-            <a href="avatar.html" class="nav-item-custom text-center text-decoration-none">
-                <i class="bi bi-person-fill fs-4" aria-hidden="true"></i>
-                <span>Avatar</span>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="avatar.html">
+              <i class="bi bi-person-badge-fill fs-5"></i>
+              <span>Avatar & Armario</span>
             </a>
-        </nav>
-    </div>
-</header>
-
-<main class="contenido">
-  <header>
-    <h1 class="contenido__titulo">Tu progreso</h1>
-    <p class="contenido__subtitulo">Cómo vas en la semana, sin compararte con nadie.</p>
-  </header>
-
-  <!-- Estados: cargando, error y sin sesión (progreso.js muestra uno a la vez) -->
-  <div id="estado-cargando" class="estado" role="status" hidden>
-    <div class="esqueleto esqueleto--linea"></div>
-    <div class="esqueleto esqueleto--bloque"></div>
-    <p>Cargando tu progreso…</p>
-  </div>
-
-  <div id="estado-error" class="estado" role="alert" hidden>
-    <p>No pudimos cargar tu progreso. Revisa que la app esté encendida e inténtalo otra vez.</p>
-    <button type="button" id="estado-reintentar" class="boton">Intentar otra vez</button>
-  </div>
-
-  <div id="sin-sesion" class="estado estado--sesion" hidden>
-    <p>Inicia sesión para ver tu progreso.</p>
-    <a class="boton" href="iniciar-sesion.html">Iniciar sesión</a>
-  </div>
-
-  <div id="progreso-contenido" class="progreso" hidden>
-    <!-- Cuando alguien vuelve después de días: una bienvenida, nunca un «perdiste XP» -->
-    <p id="bienvenida" class="progreso__bienvenida tarjeta tarjeta--emocion" role="status" hidden></p>
-
-    <!-- 1. Nivel y XP, con el número escrito -->
-    <section class="progreso__nivel tarjeta tarjeta--logro" aria-labelledby="nivel-titulo">
-      <div class="progreso__nivel-cabeza">
-        <h2 id="nivel-titulo">Nivel</h2>
-        <span id="nivel-xp" class="chip chip--logro numero"></span>
+          </li>
+          <li class="sidebar-nav-item">
+            <a href="emociones.html">
+              <i class="bi bi-emoji-smile-fill fs-5"></i>
+              <span>Ánimo</span>
+            </a>
+          </li>
+        </ul>
       </div>
-      <div class="barra-xp">
-        <div class="barra-xp__riel" id="nivel-riel" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia el siguiente nivel">
-          <div class="barra-xp__relleno" id="nivel-relleno"></div>
+
+      <!-- Tarjeta Usuario Lateral -->
+      <div class="sidebar-user-card">
+        <div class="sidebar-user-avatar">
+          <span class="lumea-avatar-mini-emoji">🙂</span>
+        </div>
+        <div class="flex-grow-1 overflow-hidden">
+          <h6 class="mb-0 fw-bold text-truncate lumea-bind-nombre">Cargando...</h6>
+          <small class="text-muted d-block fw-semibold"><span class="lumea-bind-nivel">Nivel --</span> • <span class="lumea-bind-racha">--</span> 🔥</small>
+        </div>
+        <a href="avatar.html" class="btn btn-sm btn-light rounded-circle shadow-sm">
+          <i class="bi bi-gear"></i>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ============================================================
+         ÁREA PRINCIPAL: TU PROGRESO (VERSIÓN 1.1)
+         "Cómo vas en la semana, sin juzgar."
+         ============================================================ -->
+    <main class="lumea-main-area">
+
+      <!-- Encabezado Superior -->
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-3">
+          <a href="index-ingresado.html" class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Volver a Inicio">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+          <div>
+            <span class="badge rounded-pill text-uppercase px-2.5 py-1 fw-bold" style="background: var(--lumea-accent-badge); color: var(--lumea-primary); font-size: 0.72rem;">
+              Versión 1.1 
+            </span>
+            <h1 class="user-greeting-title mb-0" style="font-size: 1.6rem;">Tu progreso</h1>
+          </div>
+        </div>
+
+        <a href="avatar.html" class="avatar-header-btn">
+          <div class="avatar-header-icon" style="width: 36px; height: 36px; font-size: 1.2rem;">
+            <span class="lumea-avatar-mini-emoji">🙂</span>
+          </div>
+          <span class="d-none d-sm-inline fw-bold text-success pe-2" style="font-size: 0.82rem;">Ver mi avatar</span>
+        </a>
+      </div>
+
+      <!-- ============================================================
+           1. NIVEL Y XP CON EL NÚMERO ESCRITO
+           "Wow: subir de nivel destapa lo que se desbloqueó en el armario."
+           ============================================================ -->
+      <div class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4 position-relative overflow-hidden">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <span class="nivel-badge lumea-bind-nivel">Nivel --</span>
+          
+          </div>
+          <a href="avatar.html" class="text-success small fw-bold text-decoration-none">
+            Ver armario desbloqueado <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <h4 class="fw-bold text-dark mb-1" style="font-size: 1.25rem;">
+          <span class="lumea-bind-xp-text">Cargando XP...</span>
+        </h4>
+        <small class="text-muted d-block mb-3">
+          Cada registro de comida, check-in emocional y fruta suma a tu camino.
+        </small>
+
+        <!-- Barra de Progreso XP -->
+        <div class="progress mb-4" style="height: 14px;">
+          <div class="progress-bar lumea-bind-xp-bar" role="progressbar" style="width: 0%;"></div>
+        </div>
+
+        <!-- Tarjetas de Racha -->
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="p-3 rounded-4 bg-light d-flex align-items-center gap-3 border">
+              <span class="fs-2">🔥</span>
+              <div>
+                <small class="text-muted d-block fw-bold" style="font-size: 0.72rem; text-transform: uppercase;">Racha actual</small>
+                <h5 class="fw-bold text-dark mb-0 lumea-bind-racha">--</h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 rounded-4 bg-light d-flex align-items-center gap-3 border">
+              <span class="fs-2">⭐</span>
+              <div>
+                <small class="text-muted d-block fw-bold" style="font-size: 0.72rem; text-transform: uppercase;">Mejor racha</small>
+                <h5 class="fw-bold text-dark mb-0 lumea-bind-mejor-racha">--</h5>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <p id="nivel-faltan" class="progreso__faltan"></p>
-    </section>
 
-    <!-- Racha, mejor racha y meta del día -->
-    <section class="progreso__racha tarjeta tarjeta--logro tarjeta--color" aria-labelledby="racha-titulo">
-      <h2 id="racha-titulo" class="tarjeta__titulo">Racha actual</h2>
-      <p id="racha-actual" class="tarjeta__cifra numero"></p>
-      <p id="racha-nota" class="tarjeta__nota"></p>
-    </section>
-    <section class="progreso__mejor tarjeta tarjeta--logro tarjeta--color" aria-labelledby="mejor-titulo">
-      <h2 id="mejor-titulo" class="tarjeta__titulo">Tu mejor racha</h2>
-      <p id="racha-mejor" class="tarjeta__cifra numero"></p>
-      <p class="tarjeta__nota">hasta ahora</p>
-    </section>
-    <section class="progreso__meta tarjeta tarjeta--logro tarjeta--color" aria-labelledby="meta-titulo">
-      <h2 id="meta-titulo" class="tarjeta__titulo">Meta de hoy</h2>
-      <p id="meta-hoy" class="tarjeta__cifra numero"></p>
-      <p id="meta-nota" class="tarjeta__nota"></p>
-    </section>
+      <!-- ============================================================
+           2. COMIDAS DE LA SEMANA
+           ============================================================ -->
+      <section class="grafica-semanal-container mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h3 class="h5 fw-bold text-dark mb-0">Comidas de la semana</h3>
+        </div>
+        <p class="text-muted small mb-3">Registros realizados en cada jornada de la semana:</p>
 
-    <!-- 2. Comidas de la semana (lunes a domingo); la fruta lleva su ícono -->
-    <section id="semana-comidas-caja" class="progreso__semana tarjeta" aria-labelledby="semana-titulo">
-      <h2 id="semana-titulo">Comidas de la semana</h2>
-      <ol id="semana-comidas" class="semana"></ol>
-    </section>
+        <!-- Contenedor dinámico de barras desde el Backend -->
+        <div class="bars-chart-wrapper" id="grafica-barras-semana">
+          <div class="w-100 text-center py-4 text-muted small">Cargando comidas de la semana desde el backend...</div>
+        </div>
+      </section>
 
-    <!-- 3. Ánimo de la semana, con las caras del avatar. Es tuyo: no se compara con nadie -->
-    <section id="semana-animo-caja" class="progreso__animo tarjeta tarjeta--emocion" aria-labelledby="animo-titulo">
-      <h2 id="animo-titulo">Tu ánimo de la semana</h2>
-      <ol id="semana-animo" class="animo-semana"></ol>
-    </section>
+      <!-- ============================================================
+           3. TU ÁNIMO DE LA SEMANA CON LAS CARAS DE TU AVATAR
+           "Es tuyo y no se compara con nadie."
+           ============================================================ -->
+      <section class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h3 class="h5 fw-bold text-dark mb-0">Tu ánimo de la semana</h3>
+          <span class="badge rounded-pill bg-light text-success border px-2.5 py-1" style="font-size: 0.75rem;">
+            Es tuyo y no se compara con nadie
+          </span>
+        </div>
+        <p class="text-muted small mb-3">Las caras de tu avatar reflejadas a lo largo de los días:</p>
 
-    <!-- Álbum de calcomanías -->
-    <p class="progreso__album">
-      <a id="album-enlace" class="boton boton--secundario" href="avatar.html#calcomanias" hidden></a>
-    </p>
+        <!-- Fila dinámica de caras de los 7 días desde el Backend -->
+        <div class="animo-semana-row" id="animo-semana-fila">
+          <div class="w-100 text-center py-3 text-muted small">Cargando historial de ánimo desde el backend...</div>
+        </div>
+
+        <div class="mt-3 text-center">
+          <a href="emociones.html" class="btn btn-sm btn-outline-success rounded-pill px-3">
+            <i class="bi bi-emoji-smile me-1"></i> Actualizar mi check-in de hoy
+          </a>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           4. BIENVENIDA CÁLIDA (NUNCA DICE "PERDISTE XP")
+           "Cuando vuelves después de días sin usarla, el backend manda mensaje_regreso.
+           Va como bienvenida cálida, nunca como 'perdiste XP'."
+           ============================================================ -->
+      <div id="aviso-regreso" class="card-bienvenida-calida mb-5" style="display: none;">
+        <span class="fs-1">💛</span>
+        <div>
+          <h5 class="fw-bold mb-1" style="font-size: 1.05rem;">¡Te extrañamos! Tu nivel sigue siendo tuyo.</h5>
+          <p class="mb-0 small opacity-90">
+            LUMEA no te penaliza ni quita experiencia si te ausentas. Tu bienestar no es una carrera con nadie: cada día que vuelves es una oportunidad para conectar contigo.
+          </p>
+        </div>
+      </div>
+
+    </main>
+
   </div>
-</main>
 
-<div class="espacio-barra-inferior" aria-hidden="true"></div>
+  <!-- ============================================================
+       BARRA INFERIOR FLOTANTE MÓVIL (< 992px)
+       ============================================================ -->
+  <div class="lumea-bottom-nav-container d-lg-none">
+    <nav class="lumea-pill-nav">
+      <a href="index-ingresado.html" class="nav-link-item">
+        <i class="bi bi-house-door"></i>
+        <span>Inicio</span>
+      </a>
 
-<!-- api.js (dirección y llamadas al backend) + progreso.js (llena esta pantalla) -->
-<script src="api.js"></script>
-<script src="formato.js"></script>
-<script src="progreso.js"></script>
+      <a href="alimentos.html" class="nav-link-item">
+        <i class="bi bi-egg-fried"></i>
+        <span>Comidas</span>
+      </a>
+
+      <!-- Botón Cámara al Centro (Ley de Fitts) -->
+      <a href="alimentos.html" class="nav-camera-fab" title="Registrar comida">
+        <i class="bi bi-camera-fill"></i>
+        <span>Cámara</span>
+      </a>
+
+      <!-- Emociones / Ánimo -->
+      <a href="emociones.html" class="nav-link-item">
+        <i class="bi bi-emoji-smile"></i>
+        <span>Emociones</span>
+      </a>
+
+      <a href="progreso.html" class="nav-link-item active">
+        <i class="bi bi-bar-chart-line-fill"></i>
+        <span>Progreso</span>
+      </a>
+
+      <a href="avatar.html" class="nav-link-item">
+        <i class="bi bi-person"></i>
+        <span>Avatar</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Scripts Globales de Lumea -->
+  <script src="lumea-state.js"></script>
+  <script src="lumea-ui.js"></script>
+  <script>
+    // Renderizar datos reales del Backend
+    async function renderizarProgresoSemana() {
+      const email = window.lumeaStore ? window.lumeaStore.obtenerEmailUsuario() : localStorage.getItem("lumea_usuario_email");
+      if (window.lumeaStore && email) {
+        await window.lumeaStore.cargarDesdeBackend(email);
+      }
+      
+      const estado = window.lumeaStore ? window.lumeaStore.obtener() : null;
+      if (!estado) return;
+
+      // 1. Barras de la semana
+      const contenedorBarras = document.getElementById("grafica-barras-semana");
+      if (contenedorBarras && estado.comidas_semana) {
+        const maxComidas = Math.max(3, ...estado.comidas_semana.map(d => d.comidas || 0));
+        contenedorBarras.innerHTML = estado.comidas_semana.map(d => {
+          const comidas = d.comidas || 0;
+          const altura = comidas === 0 ? 12 : Math.min(150, Math.round((comidas / maxComidas) * 130) + 20);
+          const estiloHoy = d.esHoy ? 'background: linear-gradient(180deg, #ffd166 0%, #2d6a4f 100%);' : '';
+          const iconoFruta = d.tieneFruta ? `<span class="bar-fruit-floating-icon" title="Fruta registrada">🍎</span>` : '';
+          
+          return `
+            <div class="bar-col-item ${d.esHoy ? 'today' : ''}">
+              <div class="bar-fill-body" style="height: ${altura}px; ${estiloHoy}" title="${comidas} comidas registradas">
+                ${iconoFruta}
+              </div>
+              <span class="bar-day-name">${d.dia}${d.esHoy ? ' (Hoy)' : ''}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      // 2. Fila de ánimo de la semana
+      const contenedorAnimo = document.getElementById("animo-semana-fila");
+      if (contenedorAnimo && estado.animo_hoy && estado.animo_hoy.historial_semana) {
+        const mapaCaras = {
+          muy_bien: { emoji: "😄", label: "Muy bien" },
+          bien: { emoji: "🙂", label: "Bien" },
+          neutral: { emoji: "😐", label: "Neutral" },
+          mal: { emoji: "🙁", label: "Mal" },
+          muy_mal: { emoji: "😢", label: "Muy mal" }
+        };
+
+        contenedorAnimo.innerHTML = estado.animo_hoy.historial_semana.map(dia => {
+          const info = mapaCaras[dia.estado] || { emoji: "•", label: "Sin registro" };
+          const esHoy = Boolean(dia.esHoy);
+          return `
+            <div class="animo-day-pill ${esHoy ? 'today' : ''}">
+              <div class="fs-2 mb-1">${dia.estado ? info.emoji : '•'}</div>
+              <small class="fw-bold ${esHoy ? 'text-success' : 'text-muted'} d-block" style="font-size: 0.72rem;">
+                ${dia.dia || ''}${esHoy ? ' (Hoy)' : ''}
+              </small>
+              <span class="badge ${esHoy ? 'text-bg-success' : 'text-bg-light border text-muted'}" style="font-size: 0.62rem;">
+                ${dia.estado ? info.label : 'Sin registro'}
+              </span>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderizarProgresoSemana();
+      if (window.lumeaStore) {
+        window.lumeaStore.suscribir(() => renderizarProgresoSemana());
+      }
+    });
+  </script>
 </body>
+
 </html>
