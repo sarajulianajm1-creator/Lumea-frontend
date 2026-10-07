@@ -47,6 +47,18 @@ Rama `gamificacion-100`. Actualizado al cerrar cada fase.
 
 **Cómo probarlo:** `.venv/bin/pytest pruebas` (20 pruebas de `test_progreso.py`, que corren en hora de Colombia y con el reloj fijo en el miércoles 7 de octubre; 4 de `test_index_ingresado.py`) y `.venv/bin/pytest pruebas -m capturas -k progreso` (0 errores de contraste en las 5 paletas × claro/oscuro).
 
+## F4 · Avatar, misiones, armario y álbum: LISTA (7 oct 2026)
+
+**Qué quedó listo**
+- `avatar.html` + `avatar.js` + `estilos/avatar.css` (bosquejo 06, variante A «la vitrina»): avatar grande con nivel y barra de XP, y debajo tres pestañas con el patrón ARIA de «tabs» (flechas, Inicio y Fin; solo la activa entra con Tab). Abren con `#misiones`, `#armario` y `#calcomanias`: a esas anclas apuntan «Ponérmelo» y «Ver mi álbum» de la celebración.
+- **Misiones:** las tres diarias de `/progreso` con «+10 XP»; la cumplida lleva «Cumplida hoy» y su calcomanía (fruta → «Fruta del día», tres comidas → «Tres al día», check-in → «Cómo llegas») si ya la ganó.
+- **Armario:** ropa y accesorios de `GET /avatar`. «Ponerme» y «Quitar» usan `equiparObjeto` y `quitarObjeto`; el backend responde con el avatar completo y se redibuja, el foco se queda en el mismo botón y el avatar da un saltico (un solo movimiento). Lo bloqueado lleva candado, «Se abre en el nivel N», `aria-disabled="true"` y no hace nada. Si el backend dice 403 o falla, se avisa y no cambia nada.
+- **Calcomanías:** el álbum de `GET /calcomanias` (ganadas a color por rol con su fecha; por ganar con contorno punteado y «Cómo se gana: …»). Si el álbum no carga, el resto de la pantalla funciona.
+- El avatar grande usa las capas de Laura cuando `imagen_lista` es verdadero en todas; si no, la cara DiceBear con el ánimo de hoy, y sin internet queda una silueta.
+- `formato.js`: plural, porcentaje y texto del nivel, compartidos con Progreso.
+
+**Cómo probarlo:** `.venv/bin/pytest pruebas` (32 pruebas de `test_avatar.py`) y `.venv/bin/pytest pruebas -m capturas -k avatar` (las tres pestañas, en 5 paletas × claro/oscuro, 0 errores de contraste).
+
 ## Decisiones provisionales para Isabella
 
 Elegí la opción más sobria y reversible cuando algo no estaba en el bosquejo ni en la misión. Dime si alguna no te gusta.
@@ -65,3 +77,8 @@ Elegí la opción más sobria y reversible cuando algo no estaba en el bosquejo 
 12. **Racha en cero:** la tarjeta dice «0 días» y «Registra algo hoy para empezar una racha»; con 1 día, «¡Empezó tu racha!».
 13. **Semana de lunes a domingo según la fecha del dispositivo.** Los días que todavía no llegan salen con borde punteado y sin cifra.
 14. **No agregué** la sugerencia de «hablar con alguien» del bosquejo 11 (es la decisión ética tuya que el bosquejo deja abierta; además esa pantalla no está en estas fases).
+15. **Sin selector de base en Avatar.** El bosquejo no lo tiene y las imágenes de las bases todavía no existen; `elegirBaseAvatar` ya está en `api.js` para cuando se decida.
+16. **Con las capas de Laura la cara del ánimo no se dibuja** (esas imágenes no llevan cara; el backend dice que el ánimo siempre usa DiceBear). Hoy, sin las imágenes, se ve la cara DiceBear con el ánimo.
+17. **Lo bloqueado** dice «Se abre en el nivel N» (como pedía T5) y el botón «Nivel N» es `aria-disabled`; no se esconde ni se desactiva con `disabled` para que el lector de pantalla pueda leerlo.
+18. **En computador** (≥ 840 px) Avatar usa dos columnas: la vitrina queda fija a la izquierda y las pestañas a la derecha. En celular, una debajo de la otra, como el bosquejo.
+19. **Textos nuevos que escribí y tú debes revisar** (no estaban en los bosquejos): subtítulo de Progreso «Cómo vas en la semana, sin compararte con nadie.», de Avatar «Cámbiale la ropa, mira tus misiones y tu álbum de calcomanías.», nota del armario «Lo que se abre al subir de nivel es tuyo para siempre.», «Todavía no te pusiste nada.», «Puesto: …», «Cumplida hoy» / «Para hoy», «Mi álbum», «Intentar otra vez», y los avisos «Te pusiste …» / «Te quitaste …».
