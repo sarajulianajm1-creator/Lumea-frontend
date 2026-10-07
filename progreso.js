@@ -1,6 +1,6 @@
 // =====================================================================
 // progreso.js — llena progreso.html (sin diseño propio: las clases están en
-// estilos/progreso.css y estilos/componentes.css). Necesita api.js antes.
+// estilos/progreso.css y estilos/componentes.css). Necesita api.js y formato.js antes.
 //
 // Datos (Backend/docs/CONTRATO_GAMIFICACION.md):
 //   GET /progreso        nivel, XP, racha, meta, mensaje_regreso, avatar, calcomanias
@@ -25,25 +25,8 @@
 
   // ---------- Cálculos puros (se prueban solos) ----------
 
-  // «1 día», «3 días»
-  function plural(n, singular, pluralTexto) {
-    return `${n} ${n === 1 ? singular : pluralTexto}`;
-  }
-
-  // Cuánto de la barra se llena (0 a 100). Después de perder XP el XP puede quedar por
-  // debajo del inicio del nivel: la barra nunca baja de 0. En el último nivel, llena.
-  function porcentajeNivel(p) {
-    if (p.xp_siguiente_nivel === null || p.xp_siguiente_nivel === undefined) return 100;
-    const ancho = p.xp_siguiente_nivel - p.xp_inicio_nivel;
-    if (!(ancho > 0)) return 0;
-    return Math.round(Math.max(0, Math.min(1, (p.xp_total - p.xp_inicio_nivel) / ancho)) * 100);
-  }
-
-  function textoNivel(p) {
-    return p.xp_siguiente_nivel === null || p.xp_siguiente_nivel === undefined
-      ? "Llegaste al nivel máximo"
-      : `Te faltan ${p.xp_faltante_siguiente_nivel} XP para el nivel ${p.nivel + 1}`;
-  }
+  // plural, porcentajeNivel y textoNivel son comunes con Avatar: viven en formato.js
+  const { plural, porcentajeNivel, textoNivel } = window.LumeaFormato;
 
   function textoRacha(n) {
     return plural(n, "día", "días");
