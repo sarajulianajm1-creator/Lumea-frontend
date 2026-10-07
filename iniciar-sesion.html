@@ -75,7 +75,7 @@
         <p class="text-secondary small mb-0">Ingresa a tu perfil para gestionar tus registros nutricionales.</p>
       </div>
 
-      <form action="index-ingresado.html" method="get" id="loginForm">
+      <form action="iniciar-sesion.html" method="post" id="loginForm">   <!-- nunca GET: la contraseña no puede ir en la dirección -->
         
         <!-- Correo Electrónico -->
         <div class="mb-3">
@@ -107,6 +107,9 @@
           </div>
           <a href="#" class="text-decoration-none text-success fw-medium">¿Olvidaste tu contraseña?</a>
         </div>
+
+        <!-- Mensaje de error / éxito (lo llena el script de abajo) -->
+        <div id="mensajeLogin" class="alert d-none small mb-3" role="alert"></div>
 
         <!-- Botón de Envío -->
         <button type="submit" class="btn btn-lumea w-100 rounded-pill py-2 mb-3">
@@ -149,11 +152,33 @@
 
   <!-- Bootstrap 5.3.3 Bundle JS -->
   <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="api.js"></script>
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      const correo = document.getElementById('correo').value.trim();
-      if (correo) {
-        localStorage.setItem('lumea_usuario_email', correo);
+    document.getElementById("loginForm").addEventListener("submit", async (evento) => {
+      evento.preventDefault();
+      const mensaje = document.getElementById("mensajeLogin");
+      const email = document.getElementById("correo").value.trim();
+      const contrasena = document.getElementById("contrasena").value;
+
+      try {
+        // POST /login: el backend compara la contraseña con el hash de bcrypt.
+        const { ok, cuerpo } = await iniciarSesion(email, contrasena);
+        mensaje.classList.remove("d-none", "alert-success", "alert-danger");
+        if (ok && cuerpo.success) {
+          guardarSesion(email);                    // una sola sesión (api.js)
+          mensaje.classList.add("alert-success");
+          mensaje.textContent = "¡Bienvenida de nuevo, " + (cuerpo.perfil.nombre || "") + "!";
+          setTimeout(() => { window.location.href = "index-ingresado.html"; }, 800);
+        } else {
+          // 401: el mismo mensaje si el correo no existe o la contraseña está mal
+          // (así nadie averigua qué correos están registrados).
+          mensaje.classList.add("alert-danger");
+          mensaje.textContent = (cuerpo.error || "No se pudo iniciar sesión.") + (cuerpo.ayuda ? " " + cuerpo.ayuda : "");
+        }
+      } catch (error) {
+        mensaje.classList.remove("d-none");
+        mensaje.classList.add("alert-danger");
+        mensaje.textContent = "No se pudo conectar con el servidor. ¿Está corriendo app.py en " + API_BASE_URL + "?";
       }
     });
   </script>

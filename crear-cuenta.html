@@ -256,7 +256,10 @@
   <!-- Bootstrap 5.3.3 Bundle JS -->
   <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
-  <!-- Script para conectar el formulario al backend con fetch -->
+  <!-- api.js: único lugar con la dirección del backend (puerto 5002) -->
+  <script src="api.js"></script>
+
+  <!-- Script para conectar el formulario al backend -->
   <script>
     // 1. Obtenemos referencias a los elementos del formulario y la alerta
     const registerForm = document.getElementById('registerForm');
@@ -267,10 +270,11 @@
     function mostrarAlerta(tipo, mensaje) {
       alertFeedback.className = `alert alert-${tipo} d-flex align-items-center gap-2 mb-4`;
       const icono = tipo === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
-      alertFeedback.innerHTML = `
-        <i class="bi ${icono} fs-5 flex-shrink-0"></i>
-        <div>${mensaje}</div>
-      `;
+      const marca = document.createElement('i');
+      marca.className = `bi ${icono} fs-5 flex-shrink-0`;
+      const texto = document.createElement('div');
+      texto.textContent = mensaje;               // textContent: nunca innerHTML con texto del servidor
+      alertFeedback.replaceChildren(marca, texto);
       alertFeedback.classList.remove('d-none');
       // Aseguramos que la alerta sea visible deslizándonos hacia ella si es necesario
       alertFeedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -292,7 +296,7 @@
       }
 
       // 3. Preparamos el objeto JSON con los datos exactos requeridos por el backend
-      // NOTA: La contraseña no se incluye aquí a propósito
+      // La contraseña viaja al backend, que guarda solo su hash (bcrypt), nunca el texto.
       const datosUsuario = {
         nombre: document.getElementById('nombre').value.trim(),
         email: document.getElementById('email').value.trim(),
@@ -300,7 +304,8 @@
         genero: document.getElementById('genero').value,
         peso: parseFloat(document.getElementById('peso').value),
         altura: parseFloat(document.getElementById('altura').value),
-        objetivo: objetivoSeleccionado.value
+        objetivo: objetivoSeleccionado.value,
+        "contraseña": document.getElementById('contrasena').value
       };
 
       // 4. Cambiamos el estado del botón a "Cargando..." para evitar dobles clics
@@ -312,50 +317,16 @@
       `;
 
       try {
-        const baseUrls = [
-          'http://127.0.0.1:5001',
-          'http://localhost:5001',
-          'http://127.0.0.1:5000',
-          'http://localhost:5000',
-          ''
-        ];
-
-        let response = null;
-        let resultado = {};
-        let conexionExitosa = false;
-        let errorConexion = '';
-
-        for (const base of baseUrls) {
-          try {
-            response = await fetch(`${base}/perfil`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(datosUsuario)
-            });
-            conexionExitosa = true;
-            window.LUMEA_BACKEND_ACTIVO = base;
-            break;
-          } catch (e) {
-            errorConexion = e.message;
-          }
-        }
-
-        if (!conexionExitosa || !response) {
-          throw new Error(errorConexion || 'No se pudo contactar al servidor.');
-        }
-
-        try {
-          resultado = await response.json();
-        } catch (e) {}
+        // 5. Enviamos el perfil con api.js (POST /perfil)
+        const { ok, cuerpo: resultado } = await crearOActualizarPerfil(datosUsuario);
 
         // 6. Verificamos si la respuesta fue exitosa (código HTTP 200 a 299)
-        if (response.ok) {
+        if (ok) {
           const mensajeServidor = resultado.mensaje || resultado.message || '¡Tu perfil ha sido registrado con éxito!';
           mostrarAlerta('success', `${mensajeServidor} Ya puedes ingresar.`);
 
-          // Guardamos datos del usuario para el inicio de sesión y consulta al backend
-          localStorage.setItem('lumea_usuario_email', datosUsuario.email);
-          localStorage.setItem('lumea_usuario_nombre', datosUsuario.nombre);
+          // Una sola sesión (api.js): quien crea su cuenta entra directo a la app
+          guardarSesion(datosUsuario.email);
 
           registerForm.reset();
 
@@ -363,13 +334,13 @@
             window.location.href = 'index-ingresado.html';
           }, 1200);
         } else {
-          const errorServidor = resultado.error || resultado.mensaje || resultado.message || `Error del servidor (código ${response.status})`;
+          const errorServidor = resultado.error || resultado.mensaje || resultado.message || 'Error del servidor';
           mostrarAlerta('danger', `No se pudo registrar: ${errorServidor}`);
         }
 
       } catch (error) {
         console.error('Error al conectar con el backend:', error);
-        mostrarAlerta('danger', `No se pudo conectar con el servidor backend (${error.message}). Asegúrate de tener tu servidor ejecutándose.`);
+        mostrarAlerta('danger', `No se pudo conectar con el servidor backend en ${API_BASE_URL}. Asegúrate de tenerlo encendido.`);
       } finally {
         // Restauramos el botón
         btnSubmit.disabled = false;

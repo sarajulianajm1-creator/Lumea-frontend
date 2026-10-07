@@ -55,14 +55,18 @@ async function buscarPerfilPorCorreo(email) {
 // arriba) para que otras páginas puedan saber quién está usando la app.
 function guardarSesion(email) {
   localStorage.setItem("lumea_email", email);
+  localStorage.removeItem("lumea_usuario_email");   // clave vieja de las páginas de Sara: una sola sesión
 }
 
+// Una sola sesión para toda la app. Lee también `lumea_usuario_email`, la clave
+// que guardaban las páginas de Sara antes de unirse: quien ya la tenía no pierde la sesión.
 function obtenerSesion() {
-  return localStorage.getItem("lumea_email");
+  return localStorage.getItem("lumea_email") || localStorage.getItem("lumea_usuario_email");
 }
 
 function cerrarSesion() {
   localStorage.removeItem("lumea_email");
+  localStorage.removeItem("lumea_usuario_email");
 }
 
 // Envía la foto a /predecir. `email` es opcional (multipart/form-data,
