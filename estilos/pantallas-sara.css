@@ -60,3 +60,15 @@
   background: var(--c-marca-suave); color: var(--c-marca-tinta);
 }
 .pildora--logro { background: var(--c-logro-suave); color: var(--c-logro-tinta); }
+
+/* ---------- Detalles de las pantallas de Sara (tamaños; los colores están en puente-sara.css) ---------- */
+.progreso-subtitulo { color: var(--c-tinta-suave); font-size: var(--t-s); font-weight: var(--t-peso-medio); }
+.progreso-faltan { font-size: var(--t-l); }
+.racha-rotulo { font-size: 0.75rem; }
+.face-cara { width: 44px; height: 44px; }
+.animo-day-pill__cara { width: 40px; height: 40px; margin: 0 auto var(--e-1); }
+.animo-day-pill__nombre { display: block; font-size: 0.72rem; min-height: 1.2em; }
+.animo-day-pill__letra { font-size: 0.72rem; }
+.cara-live-avatar .lumea-cara { width: 100%; height: 100%; }
+.sidebar-user-avatar .lumea-cara, .avatar-header-icon .lumea-cara, .shape-face-circle .lumea-cara { width: 100%; height: 100%; }
+.bar-col-item--futuro { opacity: 0.55; }

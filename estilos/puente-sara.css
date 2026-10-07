@@ -197,3 +197,184 @@ html:not([data-piel="sara"]) .form-select:focus {
   border-color: var(--c-foco);
   box-shadow: 0 0 0 3px var(--c-marca-suave);
 }
+
+/* =====================================================================
+   10. Pantallas nuevas de Sara: Inicio, Progreso, Ánimo y el menú privado
+   ---------------------------------------------------------------------
+   Aquí cada color fijo de style.css pasa a un token de rol (comida = aguacate,
+   logro = maracuyá, emoción = guayaba, misión = mora). Los degradados de adorno
+   pasan a color liso, y las MAYÚSCULAS decorativas a texto normal.
+   ===================================================================== */
+
+/* ---- Armazón: fondo plano, menú lateral y barra del celular ---- */
+html:not([data-piel="sara"]) .lumea-screen-wrapper { background: var(--c-fondo); }
+html:not([data-piel="sara"]) .lumea-desktop-sidebar {
+  background: var(--c-superficie);
+  border-right-color: var(--c-borde);
+  box-shadow: none;
+}
+html:not([data-piel="sara"]) .sidebar-logo { color: var(--c-marca-tinta); }
+html:not([data-piel="sara"]) .sidebar-nav-item a:hover {
+  background: var(--c-marca-suave);
+  color: var(--c-marca-tinta);
+  transform: none;
+}
+html:not([data-piel="sara"]) .sidebar-nav-item a.active,
+html:not([data-piel="sara"]) .sidebar-nav-item a[aria-current="page"] {
+  background: var(--c-marca);
+  color: var(--c-sobre-marca) !important;
+  box-shadow: none;
+}
+html:not([data-piel="sara"]) .sidebar-nav-item a.active i,
+html:not([data-piel="sara"]) .sidebar-nav-item a[aria-current="page"] i { color: var(--c-sobre-marca) !important; }
+html:not([data-piel="sara"]) .sidebar-user-card { background: var(--c-marca-suave); border-color: var(--c-borde); }
+html:not([data-piel="sara"]) .sidebar-user-avatar { background: var(--c-emocion-contenedor); box-shadow: none; overflow: hidden; }
+
+html:not([data-piel="sara"]) .lumea-pill-nav {
+  background: var(--c-superficie);
+  border-color: var(--c-borde-fuerte);
+  box-shadow: var(--s-2);
+}
+html:not([data-piel="sara"]) .nav-link-item { color: var(--c-tinta-suave); }
+html:not([data-piel="sara"]) .nav-link-item:hover,
+html:not([data-piel="sara"]) .nav-link-item.active,
+html:not([data-piel="sara"]) .nav-link-item.active i { color: var(--c-marca-tinta); }
+html:not([data-piel="sara"]) .nav-camera-fab {
+  background: var(--c-marca);
+  color: var(--c-sobre-marca) !important;
+  box-shadow: var(--s-2), 0 0 0 5px var(--c-superficie);
+}
+html:not([data-piel="sara"]) .nav-camera-fab span { text-transform: none; letter-spacing: 0; }
+
+/* ---- Encabezado de Inicio ---- */
+html:not([data-piel="sara"]) .avatar-header-btn {
+  background: var(--c-superficie);
+  border-color: var(--c-borde-fuerte);
+  box-shadow: none;
+}
+html:not([data-piel="sara"]) .avatar-header-btn:hover { border-color: var(--c-marca); box-shadow: var(--s-1); }
+html:not([data-piel="sara"]) .avatar-header-icon { background: var(--c-emocion-contenedor); overflow: hidden; }
+
+/* ---- Canasta de hoy: cada forma lleva el color de su rol ---- */
+html:not([data-piel="sara"]) .canasta-card {
+  background: var(--c-superficie);
+  border-color: var(--c-borde-fuerte);
+  box-shadow: var(--s-1);
+}
+html:not([data-piel="sara"]) .canasta-card:hover { border-color: var(--c-marca); box-shadow: var(--s-2); }
+html:not([data-piel="sara"]) .shape-item-box { background: var(--c-fondo); border-color: var(--c-borde); color: var(--c-tinta); }
+html:not([data-piel="sara"]) .shape-item-box:hover {
+  color: var(--c-marca-tinta);
+  border-color: var(--c-borde-fuerte);
+  box-shadow: var(--s-2);
+}
+html:not([data-piel="sara"]) .shape-organic-leaf { background: var(--c-comida-contenedor); color: var(--c-comida-tinta); box-shadow: none; }
+html:not([data-piel="sara"]) .shape-star-badge { background: var(--c-logro); color: var(--c-sobre-logro); box-shadow: none; }
+html:not([data-piel="sara"]) .shape-flag-banner { background: var(--c-mision-contenedor); color: var(--c-mision-tinta); }
+html:not([data-piel="sara"]) .shape-face-circle { background: var(--c-emocion-contenedor); color: var(--c-emocion-tinta); box-shadow: none; overflow: hidden; }
+html:not([data-piel="sara"]) .shape-metric-number { color: var(--c-tinta); }
+html:not([data-piel="sara"]) .shape-label-text { color: var(--c-tinta-suave); text-transform: none; letter-spacing: 0; }
+html:not([data-piel="sara"]) .shape-nota--mision { color: var(--c-mision-tinta); font-size: 0.72rem; }
+/* El rebote al registrar: la duración y la curva de la marca; con movimiento reducido, nada se mueve */
+html:not([data-piel="sara"]) .animate-shape-bounce {
+  animation-duration: var(--m-lento);
+  animation-timing-function: var(--m-resorte);
+}
+
+/* ---- Check-in de ánimo (Inicio y Ánimo): ánimo = guayaba ---- */
+html:not([data-piel="sara"]) .card-animo-checkin,
+html:not([data-piel="sara"]) .card-racha-nivel {
+  background: var(--c-superficie);
+  border-color: var(--c-borde);
+  box-shadow: var(--s-1);
+}
+html:not([data-piel="sara"]) .animo-checkin-title { color: var(--c-tinta); }
+html:not([data-piel="sara"]) .btn-face-mood { background: var(--c-fondo); border-color: var(--c-borde); color: var(--c-tinta); }
+html:not([data-piel="sara"]) .btn-face-mood:hover:not(:disabled) { background: var(--c-emocion-suave); border-color: var(--c-emocion-tinta); }
+html:not([data-piel="sara"]) .btn-face-mood.active {
+  background: var(--c-emocion) !important;
+  border-color: var(--c-emocion-tinta) !important;
+  box-shadow: none;
+}
+html:not([data-piel="sara"]) .btn-face-mood.active .face-name-label,
+html:not([data-piel="sara"]) .btn-face-mood.active .face-xp-tag { color: var(--c-sobre-emocion); }
+html:not([data-piel="sara"]) .btn-face-mood:disabled { cursor: default; opacity: 0.55; }
+html:not([data-piel="sara"]) .face-name-label { color: var(--c-tinta); }
+html:not([data-piel="sara"]) .face-xp-tag { color: var(--c-tinta-suave); }
+
+/* ---- Próxima misión: misión = mora ---- */
+html:not([data-piel="sara"]) .card-proxima-mision {
+  background: var(--c-mision-contenedor);
+  border-color: var(--c-mision);
+  box-shadow: none;
+}
+html:not([data-piel="sara"]) .mision-tag-pill { background: var(--c-mision-suave); color: var(--c-mision-tinta); text-transform: none; }
+html:not([data-piel="sara"]) .mision-text-title,
+html:not([data-piel="sara"]) .mision-xp-highlight { color: var(--c-tinta); }
+html:not([data-piel="sara"]) .btn-abrir-camara-mision {
+  background: var(--c-marca);
+  color: var(--c-sobre-marca) !important;
+  box-shadow: none;
+}
+html:not([data-piel="sara"]) .btn-abrir-camara-mision:hover { background: var(--c-marca-hover); box-shadow: var(--s-1); }
+
+/* ---- Atajo a la cámara: comida = aguacate ---- */
+html:not([data-piel="sara"]) .card-acceso-directo-camara {
+  background: var(--c-comida-suave);
+  border-color: var(--c-comida);
+  box-shadow: none;
+}
+html:not([data-piel="sara"]) .camara-quick-icon-circle { background: var(--c-comida); color: var(--c-sobre-comida); box-shadow: none; }
+
+/* ---- Bienvenida cálida de regreso ---- */
+html:not([data-piel="sara"]) .card-bienvenida-calida {
+  background: var(--c-emocion-suave);
+  border-color: var(--c-emocion);
+  color: var(--c-tinta);
+}
+html:not([data-piel="sara"]) .card-bienvenida-calida .bi { color: var(--c-emocion-tinta); }
+
+/* ---- Progreso: barras de comidas = aguacate, ánimo = guayaba ---- */
+html:not([data-piel="sara"]) .grafica-semanal-container {
+  background: var(--c-superficie);
+  border-color: var(--c-borde);
+  box-shadow: var(--s-1);
+}
+html:not([data-piel="sara"]) .bar-fill-body { background: var(--c-comida); }
+html:not([data-piel="sara"]) .bar-col-item.today .bar-fill-body { background: var(--c-marca); }
+html:not([data-piel="sara"]) .bar-fruit-floating-icon { color: var(--c-comida-tinta); }
+html:not([data-piel="sara"]) .bar-col-item.today .bar-day-name { color: var(--c-marca-tinta); }
+html:not([data-piel="sara"]) .animo-day-pill { background: var(--c-fondo); border-color: var(--c-borde); }
+html:not([data-piel="sara"]) .animo-day-pill.today { background: var(--c-emocion-suave); border-color: var(--c-emocion-tinta); }
+html:not([data-piel="sara"]) .animo-day-pill__nombre { color: var(--c-tinta-suave); }
+html:not([data-piel="sara"]) .animo-day-pill__letra { color: var(--c-tinta-suave); }
+
+/* ---- Ánimo ---- */
+html:not([data-piel="sara"]) .animo-stage-box {
+  background: var(--c-superficie);
+  border-color: var(--c-borde-fuerte);
+  box-shadow: var(--s-1);
+}
+html:not([data-piel="sara"]) .cara-live-avatar { background: var(--c-emocion-contenedor); box-shadow: none; overflow: hidden; }
+
+/* ---- Utilidades de Bootstrap con color fijo que usan estas pantallas ---- */
+html:not([data-piel="sara"]) .badge.text-bg-warning { background-color: var(--c-logro) !important; color: var(--c-sobre-logro) !important; }
+html:not([data-piel="sara"]) .badge.text-bg-success { background-color: var(--c-marca) !important; color: var(--c-sobre-marca) !important; }
+html:not([data-piel="sara"]) .btn-outline-success { color: var(--c-marca-tinta); border-color: var(--c-marca); }
+html:not([data-piel="sara"]) .btn-outline-success:hover { background: var(--c-marca-suave); color: var(--c-marca-tinta); }
+html:not([data-piel="sara"]) .btn-outline-secondary { color: var(--c-tinta-suave); border-color: var(--c-borde-fuerte); }
+html:not([data-piel="sara"]) .btn-outline-secondary:hover { background: var(--c-marca-suave); color: var(--c-marca-tinta); }
+html:not([data-piel="sara"]) .btn-light { background: var(--c-superficie-2); border-color: var(--c-borde); color: var(--c-tinta); }
+
+/* ---- Con movimiento reducido, nada se mueve: solo aparece ---- */
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-piel="sara"]) .shape-item-box,
+  html:not([data-piel="sara"]) .shape-icon-visual,
+  html:not([data-piel="sara"]) .btn-face-mood,
+  html:not([data-piel="sara"]) .sidebar-nav-item a,
+  html:not([data-piel="sara"]) .nav-camera-fab,
+  html:not([data-piel="sara"]) .btn-abrir-camara-mision,
+  html:not([data-piel="sara"]) .avatar-header-btn,
+  html:not([data-piel="sara"]) .bar-fill-body { transition: none; transform: none !important; }
+  html:not([data-piel="sara"]) .animate-shape-bounce { animation: none; }
+}
