@@ -25,18 +25,16 @@
     return el;
   }
 
-  // «Miércoles 7 de octubre» y la hora, con la fecha del dispositivo
+  // «Miércoles 7 de octubre», con la fecha del dispositivo (la hora ya no se muestra: rediseño R1)
   function actualizarFechaActual() {
     const ahora = new Date();
     let fecha = ahora.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" });
     fecha = fecha.charAt(0).toUpperCase() + fecha.slice(1);
-    const hora = ahora.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     todos(".lumea-bind-fecha").forEach((el) => {
       const icono = crear("i", "bi bi-calendar-event me-1");
       icono.setAttribute("aria-hidden", "true");
       el.replaceChildren(icono, document.createTextNode(` ${fecha}`));
     });
-    poner(".lumea-bind-hora", `• ${hora}`);
   }
 
   // ---------- Caras de ánimo: las del avatar (DiceBear) ----------

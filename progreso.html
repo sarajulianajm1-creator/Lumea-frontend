@@ -9,10 +9,6 @@
   <title>LUMEA | Tu Progreso Semanal</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="lumeaaa.png">
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Bootstrap 5.3.3 CSS -->
   <link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
@@ -20,70 +16,53 @@
   <!-- Hoja de Estilos Unificada -->
   <link rel="stylesheet" href="estilos/tokens.css">
   <link rel="stylesheet" href="estilos/paletas.css">
-  <link rel="stylesheet" href="style.css" />
-  <!-- Piel de Lumea sobre el diseño de Sara (no cambia style.css) -->
-  <link rel="stylesheet" href="estilos/puente-sara.css">
-  <link rel="stylesheet" href="estilos/pantallas-sara.css">
+  <link rel="stylesheet" href="estilos/componentes.css">
+  <!-- Lo propio de las pantallas privadas (armazón, piezas y lo que falta de Sara, con tokens) -->
+  <link rel="stylesheet" href="estilos/app.css">
 </head>
 
-<body class="lumea-screen-wrapper">
+<body>
 
-  <div class="lumea-desktop-layout">
+  <div class="app">
 
-    <!-- ============================================================
-         MENÚ LATERAL DESKTOP (1280px)
-         ============================================================ -->
-    <!-- menu-privado:lateral (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
-    <aside class="lumea-desktop-sidebar d-none d-lg-flex">
-      <div>
-        <a href="index-ingresado.html" class="sidebar-logo"><i class="bi bi-flower2" aria-hidden="true"></i> LUMEA</a>
-        <nav aria-label="Principal">
-          <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item"><a href="index-ingresado.html"><i class="bi bi-house-door-fill fs-5" aria-hidden="true"></i><span>Inicio</span></a></li>
-          <li class="sidebar-nav-item"><a href="mis-registros.html"><i class="bi bi-journal-text fs-5" aria-hidden="true"></i><span>Mis registros</span></a></li>
-          <li class="sidebar-nav-item"><a href="alimentos.html"><i class="bi bi-camera-fill fs-5" aria-hidden="true"></i><span>Registrar</span></a></li>
-          <li class="sidebar-nav-item"><a href="progreso.html" class="active" aria-current="page"><i class="bi bi-bar-chart-line-fill fs-5" aria-hidden="true"></i><span>Progreso</span></a></li>
-          <li class="sidebar-nav-item"><a href="avatar.html"><i class="bi bi-person-badge-fill fs-5" aria-hidden="true"></i><span>Avatar</span></a></li>
-          </ul>
-        </nav>
+    <!-- menu-privado:nav (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
+    <nav class="nav-app" aria-label="Principal">
+      <div class="nav-app__marca"><img class="marca" src="img/logo.svg" alt="Lumea"></div>
+      <a class="nav-app__enlace" href="index-ingresado.html" aria-label="Inicio"><i class="bi bi-house-door-fill" aria-hidden="true"></i><span>Inicio</span></a>
+      <a class="nav-app__enlace" href="mis-registros.html" aria-label="Mis registros"><i class="bi bi-journal-text" aria-hidden="true"></i><span class="nav-app__largo">Mis registros</span><span class="nav-app__corto" aria-hidden="true">Registros</span></a>
+      <a class="nav-app__enlace nav-app__enlace--registrar" href="alimentos.html" aria-label="Registrar"><i class="bi bi-camera-fill" aria-hidden="true"></i><span>Registrar</span></a>
+      <a class="nav-app__enlace" href="progreso.html" aria-label="Progreso" aria-current="page"><i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i><span>Progreso</span></a>
+      <a class="nav-app__enlace" href="avatar.html" aria-label="Avatar"><i class="bi bi-person-badge-fill" aria-hidden="true"></i><span>Avatar</span></a>
+      <div class="nav-app__pie">
+      <div class="nav-app__usuario">
+        <p class="nav-app__nombre lumea-bind-nombre">Cargando...</p>
+        <p class="nav-app__nivel lumea-bind-nivel">Nivel --</p>
       </div>
-      <div class="menu-pie">
-      <div class="sidebar-user-card">
-        <div class="sidebar-user-avatar"><span class="lumea-cara" data-cara="hoy"></span></div>
-        <div class="flex-grow-1 overflow-hidden">
-          <p class="mb-0 fw-bold text-truncate lumea-bind-nombre">Cargando...</p>
-          <small class="text-muted d-block fw-semibold"><span class="lumea-bind-nivel">Nivel --</span> &bull; <i class="bi bi-fire" aria-hidden="true"></i> <span class="lumea-bind-racha">--</span></small>
-        </div>
-        <a href="avatar.html" class="btn btn-sm btn-light rounded-circle shadow-sm" aria-label="Editar mi avatar"><i class="bi bi-gear" aria-hidden="true"></i></a>
+        <button type="button" class="nav-app__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
       </div>
-        <button type="button" class="menu-pie__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
-      </div>
-    </aside>
-    <!-- /menu-privado:lateral -->
+    </nav>
+    <!-- /menu-privado:nav -->
 
     <!-- ============================================================
          ÁREA PRINCIPAL: TU PROGRESO (VERSIÓN 1.1)
          "Cómo vas en la semana, sin juzgar."
          ============================================================ -->
-    <main class="lumea-main-area">
+    <main class="contenido">
 
       <!-- Encabezado Superior -->
       <div class="d-flex align-items-center justify-content-between mb-4">
         <div class="d-flex align-items-center gap-3">
-          <a href="index-ingresado.html" class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" title="Volver a Inicio" aria-label="Volver a Inicio">
-            <i class="bi bi-arrow-left" aria-hidden="true"></i>
-          </a>
           <div>
             <p class="progreso-subtitulo mb-0">Cómo vas en la semana, sin compararte con nadie.</p>
-            <h1 class="user-greeting-title mb-0" style="font-size: 1.6rem;">Tu progreso</h1>
+            <h1 class="user-greeting-title mb-0">Tu progreso</h1>
           </div>
         </div>
 
         <a href="avatar.html" class="avatar-header-btn">
-          <div class="avatar-header-icon" style="width: 36px; height: 36px; font-size: 1.2rem;">
+          <div class="avatar-header-icon">
             <span class="lumea-cara" data-cara="hoy"></span>
           </div>
-          <span class="d-none d-sm-inline fw-bold text-success pe-2" style="font-size: 0.82rem;">Ver mi avatar</span>
+          <span class="d-none d-sm-inline fw-bold text-success pe-2">Ver mi avatar</span>
         </a>
       </div>
 
@@ -113,7 +92,7 @@
         </small>
 
         <!-- Barra de Progreso XP -->
-        <div class="progress mb-4" style="height: 14px;">
+        <div class="progress mb-4">
           <div class="progress-bar lumea-bind-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia el siguiente nivel" style="width: 0%;"></div>
         </div>
 
@@ -165,7 +144,7 @@
       <section class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4" id="semana-animo-caja">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <h2 class="h5 fw-bold text-dark mb-0">Tu ánimo de la semana</h2>
-          <span class="badge rounded-pill bg-light text-success border px-2.5 py-1" style="font-size: 0.75rem;">
+          <span class="badge rounded-pill bg-light text-success border px-2.5 py-1">
             Es tuyo y no se compara con nadie
           </span>
         </div>
@@ -197,22 +176,7 @@
 
   </div>
 
-  <!-- ============================================================
-       BARRA INFERIOR FLOTANTE MÓVIL (< 992px)
-       ============================================================ -->
-  <!-- menu-privado:celular (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
-  <div class="lumea-bottom-nav-container d-lg-none">
-    <nav class="lumea-pill-nav" aria-label="Principal en celular">
-      <a href="index-ingresado.html" class="nav-link-item" aria-label="Inicio"><i class="bi bi-house-door-fill" aria-hidden="true"></i><span>Inicio</span></a>
-      <a href="mis-registros.html" class="nav-link-item" aria-label="Mis registros"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Registros</span></a>
-      <a href="alimentos.html" class="nav-camera-fab" aria-label="Registrar"><i class="bi bi-camera-fill" aria-hidden="true"></i><span>Registrar</span></a>
-      <a href="progreso.html" class="nav-link-item active" aria-label="Progreso" aria-current="page"><i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i><span>Progreso</span></a>
-      <a href="avatar.html" class="nav-link-item" aria-label="Avatar"><i class="bi bi-person-badge-fill" aria-hidden="true"></i><span>Avatar</span></a>
-    </nav>
-  </div>
-  <!-- /menu-privado:celular -->
-
-  <!-- Scripts: api.js (único lugar con la dirección del backend), formato.js (textos y cuentas de la semana),
+<!-- Scripts: api.js (único lugar con la dirección del backend), formato.js (textos y cuentas de la semana),
        el estado y la interfaz de Sara, y progreso.js (dibuja la semana) -->
   <script src="api.js"></script>
   <script src="formato.js"></script>

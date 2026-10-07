@@ -1,0 +1,343 @@
+/* =====================================================================
+   LUMEA · app.css — lo propio de las SEIS pantallas privadas
+   (Inicio, Mis registros, Registrar, Progreso, Avatar y Ánimo)
+   ---------------------------------------------------------------------
+   Va después de tokens.css, paletas.css y componentes.css. Aquí no hay un
+   color, un tamaño, un radio ni una duración escritos a mano: todo es var(--algo).
+
+   Reglas del rediseño (docs/tickets/MISION-rediseno.md):
+     - Superficies tranquilas: las tarjetas se separan con un borde, no con sombra.
+     - Una sola sombra (--s-2), solo para lo que flota: la barra inferior, un aviso, un diálogo.
+     - Cuatro radios: --r-control, --r-tarjeta, --r-panel y --r-pildora (o 50 % en círculos).
+     - Nada baja de --t-xs (12,8 px) y nada va en MAYÚSCULAS por CSS.
+
+   Esta hoja REEMPLAZA a style.css, pantallas-sara.css y puente-sara.css en estas seis
+   pantallas. Las secciones marcadas «PROVISIONAL» le dan aspecto al marcado viejo de Sara
+   mientras cada pantalla se rehace: se borran en R2 (Inicio), R3 (Ánimo), R5 (Registrar)
+   y R6 (Progreso y Mis registros).
+   ===================================================================== */
+
+/* ---------- 0. Base ---------- */
+html { background: var(--c-fondo); }                  /* el fondo cubre toda la altura, también al hacer scroll de más */
+
+/* Lo que tiene [hidden] no se ve, aunque otra regla le ponga display (el error que había en Registrar) */
+[hidden] { display: none !important; }
+
+/* Solo para el lector de pantalla */
+.solo-lector {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Bootstrap (mientras siga cargado en alguna pantalla) → tokens */
+:root {
+  --bs-body-bg: var(--c-fondo);
+  --bs-body-color: var(--c-tinta);
+  --bs-body-font-family: var(--f-familia);
+  --bs-emphasis-color: var(--c-tinta);
+  --bs-secondary-color: var(--c-tinta-suave);
+  --bs-border-color: var(--c-borde);
+  --bs-link-color: var(--c-marca-tinta);
+  --bs-link-hover-color: var(--c-marca-tinta);
+}
+a { color: var(--c-marca-tinta); }
+
+/* ---------- 1. Armazón: .app + .nav-app (el <nav> lo escribe herramientas/menu_privado.py) ---------- */
+/* minmax(0, 1fr) y no 1fr: con 1fr la columna nunca se achica por debajo de lo más ancho que tenga
+   dentro y la página se desborda a los lados en el celular (WCAG 1.4.10, sin barra horizontal). */
+.app { grid-template-columns: var(--ancho-lateral) minmax(0, 1fr); }
+@media (max-width: 720px) { .app { grid-template-columns: minmax(0, 1fr); } }
+.app__area { display: grid; grid-template-rows: 1fr auto; min-width: 0; }   /* Mis registros: contenido y pie */
+.contenido { min-width: 0; grid-template-columns: minmax(0, 1fr); }   /* mismo motivo: una sola columna que sí se achica */
+
+.marca { display: block; height: 32px; width: auto; }
+.nav-app__marca { padding: 0 var(--e-3) var(--e-5); }
+
+.nav-app__enlace[aria-current="page"] { color: var(--c-marca-tinta); }
+.nav-app__corto { display: none; }
+
+/* Zona de usuario, delgada: nombre, nivel y «Cerrar sesión» */
+.nav-app__pie { display: grid; gap: var(--e-2); }
+.nav-app__usuario { padding: 0 var(--e-3); display: grid; }
+.nav-app__nombre { margin: 0; font-weight: var(--t-peso-medio); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-app__nivel { margin: 0; font-size: var(--t-s); color: var(--c-tinta-suave); }
+.nav-app__salir {
+  display: inline-flex; align-items: center; gap: var(--e-3);
+  min-height: 44px; padding: 0 var(--e-3);
+  border: 0; border-radius: var(--r-control);
+  background: transparent; color: var(--c-tinta-suave);
+  font: inherit; font-weight: var(--t-peso-medio); cursor: pointer;
+  transition: background var(--m-rapido), color var(--m-rapido);
+}
+.nav-app__salir:hover { background: var(--c-fondo); color: var(--c-tinta); }
+
+@media (max-width: 720px) {
+  /* Barra inferior: el rótulo corto; Registrar, al centro y relleno (es la acción principal de la app) */
+  .nav-app__pie { display: none; }               /* app.css va después de componentes.css: hay que repetirlo aquí */
+  .nav-app__largo { display: none; }
+  .nav-app__corto { display: inline; }
+  .nav-app__enlace { min-width: 0; }
+  .nav-app__enlace--registrar {
+    flex: 0 0 76px; background: var(--c-marca); color: var(--c-sobre-marca);
+    border-radius: var(--r-control);
+  }
+  .nav-app__enlace--registrar:hover, .nav-app__enlace--registrar[aria-current="page"] { background: var(--c-marca-hover); color: var(--c-sobre-marca); }
+  .footer-lumea { padding-bottom: calc(var(--alto-barra-inferior) + var(--e-5)); }
+  /* «Cerrar sesión» no cabe en la barra: vive al final de Avatar (ver .salir-celular) */
+}
+
+/* «Cerrar sesión» al final de Avatar: solo en el celular, donde el menú no la tiene */
+.salir-celular { display: none; }
+@media (max-width: 720px) { .salir-celular { display: inline-flex; justify-self: start; } }
+
+/* ---------- 2. Piezas compartidas ---------- */
+/* Cara del avatar (DiceBear) o su silueta */
+.lumea-cara { display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; }
+.lumea-cara__img { width: 100%; height: 100%; object-fit: cover; }
+.lumea-cara__silueta { font-size: 60%; color: var(--c-emocion-tinta); }
+
+/* Aviso corto (flota: lleva la única sombra) */
+.lumea-toast-container {
+  position: fixed; right: var(--e-4); bottom: calc(var(--alto-barra-inferior) + var(--e-4));
+  z-index: 1200; display: grid; gap: var(--e-2); max-width: min(92vw, 360px);
+}
+.lumea-toast-item {
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--r-tarjeta);
+  background: var(--c-marca-tinta); color: var(--c-superficie);
+  font-weight: var(--t-peso-medio); font-size: var(--t-s);
+  box-shadow: var(--s-2);
+}
+
+/* Estados de la pantalla: cargando y error */
+.estado-pantalla { display: grid; gap: var(--e-3); justify-items: start; padding: var(--e-5); }
+
+/* Un dato corto con el color de su rol */
+.pildora {
+  display: inline-flex; align-items: center; gap: var(--e-1);
+  padding: var(--e-1) var(--e-3);
+  border-radius: var(--r-pildora);
+  font-size: var(--t-s); font-weight: var(--t-peso-medio);
+  background: var(--c-marca-suave); color: var(--c-marca-tinta);
+}
+.pildora--logro { background: var(--c-logro-suave); color: var(--c-logro-tinta); }
+.nivel-badge {
+  display: inline-block; padding: var(--e-1) var(--e-3);
+  border-radius: var(--r-pildora); background: var(--c-logro); color: var(--c-sobre-logro);
+  font-size: var(--t-s); font-weight: var(--t-peso-fuerte);
+}
+
+/* Botones de Sara (lumea-btn-*) con el aspecto de .boton */
+.lumea-btn-primary, .lumea-btn-secondary, .lumea-btn-pill, .btn-abrir-camara-mision {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
+  min-height: 44px; padding: 0 var(--e-5);
+  border: 1.5px solid transparent; border-radius: var(--r-control);
+  font: inherit; font-weight: var(--t-peso-medio); text-decoration: none; cursor: pointer;
+  transition: background var(--m-rapido) var(--m-salida), transform var(--m-rapido) var(--m-salida);
+}
+.lumea-btn-primary, .btn-abrir-camara-mision { background: var(--c-marca); color: var(--c-sobre-marca); }
+.lumea-btn-primary:hover, .btn-abrir-camara-mision:hover { background: var(--c-marca-hover); color: var(--c-sobre-marca); }
+.lumea-btn-secondary, .lumea-btn-pill { background: var(--c-superficie); color: var(--c-marca-tinta); border-color: var(--c-borde-fuerte); }
+.lumea-btn-secondary:hover, .lumea-btn-pill:hover { background: var(--c-marca-suave); }
+.lumea-btn-primary:active, .lumea-btn-secondary:active, .lumea-btn-pill:active { transform: scale(.97); }
+.lumea-btn-primary:disabled, .lumea-btn-secondary:disabled, .lumea-btn-pill:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+/* El sello de advertencia (Res. 810 de 2021) va siempre en negro; sus medidas están en componentes.css */
+#backend-sellos { display: flex; flex-wrap: wrap; gap: var(--e-2); justify-content: center; }
+
+/* Cuando una barra de nivel o de meta lleva su avance en línea (style="width: N%") */
+.progress { height: 12px; background: var(--c-logro-suave); border-radius: var(--r-pildora); overflow: hidden; }
+.progress-bar { background: var(--c-logro); border-radius: var(--r-pildora); }
+
+/* ---------- 3. Bootstrap con la piel de Lumea (PROVISIONAL) ----------
+   Bootstrap sigue cargado en Inicio, Ánimo, Progreso, Registrar y Mis registros solo por sus
+   utilidades de grilla (d-flex, row, col, gap, mb-*…). Su aspecto sale de aquí, con tokens. */
+.card {
+  background: var(--c-superficie); color: var(--c-tinta);
+  border: 1px solid var(--c-borde) !important; border-radius: var(--r-tarjeta);
+}
+.shadow, .shadow-sm { box-shadow: none !important; }
+.rounded-2, .rounded-3, .rounded-4 { border-radius: var(--r-tarjeta) !important; }
+.rounded-pill { border-radius: var(--r-pildora) !important; }
+.border { border: 1px solid var(--c-borde) !important; }
+.border-light-subtle { border-color: var(--c-borde) !important; }
+.bg-light, .bg-white { background-color: var(--c-superficie) !important; }
+.text-dark { color: var(--c-tinta) !important; }
+.text-muted, .text-secondary { color: var(--c-tinta-suave) !important; }
+.text-success { color: var(--c-comida-tinta) !important; }
+.text-primary { color: var(--c-marca-tinta) !important; }
+.text-danger { color: var(--c-error) !important; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
+  min-height: 44px; padding: 0 var(--e-4);
+  border: 1.5px solid transparent; border-radius: var(--r-control) !important;
+  font: inherit; font-size: var(--t-m); font-weight: var(--t-peso-medio); text-decoration: none;
+}
+.btn-lumea { background: var(--c-marca); color: var(--c-sobre-marca); }
+.btn-lumea:hover { background: var(--c-marca-hover); color: var(--c-sobre-marca); }
+.btn-lumea-outline, .btn-outline-secondary, .btn-outline-success, .btn-light {
+  background: var(--c-superficie); color: var(--c-marca-tinta); border-color: var(--c-borde-fuerte);
+}
+.btn-lumea-outline:hover, .btn-outline-secondary:hover, .btn-outline-success:hover, .btn-light:hover {
+  background: var(--c-marca-suave); color: var(--c-marca-tinta);
+}
+.btn-close { border-radius: var(--r-control) !important; }
+
+.badge {
+  display: inline-block; padding: var(--e-1) var(--e-3);
+  border-radius: var(--r-pildora) !important; font-size: var(--t-xs); font-weight: var(--t-peso-fuerte);
+  background: var(--c-marca-suave); color: var(--c-marca-tinta);
+}
+.badge.text-bg-success { background-color: var(--c-marca-suave) !important; color: var(--c-marca-tinta) !important; }
+.badge.text-bg-warning { background-color: var(--c-logro-suave) !important; color: var(--c-logro-tinta) !important; }
+
+.alert { border-radius: var(--r-tarjeta); border: 1px solid var(--c-borde); }
+.alert-danger { background: var(--c-error-suave); color: var(--c-tinta); }
+.container { max-width: var(--ancho-contenido); }
+
+/* ---------- 4. Inicio (PROVISIONAL hasta R2) ---------- */
+.lumea-user-topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--e-4); }
+.user-greeting-title { font-size: var(--t-2xl); }
+.user-greeting-sub, .progreso-subtitulo { color: var(--c-tinta-suave); font-size: var(--t-s); font-weight: var(--t-peso-medio); }
+.lumea-bind-fecha { font-size: var(--t-xs); }
+
+.avatar-header-btn {
+  display: flex; align-items: center; gap: var(--e-2);
+  min-height: 44px; padding: var(--e-1) var(--e-3) var(--e-1) var(--e-1);
+  border: 1px solid var(--c-borde-fuerte); border-radius: var(--r-pildora);
+  background: var(--c-superficie); color: var(--c-tinta); text-decoration: none; font-weight: var(--t-peso-medio);
+}
+.avatar-header-btn:hover { background: var(--c-marca-suave); }
+.avatar-header-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--c-emocion-contenedor); overflow: hidden; flex: none; }
+
+.card-bienvenida-calida {
+  display: flex; align-items: center; gap: var(--e-3);
+  padding: var(--e-4); border-radius: var(--r-tarjeta);
+  background: var(--c-emocion-suave); border: 1px solid var(--c-borde); color: var(--c-tinta);
+}
+.card-bienvenida-calida .bi { color: var(--c-emocion-tinta); }
+
+.card-acceso-directo-camara, .canasta-card, .card-animo-checkin, .card-proxima-mision, .card-racha-nivel,
+.grafica-semanal-container, .animo-stage-box {
+  background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta); padding: var(--e-5);
+}
+.camara-quick-icon-circle { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--c-comida-contenedor); color: var(--c-comida-tinta); flex: none; }
+
+.inicio-desktop-cols { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--e-5); align-items: start; }
+@media (max-width: 992px) { .inicio-desktop-cols { grid-template-columns: 1fr; } }
+.canasta-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--e-3); margin-bottom: var(--e-4); }
+.canasta-title { font-size: var(--t-l); }
+.canasta-grid-shapes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--e-3); }
+.shape-item-box {
+  display: grid; justify-items: center; align-content: start; gap: var(--e-1);
+  padding: var(--e-4); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta);
+  background: var(--c-fondo); color: var(--c-tinta); text-decoration: none; text-align: center;
+}
+.shape-item-box:hover { background: var(--c-marca-suave); }
+.shape-icon-visual { display: grid; place-items: center; }
+.shape-organic-leaf, .shape-star-badge, .shape-flag-banner, .shape-face-circle {
+  display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; font-size: var(--t-xl); overflow: hidden;
+}
+.shape-organic-leaf { background: var(--c-comida-contenedor); color: var(--c-comida-tinta); }
+.shape-star-badge { background: var(--c-logro-contenedor); color: var(--c-logro-tinta); }
+.shape-flag-banner { background: var(--c-mision-contenedor); color: var(--c-mision-tinta); }
+.shape-face-circle { background: var(--c-emocion-contenedor); }
+.shape-metric-number { font-size: var(--t-l); font-weight: var(--t-peso-fuerte); line-height: 1.2; }
+.shape-label-text { font-size: var(--t-s); color: var(--c-tinta-suave); }
+.shape-nota { font-size: var(--t-xs); }
+.shape-nota--mision { color: var(--c-mision-tinta); }
+
+.animo-checkin-title { font-size: var(--t-l); }
+.animo-checkin-sub { color: var(--c-tinta-suave); font-size: var(--t-s); }
+.card-proxima-mision { display: flex; justify-content: space-between; align-items: center; gap: var(--e-4); flex-wrap: wrap; background: var(--c-mision-contenedor); }
+.mision-tag-pill { display: inline-block; padding: var(--e-1) var(--e-3); border-radius: var(--r-pildora); background: var(--c-mision-suave); color: var(--c-mision-tinta); font-size: var(--t-xs); font-weight: var(--t-peso-fuerte); }
+.mision-text-title { font-size: var(--t-l); margin: var(--e-2) 0; }
+.mision-xp-highlight { color: var(--c-tinta); }
+.racha-rotulo { font-size: var(--t-xs); }
+
+/* ---------- 5. Check-in de ánimo: Inicio y Ánimo (PROVISIONAL hasta R3) ---------- */
+.animo-faces-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--e-2); }
+.btn-face-mood {
+  display: grid; justify-items: center; align-content: start; gap: var(--e-1);
+  min-height: 44px; padding: var(--e-2) var(--e-1);
+  border: 1.5px solid var(--c-borde); border-radius: var(--r-tarjeta);
+  background: var(--c-fondo); color: var(--c-tinta); font: inherit; cursor: pointer;
+  transition: background var(--m-rapido), border-color var(--m-rapido);
+}
+.btn-face-mood:hover:not(:disabled) { background: var(--c-emocion-suave); border-color: var(--c-emocion-tinta); }
+.btn-face-mood.active { background: var(--c-emocion); border-color: var(--c-emocion-tinta); color: var(--c-sobre-emocion); }
+.btn-face-mood:disabled { cursor: default; opacity: .55; }
+.btn-face-mood.active:disabled { opacity: 1; }
+.face-cara { width: 44px; height: 44px; }
+.face-name-label { font-size: var(--t-s); font-weight: var(--t-peso-medio); }
+.face-xp-tag { font-size: var(--t-xs); }
+.btn-face-mood.active .face-name-label, .btn-face-mood.active .face-xp-tag { color: var(--c-sobre-emocion); }
+
+.animo-stage-box { text-align: center; display: grid; justify-items: center; gap: var(--e-3); }
+.cara-live-avatar { width: 140px; height: 140px; border-radius: 50%; background: var(--c-emocion-contenedor); overflow: hidden; }
+.animo-stage-box .animo-faces-row, .animo-stage-box [role="group"] { width: 100%; max-width: 560px; justify-content: center; }
+#btn-guardar-animo { width: 100%; max-width: 320px; min-height: 48px; }
+
+/* La semana de ánimo (Ánimo y Progreso): una cara por día */
+.animo-semana-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: var(--e-2); }
+.animo-day-pill { min-width: 0; padding: var(--e-2); text-align: center; border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta); background: var(--c-fondo); }
+.animo-day-pill.today { background: var(--c-emocion-suave); border-color: var(--c-emocion-tinta); }
+.animo-day-pill__cara { display: block; width: 40px; height: 40px; margin: 0 auto var(--e-1); }
+.animo-day-pill__letra, .animo-day-pill__nombre { display: block; font-size: var(--t-xs); color: var(--c-tinta-suave); }
+.animo-day-pill__nombre { min-height: 1.2em; }
+
+/* ---------- 6. Progreso (PROVISIONAL hasta R6) ---------- */
+.progreso-faltan { font-size: var(--t-l); }
+.bars-chart-wrapper { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--e-1); height: 170px; padding-top: var(--e-6); }
+.bar-col-item { display: flex; flex-direction: column; align-items: center; gap: var(--e-2); flex: 1; min-width: 0; text-align: center; }
+.bar-col-item--futuro { opacity: .55; }
+.bar-fill-body { position: relative; width: 26px; background: var(--c-comida); border-radius: var(--r-control) var(--r-control) 0 0; }
+.bar-col-item.today .bar-fill-body { background: var(--c-marca); }
+.bar-fruit-floating-icon { position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: var(--t-l); color: var(--c-comida-tinta); }
+.bar-day-name { font-size: var(--t-xs); font-weight: var(--t-peso-medio); color: var(--c-tinta-suave); }
+.bar-col-item.today .bar-day-name { color: var(--c-marca-tinta); font-weight: var(--t-peso-fuerte); }
+
+/* ---------- 7. Registrar (PROVISIONAL hasta R5) ---------- */
+.lumea-dashboard-screen { display: grid; justify-items: center; }
+.lumea-dashboard-card {
+  width: 100%; max-width: 620px; padding: var(--e-5);
+  background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta);
+}
+.card-section-title { font-size: var(--t-s); font-weight: var(--t-peso-fuerte); color: var(--c-tinta-suave); margin-bottom: var(--e-3); text-transform: none; }
+.camera-preview-container {
+  position: relative; aspect-ratio: 4 / 3; width: 100%; overflow: hidden;
+  display: grid; place-items: center;
+  border-radius: var(--r-tarjeta); background: var(--c-visor); color: var(--c-sobre-visor);
+}
+.camera-video-stream, .camera-foto { width: 100%; height: 100%; object-fit: cover; }
+.camera-foto { position: absolute; inset: 0; }
+.camera-preview-container .corner { position: absolute; width: 24px; height: 24px; border: 3px solid var(--c-sobre-visor); pointer-events: none; }
+.corner.top-left { top: var(--e-3); left: var(--e-3); border-width: 3px 0 0 3px; }
+.corner.top-right { top: var(--e-3); right: var(--e-3); border-width: 3px 3px 0 0; }
+.corner.bottom-left { bottom: var(--e-3); left: var(--e-3); border-width: 0 0 3px 3px; }
+.corner.bottom-right { bottom: var(--e-3); right: var(--e-3); border-width: 0 3px 3px 0; }
+.camera-actions-main { display: flex; flex-wrap: wrap; gap: var(--e-3); margin: var(--e-4) 0 var(--e-3); }
+.camera-actions-main > * { flex: 1 1 200px; }
+.camera-actions-sub { display: flex; flex-wrap: wrap; gap: var(--e-2); margin-bottom: var(--e-5); }
+.camera-actions-sub > * { flex: 1 1 120px; }
+.btn-icon, .pill-icon { flex: none; }
+.criterios-grid-nuevos { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--e-2); margin-top: var(--e-3); }
+.criterio-card { display: grid; justify-items: center; gap: var(--e-1); padding: var(--e-3); text-align: center; border-radius: var(--r-tarjeta); background: var(--c-comida-suave); border: 1px solid var(--c-borde); }
+.criterio-card.highlight { background: var(--c-marca); color: var(--c-sobre-marca); border-color: var(--c-marca); }
+.criterio-title { font-size: var(--t-s); font-weight: var(--t-peso-fuerte); }
+.criterio-desc { font-size: var(--t-s); }
+.criterio-icon-wrap { display: grid; place-items: center; }
+#backend-opciones .lumea-btn-pill {
+  flex: 1 1 100%; max-width: 100%; height: auto; padding: var(--e-2) var(--e-4);
+  line-height: 1.25; white-space: normal; overflow-wrap: anywhere; text-align: left; justify-content: flex-start;
+}
+.opciones__grupo { flex-basis: 100%; margin: var(--e-2) 0 0; font-size: var(--t-xs); font-weight: var(--t-peso-medio); color: var(--c-duda-tinta); text-transform: none; }
+#backend-logros li { display: inline-block; margin: 0 var(--e-1) var(--e-1) 0; padding: 2px var(--e-3); border-radius: var(--r-pildora); background: var(--c-logro-suave); color: var(--c-logro-tinta); }
+.auth-card { width: 100%; max-width: 500px; background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta); }
+.step-badge { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--r-control); background: var(--c-marca-suave); color: var(--c-marca-tinta); }
+.hero-title { color: var(--c-tinta); }
+
+/* ---------- 8. Mis registros (PROVISIONAL hasta R6) ---------- */
+.footer-lumea { background: var(--c-superficie); border-top: 1px solid var(--c-borde); }
+.footer-lumea .list-inline { display: flex; flex-wrap: wrap; gap: var(--e-2); justify-content: center; padding: 0; list-style: none; }

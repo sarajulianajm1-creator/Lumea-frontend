@@ -58,10 +58,13 @@ def test_muestra_el_nivel_y_la_racha(pagina, backend):
     assert pagina.errores == []
 
 
-def test_el_menu_lateral_muestra_nombre_nivel_y_racha(pagina, backend):
+def test_el_menu_lateral_muestra_nombre_y_nivel(pagina, backend):
+    # Rediseño R1: la zona de usuario del menú es delgada (nombre, nivel y «Cerrar sesión»); la racha
+    # ya no va ahí, está en esta pantalla (ver test_muestra_el_nivel_y_la_racha) y en Inicio.
     abrir(pagina, backend)
-    tarjeta = pagina.locator(".sidebar-user-card")
-    assert "Ana" in tarjeta.inner_text() and "Nivel 2" in tarjeta.inner_text() and "3 días" in tarjeta.inner_text()
+    pagina.locator(".nav-app__nivel", has_text="Nivel 2").wait_for()
+    usuario = pagina.locator(".nav-app__usuario")
+    assert "Ana" in usuario.inner_text() and "Nivel 2" in usuario.inner_text()
 
 
 def test_un_solo_h1_sin_version_ni_emojis_de_icono(pagina, backend):

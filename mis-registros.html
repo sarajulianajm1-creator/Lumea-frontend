@@ -8,10 +8,6 @@
   <title>LUMEA | Mis Registros</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="lumeaaa.png">
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Bootstrap 5.3.3 CSS (copia local en vendor/: funciona sin internet) -->
   <link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
@@ -19,35 +15,28 @@
   <!-- Hoja de Estilos Unificada -->
   <link rel="stylesheet" href="estilos/tokens.css">
   <link rel="stylesheet" href="estilos/paletas.css">
-  <link rel="stylesheet" href="style.css" />
-  <!-- Piel de Lumea sobre el diseño de Sara (no cambia style.css) -->
-  <link rel="stylesheet" href="estilos/puente-sara.css">
-  <link rel="stylesheet" href="estilos/pantallas-sara.css">
+  <link rel="stylesheet" href="estilos/componentes.css">
+  <!-- Lo propio de las pantallas privadas (armazón, piezas y lo que falta de Sara, con tokens) -->
+  <link rel="stylesheet" href="estilos/app.css">
 </head>
-<body class="lumea-screen-wrapper">
-<div class="lumea-desktop-layout">
+<body>
+<div class="app">
 
-    <!-- menu-privado:lateral (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
-    <aside class="lumea-desktop-sidebar d-none d-lg-flex">
-      <div>
-        <a href="index-ingresado.html" class="sidebar-logo"><i class="bi bi-flower2" aria-hidden="true"></i> LUMEA</a>
-        <nav aria-label="Principal">
-          <ul class="sidebar-nav-list">
-          <li class="sidebar-nav-item"><a href="index-ingresado.html"><i class="bi bi-house-door-fill fs-5" aria-hidden="true"></i><span>Inicio</span></a></li>
-          <li class="sidebar-nav-item"><a href="mis-registros.html" class="active" aria-current="page"><i class="bi bi-journal-text fs-5" aria-hidden="true"></i><span>Mis registros</span></a></li>
-          <li class="sidebar-nav-item"><a href="alimentos.html"><i class="bi bi-camera-fill fs-5" aria-hidden="true"></i><span>Registrar</span></a></li>
-          <li class="sidebar-nav-item"><a href="progreso.html"><i class="bi bi-bar-chart-line-fill fs-5" aria-hidden="true"></i><span>Progreso</span></a></li>
-          <li class="sidebar-nav-item"><a href="avatar.html"><i class="bi bi-person-badge-fill fs-5" aria-hidden="true"></i><span>Avatar</span></a></li>
-          </ul>
-        </nav>
+    <!-- menu-privado:nav (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
+    <nav class="nav-app" aria-label="Principal">
+      <div class="nav-app__marca"><img class="marca" src="img/logo.svg" alt="Lumea"></div>
+      <a class="nav-app__enlace" href="index-ingresado.html" aria-label="Inicio"><i class="bi bi-house-door-fill" aria-hidden="true"></i><span>Inicio</span></a>
+      <a class="nav-app__enlace" href="mis-registros.html" aria-label="Mis registros" aria-current="page"><i class="bi bi-journal-text" aria-hidden="true"></i><span class="nav-app__largo">Mis registros</span><span class="nav-app__corto" aria-hidden="true">Registros</span></a>
+      <a class="nav-app__enlace nav-app__enlace--registrar" href="alimentos.html" aria-label="Registrar"><i class="bi bi-camera-fill" aria-hidden="true"></i><span>Registrar</span></a>
+      <a class="nav-app__enlace" href="progreso.html" aria-label="Progreso"><i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i><span>Progreso</span></a>
+      <a class="nav-app__enlace" href="avatar.html" aria-label="Avatar"><i class="bi bi-person-badge-fill" aria-hidden="true"></i><span>Avatar</span></a>
+      <div class="nav-app__pie">
+        <button type="button" class="nav-app__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
       </div>
-      <div class="menu-pie">
-        <button type="button" class="menu-pie__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
-      </div>
-    </aside>
-    <!-- /menu-privado:lateral -->
-    <div class="lumea-main-area">
-<main class="py-5">
+    </nav>
+    <!-- /menu-privado:nav -->
+    <div class="app__area">
+<main class="contenido">
     <div class="container">
 
       <!-- Aviso: sin sesión -->
@@ -91,7 +80,7 @@
     <div class="container">
       <div class="row align-items-center gy-3">
         <div class="col-md-6 text-center text-md-start">
-          <span class="fw-bold hero-title"><i class="bi bi-flower2" aria-hidden="true"></i> LUMEA</span>
+          <img class="marca d-inline-block align-middle" src="img/logo.svg" alt="Lumea">
           <span class="small text-secondary ms-2">&copy; 2026. Bienestar y educación nutricional para estudiantes.</span>
         </div>
         <div class="col-md-6 text-center text-md-end">
@@ -108,34 +97,8 @@
       </div>
     </div>
   </footer>
-
-  <style>
-    /* Sello de advertencia en pequeño: octágono negro, como en la norma. */
-    .sello-mini {
-      width: 58px; height: 58px;
-      display: flex; align-items: center; justify-content: center; text-align: center;
-      padding: 0.35rem; background: #000; color: #fff;
-      font-size: 0.45rem; font-weight: 700; line-height: 1.1;
-      clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
-    }
-  </style>
     </div>
   </div>
-  <!-- menu-privado:celular (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
-  <div class="lumea-bottom-nav-container d-lg-none">
-    <nav class="lumea-pill-nav" aria-label="Principal en celular">
-      <a href="index-ingresado.html" class="nav-link-item" aria-label="Inicio"><i class="bi bi-house-door-fill" aria-hidden="true"></i><span>Inicio</span></a>
-      <a href="mis-registros.html" class="nav-link-item active" aria-label="Mis registros" aria-current="page"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Registros</span></a>
-      <a href="alimentos.html" class="nav-camera-fab" aria-label="Registrar"><i class="bi bi-camera-fill" aria-hidden="true"></i><span>Registrar</span></a>
-      <a href="progreso.html" class="nav-link-item" aria-label="Progreso"><i class="bi bi-bar-chart-line-fill" aria-hidden="true"></i><span>Progreso</span></a>
-      <a href="avatar.html" class="nav-link-item" aria-label="Avatar"><i class="bi bi-person-badge-fill" aria-hidden="true"></i><span>Avatar</span></a>
-    </nav>
-  </div>
-  <!-- /menu-privado:celular -->
-
-  <!-- Bootstrap 5.3.3 Bundle JS -->
-
-  <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
   <script src="api.js"></script>
   <script src="sesion-nav.js"></script>
   <script>

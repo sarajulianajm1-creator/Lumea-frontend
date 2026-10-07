@@ -1,4 +1,7 @@
-"""La navegación privada es la misma en las cinco pantallas (el menú lateral de Sara), con aria-current en la actual."""
+"""La navegación privada es la misma en las cinco pantallas (un solo <nav>), con aria-current en la actual.
+
+Rediseño R1: ya no hay un menú lateral y otro de celular. Es UN <nav class="nav-app"> que el CSS
+convierte en barra lateral (computador) o en barra inferior (celular)."""
 import pytest
 
 PANTALLAS = {                      # página -> el destino que debe quedar marcado
@@ -28,9 +31,11 @@ def test_los_cinco_destinos_y_la_actual_marcada(pagina, pagina_nombre, actual):
 def test_el_menu_del_celular_tiene_los_mismos_cinco_destinos(pagina, pagina_nombre, actual):
     pagina.set_viewport_size({"width": 375, "height": 812})
     pagina.goto(f"{pagina.servidor}/{pagina_nombre}")
-    nav = pagina.locator("nav[aria-label='Principal en celular']")
+    nav = pagina.locator("nav[aria-label=Principal]")          # el MISMO nav, ahora pegado abajo
     assert nav.is_visible()
-    assert not pagina.locator("nav[aria-label=Principal]").is_visible()
+    assert pagina.locator("nav").count() == 1
+    caja = nav.bounding_box()
+    assert caja["y"] + caja["height"] == 812
     enlaces = nav.locator("a")
     assert [(e.get_attribute("aria-label"), e.get_attribute("href")) for e in enlaces.all()] == DESTINOS
     marcados = nav.locator("a[aria-current=page]")
