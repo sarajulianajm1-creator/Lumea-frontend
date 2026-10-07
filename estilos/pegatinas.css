@@ -1,0 +1,52 @@
+/* =====================================================================
+   LUMEA · pegatinas.css — la calcomanía (insignia) como pieza de diseño
+   ---------------------------------------------------------------------
+   Solo usa tokens de tokens.css y paletas.css: se puede cargar en
+   cualquier página, también en las de Sara, sin cambiarles nada más.
+
+   La forma es un sello troquelado dibujado en SVG (lo hace pegatinas.js);
+   el color sale del ROL de la calcomanía, con la misma gramática de color
+   de toda la app: comida = aguacate, logro = maracuyá, misión = mora,
+   emoción = guayaba, duda = mango.
+
+   Dos estados: ganada (de color) y por ganar (contorno punteado).
+   ===================================================================== */
+.pegatina {
+  display: inline-block;
+  width: 88px; aspect-ratio: 1;
+  flex: none;
+}
+.pegatina svg, .pegatina img { display: block; width: 100%; height: 100%; }
+
+.pegatina__forma { fill: var(--pegatina-relleno); stroke: none; }
+.pegatina__icono {
+  stroke: var(--pegatina-icono); fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.pegatina--comida  { --pegatina-relleno: var(--c-comida);  --pegatina-icono: var(--c-sobre-comida); }
+.pegatina--logro   { --pegatina-relleno: var(--c-logro);   --pegatina-icono: var(--c-sobre-logro); }
+.pegatina--mision  { --pegatina-relleno: var(--c-mision);  --pegatina-icono: var(--c-sobre-mision); }
+.pegatina--emocion { --pegatina-relleno: var(--c-emocion); --pegatina-icono: var(--c-sobre-emocion); }
+.pegatina--duda    { --pegatina-relleno: var(--c-duda);    --pegatina-icono: var(--c-sobre-duda); }
+
+/* Por ganar: solo el contorno, punteado (no se confunde con una ganada
+   aunque la persona no distinga colores). */
+.pegatina--vacia .pegatina__forma {
+  fill: none; stroke: var(--c-borde-fuerte);
+  stroke-width: 2; stroke-dasharray: 5 4; stroke-linejoin: round;
+}
+.pegatina--vacia .pegatina__icono { stroke: var(--c-tinta-suave); }
+
+/* "Pegarse": gira un poco y rebota una sola vez (el rebote es solo para logros). */
+.pegatina--pegandose {
+  animation: pegatina-pegar var(--m-lento) var(--m-resorte) both;
+  transform: rotate(-4deg);
+}
+@keyframes pegatina-pegar {
+  from { opacity: 0; transform: scale(1.7) rotate(-16deg); }
+  to   { opacity: 1; transform: scale(1) rotate(-4deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pegatina--pegandose { animation: none; }
+}
