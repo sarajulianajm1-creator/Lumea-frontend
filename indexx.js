@@ -6,7 +6,7 @@
 //   - el check-in rápido de ánimo (POST /estado-animo por el estado, con celebración)
 //   - el atajo «Foto directa» (la foto pasa a alimentos.html una sola vez)
 //   - cerrar la bienvenida de regreso
-// Toda la conexión va por api.js; aquí no hay direcciones ni fetch.
+// Toda la conexión va por api.js; aquí no hay direcciones ni llamadas a mano.
 // Necesita api.js, formato.js, lumea-state.js y lumea-ui.js antes.
 // =====================================================================
 (function () {

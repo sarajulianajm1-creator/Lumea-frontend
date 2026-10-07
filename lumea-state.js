@@ -3,11 +3,11 @@
  *
  * Diseño de Sara: un solo objeto (window.lumeaStore) que cada pantalla lee, y el evento
  * "lumea:state-changed" cuando algo cambia. Lo que cambió al unirse con la gamificación:
- *   - Una sola conexión: todo va por api.js (puerto 5002). Aquí no hay direcciones ni fetch.
- *   - Una sola sesión: la de api.js (obtenerSesion). El correo ya no se lee de la dirección (?email=).
+ *   - Una sola conexión: todo va por api.js (el puerto lo fija api.js). Aquí no hay direcciones ni llamadas a mano.
+ *   - Una sola sesión: la de api.js (obtenerSesion). El correo ya no se lee de la dirección de la página.
  *   - El XP, la racha, las misiones y el nivel los calcula el BACKEND; aquí no se inventa nada.
  *     Se leen de GET /progreso, GET /historial (con es_fruta) y GET /estado-animo?dias=7.
- *   - Texto que llega del servidor: siempre textContent, nunca innerHTML.
+ *   - Texto que llega del servidor: siempre textContent, nunca HTML armado a mano.
  *
  * Necesita api.js y formato.js antes. Si algo opcional falla (historial, ánimo, perfil),
  * la pantalla sigue con lo que sí llegó; solo si falla /progreso se avisa el error.
