@@ -451,3 +451,141 @@ def test_ningun_boton_del_resultado_ni_del_visor_promete_xp(pagina, backend, fot
     analizar(pagina, foto, backend, cargar_respuesta("predecir_grupo"))
     botones = pagina.locator("main button").all_inner_texts()
     assert botones and not [b for b in botones if "XP" in b]                          # R5: la referencia trae «+10 XP» en «Sí, es esto»; aquí no
+
+
+# ---------- Camino del cuidado, K0.5: el dato curioso largo ----------
+# Isabella reescribió los datos curiosos: miden entre 500 y 860 caracteres. Líneas de unos 65 caracteres, buen
+# interlineado y, si pasa de cuatro líneas, un «Leer más» con aria-expanded y sin animación.
+
+DATO_860 = ("La papa criolla es de las primeras papas que se cultivaron en los Andes, mucho antes de que existieran los mercados "
+            "de hoy. Las comunidades indígenas de la cordillera la sembraban en terrazas, la guardaban secándola al sol y la "
+            "cocinaban en sopas y guisos que alimentaban a familias enteras durante las épocas frías. Su color amarillo viene "
+            "de pigmentos naturales parecidos a los de otros alimentos amarillos y anaranjados, y su cáscara es tan fina que "
+            "casi no hace falta pelarla. Cuando llegó a otros continentes cambió la manera de comer de muchos pueblos, y hoy "
+            "sigue siendo protagonista del ajiaco, de la bandeja y de muchas mesas de domingo. Cada papa guarda así una parte "
+            "de la historia de quienes la cultivaron, la cuidaron y la compartieron en las veredas y en las plazas de mercado. "
+            "Por eso vale la pena probarla despacio y con curiosidad.")
+
+
+def con_dato(texto):
+    return cargar_respuesta("predecir_segura") | {"dato_curioso": texto}
+
+
+def estado_dato(pagina):
+    return pagina.evaluate("""() => { const p = document.getElementById('backend-dato'), b = document.getElementById('btn-dato-mas');
+        const lh = parseFloat(getComputedStyle(p).lineHeight);
+        return { lineas: Math.round(p.clientHeight / lh), todas: Math.round(p.scrollHeight / lh), visible: !b.hidden,
+                 expandido: b.getAttribute('aria-expanded'), etiqueta: b.textContent.trim(), cortado: p.scrollHeight > p.clientHeight + 1 } }""")
+
+
+def test_el_dato_de_860_caracteres_es_exactamente_el_que_prueba_el_largo(pagina):
+    assert 840 <= len(DATO_860) <= 870
+
+
+@pytest.mark.parametrize("ancho", [375, 1280])
+def test_un_dato_largo_se_corta_a_cuatro_lineas_con_leer_mas_y_se_abre_y_se_cierra(pagina, backend, foto, ancho):
+    pagina.set_viewport_size({"width": ancho, "height": 900})
+    analizar(pagina, foto, backend, con_dato(DATO_860))
+    e = estado_dato(pagina)
+    assert e["visible"] and e["lineas"] == 4 and e["todas"] > 4 and e["cortado"]
+    assert (e["expandido"], e["etiqueta"]) == ("false", "Leer más")
+    boton = pagina.get_by_role("button", name="Leer más")
+    assert boton.get_attribute("aria-controls") == "backend-dato"
+    boton.click()
+    e = estado_dato(pagina)
+    assert e["expandido"] == "true" and e["etiqueta"] == "Leer menos" and not e["cortado"] and e["lineas"] == e["todas"]
+    assert pagina.locator("#backend-dato").inner_text().replace("\n", " ").strip() == DATO_860                   # el texto completo
+    pagina.get_by_role("button", name="Leer menos").click()
+    e = estado_dato(pagina)
+    assert e["expandido"] == "false" and e["lineas"] == 4 and e["cortado"]
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= ancho
+
+
+def test_un_dato_corto_no_lleva_boton(pagina, backend, foto):
+    analizar(pagina, foto, backend, con_dato("La arepa es de maíz y se come en todo el país desde hace siglos."))
+    e = estado_dato(pagina)
+    assert not e["visible"] and not e["cortado"]
+    assert pagina.get_by_role("button", name="Leer más").count() == 0
+
+
+def test_cuatro_lineas_justas_no_llevan_boton_y_la_quinta_si(pagina, backend, foto):
+    # el límite: lo que cabe en cuatro líneas se ve entero; con una línea más aparece «Leer más»
+    pagina.set_viewport_size({"width": 1280, "height": 900})
+    analizar(pagina, foto, backend, con_dato("Palabra " * 20))
+    cortos = estado_dato(pagina)["todas"]
+    assert cortos <= 4
+    backend.poner("POST", "/predecir", con_dato(" ".join(["Palabra"] * 60)))
+    pagina.set_input_files("input[type=file]", str(foto))
+    pagina.wait_for_function("document.getElementById('backend-dato').textContent.split(' ').length > 50")
+    assert estado_dato(pagina)["visible"]
+
+
+def test_el_dato_largo_tiene_lineas_de_65_caracteres_como_maximo_y_buen_interlineado(pagina, backend, foto):
+    pagina.set_viewport_size({"width": 900, "height": 900})                              # una columna: la tarjeta es ancha
+    analizar(pagina, foto, backend, con_dato(DATO_860))
+    pagina.get_by_role("button", name="Leer más").click()
+    medidas = pagina.evaluate("""() => { const p = document.getElementById('backend-dato'), cs = getComputedStyle(p);
+        const sonda = Object.assign(document.createElement('span'), { style: 'width:1ch;position:absolute;visibility:hidden' });
+        p.appendChild(sonda); const ch = sonda.getBoundingClientRect().width; sonda.remove();
+        return { ancho: p.getBoundingClientRect().width, ch, lh: parseFloat(cs.lineHeight), fs: parseFloat(cs.fontSize) } }""")
+    assert medidas["ancho"] <= 65 * medidas["ch"] + 1
+    assert medidas["lh"] >= 1.5 * medidas["fs"] - 0.1
+
+
+def test_leer_mas_se_alcanza_con_el_teclado_y_mide_44_px(pagina, backend, foto):
+    analizar(pagina, foto, backend, con_dato(DATO_860))
+    boton = pagina.get_by_role("button", name="Leer más")
+    for _ in range(40):
+        pagina.keyboard.press("Tab")
+        if pagina.evaluate("document.activeElement.id") == "btn-dato-mas":
+            break
+    assert pagina.evaluate("document.activeElement.id") == "btn-dato-mas"
+    aro = boton.evaluate("e => { const c = getComputedStyle(e); return [c.outlineStyle, parseFloat(c.outlineWidth)] }")
+    assert aro[0] != "none" and aro[1] >= 2                                              # el foco se ve
+    pagina.keyboard.press("Enter")
+    assert estado_dato(pagina)["expandido"] == "true"
+    assert pagina.locator("#btn-dato-mas").bounding_box()["height"] >= 44              # (ahora se llama «Leer menos»)
+
+
+def test_cortar_y_abrir_el_dato_no_lleva_animacion(pagina, backend, foto):
+    # sin gamificación: la celebración de XP tiene su propia animación y podría caer en medio de la medida
+    analizar(pagina, foto, backend, con_dato(DATO_860) | {"gamificacion": None})
+    for sel in ("#backend-dato", "#btn-dato-mas"):
+        d = pagina.locator(sel).evaluate("e => { const c = getComputedStyle(e); return [c.transitionDuration, c.animationName] }")
+        assert d == ["0s", "none"], (sel, d)
+    # nada se anima al abrirlo: se anota todo transitionrun y animationstart mientras se abre
+    pagina.evaluate("window.__mov = []; ['transitionrun', 'animationstart'].forEach(t => document.addEventListener(t, e => window.__mov.push(t + ' ' + e.target.id), true))")
+    pagina.get_by_role("button", name="Leer más").click()
+    assert pagina.evaluate("window.__mov") == []
+
+
+def test_cada_respuesta_nueva_vuelve_a_cortar_el_dato(pagina, backend, foto):
+    analizar(pagina, foto, backend, con_dato(DATO_860))
+    pagina.get_by_role("button", name="Leer más").click()
+    assert estado_dato(pagina)["expandido"] == "true"
+    backend.poner("POST", "/predecir", con_dato(DATO_860 + " Y sigue."))
+    pagina.set_input_files("input[type=file]", str(foto))
+    pagina.wait_for_function("document.getElementById('backend-dato').textContent.endsWith('Y sigue.')")
+    e = estado_dato(pagina)
+    assert (e["expandido"], e["etiqueta"], e["lineas"]) == ("false", "Leer más", 4)
+
+
+def test_al_girar_o_cambiar_el_ancho_se_vuelve_a_medir(pagina, backend, foto):
+    pagina.set_viewport_size({"width": 1280, "height": 900})
+    analizar(pagina, foto, backend, con_dato("Palabra " * 45))                           # ≈ 360 caracteres: 3 líneas en ancho, más en estrecho
+    ancho = estado_dato(pagina)
+    pagina.set_viewport_size({"width": 340, "height": 900})
+    pagina.wait_for_function("(document.getElementById('btn-dato-mas').hidden === false)")
+    estrecho = estado_dato(pagina)
+    assert estrecho["todas"] > ancho["todas"] and estrecho["visible"] and estrecho["lineas"] == 4
+    pagina.set_viewport_size({"width": 1280, "height": 900})
+    pagina.wait_for_function("document.getElementById('btn-dato-mas').hidden === (" + str(not ancho["visible"]).lower() + ")")
+    assert pagina.evaluate("window.__erroresRO || 0") == 0 and not [e for e in pagina.errores if "ResizeObserver" in e]
+
+
+def test_el_dato_largo_con_consejos_sigue_sin_desbordar_ni_bajar_de_12_8_px(pagina, backend, foto):
+    pagina.set_viewport_size({"width": 375, "height": 900})
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_bandeja_paisa") | {"dato_curioso": DATO_860})
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= 375
+    assert estado_dato(pagina)["visible"]
+    assert pagina.evaluate("parseFloat(getComputedStyle(document.getElementById('btn-dato-mas')).fontSize)") >= 12.8

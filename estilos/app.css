@@ -309,6 +309,12 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .consejo { display: grid; gap: var(--e-1); min-width: 0; }
 .consejo__titulo { font-size: var(--t-s); font-weight: var(--t-peso-fuerte); color: var(--c-tinta-suave); }
 .consejo__texto { max-width: 65ch; overflow-wrap: anywhere; }
+/* El dato curioso largo (500 a 860 caracteres): líneas de unos 65 caracteres y buen interlineado; si pasa de
+   cuatro líneas lumea-camara.js lo corta (.dato--cortado) y muestra «Leer más». Sin animación. */
+#backend-dato { max-width: 65ch; line-height: var(--t-interlineado); overflow-wrap: anywhere; }
+#backend-dato.dato--cortado { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden; }
+/* «Leer más» es un botón de texto: sin relleno a los lados, para que su palabra quede alineada con el texto */
+.consejo__mas { justify-self: start; padding-inline: 0; border-width: 0; transition: none; }
 
 /* ---------- 8. Mis registros (rediseño R6) ----------
    Una lista de filas, no de tarjetas: el nombre y la fecha a la izquierda, calorías y certeza a la derecha,

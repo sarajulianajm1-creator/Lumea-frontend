@@ -16,7 +16,7 @@ const MOSTRAR_CALORIAS = true;
 //   Resultado:  resultado (el contenedor: lleva data-estado="segura" o "duda"
 //               cuando hay respuesta, para que el CSS pinte «IA segura» o «IA duda»),
 //               backend-alimento, backend-precision, backend-medidor, backend-energia,
-//               backend-sellos, backend-consejos (bloques de consejo), backend-dato, backend-mensaje,
+//               backend-sellos, backend-consejos (bloques de consejo), backend-dato (+ btn-dato-mas: «Leer más»), backend-mensaje,
 //               backend-opciones (botones para confirmar), backend-estado,
 //               backend-foto (<img> con la foto que se analiza),
 //               backend-logros (<ul>: XP, misiones, calcomanías, nivel, meta del día)
@@ -199,6 +199,43 @@ const MOSTRAR_CALORIAS = true;
     });
   }
 
+  // El dato curioso puede ser largo (500 a 860 caracteres). Líneas de unos 65 caracteres (CSS) y, si pasa de
+  // LINEAS_DATO líneas, se corta y el botón «Leer más» (aria-expanded, sin animación) lo abre y lo cierra.
+  const LINEAS_DATO = 4;
+  let anchoDato = null;
+  function ajustarDato(reiniciar) {
+    const p = $("backend-dato"), boton = $("btn-dato-mas");
+    if (!p || !boton) return;
+    if (reiniciar) { boton.setAttribute("aria-expanded", "false"); boton.textContent = "Leer más"; }
+    const abierto = boton.getAttribute("aria-expanded") === "true";
+    const alto = parseFloat(getComputedStyle(p).lineHeight);
+    // scrollHeight es el alto de todo el texto, esté cortado o no
+    const lineas = alto > 0 ? Math.round(p.scrollHeight / alto) : 0;
+    const largo = lineas > LINEAS_DATO;
+    boton.hidden = !largo;
+    p.classList.toggle("dato--cortado", largo && !abierto);
+  }
+  (function conectarDato() {
+    const p = $("backend-dato"), boton = $("btn-dato-mas");
+    if (!p || !boton) return;
+    boton.addEventListener("click", () => {
+      const abrir = boton.getAttribute("aria-expanded") !== "true";
+      boton.setAttribute("aria-expanded", String(abrir));
+      boton.textContent = abrir ? "Leer menos" : "Leer más";
+      ajustarDato(false);
+    });
+    // Si cambia el ancho (giro del celular, ventana), el texto ocupa otras líneas: se vuelve a medir.
+    // Solo se mira el ancho: cortar el texto cambia el alto y no debe volver a disparar la medida.
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => {
+        const ancho = p.clientWidth;
+        if (ancho === anchoDato) return;
+        anchoDato = ancho;
+        ajustarDato(false);
+      }).observe(p);
+    }
+  })();
+
   function mostrarOpciones(r) {
     const caja = $("backend-opciones");
     if (!caja) return;
@@ -289,6 +326,7 @@ const MOSTRAR_CALORIAS = true;
     }
     mostrarSellos(r.sellos_advertencia);
     poner("backend-dato", r.dato_curioso || "");
+    ajustarDato(true);
     mostrarConsejos(r);
     let msg = r.mensaje_educativo || "";
     if (r.seleccion_manual && !(r.opciones_detalle || r.opciones_sugeridas || []).length) {

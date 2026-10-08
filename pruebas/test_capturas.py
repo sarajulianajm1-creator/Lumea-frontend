@@ -65,14 +65,18 @@ def _guardar_resumen():
 
 # ---------- Registrar con un resultado (R5): «IA segura» e «IA duda» ----------
 # El contenedor del rol «duda» y el texto encima, y los sellos, se miden con la respuesta puesta (la página vacía no los muestra).
+# K0.5 suma «consejos»: los bloques de consejo con el dato curioso largo cortado y con «Leer más» (y el mismo, abierto).
 
-@pytest.mark.parametrize("estado", ["segura", "duda"])
+@pytest.mark.parametrize("estado", ["segura", "duda", "consejos", "consejos-abierto"])
 @pytest.mark.parametrize("paleta", PALETAS)
 @pytest.mark.parametrize("modo", MODOS)
 def test_resultado_de_la_camara_sin_errores_de_contraste(pagina, backend, foto, estado, paleta, modo):
     from conftest import cargar_respuesta
-    respuesta = (cargar_respuesta("predecir_duda") if estado == "duda"
-                 else cargar_respuesta("predecir_segura") | {"sellos_advertencia": ["azucares", "grasas_saturadas"]})
+    if estado.startswith("consejos"):
+        respuesta = cargar_respuesta("predecir_bandeja_paisa")
+    else:
+        respuesta = (cargar_respuesta("predecir_duda") if estado == "duda"
+                     else cargar_respuesta("predecir_segura") | {"sellos_advertencia": ["azucares", "grasas_saturadas"]})
     backend.poner("POST", "/predecir", respuesta)
     guardar_paleta = f"localStorage.setItem('lumea-paleta', '{paleta}'); " if paleta else ""
     pagina.add_init_script(guardar_paleta + f"localStorage.setItem('lumea-modo', '{modo}')")
@@ -80,6 +84,8 @@ def test_resultado_de_la_camara_sin_errores_de_contraste(pagina, backend, foto, 
     pagina.set_input_files("input[type=file]", str(foto))
     pagina.locator("#resultado[data-estado]:not([data-estado=''])").wait_for()
     pagina.wait_for_timeout(300)
+    if estado == "consejos-abierto":
+        pagina.get_by_role("button", name="Leer más").click()
     CARPETA.mkdir(exist_ok=True)
     pagina.screenshot(path=str(CARPETA / f"alimentos-{estado}__{paleta or 'neutro'}-{modo}.png"), full_page=True)
     errores = Axe().run(pagina, options={"runOnly": ["color-contrast"]}).response["violations"]
