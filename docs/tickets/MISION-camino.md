@@ -28,8 +28,8 @@
 
 ## Antes de empezar
 
-- Isabella tenía `conocenos.html` e `index.html` sin guardar en este worktree. Si `git status` todavía los muestra, **para y pídele que haga su commit**. No los toques.
-- Agrega este archivo con su propio commit.
+- Isabella ya hizo commit de sus textos (`conocenos.html`, `index.html` y `crear-cuenta.html`). No los toques. Si `git status` muestra otros cambios que no son tuyos, para y pregúntale.
+- Este archivo se actualizó después del commit de Isabella: haz commit de la versión nueva antes de empezar.
 - Lee `docs/tickets/ESTADO-rediseno.md` (incluida la sección «Para después de unir»), `formato.js`, `lumea-ui.js`, `lumea-state.js`, `caras-checkin.js`, `selector-colores.js`, `avatar.js`, `celebracion.js` y `api.js`.
 - **Nunca** `git add -A` ni `git commit -a`. No hagas push.
 
@@ -66,10 +66,16 @@ Además:
 
 **Diseño de Registrar.** Isabella prefiere el diseño de `ejemplo-camara.html` («Registrar comida», «Lumea cree que es…»). Verifica que `alimentos.html` lo siga, y si algo se aparta, alinéalo con esa referencia.
 
-**Páginas públicas.** A Isabella le gusta cómo las hizo Sara: el inicio con su fondo y el inicio de sesión.
-- Quita `estilos/publico.css` del `<head>` de las seis páginas públicas.
-- Vuelve a poner la marca de Sara en el encabezado mientras llega el logo de Isabella.
-- No toques sus textos. Isabella tiene cambios en `conocenos.html` e `index.html`, y los guarda con su propio commit antes de que empieces.
+**El dato curioso largo.** Los datos curiosos que reescribió Isabella tienen entre 500 y 860 caracteres. El bloque «¿Sabías que…?» tiene que verse bien con textos así:
+- líneas de unos 65 caracteres y buen interlineado;
+- si pasa de cuatro líneas, se corta con un botón «Leer más» accesible (`aria-expanded`), sin animación.
+
+**Páginas públicas: se conserva R7 y se integra con la paleta.** Isabella no quiere deshacer el estilo de R7: quiere las páginas públicas integradas con la paleta nueva de Lumea, **respetando el blanco**.
+- **Fondo.** En modo claro, el fondo de la página y el de las tarjetas son blancos (`#FFFFFF`), sin tinte de la paleta. La paleta solo pone color en los acentos: el botón principal, los enlaces, los íconos y los chips.
+- **Lo que le gusta de Sara.** Conserva el fondo del inicio (las hojas y los destellos) y la tarjeta del inicio de sesión, con sus composiciones. Tiñe esos adornos con un color muy suave de la paleta activa o del estado neutro.
+- **Modo oscuro.** Sigue las superficies oscuras de la paleta.
+- **Contraste.** Verifícalo en las 5 paletas, en el estado neutro y en los dos modos.
+- **Textos.** No toques los textos de Isabella; ya hizo commit de `conocenos.html`, `index.html` y `crear-cuenta.html`.
 
 ### K1 · Semillas y etapas
 
