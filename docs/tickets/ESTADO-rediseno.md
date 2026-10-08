@@ -283,7 +283,72 @@ Misión: `docs/tickets/MISION-camino.md` (rama `rediseno`). Isabella aprobó el 
 5. **En el computador, la tarjeta del resultado mide unos 310 px**, así que las líneas del dato curioso salen de unos 40 caracteres; el tope de 65 solo se nota en una columna (< 960 px). Para ver 65 a 1280 px habría que ensanchar la columna del resultado.
 6. **«Leer más» pasa a «Leer menos»** (la misión pide solo «Leer más»): ambos son textos nuevos.
 7. `herramientas/hojas_mascara.py` necesita Pillow y numpy, que no están en `pruebas/requirements.txt` (las pruebas no los usan: solo comprueban que el PNG existe, tiene alpha y es liviano).
-8. **El backend todavía no manda `consejo`** (`MISION_CAMINO_BACKEND.md`, fase C0.5): por ahora solo se ve con respuestas simuladas.
+8. **El backend todavía no manda `consejo`** (`MISION_CAMINO_BACKEND.md`, fase C0.5): por ahora solo se ve con respuestas simuladas. *(Actualizado en K3: la rama `gamificacion-100` ya lo manda; se vio con un banano real, ver K3.)*
+
+### K1 · Semillas y etapas: LISTA (8 oct 2026)
+
+**Qué quedó listo** (dos commits: `9f41f66` el vocabulario y `fa6a4f0` las respuestas simuladas y sus pruebas)
+
+- **Lo que se lee dice «semillas» donde el contrato dice XP y «etapa» donde dice nivel**, en Inicio, Progreso, Avatar, Ánimo, Registrar (resultado y celebración), la barra de navegación y todos los `aria-label`. Las claves del contrato (`xp_total`, `nivel`, `xp_siguiente_nivel`, `nivel_requerido`…) y las variables **no cambian**. `formato.js` sigue siendo el único lugar de los textos compartidos y gana `semillas(n)` («1 semilla», «5 semillas»).
+- **Respuestas simuladas al contrato real** de `gamificacion-100` (`Backend/docs/CONTRATO_GAMIFICACION.md`): `/progreso`, `/avatar` y `/avatares` traen `forma`, `color` y los compañeros de gaze 10.x con su URL quieta; `/predecir` trae `consejo` con sellos. `conftest.py` gana `url_companero()`, `companero()`, `companero_basico()` y `avatares_estado()`; `avatares.json` y `avatar_elegir.json` son nuevos, y las rutas `GET /avatares` y `POST /avatar` están simuladas. Los textos de misiones y calcomanías se copiaron **tal cual** de `gamificacion_config.py`, sin tocarlo.
+- **`test_vocabulario.py`** (nuevo, 20 casos): ninguna pantalla privada dice «XP» ni «nivel» (texto visible y `aria-label`), los plurales, y los textos de etapa y de meta.
+
+**Extras que no estaban en el plan** (anotados para que Isabella decida):
+- «Llegaste a la etapa máxima» (el plan solo decía «Etapa máxima» para el `aria-label`; el texto del progreso antes decía «Llegaste al nivel máximo»).
+- Singular correcto: «Te falta 1 semilla para la etapa 3» (con 1, «Te falta», no «Te faltan»).
+- «Compañero nuevo:» en la celebración de la etapa (antes «Avatar nuevo:»): sale del vocabulario de los compañeros.
+- `alimentos.html` ahora carga `formato.js` (lo usa `lumea-camara.js` para «+10 semillas»).
+- Los textos con errores que siguen en el backend (`gamificacion_config.py`: «El camino continua», «Etapa: El Jardín»…) **no se corrigieron aquí**: los corrige la sesión del backend. Están copiados tal cual en `calcomanias.json`.
+- `sistema-diseno.html` («Nivel 4», «320 de 500 XP», «el mismo XP») y `ejemplo-camara.html` («+10 XP» en el botón de la referencia) **no se tocaron**: son referencias, y cambiarlos bien es repasar el sistema de diseño entero.
+
+### K2 · El compañero en Avatar: LISTA (8 oct 2026)
+
+**Qué quedó listo** (un commit: `5c94710`; `avatar.html`, `avatar.js`, `estilos/avatar.css`, `companero.js` nuevo)
+
+- **«Tu compañero»**: los seis (Sol, Luna, Río, Montaña, Orquídea, Colibrí) quietos, con su nombre y la etapa en que se abren, debajo de las pestañas. Usa la tarjeta y el foco del armario: los bloqueados llevan candado, «Etapa N», `aria-disabled="true"` y no hacen nada; se elige con `elegirAvatarDiceBear` (`POST /avatar`) y al elegir se vuelve a leer `GET /progreso` para traer las caras del compañero nuevo (el `POST` solo trae la de ojos neutros). El foco se queda en el botón. Si `/avatares` falla, la sección dice que no pudo cargar y lo demás funciona.
+- **La figura grande:** con `imagen_lista` verdadero, la persona por capas y el compañero a su lado, más pequeño y **quieto**; si no, el compañero grande, con los ojos del ánimo de hoy y animado `slow`. Sin internet queda una silueta (que antes se quedaba **detrás** de la imagen y se veía por las partes transparentes de las formas de gaze).
+- **`companero.js`** agrega `animationVariant` a la URL quieta del backend solo donde algo se anima, y **no lo pide si la persona tiene el movimiento reducido** (además de que el SVG de gaze ya respeta `prefers-reduced-motion` por dentro: se comprobó leyendo el SVG, con `animationVariant=medium` los fotogramas están dentro de `@media (prefers-reduced-motion: no-preference)`). Solo acepta direcciones http(s).
+- **La acción principal de Avatar** sigue siendo ponerte algo del armario: los botones de los compañeros son secundarios.
+- **Pruebas:** `test_avatar.py` +16 (seis compañeros, bloqueados, quietos y sin datos de la persona, elegir con ratón y teclado, 403 y 500, desbloqueo por etapa, el grande en `slow` y único que se mueve, movimiento reducido, persona + compañero, sin internet, sin `/avatares`, HTML en el nombre, 375 y 1280 px, la acción principal).
+
+### K3 · El check-in con el compañero: LISTA (8 oct 2026)
+
+**Qué quedó listo** (un commit: `4ee7d8e`)
+
+- Los cinco botones del check-in (**Inicio y Ánimo**) muestran las caras de tu compañero (`avatar.urls_por_estado`), quietas; la del botón elegido (`aria-pressed`) se anima con `medium`, una a la vez, y una cara ya dibujada no se vuelve a cargar al elegir otra. Sin internet o sin compañero queda la palabra (el hueco no ocupa lugar). El nombre accesible es la palabra y la imagen lleva `alt=""`. Ya no se recortan en círculo (la forma del compañero es su silueta) y miden 56 px.
+- **`caras-checkin.js` se eliminó.** Su trabajo era dibujar los sets «gaze» y «moods» con una semilla fija y el color de emoción de la paleta, y guardar la elección en `localStorage` (`lumea-caras`). Eso ya no existe: el compañero trae su forma y su color. Lo que sigue vivo (poner la imagen, quitarla si no carga, animar la elegida) pasó a `companero.js`, que además borra la clave `lumea-caras` que hubiera quedado.
+- **`selector-colores.js` pierde el grupo «Caras»** y sus cinco caras de muestra. La tarjeta de Inicio pasa a **«Elige tus colores»** y se abre mientras falte la paleta (ya no el set de caras); la sección de Avatar, a **«Mis colores»**.
+- **Probado una vez contra el backend real** (puerto 5002, rama `gamificacion-100`, con una cuenta de prueba): las cinco caras salen con los ojos `bars`, `small`, `dots`, `happy` y `grin`; la elegida lleva `animationVariant=medium`; guardar el ánimo celebra; `/avatares` trae los seis con sus etapas; elegir a Luna con `POST /avatar` funciona y la figura grande pasa a Luna (`animationVariant=slow`); y Registrar con un banano real muestra «Lo que aporta» y «A tener en cuenta» (el backend no mandó «Para completar tu plato») y la certeza «94 %». **Sin errores de consola ni peticiones fallidas**, en 1280 y 390 px. **La cuenta de prueba quedó en la base local:** correo `camino-k3@lumea.test` (créala de nuevo o bórrala con SQL cuando quieras; el backend no tiene ruta para borrar cuentas). Capturas en `pruebas/capturas/despues-K3-backend-real/`.
+
+### K4 · La semana de ánimo y Progreso: LISTA (8 oct 2026)
+
+**Qué quedó listo** (un commit, solo pruebas: `8117f61`)
+
+`[data-cara]` y `dibujarSemanaAnimo` (`lumea-ui.js`) ya usaban `urls_por_estado`, así que Progreso y Ánimo muestran al compañero sin tocar código. Se revisó en pantalla con los seis compañeros (el triángulo de Montaña, el rombo de Orquídea, el huevo de Colibrí, la píldora de Río y el arco de Luna caben en el círculo de 40 px sin cortarse), quietos y sin errores de contraste. Dos pruebas lo cuidan: la semana lleva la cara de cada estado del compañero y ninguna pide animación; y en Ánimo, lo único que se mueve en toda la pantalla es la cara elegida.
+
+### K5 · Pruebas, capturas y cierre: LISTA (8 oct 2026)
+
+**Pruebas:** `.venv/bin/pytest pruebas` → **769 pasan, 1 `xfail`** (al cerrar K0.5 eran 742 + 1). `.venv/bin/pytest pruebas -m capturas` → **282 casos pasan, 0 errores de contraste**: las seis públicas y las pantallas privadas (Inicio, Ánimo, Progreso, Avatar con «Tu compañero», Registrar) en las 5 paletas + el neutro × claro/oscuro. Las imágenes de los compañeros no entran en el contraste (axe mira texto), pero el texto de sus tarjetas, de los botones del check-in y de la semana sí.
+- **Nuevas:** `test_vocabulario.py` (20), `test_avatar.py` +16, `test_caras_checkin.py` y `test_selector_colores.py` reescritas, y +2 de K4 (la semana quieta en Progreso y en Ánimo).
+
+**Pruebas que cambiaron, y por qué** (ninguna se borró para que pasara; ninguna de accesibilidad se debilitó):
+- **K1** (`test_avatar.py`, `test_camara.py`, `test_celebracion.py`, `test_emociones.py`, `test_index_ingresado.py`, `test_progreso.py`, `test_rediseno.py`): esperaban «XP», «nivel», «Subiste al nivel», «Avatar nuevo» y las caras de DiceBear 9.x (`moods`, `twinkle`, `mouth=concerned`); ahora esperan el vocabulario nuevo y las URL de gaze 10.x (`grin`, `small`). `test_el_xp_aparece_tres_veces_como_maximo` pasó a llamarse `test_las_semillas_aparecen_tres_veces_como_maximo`.
+- **K2** (`test_avatar.py`): las pruebas del armario contaban todas las `.prenda`; ahora miran solo `#armario-grupos` (la sección de compañeros usa la misma tarjeta). El `aria-label` de la figura pasó de «Tu avatar, tu ánimo de hoy: Bien» a «Tu compañero Sol, tu ánimo de hoy: Bien».
+- **K3, `test_caras_checkin.py` y `test_selector_colores.py`**: pasan a probar el comportamiento nuevo (lo pedía la misión). **Se quitaron las pruebas de lo que dejó de existir:** `test_poner_guarda_la_eleccion_y_redibuja_con_lumea_caras`, `test_poner_ignora_un_set_que_no_existe`, `test_la_eleccion_dura_entre_paginas_porque_vive_en_el_navegador`, las de los sets «gaze» y «moods» y su color por paleta (`test_el_color_del_cuerpo_es_el_de_emocion_de_la_paleta_activa`, `test_al_cambiar_de_paleta_las_caras_se_dibujan_de_nuevo`, `test_al_cambiar_a_modo_oscuro_el_color_sigue_a_la_paleta`), y en el selector `test_elegir_el_set_de_caras_…`, `test_al_elegir_paleta_las_caras_toman_su_color_de_emocion`, `test_las_caras_de_muestra_son_cinco_por_set_y_van_quietas` y `test_sin_internet_en_el_selector_quedan_los_nombres`. Se **conservaron, adaptadas,** las que cuidaban una garantía que sigue valiendo: sin datos de la persona en la URL, alt vacío, `aria-pressed`, solo una cara animada, sin internet queda la palabra, `localStorage` bloqueado, ningún botón dice «XP» ni cambia de color por ánimo. `test_hay_tres_radiogroup…` pasó a dos grupos; `test_con_la_paleta_y_las_caras_ya_elegidas_no_aparece` pasó a solo la paleta.
+- **K3, `test_emociones.py` y `test_index_ingresado.py`:** esperaban cero imágenes en los botones del check-in (sin set elegido) y ahora esperan cinco (las del compañero). `test_publico.py::test_crear_cuenta_no_tiene_ningun_paso_nuevo` busca `companero` en lugar de `caras-checkin`.
+
+**Capturas** (carpetas que git ignora: **Isabella elige cuáles guarda**; las imágenes de los compañeros son las reales de DiceBear): `despues-K1` (Progreso, Inicio y la celebración de la etapa), `despues-K2` (Avatar con el compañero grande, con la persona y el compañero, en nivel alto y en el armario), `despues-K3` (Inicio y Ánimo con distintos compañeros y la cara elegida), `despues-K4` (la semana de ánimo en Progreso y en Ánimo) y `despues-K3-backend-real` (el recorrido contra el backend real). En 1280 y 390 px, claro y oscuro, el estado neutro y una paleta.
+
+**Documentación:** una fila por fase en `docs/bitacora-ia.md`; dos preguntas nuevas, sin respuesta, en `docs/defensa/preguntas-camino.md`; y `docs/defensa/privacidad-y-limites-rediseno.md` y `preguntas-rediseno.md` al día (ya no hay set de caras ni `lumea-caras`).
+
+**Para decidir**
+1. **Privacidad: DiceBear puede ver el ánimo del momento.** Antes se decía que no sabía qué ánimo se elegía porque las cinco caras se piden siempre. Ahora la cara elegida se vuelve a pedir con `animationVariant=medium` y Avatar pide al compañero con los ojos del ánimo de hoy: DiceBear ve la IP, cuál de los seis compañeros (`seed=lumea-<id>`) y los ojos de esa petición, **sin nombre ni correo**. Está dicho con esas palabras en `privacidad-y-limites-rediseno.md`. Si quieres cerrarlo, el contrato ya sugiere descargar los SVG y servirlos desde Lumea (haría falta que `animationVariant` no dependiera de DiceBear).
+2. **Ánimo repite al compañero:** la cara grande y el botón elegido son el mismo compañero. La misión no pide quitar la grande, así que se dejó; si sobra, es borrar `#cara-en-vivo-contenedor`.
+3. **El compañero pequeño junto a la persona va quieto** (la misión solo dice `slow` para el grande). Es un cambio de una palabra en `avatar.js` si lo quieres animado.
+4. **Los compañeros bloqueados se ven** (a 45 % de opacidad, con candado), no escondidos: la misión dice «los seis compañeros quietos». Si prefieres que sean una sorpresa, se cambia la imagen por el candado como en el armario.
+5. **El compañero elegido** tiene el botón «Elegido» con `aria-disabled="true"` (se puede enfocar, no hace nada), no `aria-pressed`.
+6. **`api.js` tiene un cambio sin commit que no es mío:** `API_BASE_URL` pasó de `"http://127.0.0.1:5002"` a `` `http://${location.hostname}:5002` `` (estaba entre comillas dobles, así que no interpolaba y rompía todas las llamadas; tú me pediste corregirlo con comillas invertidas). Queda **sin commit** para que lo revises; sirve para abrir el frontend desde otro dispositivo, y las pruebas siguen pasando porque sirven desde `127.0.0.1`.
+7. Los textos nuevos de esta misión están abajo, en «Textos nuevos para que Isabella revise».
 
 ## Textos nuevos para que Isabella revise
 
@@ -291,17 +356,17 @@ Misión: `docs/tickets/MISION-camino.md` (rama `rediseno`). Isabella aprobó el 
 - «Tu día» · «comidas» (en «1 de 3 comidas») · «Registrar comida»
 - «Elige la cara que más se parece a tu día» (viene del esquema del documento) · «Guardar mi ánimo» · «Ver mi semana de ánimo»
 - «Misión de hoy»
-- Títulos que solo oye el lector de pantalla: «Nivel y racha» y «. Ver mi progreso» (al final de la franja del nivel)
-- Racha dentro de la franja del nivel: «Te faltan 35 XP para el nivel 3. Racha: 3 días»
+- Títulos que solo oye el lector de pantalla: «Etapa y racha» (K1; antes «Nivel y racha») y «. Ver mi progreso» (al final de la franja de la etapa)
+- Racha dentro de la franja de la etapa: «Te faltan 35 semillas para la etapa 3. Racha: 3 días» (K1; antes «…XP para el nivel 3»)
 - Aviso si falla la foto directa: «No se pudo abrir la foto. Prueba con «Registrar comida».» (antes decía «Cámara en vivo»)
 
-**Selector de colores y caras (R4)**
-- Tarjeta de Inicio: «Elige tus colores y tus caras» · botones «Listo» y «Ahora no»
-- Sección de Avatar: «Mis colores y caras»
-- Títulos de los grupos: «Colores», «Modo», «Caras»
+**Selector de colores (R4; sin caras desde K3)**
+- Tarjeta de Inicio: **«Elige tus colores»** (K3; antes «…y tus caras») · botones «Listo» y «Ahora no»
+- Sección de Avatar: **«Mis colores»** (K3; antes «Mis colores y caras»)
+- Títulos de los grupos: «Colores», «Modo» (se quitó «Caras»)
 - Nombres de las paletas: Laguna, Neblina, Carnaval, Colibrí, Cosecha (los de `MARCA.md`; **siguen pendientes de votar** con estudiantes y familias)
 - Modos: «Claro», «Oscuro», «Como mi dispositivo»
-- Sets de caras (nombres provisionales de la misión): «Miradas» (`gaze`, solo ojos) y «Gestos» (`moods`, ojos y boca)
+- *(Los sets «Miradas» y «Gestos» ya no existen: el check-in usa las caras del compañero.)*
 
 **Registrar (R5)**
 - «Muéstrale tu plato» (antes «1. MUÉSTRALE TU PLATO») · «Lo que reconoció Lumea» (antes «2. LO QUE VE LA IA»)
@@ -323,7 +388,23 @@ Misión: `docs/tickets/MISION-camino.md` (rama `rediseno`). Isabella aprobó el 
 - Visor vacío: «La cámara está apagada»
 - Los textos de las tres respuestas simuladas (banano, gaseosa y bandeja paisa) son de ejemplo para las pruebas: no son textos de la app.
 
-*(Se llena fase por fase.)*
+**Camino del cuidado, K1 · Semillas y etapas**
+- «semillas» y «etapa» en todo lo visible: «10 de 15 semillas hoy» · «Meta cumplida: 20 semillas hoy» · «Te faltan 35 semillas para la etapa 3» · «Te falta 1 semilla para la etapa 3» · «Etapa 2» · «Etapa máxima» · «Llegaste a la etapa máxima» · «+10 semillas» · «Llegaste a la etapa 4» · «Se abre en la etapa 3» · «Cargando semillas…»
+- Avatar: «Todavía no se abre: te falta 1 etapa» / «…te faltan 3 etapas» · «Lo que se abre al llegar a una etapa nueva es tuyo para siempre.»
+- Ánimo: «Todas las emociones dan las mismas semillas: no se premia estar siempre bien.»
+- Celebración de la etapa: «Compañero nuevo:» (antes «Avatar nuevo:»)
+- Los `aria-label`: «Avance hacia la etapa 3» · «Avance hacia la siguiente etapa» · «Etapa máxima»
+
+**Camino del cuidado, K2 · Tu compañero (Avatar)**
+- Título de la sección: «Tu compañero» · nota: «Te acompaña en Lumea y sus ojos muestran cómo llegas hoy. Los demás se abren al llegar a una etapa nueva.»
+- Error si no cargan: «No pudimos cargar a tus compañeros. Vuelve a abrir esta pantalla en un momento.»
+- En cada tarjeta: «Tu compañero» (el elegido) · «Disponible» · «Se abre en la etapa 5» · botones «Elegir», «Elegido» y «Etapa 5»
+- Para el lector de pantalla: «Elegir a Luna» · «Elegido: Sol» · «Río, se abre en la etapa 3» · «Tu compañero ahora es Luna.»
+- La figura grande: «Tu compañero Sol, tu ánimo de hoy: Bien» y, con la persona, «Tu avatar y tu compañero Sol, tu ánimo de hoy: Bien»
+
+**Camino del cuidado, K3 · Check-in con el compañero**
+- «Elige tus colores» y «Mis colores» (arriba, en el selector).
+- Sin textos nuevos en los botones del check-in: la palabra de cada estado se queda.
 
 ## Para después de unir
 
