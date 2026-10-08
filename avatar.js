@@ -130,7 +130,7 @@
     lista.replaceChildren();
     const misiones = (estado.progreso && estado.progreso.misiones) || [];
     misiones.forEach((m) => {
-      const li = crear("li", "mision tarjeta tarjeta--mision" + (m.cumplida ? " mision--cumplida" : ""));
+      const li = crear("li", "mision tarjeta" + (m.cumplida ? " mision--cumplida" : ""));
       const cabeza = crear("div", "mision__cuerpo");
       cabeza.appendChild(crear("h3", "mision__nombre", m.nombre));
       const fila = crear("p", "mision__fila");

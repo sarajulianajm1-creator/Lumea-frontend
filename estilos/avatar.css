@@ -3,18 +3,14 @@
    ---------------------------------------------------------------------
    Solo tokens. Las piezas generales (.tarjeta, .chip, .boton, .barra-xp…) vienen
    de componentes.css y las calcomanías de pegatinas.css.
-   Color: el avatar y el ánimo = emoción (guayaba); las misiones = misión (mora);
-   nivel = logro. Maracuyá y mango nunca como texto.
+   Superficies tranquilas (rediseño R6): la vitrina y las misiones son tarjetas con borde, sin fondos de color;
+   el color va en los momentos: el chip de nivel (logro), el chip de cada misión (mora), la calcomanía y la
+   prenda puesta (emoción). Maracuyá y mango nunca como texto.
    ===================================================================== */
 
-/* Texto que solo oye el lector de pantalla (no depende de Bootstrap) */
-.solo-lector {
-  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
-  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
-}
-
 .avatar-pantalla { display: grid; gap: var(--e-5); grid-template-columns: minmax(0, 1fr); align-items: start; }
-@media (min-width: 840px) {
+/* Dos columnas desde 992 px: el avatar y el nivel a la izquierda, las pestañas a la derecha. Debajo, una sola. */
+@media (min-width: 992px) {
   .avatar-pantalla { grid-template-columns: minmax(280px, 5fr) minmax(0, 7fr); }
   .avatar-vitrina { position: sticky; top: var(--e-5); }
 }
@@ -24,14 +20,14 @@
 .avatar-vitrina { display: grid; gap: var(--e-3); }
 .avatar-vitrina__cabeza { display: flex; align-items: center; justify-content: space-between; gap: var(--e-2); }
 .avatar-vitrina__cabeza h2 { font-size: var(--t-l); }
-.avatar-vitrina .barra-xp__riel { background: var(--c-superficie); }
 .avatar-vitrina__puesto { font-weight: var(--t-peso-medio); overflow-wrap: anywhere; }
 
 .avatar-figura {
   position: relative;
   width: min(100%, 280px); aspect-ratio: 1; margin: 0 auto;
   border-radius: var(--r-panel);
-  background: var(--c-superficie);
+  background: var(--c-fondo);                     /* el avatar sobre una superficie tranquila, no sobre un fondo rosado */
+  border: 1px solid var(--c-borde);
   display: grid; place-items: center; overflow: hidden;
 }
 .avatar-figura__capa { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
