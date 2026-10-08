@@ -1,0 +1,76 @@
+/* =====================================================================
+   LUMEA · publico.css — las seis páginas públicas, solo con CSS
+   (Bienvenida, Conócenos, Guía, Crear cuenta, Iniciar sesión y Términos)
+   ---------------------------------------------------------------------
+   Va DESPUÉS de style.css (de Sara) y de puente-sara.css, que ya les pasó los colores a los tokens.
+   Aquí no se cambia ningún texto ni ninguna página: solo el aspecto. Todo es var(--algo).
+
+   Qué hace (misión del rediseño, R7):
+     - Los verdes de Sara que quedaban pasan a tokens: se ven en el estado neutro o en la paleta que ese
+       navegador ya tenga guardada (tema.js la aplica); Crear cuenta no tiene ningún paso nuevo.
+     - Bricolage Grotesque (la fuente única) y la escala de tipos de tokens.css.
+     - Los cuatro radios de siempre: --r-control, --r-tarjeta, --r-panel y --r-pildora.
+     - Superficies tranquilas: las tarjetas se separan con un borde, no con sombra.
+     - Nada en MAYÚSCULAS por CSS.
+   ===================================================================== */
+
+/* ---------- 1. Bootstrap con los tokens ----------
+   Bootstrap saca sus radios, su tamaño de letra y sus verdes de variables --bs-*: al redefinirlas aquí,
+   todo lo que las usa (botones, campos, alertas, insignias…) sigue a los tokens sin tocar cada clase. */
+:root {
+  --bs-body-font-family: var(--f-familia);
+  --bs-body-font-size: var(--t-m);
+  --bs-border-radius: var(--r-control);
+  --bs-border-radius-sm: var(--r-control);
+  --bs-border-radius-lg: var(--r-tarjeta);
+  --bs-border-radius-xl: var(--r-tarjeta);
+  --bs-border-radius-xxl: var(--r-panel);
+  --bs-border-radius-pill: var(--r-pildora);
+  --bs-success-text-emphasis: var(--c-marca-tinta);       /* el verde oscuro de «text-success-emphasis» */
+  --bs-success-bg-subtle: var(--c-marca-suave);
+  --bs-success-border-subtle: var(--c-borde);
+}
+
+/* ---------- 2. Tipografía: la escala de tokens.css ---------- */
+body { font-family: var(--f-familia); font-size: var(--t-m); }
+h1, .h1 { font-size: var(--t-2xl); }
+h2, .h2, .h3 { font-size: var(--t-xl); }
+h3, h4, h5, h6, .h4, .h5, .h6, .lead { font-size: var(--t-l); }
+/* Bootstrap (las utilidades fs-*) y varias páginas (style="font-size: …" escrito en el HTML, que no se toca)
+   llevan el tamaño con más fuerza que una hoja: solo con !important se los lleva a la escala */
+.fs-3, .fs-4 { font-size: var(--t-xl) !important; }
+.fs-5 { font-size: var(--t-l) !important; }
+.fs-6 { font-size: var(--t-m) !important; }
+small, .small, .form-text, .badge { font-size: var(--t-s); }
+.navbar .nav-link, .nav-link, .step-badge, .step-badge-highlight, .input-group-text, p.text-secondary { font-size: var(--t-m); }
+.input-group-text.small { font-size: var(--t-s); }
+.btn-objective { font-size: var(--t-m); }
+.step-badge, .step-badge-highlight, p.text-secondary { font-size: var(--t-m) !important; }
+p.lead { font-size: var(--t-l) !important; }
+h1.h3 { font-size: var(--t-2xl); }                        /* el título de Crear cuenta e Iniciar sesión es un h1 con aspecto de h3 */
+.display-4, .display-5 { font-size: var(--t-2xl); }       /* el título grande de cada página: --t-3xl en pantallas anchas */
+@media (min-width: 768px) { .display-4, .display-5 { font-size: var(--t-3xl); } }
+
+/* ---------- 3. Sin mayúsculas decorativas ---------- */
+.text-uppercase, .hero-tag, .badge { text-transform: none !important; letter-spacing: normal; }
+
+/* ---------- 4. Verdes de Sara → tokens ---------- */
+.text-success-emphasis { color: var(--c-marca-tinta) !important; }
+
+/* ---------- 5. Radios por jerarquía ---------- */
+.btn { border-radius: var(--r-control) !important; }     /* también los «rounded-pill» y los «btn-lg»: un botón es un control */
+.badge { border-radius: var(--r-pildora) !important; }   /* una etiqueta corta sí es una píldora */
+.navbar .nav-link, .nav-link, .navbar-toggler, .btn-objective, .step-badge, .step-badge-highlight { border-radius: var(--r-control); }
+.pillar-icon-box, .auth-card, .quote-box { border-radius: var(--r-tarjeta); }
+.form-check-input[type="checkbox"] { border-radius: 0; }  /* la casilla es cuadrada; la de radio sigue siendo un círculo */
+
+/* ---------- 6. Superficies tranquilas: borde, no sombra ---------- */
+.card, .quote-box, .auth-card, .notice-box-warning, .alert {
+  box-shadow: none !important;
+  border: 1px solid var(--c-borde) !important;
+}
+.shadow, .shadow-sm { box-shadow: none !important; }
+.navbar-lumea { box-shadow: none; border-bottom: 1px solid var(--c-borde); }
+
+/* ---------- 7. El logo del encabezado: una imagen (img/logo.svg) ---------- */
+.logo-brand .marca { display: block; height: 32px; width: auto; }
