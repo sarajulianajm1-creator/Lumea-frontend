@@ -42,7 +42,11 @@
          (el contrato está en su encabezado).
          ============================================================ -->
     <main class="contenido">
-      <h1 class="contenido__titulo">Registrar comida</h1>
+      <header>
+        <h1 class="contenido__titulo">Registrar comida</h1>
+        <!-- Del diseño de referencia (ejemplo-camara.html) -->
+        <p class="contenido__subtitulo">Toma una foto de lo que vas a comer. Lumea te dice qué es y algo que vale la pena saber.</p>
+      </header>
 
       <!-- Sin sesión: no se registra nada. lumea-camara.js lo muestra si no hay correo guardado. -->
       <section id="sin-sesion" class="tarjeta registro__sesion" aria-labelledby="titulo-sin-sesion" hidden>
@@ -61,6 +65,12 @@
           <h2 id="titulo-plato" class="inicio__titulo">Muéstrale tu plato</h2>
           <div class="visor">
             <video id="webcam" autoplay playsinline muted class="camera-video-stream"></video>
+            <!-- Visor vacío (de ejemplo-camara.html): con la cámara apagada y sin foto, lumea-camara.js lo muestra; si no, lo esconde -->
+            <div id="visor-vacio" class="visor__vacio">
+              <i class="bi bi-camera-video-off" aria-hidden="true"></i>
+              <p>La cámara está apagada</p>
+              <button type="button" id="btn-encender" class="boton boton--secundario"><i class="bi bi-camera" aria-hidden="true"></i> Encender cámara</button>
+            </div>
             <img id="backend-foto" class="camera-foto" alt="La foto que estás registrando" hidden>
             <!-- Esquinas de enfoque: solo decoran, ayudan a centrar el plato -->
             <span class="corner top-left" aria-hidden="true"></span>
@@ -70,7 +80,6 @@
           </div>
           <!-- Una acción principal (relleno); lo demás es secundario o de texto -->
           <div class="controles">
-            <button type="button" id="btn-encender" class="boton boton--secundario"><i class="bi bi-camera" aria-hidden="true"></i> Encender cámara</button>
             <button type="button" id="btn-tomar" class="boton" data-accion-principal aria-keyshortcuts="Space"><i class="bi bi-camera-fill" aria-hidden="true"></i> Tomar foto</button>
           </div>
           <div class="controles controles--texto">
@@ -87,8 +96,13 @@
           <h2 id="titulo-resultado" class="inicio__titulo">Lo que reconoció Lumea</h2>
           <p class="resultado__vacio inicio__nota">Toma una foto de tu plato o súbela y aquí verás lo que reconoció Lumea.</p>
           <div class="resultado__contenido">
+            <!-- «Lumea cree que es…» (de ejemplo-camara.html): solo cuando la IA está segura; si duda, el nombre ya es la pregunta -->
+            <p class="etiqueta__pregunta">Lumea cree que es…</p>
             <p id="backend-alimento" class="etiqueta__nombre">—</p>
-            <p id="backend-precision" class="resultado__certeza"></p>
+            <div class="etiqueta__certeza">
+              <span id="backend-medidor" class="etiqueta__medidor" aria-hidden="true"></span>
+              <span id="backend-precision" class="resultado__certeza"></span>
+            </div>
             <p id="backend-energia" class="inicio__nota" hidden></p>
             <div class="resultado__sellos">
               <p class="resultado__rotulo">Sellos de advertencia</p>

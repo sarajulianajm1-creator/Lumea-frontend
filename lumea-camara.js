@@ -12,10 +12,10 @@ const MOSTRAR_CALORIAS = true;
 // (los que faltan se ignoran; ninguno rompe la página):
 //
 //   Cámara:     webcam (<video>), btn-encender, btn-tomar, btn-otra,
-//               btn-apagar, btn-subir
+//               btn-apagar, btn-subir, visor-vacio (se esconde con cámara o foto)
 //   Resultado:  resultado (el contenedor: lleva data-estado="segura" o "duda"
 //               cuando hay respuesta, para que el CSS pinte «IA segura» o «IA duda»),
-//               backend-alimento, backend-precision, backend-energia,
+//               backend-alimento, backend-precision, backend-medidor, backend-energia,
 //               backend-sellos, backend-consejos (bloques de consejo), backend-dato, backend-mensaje,
 //               backend-opciones (botones para confirmar), backend-estado,
 //               backend-foto (<img> con la foto que se analiza),
@@ -72,6 +72,13 @@ const MOSTRAR_CALORIAS = true;
     set("btn-apagar", !on || ocupado);
     set("btn-otra", ocupado);
     set("btn-subir", ocupado);
+    actualizarVisor();
+  }
+
+  // El visor vacío («La cámara está apagada» + «Encender cámara») solo se ve con la cámara apagada y sin foto
+  function actualizarVisor() {
+    const vacio = $("visor-vacio");
+    if (vacio) vacio.hidden = stream !== null || urlFoto !== null;
   }
 
   // ---------- Cámara ----------
@@ -253,6 +260,7 @@ const MOSTRAR_CALORIAS = true;
     urlFoto = archivo ? URL.createObjectURL(archivo) : null;
     if (urlFoto) img.src = urlFoto; else img.removeAttribute("src");
     img.hidden = !urlFoto;
+    actualizarVisor();
   }
 
   function mostrar(r) {
@@ -262,7 +270,12 @@ const MOSTRAR_CALORIAS = true;
     // «IA segura» o «IA duda»: el CSS pinta el contenedor según este estado (la duda va en el rol «duda»)
     const resultado = $("resultado");
     if (resultado) resultado.dataset.estado = r.seleccion_manual ? "duda" : "segura";
-    // La certeza, en palabras y en número
+    // La certeza, en palabras y en número (y el medidor la acompaña, no la reemplaza)
+    const medidor = $("backend-medidor");
+    if (medidor) {
+      if (r.certeza != null) medidor.style.setProperty("--certeza", `${Math.min(100, Math.max(0, Math.round(r.certeza)))}%`);
+      else medidor.style.removeProperty("--certeza");
+    }
     poner("backend-precision", r.certeza != null
       ? `${r.seleccion_manual ? "La IA no está segura" : "La IA está segura"}: ${Math.round(r.certeza)} %`
       : (r.seleccion_manual ? "La IA no está segura" : ""));

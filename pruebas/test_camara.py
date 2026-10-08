@@ -134,8 +134,9 @@ def test_tomar_foto_es_la_unica_accion_principal(pagina):
 def test_los_iconos_son_de_bootstrap_icons_y_no_hay_svg_a_mano(pagina):
     abrir(pagina)
     assert pagina.locator("main svg").count() == 0
-    assert pagina.locator("main .controles .bi").count() == 5
-    assert pagina.locator("main .bi[aria-hidden=true]").count() == 5
+    # los cinco botones llevan su ícono (K0.5: «Encender cámara» pasó al visor vacío) y el visor vacío trae el suyo
+    assert pagina.locator("main .controles .bi, main .visor__vacio button .bi").count() == 5
+    assert pagina.locator("main .bi[aria-hidden=true]").count() == 6
 
 
 def test_el_resultado_seguro_dice_lo_que_reconocio_con_el_nombre_en_grande(pagina, foto):
@@ -370,3 +371,83 @@ def test_los_consejos_se_leen_bien_y_no_desbordan(pagina, backend, foto, ancho):
     assert chicos == []
     # el título es menor que el texto y es un h3 dentro de la sección «Lo que reconoció Lumea»
     assert pagina.locator("#resultado h3").count() == 4
+
+
+# ---------- Camino del cuidado, K0.5: Registrar sigue a ejemplo-camara.html ----------
+# Se adoptan el subtítulo, el visor vacío y «Lumea cree que es…»; donde choca, gana R5 (certeza en palabras y número,
+# nada de «+10 XP» en los botones, «Tomar foto» como única acción principal).
+
+def test_el_titulo_trae_el_subtitulo_de_la_referencia(pagina):
+    abrir(pagina)
+    assert pagina.get_by_role("heading", level=1).inner_text() == "Registrar comida"
+    assert pagina.locator("main header .contenido__subtitulo").inner_text().startswith("Toma una foto de lo que vas a comer.")
+
+
+def test_con_la_camara_apagada_el_visor_dice_que_esta_apagada_y_ofrece_encenderla(pagina):
+    abrir(pagina)
+    vacio = pagina.locator("#visor-vacio")
+    assert vacio.is_visible() and "La cámara está apagada" in vacio.inner_text()
+    encender = vacio.get_by_role("button", name="Encender cámara")
+    assert encender.is_visible() and encender.is_enabled()
+    assert encender.get_attribute("class").split() == ["boton", "boton--secundario"]            # R5: «Tomar foto» sigue siendo la única acción principal
+    # el visor vacío cubre el visor entero, sin empujar nada
+    cajas = pagina.evaluate("[document.querySelector('.visor'), document.querySelector('#visor-vacio')].map(e => e.getBoundingClientRect().toJSON())")
+    assert cajas[0]["width"] == cajas[1]["width"] and cajas[0]["height"] == cajas[1]["height"]
+
+
+def test_el_visor_vacio_se_esconde_con_una_foto_y_vuelve_con_otra_foto(pagina, foto):
+    abrir(pagina)
+    pagina.set_input_files("input[type=file]", str(foto))
+    pagina.locator("#backend-foto").wait_for(state="visible")
+    assert not pagina.locator("#visor-vacio").is_visible()
+    pagina.locator("#backend-alimento", has_text="Arepa").wait_for()
+    pagina.get_by_role("button", name="Otra foto").click()
+    assert pagina.locator("#visor-vacio").is_visible()
+
+
+def test_el_visor_vacio_se_esconde_con_la_camara_encendida(pagina):
+    pagina.add_init_script("""navigator.mediaDevices.getUserMedia = async () => {
+        const c = Object.assign(document.createElement('canvas'), { width: 64, height: 48 });
+        c.getContext('2d').fillRect(0, 0, 64, 48); return c.captureStream(5); };""")
+    abrir(pagina)
+    pagina.get_by_role("button", name="Encender cámara").click()
+    pagina.locator("#btn-tomar:enabled").wait_for()
+    assert not pagina.locator("#visor-vacio").is_visible()
+    pagina.get_by_role("button", name="Apagar").click()
+    assert pagina.locator("#visor-vacio").is_visible()
+
+
+def test_lumea_cree_que_es_abre_la_tarjeta_con_la_ia_segura_y_no_cuando_duda(pagina, backend, foto):
+    abrir(pagina)
+    assert not pagina.get_by_text("Lumea cree que es…").is_visible()                  # antes de la foto solo está la invitación
+    analizar(pagina, foto)
+    pregunta = pagina.get_by_text("Lumea cree que es…")
+    assert pregunta.is_visible()
+    # va antes del nombre, y el título de la sección sigue ahí para el lector de pantalla
+    assert pagina.evaluate("document.querySelector('.etiqueta__pregunta').getBoundingClientRect().bottom <= document.getElementById('backend-alimento').getBoundingClientRect().top")
+    assert pagina.locator("#resultado").get_by_role("heading", name="Lo que reconoció Lumea").count() == 1
+    # con la IA en duda el nombre ya es la pregunta («¿Cuál de estos es?»): no se afirma nada
+    backend.poner("POST", "/predecir", cargar_respuesta("predecir_duda"))
+    pagina.set_input_files("input[type=file]", str(foto))
+    pagina.locator("#backend-opciones button").first.wait_for()
+    assert not pregunta.is_visible()
+
+
+def test_la_certeza_sigue_en_palabras_y_numero_y_el_medidor_la_acompana(pagina, backend, foto):
+    analizar(pagina, foto)                                                           # certeza 94
+    assert pagina.locator("#backend-precision").inner_text() == "La IA está segura: 94 %"
+    medidor = pagina.locator("#backend-medidor")
+    assert medidor.get_attribute("aria-hidden") == "true" and medidor.inner_text() == ""
+    assert medidor.evaluate("e => e.style.getPropertyValue('--certeza')") == "94%"
+    assert medidor.evaluate("e => parseFloat(getComputedStyle(e, '::after').width) / parseFloat(getComputedStyle(e).width)") == pytest.approx(0.94, abs=0.02)
+    # sin dato de certeza no queda un medidor suelto
+    backend.poner("POST", "/predecir", cargar_respuesta("predecir_segura") | {"certeza": None})
+    pagina.set_input_files("input[type=file]", str(foto))
+    pagina.wait_for_function("!document.getElementById('backend-precision').textContent")
+    assert not pagina.locator(".etiqueta__certeza").is_visible()
+
+
+def test_ningun_boton_del_resultado_ni_del_visor_promete_xp(pagina, backend, foto):
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_grupo"))
+    botones = pagina.locator("main button").all_inner_texts()
+    assert botones and not [b for b in botones if "XP" in b]                          # R5: la referencia trae «+10 XP» en «Sí, es esto»; aquí no

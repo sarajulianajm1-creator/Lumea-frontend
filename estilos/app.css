@@ -268,6 +268,10 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 /* El visor: el video, la foto quieta mientras la IA la analiza y las esquinas de enfoque */
 .camera-video-stream { width: 100%; height: 100%; object-fit: cover; }
 .camera-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Visor vacío (de ejemplo-camara.html): encima del video apagado, con el botón para encenderlo */
+.visor__vacio { position: absolute; inset: 0; align-content: center; }
+.visor__vacio .bi { font-size: var(--t-2xl); line-height: 1; }
+.visor__vacio p { color: var(--c-sobre-visor); }
 .visor .corner { position: absolute; width: 24px; height: 24px; border: 0 solid var(--c-sobre-visor); pointer-events: none; }
 .corner.top-left { top: var(--e-3); left: var(--e-3); border-width: 3px 0 0 3px; }
 .corner.top-right { top: var(--e-3); right: var(--e-3); border-width: 3px 3px 0 0; }
@@ -279,7 +283,16 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 #resultado[data-estado=""] .resultado__contenido { display: none; }
 #resultado:not([data-estado=""]) .resultado__vacio { display: none; }
 .etiqueta__nombre { overflow-wrap: anywhere; }
-.resultado__certeza { font-weight: var(--t-peso-medio); }
+/* La certeza, en palabras y número, con el medidor de ejemplo-camara.html al lado (decora; el dato está en el texto) */
+.resultado__certeza { font-size: var(--t-m); font-weight: var(--t-peso-medio); }
+.etiqueta__certeza:has(#backend-precision:empty) { display: none; }
+/* «Lumea cree que es…» (de ejemplo-camara.html): con la IA segura. Si duda, el nombre ya es la pregunta */
+#resultado[data-estado="duda"] .etiqueta__pregunta { display: none; }
+#resultado[data-estado="duda"] .etiqueta__medidor::after { background: var(--c-duda); }
+/* Con respuesta, «Lumea cree que es…» abre la tarjeta: el título de la sección queda solo para el lector de pantalla */
+#resultado:not([data-estado=""]) #titulo-resultado {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 .resultado__rotulo { font-size: var(--t-s); font-weight: var(--t-peso-fuerte); color: var(--c-tinta-suave); margin-bottom: var(--e-2); }
 /* IA duda: el contenedor del rol «duda» (el mango nunca va como texto: el texto sigue en tinta) */
 #resultado[data-estado="duda"] { background: var(--c-duda-contenedor); }
