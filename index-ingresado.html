@@ -66,6 +66,17 @@
         <button type="button" class="boton boton--fantasma" data-cerrar-aviso aria-label="Cerrar el mensaje"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
       </div>
 
+      <!-- ELIGE TUS COLORES Y TUS CARAS: ninguna paleta ni set de caras es predeterminado. Aparece mientras falte
+           alguno (la decide indexx.js); no es un diálogo: no impide registrar una comida. -->
+      <section class="tarjeta inicio__colores" id="card-colores" aria-labelledby="titulo-colores" hidden>
+        <h2 id="titulo-colores" class="inicio__titulo">Elige tus colores y tus caras</h2>
+        <div data-selector-colores></div>
+        <div class="inicio__acciones">
+          <button type="button" id="btn-colores-listo" class="boton boton--secundario">Listo</button>
+          <button type="button" id="btn-colores-ahora-no" class="boton boton--fantasma">Ahora no</button>
+        </div>
+      </section>
+
       <div class="inicio__fila">
 
         <!-- TU DÍA: las comidas de hoy y la única acción principal de la pantalla -->
@@ -154,6 +165,7 @@
   <script src="lumea-state.js"></script>
   <script src="lumea-ui.js"></script>
   <script src="caras-checkin.js"></script>
+  <script src="selector-colores.js"></script>
   <script src="indexx.js"></script>
   <script src="menu-privado.js"></script>
 </body>

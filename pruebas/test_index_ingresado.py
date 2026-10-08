@@ -210,7 +210,8 @@ def test_a_375px_no_se_desborda(pagina, backend):
 
 def test_cuatro_superficies_como_maximo_y_un_solo_boton_relleno(pagina, backend):
     abrir(pagina, backend)
-    superficies = pagina.locator("main .tarjeta, main .inicio__franja")
+    # sin contar la tarjeta «Elige tus colores y tus caras» (R4), que desaparece una vez elegido todo
+    superficies = pagina.locator("main .tarjeta:not(#card-colores), main .inicio__franja")
     assert superficies.count() <= 4                                         # antes eran 13 cajas
     # «una acción principal por pantalla»: solo un botón relleno, y es «Registrar comida»
     rellenos = pagina.locator("main .boton:not(.boton--secundario):not(.boton--fantasma)")
@@ -227,7 +228,7 @@ def test_el_xp_aparece_tres_veces_como_maximo(pagina, backend):
 
 def test_cada_bloque_es_una_seccion_con_su_titulo(pagina, backend):
     abrir(pagina, backend)
-    secciones = pagina.locator("main section[aria-labelledby]")
+    secciones = pagina.locator("main section[aria-labelledby]:not(#card-colores)")
     assert secciones.count() == 4
     for seccion in secciones.all():
         titulo = seccion.get_attribute("aria-labelledby")

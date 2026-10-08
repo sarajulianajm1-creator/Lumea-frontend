@@ -6,6 +6,7 @@
 //   - el check-in de ánimo: eliges una cara (aria-pressed) y la guardas con «Guardar mi ánimo»
 //     (POST /estado-animo por el estado, con celebración)
 //   - el atajo «Foto directa» (la foto pasa a alimentos.html una sola vez)
+//   - la tarjeta «Elige tus colores y tus caras» (cuándo se muestra y cómo se cierra)
 //   - cerrar la bienvenida de regreso
 // Toda la conexión va por api.js; aquí no hay direcciones ni llamadas a mano.
 // Necesita api.js, formato.js, lumea-state.js y lumea-ui.js antes.
@@ -50,6 +51,32 @@
     pintarCheckin();
   }
 
+  // ---------- Elige tus colores y tus caras ----------
+
+  // localStorage y sessionStorage pueden fallar (modo privado): nunca rompen la pantalla
+  function leer(almacen, clave) { try { return window[almacen].getItem(clave); } catch (e) { return null; } }
+  function guardar(almacen, clave, valor) { try { window[almacen].setItem(clave, valor); } catch (e) {} }
+
+  // La tarjeta se abre al entrar si todavía falta la paleta o el set de caras y la persona no la cerró.
+  // Una vez abierta se queda abierta aunque elija las dos cosas: se cierra con «Listo» o «Ahora no».
+  //   Listo     -> no vuelve a aparecer (se recuerda en el navegador; todo se cambia luego en Avatar)
+  //   Ahora no  -> se esconde solo durante esta sesión
+  function prepararTarjetaDeColores() {
+    const tarjeta = $("card-colores");
+    if (!tarjeta || !window.LumeaTema || !window.LumeaCaras) return;
+    const falta = !window.LumeaTema.paletaActual() || !window.LumeaCaras.actual();
+    const cerrada = leer("localStorage", "lumea-colores-listo") === "1" || leer("sessionStorage", "lumea-colores-ahora-no") === "1";
+    tarjeta.hidden = !(falta && !cerrada);
+    const cerrar = (almacen, clave) => {
+      guardar(almacen, clave, "1");
+      tarjeta.hidden = true;
+      const principal = document.querySelector("[data-accion-principal]");
+      if (principal) principal.focus();                  // el foco no se pierde: pasa a la acción principal
+    };
+    $("btn-colores-listo").addEventListener("click", () => cerrar("localStorage", "lumea-colores-listo"));
+    $("btn-colores-ahora-no").addEventListener("click", () => cerrar("sessionStorage", "lumea-colores-ahora-no"));
+  }
+
   // ---------- Foto directa: del celular a la cámara de registro ----------
 
   // Reduce la foto y la deja en sessionStorage para que alimentos.html la analice (y la borre)
@@ -76,6 +103,7 @@
       boton.addEventListener("click", () => { elegido = boton.dataset.estado; pintarCheckin(); });
     });
     $("btn-guardar-animo-inicio").addEventListener("click", guardarAnimo);
+    prepararTarjetaDeColores();
     const foto = $("input-foto-directa-home");
     if (foto) foto.addEventListener("change", () => { if (foto.files[0]) pasarFotoALaCamara(foto.files[0]); });
     const cerrar = document.querySelector("[data-cerrar-aviso]");

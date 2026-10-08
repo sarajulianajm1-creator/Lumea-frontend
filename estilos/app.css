@@ -265,6 +265,37 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
   .inicio__flecha { grid-column: 2; grid-row: 1 / span 3; }
 }
 
+/* ---------- 4b. Selector de colores, modo y caras (Inicio y Avatar; selector-colores.js) ---------- */
+.inicio__colores, .avatar-colores { display: grid; gap: var(--e-4); }
+.selector { display: grid; gap: var(--e-5); }
+.selector__grupo { display: grid; gap: var(--e-2); min-width: 0; margin: 0; padding: 0; border: 0; }
+.selector__titulo { padding: 0; font-weight: var(--t-peso-fuerte); }
+.selector__opciones { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+.selector__opcion {
+  position: relative; flex: 1 1 128px;
+  display: grid; gap: var(--e-2); justify-items: center; align-content: center;
+  min-height: 44px; padding: var(--e-3);
+  border: 1.5px solid var(--c-borde-fuerte); border-radius: var(--r-tarjeta);
+  background: var(--c-superficie); color: var(--c-tinta); cursor: pointer;
+  transition: border-color var(--m-rapido), background var(--m-rapido);
+}
+.selector__opcion:hover { border-color: var(--c-marca-tinta); }
+.selector__opcion:has(input:focus-visible) { outline: 3px solid var(--c-foco); outline-offset: 2px; }
+.selector__opcion--elegida { background: var(--c-marca-suave); border-color: var(--c-marca-tinta); }
+.selector__nombre { font-weight: var(--t-peso-medio); text-align: center; }
+.selector__opciones--modos .selector__opcion { flex: 0 1 auto; padding: var(--e-2) var(--e-4); }
+/* La tira de una paleta: los cinco colores de rol. Los colores son los de ESA paleta (su data-paleta) */
+.selector__tira { display: flex; width: 100%; height: 28px; overflow: hidden; border-radius: var(--r-control); border: 1px solid var(--c-borde); }
+.selector__muestra { flex: 1; }
+.selector__muestra--comida { background: var(--c-comida); }
+.selector__muestra--logro { background: var(--c-logro); }
+.selector__muestra--emocion { background: var(--c-emocion); }
+.selector__muestra--mision { background: var(--c-mision); }
+.selector__muestra--duda { background: var(--c-duda); }
+/* Las caras de un set, quietas */
+.selector__caras { display: flex; gap: var(--e-1); }
+.selector__cara { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; }
+
 /* ---------- 5. Check-in de ánimo: las cinco caras (Inicio y Ánimo) ---------- */
 .animo-escena { display: grid; justify-items: center; gap: var(--e-3); text-align: center; }
 .animo-escena .animo-caras { width: 100%; max-width: 560px; }
