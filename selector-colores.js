@@ -1,18 +1,17 @@
 // =====================================================================
-// selector-colores.js — dónde cada persona elige sus colores, su modo y sus caras.
+// selector-colores.js — dónde cada persona elige sus colores y su modo.
 //
-// Ninguna paleta ni ningún set de caras es predeterminado: mientras la persona no elige, Lumea se ve
-// en un estado neutro y los botones del check-in muestran solo la palabra. Este componente lo usan
-// Inicio (la tarjeta «Elige tus colores y tus caras») y Avatar (la sección «Mis colores y caras»).
+// Ninguna paleta es predeterminada: mientras la persona no elige, Lumea se ve en un estado neutro.
+// Este componente lo usan Inicio (la tarjeta «Elige tus colores») y Avatar (la sección «Mis colores»).
+// Las caras del check-in ya no se eligen aquí: son las de tu compañero (companero.js).
 //
 // Uso: en el HTML basta con un contenedor vacío,
 //   <div data-selector-colores></div>
-// y este archivo lo llena con tres grupos de opciones (radiogroup):
+// y este archivo lo llena con dos grupos de opciones (radiogroup):
 //   Colores  Laguna, Neblina, Carnaval, Colibrí, Cosecha: una tira con los colores de cada rol
 //   Modo     Claro, Oscuro, Como mi dispositivo
-//   Caras    Miradas (gaze) y Gestos (moods): las cinco caras quietas de cada set
-// Al elegir, se aplica y se guarda al instante (LumeaTema.ponerPaleta / ponerModo, LumeaCaras.poner).
-// Necesita tema.js (en el <head>) y caras-checkin.js antes. Todo se escribe con createElement.
+// Al elegir, se aplica y se guarda al instante (LumeaTema.ponerPaleta / ponerModo).
+// Necesita tema.js (en el <head>). Todo se escribe con createElement.
 //
 // Los grupos son botones de radio de verdad (escondidos con .solo-lector): el teclado, las flechas
 // y el lector de pantalla funcionan sin código extra.
@@ -21,14 +20,11 @@
   "use strict";
 
   const Tema = window.LumeaTema;
-  const Caras = window.LumeaCaras;
   if (!Tema) return;
 
   // Los nombres que ve la persona (provisionales: los decide Isabella)
   const PALETAS = [["laguna", "Laguna"], ["neblina", "Neblina"], ["carnaval", "Carnaval"], ["colibri", "Colibrí"], ["cosecha", "Cosecha"]];
   const MODOS = [["claro", "Claro"], ["oscuro", "Oscuro"], ["auto", "Como mi dispositivo"]];
-  const SETS = [["gaze", "Miradas"], ["moods", "Gestos"]];
-  const ESTADOS = ["muy_mal", "mal", "neutral", "bien", "muy_bien"];
   const ROLES = ["comida", "logro", "emocion", "mision", "duda"];     // la gramática de color, en este orden
 
   let contador = 0;                                                   // para que los name de los radios no se pisen
@@ -40,7 +36,7 @@
     return el;
   }
 
-  // Un grupo de opciones. `dibujarVista` arma lo que se ve en cada opción (la tira, las caras…).
+  // Un grupo de opciones. `dibujarVista` arma lo que se ve en cada opción (la tira de colores).
   function grupo(prefijo, id, titulo, opciones, clase, dibujarVista, alElegir) {
     const conjunto = crear("fieldset", "selector__grupo");
     conjunto.setAttribute("role", "radiogroup");
@@ -74,31 +70,10 @@
     return el;
   }
 
-  // Las cinco caras quietas de un set (con el color de emoción de la paleta activa)
-  function carasDe(set) {
-    const el = crear("span", "selector__caras");
-    el.setAttribute("aria-hidden", "true");
-    el.dataset.set = set;
-    return el;
-  }
-
-  function pintarCaras(raiz) {
-    if (!Caras) return;
-    raiz.querySelectorAll(".selector__caras").forEach((contenedor) => {
-      contenedor.replaceChildren();
-      ESTADOS.forEach((estado) => {
-        const celda = crear("span", "selector__cara");
-        const img = Caras.imagen(contenedor.dataset.set, estado, false);     // quietas: ninguna se mueve aquí
-        if (img) celda.appendChild(img);
-        contenedor.appendChild(celda);
-      });
-    });
-  }
-
   // Marca en los radios lo que está elegido ahora (y las tiras toman el modo de ahora)
   function sincronizar(raiz) {
-    const actual = { paleta: Tema.paletaActual(), modo: Tema.modoGuardado(), caras: Caras ? Caras.actual() : null };
-    [["paleta", actual.paleta], ["modo", actual.modo], ["caras", actual.caras]].forEach(([id, valor]) => {
+    const actual = { paleta: Tema.paletaActual(), modo: Tema.modoGuardado() };
+    [["paleta", actual.paleta], ["modo", actual.modo]].forEach(([id, valor]) => {
       raiz.querySelectorAll(`input[name$="-${id}"]`).forEach((radio) => {
         radio.checked = radio.value === valor;
         radio.closest(".selector__opcion").classList.toggle("selector__opcion--elegida", radio.checked);
@@ -112,13 +87,10 @@
     const raiz = crear("div", "selector");
     raiz.appendChild(grupo(prefijo, "paleta", "Colores", PALETAS, "selector__opciones--paletas", tira, (v) => Tema.ponerPaleta(v)));
     raiz.appendChild(grupo(prefijo, "modo", "Modo", MODOS, "selector__opciones--modos", () => null, (v) => Tema.ponerModo(v)));
-    if (Caras) raiz.appendChild(grupo(prefijo, "caras", "Caras", SETS, "selector__opciones--caras", carasDe, (v) => Caras.poner(v)));
     contenedor.replaceChildren(raiz);
-    pintarCaras(raiz);
     sincronizar(raiz);
-    // Cambió la paleta o el modo (desde aquí o desde otro lado): las tiras, las caras y lo marcado se ponen al día
-    document.documentElement.addEventListener("lumea:tema", () => { pintarCaras(raiz); sincronizar(raiz); });
-    document.documentElement.addEventListener("lumea:caras", () => sincronizar(raiz));
+    // Cambió la paleta o el modo (desde aquí o desde otro lado): las tiras y lo marcado se ponen al día
+    document.documentElement.addEventListener("lumea:tema", () => sincronizar(raiz));
     return raiz;
   }
 

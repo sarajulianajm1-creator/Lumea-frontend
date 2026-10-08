@@ -1,4 +1,4 @@
-"""emociones.html (Ánimo, rediseño R3): la cara grande cambia en vivo, los cinco botones llevan las caras del set elegido y guardar celebra."""
+"""emociones.html (Ánimo): la cara grande cambia en vivo, los cinco botones llevan las caras del compañero y guardar celebra."""
 import json
 
 import pytest
@@ -33,8 +33,8 @@ def test_los_cinco_estados_con_su_palabra_y_sin_xp(pagina, backend):
     abrir(pagina, backend)
     botones = pagina.locator(".animo-cara")
     assert [b.locator(".animo-cara__nombre").inner_text() for b in botones.all()] == ESTADOS
-    # sin set de caras elegido solo se ve la palabra; las caras de cada set se prueban en test_caras_checkin.py
-    assert botones.locator("img").count() == 0
+    # cada botón lleva la cara del compañero (se prueban a fondo en test_caras_checkin.py)
+    assert botones.locator("img").count() == 5
     for b in botones.all():
         assert "XP" not in b.inner_text()             # ningún botón promete XP (regla 4)
     assert pagina.errores == []                       # ni «suscribir is not a function» ni «null.style»
@@ -48,13 +48,13 @@ def test_el_boton_de_guardar_no_dice_xp_ni_hay_pildora_ni_flecha_de_volver(pagin
     assert "+5" not in pagina.locator("main").inner_text()
 
 
-def test_las_caras_de_los_botones_son_las_del_set_elegido_y_la_grande_sigue_siendo_la_del_avatar(pagina, backend):
-    pagina.add_init_script("localStorage.setItem('lumea-caras', 'moods')")
+def test_las_caras_de_los_botones_y_la_grande_son_las_del_mismo_companero(pagina, backend):
     abrir(pagina, backend)
     pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    assert all("/10.x/moods/" in i.get_attribute("src") for i in pagina.locator(".animo-caras img").all())
+    assert all("/10.x/gaze/" in i.get_attribute("src") and "seed=lumea-sol" in i.get_attribute("src") for i in pagina.locator(".animo-caras img").all())
     boton(pagina, "Mal").click()
-    assert "eyesVariant=small" in pagina.locator("#cara-grande img").get_attribute("src")    # la del avatar, no la del set
+    assert "eyesVariant=small" in pagina.locator("#cara-grande img").get_attribute("src")    # la grande, la del compañero
+    assert "eyesVariant=small" in boton(pagina, "Mal").locator("img").get_attribute("src")    # y la del botón elegido
 
 
 def test_sin_emojis_ni_version_en_la_pantalla(pagina, backend):
@@ -134,7 +134,6 @@ def test_esta_semana_viene_del_backend_no_de_ejemplos(pagina, backend):
 
 
 def test_sin_internet_para_las_caras_queda_el_nombre(pagina, backend):
-    pagina.add_init_script("localStorage.setItem('lumea-caras', 'gaze')")
     abrir(pagina, backend)
     pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
     pagina.evaluate("document.querySelectorAll('img').forEach(i => i.dispatchEvent(new Event('error')))")

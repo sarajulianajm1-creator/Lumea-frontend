@@ -1,41 +1,39 @@
-"""caras-checkin.js (rediseño R3): las caras de los cinco botones del check-in, en Inicio y en Ánimo.
+"""companero.js (Camino del cuidado, K3): las caras de los cinco botones del check-in son las de tu compañero.
 
-Cada persona elige su set de caras («gaze» o «moods»), igual que su paleta; ninguno es predeterminado.
-Se prueban los tres estados: sin elección (solo la palabra), con «gaze» y con «moods». En los tres:
-la dirección sin datos personales, alt="", aria-pressed, el respaldo sin internet y el redibujo
-con «lumea:tema» y «lumea:caras». (Las imágenes no salen a internet: conftest.py las reemplaza.)
+Inicio y Ánimo dibujan, en cada botón, la cara que el backend manda en `avatar.urls_por_estado` (gaze 10.x),
+quieta; solo la del botón elegido se anima (`animationVariant=medium`), una a la vez. Sin compañero o sin
+internet queda la palabra. Antes (R3) la persona elegía un set de caras («gaze» o «moods») que se guardaba
+en el navegador: ya no hay set, ni clave `lumea-caras`, ni `caras-checkin.js`.
+(Las imágenes no salen a internet: conftest.py las reemplaza.)
 """
 from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-from conftest import cargar_respuesta
+from conftest import CORREO_PRUEBA, OJOS_POR_ESTADO, RAIZ, cargar_respuesta, companero, url_companero
 
 PAGINAS = ["index-ingresado.html", "emociones.html"]
-SETS = [None, "gaze", "moods"]
 ESTADOS = ["Muy mal", "Mal", "Neutral", "Bien", "Muy bien"]
-BASES = {"gaze": "https://api.dicebear.com/10.x/gaze/svg", "moods": "https://api.dicebear.com/10.x/moods/svg"}
+CLAVES = ["muy_mal", "mal", "neutral", "bien", "muy_bien"]
 # Todo lo que puede ir en la dirección: ajustes del dibujo, nada de la persona
-PARAMETROS_PERMITIDOS = {"seed", "shapeVariant", "faceVariant", "cheeksProbability", "backgroundColor",
-                         "eyesVariant", "mouthVariant", "bodyColor", "faceColor", "animationVariant"}
+PARAMETROS_PERMITIDOS = {"seed", "shapeVariant", "bodyColor", "eyesVariant", "animationVariant"}
 CORTO = "LumeaCelebrar.tiempos.xp = 300; LumeaCelebrar.tiempos.mision = 300; LumeaCelebrar.tiempos.salida = 60;"
 
 
-def abrir(pagina, backend, nombre, caras=None, paleta=None, modo=None):
-    """La página con la sesión de prueba, sin check-in hecho hoy y con el set (y la paleta) pedidos ya guardados."""
+def abrir(pagina, backend, nombre, compa="sol", registrado=None):
+    """La página con la sesión de prueba, con el compañero pedido y sin check-in hecho hoy (salvo `registrado`)."""
     cuerpo = cargar_respuesta("progreso")
-    cuerpo["progreso"]["avatar"]["estado_animo_hoy"] = None
+    if compa is None:
+        cuerpo["progreso"].pop("avatar", None)                       # un backend que no manda compañero
+    else:
+        cuerpo["progreso"]["avatar"] = companero(compa, registrado)
     backend.poner("GET", "/progreso", cuerpo)
     backend.poner("GET", "/estado-animo", {"success": True, "cantidad": 0, "historial": []})
-    guardado = []
-    if caras: guardado.append(f"localStorage.setItem('lumea-caras', '{caras}')")
-    if paleta: guardado.append(f"localStorage.setItem('lumea-paleta', '{paleta}')")
-    if modo: guardado.append(f"localStorage.setItem('lumea-modo', '{modo}')")
-    if guardado:
-        pagina.add_init_script(";".join(guardado))
     pagina.goto(f"{pagina.servidor}/{nombre}")
     pagina.locator(".animo-cara").first.wait_for()
     pagina.evaluate(CORTO)
+    if compa is not None:
+        pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
 
 
 def botones(pagina):
@@ -46,65 +44,60 @@ def parametros(src):
     return {k: v[0] for k, v in parse_qs(urlparse(src).query).items()}
 
 
-def sin_ruta(src):
-    return src.split("?")[0]
+def srcs(pagina):
+    """El src de la imagen de cada botón, en orden (None si el botón no tiene imagen)."""
+    return pagina.evaluate("""[...document.querySelectorAll('.animo-cara')].map(b => { const i = b.querySelector('img'); return i ? i.src : null })""")
 
 
-# ---------- Sin elección: solo la palabra ----------
+# ---------- Las cinco caras son las del compañero ----------
 
 @pytest.mark.parametrize("nombre", PAGINAS)
-def test_sin_eleccion_no_hay_ninguna_imagen_solo_la_palabra(pagina, backend, nombre):
+@pytest.mark.parametrize("compa", ["sol", "luna", "colibri"])
+def test_cada_boton_trae_la_cara_de_su_estado_del_companero_y_quieta(pagina, backend, nombre, compa):
+    abrir(pagina, backend, nombre, compa)
+    assert srcs(pagina) == [url_companero(compa, OJOS_POR_ESTADO[e]) for e in CLAVES]           # las del backend, tal cual
+    assert len(set(srcs(pagina))) == 5                                                           # cinco caras distintas
+    assert all("animationVariant" not in s for s in srcs(pagina))                                # quietas
+    assert all(s.startswith("https://api.dicebear.com/10.x/gaze/svg?") for s in srcs(pagina))
+    assert [parametros(s)["eyesVariant"] for s in srcs(pagina)] == ["bars", "small", "dots", "happy", "grin"]
+
+
+@pytest.mark.parametrize("nombre", PAGINAS)
+def test_la_direccion_no_lleva_datos_de_la_persona(pagina, backend, nombre):
     abrir(pagina, backend, nombre)
-    assert botones(pagina).locator("img").count() == 0
-    assert [b.locator(".animo-cara__nombre").inner_text() for b in botones(pagina).all()] == ESTADOS
-    assert pagina.locator(".animo-cara__imagen:visible").count() == 0           # el hueco no ocupa lugar
-    assert pagina.evaluate("LumeaCaras.actual()") is None
-
-
-@pytest.mark.parametrize("valor", ["otro", "", "GAZE", "{}"])
-def test_un_valor_guardado_desconocido_es_sin_eleccion(pagina, backend, valor):
-    pagina.add_init_script(f"localStorage.setItem('lumea-caras', {valor!r})")
-    abrir(pagina, backend, "index-ingresado.html")
-    assert pagina.evaluate("LumeaCaras.actual()") is None
-    assert botones(pagina).locator("img").count() == 0
-
-
-# ---------- Con un set elegido ----------
-
-@pytest.mark.parametrize("nombre", PAGINAS)
-@pytest.mark.parametrize("caras", ["gaze", "moods"])
-def test_con_set_cada_boton_trae_su_cara_distinta_y_quieta(pagina, backend, nombre, caras):
-    abrir(pagina, backend, nombre, caras=caras)
-    imagenes = botones(pagina).locator("img")
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    srcs = [i.get_attribute("src") for i in imagenes.all()]
-    assert len(set(srcs)) == 5                                                  # una cara distinta por estado
-    for src in srcs:
-        assert sin_ruta(src) == BASES[caras]
-        assert parametros(src)["animationVariant"] == "none"                     # quietas: nunca cinco moviéndose
-        assert parametros(src)["seed"] == "lumea-animo"
-    for i in imagenes.all():
-        assert i.get_attribute("alt") == ""                                      # la palabra es el nombre accesible
+    pagina.get_by_role("button", name="Bien", exact=True).click()                                # incluso la animada
+    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
+    for src in srcs(pagina):
+        datos = parametros(src)
+        assert set(datos) <= PARAMETROS_PERMITIDOS, f"parámetro de más: {set(datos) - PARAMETROS_PERMITIDOS}"
+        assert datos["seed"] == "lumea-sol"                                                      # la semilla fija del compañero
+        assert CORREO_PRUEBA.split("@")[0] not in src and "@" not in src and "prueba" not in src.lower()
 
 
 @pytest.mark.parametrize("nombre", PAGINAS)
-@pytest.mark.parametrize("caras", ["gaze", "moods"])
-def test_la_direccion_no_lleva_datos_de_la_persona(pagina, backend, nombre, caras):
-    abrir(pagina, backend, nombre, caras=caras)
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    for i in botones(pagina).locator("img").all():
-        src = i.get_attribute("src")
-        assert set(parametros(src)) <= PARAMETROS_PERMITIDOS, src
-        for dato in ("prueba", "lumea.test", "Ana", "@", "email", "nombre"):    # ni el correo ni el nombre de la cuenta de prueba
-            assert dato not in src
+def test_la_imagen_no_se_llama_nada_y_el_hueco_esta_escondido_a_los_lectores(pagina, backend, nombre):
+    abrir(pagina, backend, nombre)
+    assert botones(pagina).locator("img").evaluate_all("e => e.every(i => i.alt === '')")        # alt vacío: la palabra es el nombre
+    for palabra in ESTADOS:
+        assert pagina.get_by_role("button", name=palabra, exact=True).count() == 1               # la cara no altera el nombre accesible
+    assert pagina.errores == []
 
 
-@pytest.mark.parametrize("caras", ["gaze", "moods"])
-def test_el_boton_se_llama_por_su_palabra_y_se_marca_con_aria_pressed(pagina, backend, caras):
-    abrir(pagina, backend, "index-ingresado.html", caras=caras)
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    for palabra in ESTADOS:                                                      # la cara (alt vacío) no altera el nombre
-        assert pagina.get_by_role("button", name=palabra, exact=True).count() == 1
+@pytest.mark.parametrize("nombre", PAGINAS)
+def test_las_caras_no_se_recortan_en_circulo_porque_la_forma_es_el_compañero(pagina, backend, nombre):
+    abrir(pagina, backend, nombre)
+    estilo = botones(pagina).first.locator(".animo-cara__imagen").evaluate(
+        "e => ({ overflow: getComputedStyle(e).overflow, radio: getComputedStyle(e).borderTopLeftRadius })")
+    assert estilo == {"overflow": "visible", "radio": "0px"}
+    caja = botones(pagina).first.locator("img").bounding_box()
+    assert caja["width"] >= 44 and caja["height"] >= 44                                          # lo bastante grande para ver los ojos
+
+
+# ---------- Elegir ----------
+
+@pytest.mark.parametrize("nombre", PAGINAS)
+def test_el_boton_se_marca_con_aria_pressed(pagina, backend, nombre):
+    abrir(pagina, backend, nombre)
     assert botones(pagina).evaluate_all("e => e.map(b => b.getAttribute('aria-pressed'))") == ["false"] * 5
     pagina.get_by_role("button", name="Mal", exact=True).click()
     assert pagina.get_by_role("button", name="Mal", exact=True).get_attribute("aria-pressed") == "true"
@@ -112,7 +105,7 @@ def test_el_boton_se_llama_por_su_palabra_y_se_marca_con_aria_pressed(pagina, ba
 
 
 def test_se_elige_y_se_guarda_con_el_teclado(pagina, backend):
-    abrir(pagina, backend, "emociones.html", caras="gaze")
+    abrir(pagina, backend, "emociones.html")
     boton = pagina.get_by_role("button", name="Neutral", exact=True)
     boton.focus()
     pagina.keyboard.press("Space")
@@ -120,131 +113,112 @@ def test_se_elige_y_se_guarda_con_el_teclado(pagina, backend):
     assert pagina.locator("#btn-guardar-animo").is_enabled()
 
 
-@pytest.mark.parametrize("caras", ["gaze", "moods"])
-def test_solo_la_cara_elegida_se_anima(pagina, backend, caras):
-    abrir(pagina, backend, "index-ingresado.html", caras=caras)
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
+@pytest.mark.parametrize("nombre", PAGINAS)
+def test_solo_la_cara_elegida_se_anima_y_la_animacion_la_sigue(pagina, backend, nombre):
+    abrir(pagina, backend, nombre)
 
     def animadas():
-        return pagina.evaluate("""[...document.querySelectorAll('.animo-cara')].map(b => {
-            const img = b.querySelector('img'); return img ? new URL(img.src).searchParams.get('animationVariant') : null })""")
+        return [parametros(s).get("animationVariant") if s else None for s in srcs(pagina)]
 
-    assert animadas() == ["none"] * 5
+    assert animadas() == [None] * 5
     pagina.get_by_role("button", name="Bien", exact=True).click()
     pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
-    assert animadas() == ["none", "none", "none", "medium", "none"]
-    pagina.get_by_role("button", name="Mal", exact=True).click()                 # el movimiento sigue a lo que la persona hace
+    assert animadas() == [None, None, None, "medium", None]
+    assert parametros(srcs(pagina)[3])["eyesVariant"] == "happy"                                 # sigue siendo SU cara
+    pagina.get_by_role("button", name="Mal", exact=True).click()                                 # el movimiento sigue a lo que la persona hace
     pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
-    assert animadas() == ["none", "medium", "none", "none", "none"]
+    assert animadas() == [None, "medium", None, None, None]
+    assert pagina.locator("img[src*=medium], img[src*=slow]").count() == 1                       # nunca dos caras moviéndose
 
-
-# ---------- El color sale de la paleta ----------
-
-def color_de_emocion(pagina):
-    return pagina.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--c-emocion').trim()").lstrip("#").lower()
-
-
-@pytest.mark.parametrize("paleta", ["laguna", "carnaval", "cosecha"])
-@pytest.mark.parametrize("caras,parametro", [("gaze", "bodyColor"), ("moods", "faceColor")])
-def test_el_color_del_cuerpo_es_el_de_emocion_de_la_paleta_activa(pagina, backend, paleta, caras, parametro):
-    abrir(pagina, backend, "index-ingresado.html", caras=caras, paleta=paleta)
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    esperado = color_de_emocion(pagina)
-    for i in botones(pagina).locator("img").all():
-        assert parametros(i.get_attribute("src"))[parametro] == esperado
-
-
-@pytest.mark.parametrize("caras,parametro", [("gaze", "bodyColor"), ("moods", "faceColor")])
-def test_al_cambiar_de_paleta_las_caras_se_dibujan_de_nuevo(pagina, backend, caras, parametro):
-    abrir(pagina, backend, "emociones.html", caras=caras, paleta="laguna")
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    antes = parametros(botones(pagina).locator("img").first.get_attribute("src"))[parametro]
-    pagina.evaluate("LumeaTema.ponerPaleta('carnaval')")                         # emite «lumea:tema»
-    despues_esperado = color_de_emocion(pagina)
-    assert despues_esperado != antes
-    pagina.wait_for_function(f"document.querySelector('.animo-caras img').src.includes('{parametro}={despues_esperado}')")
-    for i in botones(pagina).locator("img").all():
-        assert parametros(i.get_attribute("src"))[parametro] == despues_esperado
-
-
-def test_al_cambiar_a_modo_oscuro_el_color_sigue_a_la_paleta(pagina, backend):
-    abrir(pagina, backend, "index-ingresado.html", caras="gaze", paleta="neblina", modo="claro")
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    pagina.evaluate("LumeaTema.ponerModo('oscuro')")
-    esperado = color_de_emocion(pagina)
-    pagina.wait_for_function(f"document.querySelector('.animo-caras img').src.includes('bodyColor={esperado}')")
-
-
-# ---------- Elegir el set ----------
 
 @pytest.mark.parametrize("nombre", PAGINAS)
-def test_poner_guarda_la_eleccion_y_redibuja_con_lumea_caras(pagina, backend, nombre):
+def test_con_movimiento_reducido_las_caras_se_ven_pero_no_piden_animacion(pagina, backend, nombre):
+    pagina.emulate_media(reduced_motion="reduce")
     abrir(pagina, backend, nombre)
-    eventos = pagina.evaluate("window.__caras = 0; document.documentElement.addEventListener('lumea:caras', () => window.__caras++); 0")
-    pagina.evaluate("LumeaCaras.poner('moods')")
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    assert sin_ruta(botones(pagina).locator("img").first.get_attribute("src")) == BASES["moods"]
-    assert pagina.evaluate("localStorage.getItem('lumea-caras')") == "moods"
-    pagina.evaluate("LumeaCaras.poner('gaze')")
-    pagina.wait_for_function("document.querySelector('.animo-caras img').src.includes('/gaze/')")
-    assert pagina.evaluate("localStorage.getItem('lumea-caras')") == "gaze"
-    assert pagina.evaluate("window.__caras") == 2
-    pagina.evaluate("LumeaCaras.poner(null)")                                    # quitar la elección: otra vez solo la palabra
-    assert botones(pagina).locator("img").count() == 0
-    assert pagina.evaluate("localStorage.getItem('lumea-caras')") is None
+    pagina.get_by_role("button", name="Bien", exact=True).click()
+    pagina.wait_for_timeout(200)
+    assert all(s is not None and "animationVariant" not in s for s in srcs(pagina))
 
-
-def test_poner_ignora_un_set_que_no_existe(pagina, backend):
-    abrir(pagina, backend, "index-ingresado.html", caras="gaze")
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    pagina.evaluate("LumeaCaras.poner('otro')")
-    assert pagina.evaluate("LumeaCaras.actual()") == "gaze"
-    assert botones(pagina).locator("img").count() == 5
-
-
-def test_la_eleccion_dura_entre_paginas_porque_vive_en_el_navegador(pagina, backend):
-    abrir(pagina, backend, "index-ingresado.html")
-    pagina.evaluate("LumeaCaras.poner('moods')")
-    pagina.goto(f"{pagina.servidor}/emociones.html")
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    assert sin_ruta(botones(pagina).locator("img").first.get_attribute("src")) == BASES["moods"]
-
-
-def test_si_localstorage_falla_no_se_rompe_nada(pagina, backend):
-    abrir(pagina, backend, "index-ingresado.html")
-    resultado = pagina.evaluate("""() => {
-        const original = Storage.prototype.getItem, guardar = Storage.prototype.setItem;
-        Storage.prototype.getItem = () => { throw new Error('sin permiso'); };
-        Storage.prototype.setItem = () => { throw new Error('sin permiso'); };
-        try { LumeaCaras.poner('gaze'); return LumeaCaras.actual(); }
-        finally { Storage.prototype.getItem = original; Storage.prototype.setItem = guardar; }
-    }""")
-    assert resultado is None
-    assert pagina.errores == []
-
-
-# ---------- Sin internet ----------
 
 @pytest.mark.parametrize("nombre", PAGINAS)
-@pytest.mark.parametrize("caras", ["gaze", "moods"])
-def test_sin_internet_se_quita_la_imagen_y_queda_la_palabra_y_el_boton_funciona(pagina, backend, nombre, caras):
-    abrir(pagina, backend, nombre, caras=caras)
-    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
+def test_las_demas_caras_no_se_vuelven_a_cargar_al_elegir_otra(pagina, backend, nombre):
+    """Una cara que ya está dibujada tal cual no parpadea ni reinicia su animación."""
+    abrir(pagina, backend, nombre)
+    pagina.evaluate("document.querySelectorAll('.animo-cara img').forEach((i, n) => { i.dataset.marca = n })")
+    pagina.get_by_role("button", name="Bien", exact=True).click()
+    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
+    marcas = pagina.evaluate("[...document.querySelectorAll('.animo-cara')].map(b => { const i = b.querySelector('img'); return i && i.dataset.marca || null })")
+    assert marcas == ["0", "1", "2", None, "4"]                       # solo la elegida es una imagen nueva
+
+
+def test_ya_registrado_hoy_la_cara_de_hoy_es_la_elegida(pagina, backend):
+    abrir(pagina, backend, "index-ingresado.html", registrado="mal")
+    assert pagina.get_by_role("button", name="Mal", exact=True).get_attribute("aria-pressed") == "true"
+    assert "animationVariant=medium" in srcs(pagina)[1]
+
+
+# ---------- Sin compañero o sin internet: queda la palabra ----------
+
+@pytest.mark.parametrize("nombre", PAGINAS)
+def test_sin_internet_se_quita_la_imagen_y_queda_la_palabra_y_el_boton_funciona(pagina, backend, nombre):
+    abrir(pagina, backend, nombre)
     pagina.evaluate("document.querySelectorAll('.animo-caras img').forEach(i => i.dispatchEvent(new Event('error')))")
     assert botones(pagina).locator("img").count() == 0
     assert [b.locator(".animo-cara__nombre").inner_text() for b in botones(pagina).all()] == ESTADOS
+    assert pagina.locator(".animo-cara__imagen:visible").count() == 0                           # el hueco no ocupa lugar
     pagina.get_by_role("button", name="Bien", exact=True).click()
     assert pagina.get_by_role("button", name="Bien", exact=True).get_attribute("aria-pressed") == "true"
+
+
+@pytest.mark.parametrize("nombre", PAGINAS)
+def test_si_el_backend_no_manda_companero_solo_se_ve_la_palabra(pagina, backend, nombre):
+    abrir(pagina, backend, nombre, compa=None)
+    pagina.wait_for_timeout(300)
+    assert botones(pagina).locator("img").count() == 0
+    assert [b.locator(".animo-cara__nombre").inner_text() for b in botones(pagina).all()] == ESTADOS
+    pagina.get_by_role("button", name="Neutral", exact=True).click()
+    assert pagina.get_by_role("button", name="Neutral", exact=True).get_attribute("aria-pressed") == "true"
+    assert pagina.errores == []
+
+
+@pytest.mark.parametrize("nombre", PAGINAS)
+def test_una_direccion_que_no_es_http_no_se_dibuja(pagina, backend, nombre):
+    cuerpo = cargar_respuesta("progreso")
+    cuerpo["progreso"]["avatar"] = companero("sol", None)
+    cuerpo["progreso"]["avatar"]["urls_por_estado"]["mal"] = "javascript:alert(1)"
+    backend.poner("GET", "/progreso", cuerpo)
+    pagina.goto(f"{pagina.servidor}/{nombre}")
+    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 4")
+    assert botones(pagina).nth(1).locator("img").count() == 0                                   # esa queda con su palabra
+
+
+# ---------- Ya no hay sets de caras ni clave en el navegador ----------
+
+@pytest.mark.parametrize("nombre", PAGINAS)
+def test_una_eleccion_vieja_de_set_se_borra_y_no_cambia_las_caras(pagina, backend, nombre):
+    pagina.add_init_script("localStorage.setItem('lumea-caras', 'moods')")
+    abrir(pagina, backend, nombre)
+    assert pagina.evaluate("localStorage.getItem('lumea-caras')") is None
+    assert all("/10.x/gaze/" in s for s in srcs(pagina))
+
+
+def test_caras_checkin_ya_no_existe_ni_se_carga(pagina, backend):
+    assert not (RAIZ / "caras-checkin.js").exists()
+    for nombre in ["index-ingresado.html", "emociones.html", "avatar.html"]:
+        html = (RAIZ / nombre).read_text(encoding="utf-8")
+        assert "caras-checkin" not in html and "LumeaCaras" not in html
+    abrir(pagina, backend, "index-ingresado.html")
+    assert pagina.evaluate("typeof LumeaCaras") == "undefined"
+    assert pagina.evaluate("typeof LumeaCompanero") == "object"
 
 
 # ---------- Ningún ánimo es mejor que otro ----------
 
 @pytest.mark.parametrize("nombre", PAGINAS)
-@pytest.mark.parametrize("caras", [None, "gaze", "moods"])
-def test_ningun_boton_dice_xp_ni_tiene_un_color_distinto_por_animo(pagina, backend, nombre, caras):
-    abrir(pagina, backend, nombre, caras=caras)
+def test_ningun_boton_dice_xp_ni_tiene_un_color_distinto_por_animo(pagina, backend, nombre):
+    abrir(pagina, backend, nombre)
     for b in botones(pagina).all():
-        assert "XP" not in b.inner_text()
+        assert "XP" not in b.inner_text() and "semilla" not in b.inner_text()
     estilos = botones(pagina).evaluate_all("""e => e.map(b => { const c = getComputedStyle(b);
         return [c.backgroundColor, c.borderTopColor, c.color].join('|') })""")
     assert len(set(estilos)) == 1                                                # los cinco, idénticos: ni rojo ni verde por ánimo

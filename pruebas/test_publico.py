@@ -178,7 +178,7 @@ def test_crear_cuenta_no_tiene_ningun_paso_nuevo(pagina):
     """Ese archivo es de Isabella: ni selector de colores ni tarjeta nueva (R4 lo exige)."""
     pagina.goto(f"{pagina.servidor}/crear-cuenta.html")
     assert pagina.locator("[data-selector-colores], #card-colores, script[src*=selector-colores]").count() == 0
-    assert pagina.locator("script[src*=caras-checkin]").count() == 0
+    assert pagina.locator("script[src*=companero]").count() == 0           # ni el compañero: eso es de las pantallas privadas
     assert pagina.locator("form#registroForm, form").count() >= 1
 
 

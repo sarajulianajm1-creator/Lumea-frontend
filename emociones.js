@@ -3,7 +3,7 @@
 //
 // Eliges uno de los cinco estados del backend (muy_mal a muy_bien) y la cara grande, la de TU avatar
 // (DiceBear, avatar.urls_por_estado de GET /progreso), cambia en vivo. Los cinco botones llevan las
-// caras del set que la persona eligió (caras-checkin.js), o solo la palabra si no eligió. Guardar hace
+// caras de ese mismo compañero (companero.js), quietas; la elegida se anima. Sin internet queda solo la palabra. Guardar hace
 // POST /estado-animo por api.js y celebra con la misma respuesta (LumeaCelebrar).
 // Todos los estados dan las mismas semillas: no se premia estar bien. Sin internet no se ven las
 // caras, pero el nombre del estado siempre está escrito.
@@ -34,8 +34,9 @@
     $("subtexto-estado").textContent = d ? d.sub : "Todas las emociones dan las mismas semillas: no se premia estar siempre bien.";
     UI.ponerCara($("cara-grande"), estado);
     document.querySelectorAll(".animo-cara").forEach((boton) => {
-      boton.setAttribute("aria-pressed", String(boton.dataset.estado === estado));   // caras-checkin.js anima la elegida
+      boton.setAttribute("aria-pressed", String(boton.dataset.estado === estado));   // companero.js anima la elegida
     });
+    window.LumeaCompanero.pintarCheckin();
   }
 
   function elegir(estado) {
@@ -64,6 +65,7 @@
       if (!elegido) mostrarEstado(null);
       guardar.disabled = !elegido;
     }
+    window.LumeaCompanero.pintarCheckin();                  // por si la persona eligió antes de que llegara su compañero
     const caja = $("semana-animo-caja");
     caja.hidden = !s.animo_hoy.historial_semana;
     if (s.animo_hoy.historial_semana) UI.dibujarSemanaAnimo($("animo-semana-fila"), s.animo_hoy.historial_semana);

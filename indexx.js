@@ -3,10 +3,10 @@
 //
 // Los datos (nivel, XP, racha, misión, comidas) los pone lumea-ui.js desde el estado
 // de lumea-state.js; aquí solo está lo que hace esta pantalla por su cuenta:
-//   - el check-in de ánimo: eliges una cara (aria-pressed) y la guardas con «Guardar mi ánimo»
-//     (POST /estado-animo por el estado, con celebración)
+//   - el check-in de ánimo: eliges una cara de tu compañero (aria-pressed; la elegida se anima, companero.js)
+//     y la guardas con «Guardar mi ánimo» (POST /estado-animo por el estado, con celebración)
 //   - el atajo «Foto directa» (la foto pasa a alimentos.html una sola vez)
-//   - la tarjeta «Elige tus colores y tus caras» (cuándo se muestra y cómo se cierra)
+//   - la tarjeta «Elige tus colores» (cuándo se muestra y cómo se cierra)
 //   - cerrar la bienvenida de regreso
 // Toda la conexión va por api.js; aquí no hay direcciones ni llamadas a mano.
 // Necesita api.js, formato.js, lumea-state.js y lumea-ui.js antes.
@@ -40,6 +40,7 @@
     const aviso = $("checkin-confirmado");
     aviso.hidden = !registrado;
     if (registrado) aviso.textContent = `Hoy llegaste: ${F.NOMBRE_ANIMO[s.animo_hoy.estado] || s.animo_hoy.estado}. Tu check-in ya está registrado.`;
+    if (window.LumeaCompanero) window.LumeaCompanero.pintarCheckin();       // la cara elegida se anima; las demás, quietas
   }
 
   async function guardarAnimo() {
@@ -51,20 +52,20 @@
     pintarCheckin();
   }
 
-  // ---------- Elige tus colores y tus caras ----------
+  // ---------- Elige tus colores ----------
 
   // localStorage y sessionStorage pueden fallar (modo privado): nunca rompen la pantalla
   function leer(almacen, clave) { try { return window[almacen].getItem(clave); } catch (e) { return null; } }
   function guardar(almacen, clave, valor) { try { window[almacen].setItem(clave, valor); } catch (e) {} }
 
-  // La tarjeta se abre al entrar si todavía falta la paleta o el set de caras y la persona no la cerró.
-  // Una vez abierta se queda abierta aunque elija las dos cosas: se cierra con «Listo» o «Ahora no».
+  // La tarjeta se abre al entrar si todavía falta la paleta y la persona no la cerró.
+  // Una vez abierta se queda abierta aunque elija una paleta: se cierra con «Listo» o «Ahora no».
   //   Listo     -> no vuelve a aparecer (se recuerda en el navegador; todo se cambia luego en Avatar)
   //   Ahora no  -> se esconde solo durante esta sesión
   function prepararTarjetaDeColores() {
     const tarjeta = $("card-colores");
-    if (!tarjeta || !window.LumeaTema || !window.LumeaCaras) return;
-    const falta = !window.LumeaTema.paletaActual() || !window.LumeaCaras.actual();
+    if (!tarjeta || !window.LumeaTema) return;
+    const falta = !window.LumeaTema.paletaActual();
     const cerrada = leer("localStorage", "lumea-colores-listo") === "1" || leer("sessionStorage", "lumea-colores-ahora-no") === "1";
     tarjeta.hidden = !(falta && !cerrada);
     const cerrar = (almacen, clave) => {

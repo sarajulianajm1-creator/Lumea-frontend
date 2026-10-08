@@ -4,21 +4,32 @@
 // El compañero es un dibujo de DiceBear 10.x «gaze» (licencia CC0) con forma y color fijos; sus ojos
 // muestran el ánimo. El backend manda las direcciones QUIETAS (avatar.urls_por_estado de GET /progreso,
 // y la lista de GET /avatares); aquí solo se les agrega animationVariant donde algo responde a una acción:
+//   la cara elegida en el check-in      medium
 //   el compañero grande de Avatar       slow
 // La dirección lleva solo la configuración del dibujo (la semilla es fija, «lumea-<id>»): nunca viaja
 // un dato de la persona. La animación vive dentro del SVG y se apaga sola con prefers-reduced-motion;
 // además aquí no se pide ninguna si la persona tiene el movimiento reducido.
 //
+// Esto reemplaza a caras-checkin.js: ya no hay sets de caras que elegir ni la clave lumea-caras en el
+// navegador. Las cinco caras del check-in (Inicio y Ánimo) son siempre las de tu compañero.
+//
 // Cómo se usa:
+//   <span data-cara-checkin="muy_mal"></span>   un hueco por estado, dentro del botón del check-in
+//   LumeaCompanero.pintarCheckin()              dibuja las cinco caras; la del botón con aria-pressed="true" se anima
 //   LumeaCompanero.url(direccion, "slow")             la misma dirección con la animación pedida (o quieta si no se pide)
 //   LumeaCompanero.imagen(direccion, "slow", clase)   una <img alt=""> del compañero; si no carga, se quita sola
 //
 // Qué pasa solo:
-//   - La imagen lleva alt="": el nombre del compañero va escrito al lado, nunca solo en el dibujo.
-//   - Sin internet se quita la imagen y queda lo que haya alrededor (la palabra, la silueta).
+//   - Nunca hay dos caras moviéndose: solo se anima el botón elegido (uno a la vez).
+//   - La imagen lleva alt="": la palabra del botón (o el nombre al lado) es su nombre accesible.
+//   - Sin internet (o sin compañero) el hueco queda vacío y no ocupa lugar: queda la palabra, y el botón funciona igual.
+// pintarCheckin() necesita lumea-state.js y lumea-ui.js antes (la cara sale de lumeaStore → avatar.urls_por_estado).
 // =====================================================================
 (function () {
   "use strict";
+
+  // La clave del set de caras que existió del 7 al 8 de octubre: ya no se usa, y no se deja basura en el navegador
+  try { localStorage.removeItem("lumea-caras"); } catch (e) { /* modo privado: no importa */ }
 
   function movimientoReducido() {
     return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -49,5 +60,21 @@
     return img;
   }
 
-  window.LumeaCompanero = { url, imagen, movimientoReducido };
+  // Dibuja las cinco caras del check-in con el compañero de la persona. Se puede llamar las veces que haga falta:
+  // una cara que ya está dibujada tal cual no se vuelve a cargar (así no parpadea ni reinicia su animación).
+  function pintarCheckin() {
+    const UI = window.LumeaUI;
+    document.querySelectorAll("[data-cara-checkin]").forEach((hueco) => {
+      const boton = hueco.closest("button");
+      const elegida = !!boton && boton.getAttribute("aria-pressed") === "true";
+      const quieta = UI ? UI.urlDeCara(hueco.dataset.caraCheckin) : null;
+      const animacion = elegida ? "medium" : null;
+      const actual = hueco.firstElementChild;
+      if (actual && actual.dataset.fuente === url(quieta, animacion)) return;
+      const img = imagen(quieta, animacion, "companero__img");
+      if (img) hueco.replaceChildren(img); else hueco.replaceChildren();
+    });
+  }
+
+  window.LumeaCompanero = { url, imagen, pintarCheckin, movimientoReducido };
 })();

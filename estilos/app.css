@@ -130,7 +130,7 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 .foto-directa:focus-within { outline: 3px solid var(--c-foco); outline-offset: 2px; }
 
 /* ¿Cómo llegas hoy?: cinco caras. En una tarjeta angosta van 3 + 2; si cabe, las cinco en una fila.
-   Las usan Inicio y Ánimo; la cara de cada botón la dibuja caras-checkin.js (sin set elegido, solo la palabra). */
+   Las usan Inicio y Ánimo; la cara de cada botón es la de tu compañero y la dibuja companero.js (sin internet, solo la palabra). */
 .inicio__animo, .animo-escena { container-type: inline-size; }
 .animo-caras { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--e-2); }
 .animo-cara {
@@ -145,13 +145,12 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 @container (min-width: 460px) { .animo-cara { flex-basis: calc((100% - 4 * var(--e-2)) / 5); } }
 .animo-cara:hover:not(:disabled) { border-color: var(--c-emocion-tinta); }
 /* La elegida: fondo suave y borde del rol «emoción» (el mismo para los cinco ánimos: ninguno es mejor que otro).
-   Es suave a propósito: el cuerpo de la cara es --c-emocion y tiene que verse sobre este fondo. */
+   Es suave a propósito: el compañero (cada uno con su color) tiene que verse sobre este fondo. */
 .animo-cara[aria-pressed="true"] { background: var(--c-emocion-suave); border: 2px solid var(--c-emocion-tinta); padding: calc(var(--e-3) - .5px) calc(var(--e-1) - .5px); }
 .animo-cara:disabled { cursor: default; opacity: .55; }
 .animo-cara[aria-pressed="true"]:disabled { opacity: 1; }
-.animo-cara__imagen { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; }
-.animo-cara__imagen:empty { display: none; }        /* sin set de caras elegido solo se ve la palabra */
-.caras-checkin__img { display: block; width: 100%; height: 100%; }
+.animo-cara__imagen { width: 56px; height: 56px; }        /* sin recorte: la forma del compañero (círculo, arco, píldora…) es su silueta */
+.animo-cara__imagen:empty { display: none; }        /* sin compañero o sin internet solo se ve la palabra */
 .companero__img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .animo-cara__nombre { font-weight: var(--t-peso-medio); text-align: center; }
 .inicio__confirmacion { font-weight: var(--t-peso-medio); color: var(--c-emocion-tinta); }
@@ -178,7 +177,7 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
   .inicio__flecha { grid-column: 2; grid-row: 1 / span 3; }
 }
 
-/* ---------- 4b. Selector de colores, modo y caras (Inicio y Avatar; selector-colores.js) ---------- */
+/* ---------- 4b. Selector de colores y modo (Inicio y Avatar; selector-colores.js) ---------- */
 .inicio__colores, .avatar-colores { display: grid; gap: var(--e-4); }
 .selector { display: grid; gap: var(--e-5); }
 .selector__grupo { display: grid; gap: var(--e-2); min-width: 0; margin: 0; padding: 0; border: 0; }
@@ -205,9 +204,6 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .selector__muestra--emocion { background: var(--c-emocion); }
 .selector__muestra--mision { background: var(--c-mision); }
 .selector__muestra--duda { background: var(--c-duda); }
-/* Las caras de un set, quietas */
-.selector__caras { display: flex; gap: var(--e-1); }
-.selector__cara { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; }
 
 /* ---------- 5. Check-in de ánimo: las cinco caras (Inicio y Ánimo) ---------- */
 .animo-escena { display: grid; justify-items: center; gap: var(--e-3); text-align: center; }

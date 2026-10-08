@@ -125,8 +125,8 @@ def test_el_checkin_tiene_cinco_estados_con_su_palabra_y_sin_xp(pagina, backend)
     for boton in botones.all():
         assert "XP" not in boton.inner_text()
         assert boton.get_attribute("aria-pressed") == "false"
-    # R3 les pone la cara del set elegido; mientras tanto (y sin set elegido) solo se ve la palabra
-    assert botones.locator("img").count() == 0
+    # cada botón lleva la cara de tu compañero (a fondo, en test_caras_checkin.py); la palabra siempre está
+    assert botones.locator("img").count() == 5
     assert botones.locator("[data-cara-checkin]").count() == 5
     assert pagina.locator(".animo-cara [data-cara]").count() == 0           # ya no usan data-cara: lumea-ui.js no les pinta la cara del avatar
 
@@ -210,7 +210,7 @@ def test_a_375px_no_se_desborda(pagina, backend):
 
 def test_cuatro_superficies_como_maximo_y_un_solo_boton_relleno(pagina, backend):
     abrir(pagina, backend)
-    # sin contar la tarjeta «Elige tus colores y tus caras» (R4), que desaparece una vez elegido todo
+    # sin contar la tarjeta «Elige tus colores», que desaparece una vez elegida la paleta
     superficies = pagina.locator("main .tarjeta:not(#card-colores), main .inicio__franja")
     assert superficies.count() <= 4                                         # antes eran 13 cajas
     # «una acción principal por pantalla»: solo un botón relleno, y es «Registrar comida»

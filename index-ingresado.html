@@ -66,10 +66,10 @@
         <button type="button" class="boton boton--fantasma" data-cerrar-aviso aria-label="Cerrar el mensaje"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
       </div>
 
-      <!-- ELIGE TUS COLORES Y TUS CARAS: ninguna paleta ni set de caras es predeterminado. Aparece mientras falte
-           alguno (la decide indexx.js); no es un diálogo: no impide registrar una comida. -->
+      <!-- ELIGE TUS COLORES: ninguna paleta es predeterminada. Aparece mientras falte la paleta (la decide indexx.js);
+           no es un diálogo: no impide registrar una comida. -->
       <section class="tarjeta inicio__colores" id="card-colores" aria-labelledby="titulo-colores" hidden>
-        <h2 id="titulo-colores" class="inicio__titulo">Elige tus colores y tus caras</h2>
+        <h2 id="titulo-colores" class="inicio__titulo">Elige tus colores</h2>
         <div data-selector-colores></div>
         <div class="inicio__acciones">
           <button type="button" id="btn-colores-listo" class="boton boton--secundario">Listo</button>
@@ -101,7 +101,7 @@
         <section class="tarjeta inicio__animo" aria-labelledby="titulo-animo" id="card-checkin-inicio">
           <h2 id="titulo-animo" class="inicio__titulo">¿Cómo llegas hoy?</h2>
           <p class="inicio__nota">Elige la cara que más se parece a tu día</p>
-          <!-- Cada botón deja un hueco (data-cara-checkin) para la cara del set que la persona elija (R3) -->
+          <!-- Cada botón deja un hueco (data-cara-checkin) para la cara de tu compañero (companero.js) -->
           <div class="animo-caras" role="group" aria-labelledby="titulo-animo">
             <button type="button" class="animo-cara" data-estado="muy_mal" aria-pressed="false">
               <span class="animo-cara__imagen" data-cara-checkin="muy_mal"></span>
@@ -157,14 +157,14 @@
   </div>
 
   <!-- Scripts: api.js (único lugar con la dirección del backend), formato.js (textos), el estado y la
-       interfaz de Sara, la celebración, las caras del check-in y la lógica de esta pantalla (indexx.js) -->
+       interfaz de Sara, la celebración, el compañero (las caras del check-in) y la lógica de esta pantalla (indexx.js) -->
   <script src="api.js"></script>
   <script src="formato.js"></script>
   <script src="pegatinas.js"></script>
   <script src="celebracion.js"></script>
   <script src="lumea-state.js"></script>
   <script src="lumea-ui.js"></script>
-  <script src="caras-checkin.js"></script>
+  <script src="companero.js"></script>
   <script src="selector-colores.js"></script>
   <script src="indexx.js"></script>
   <script src="menu-privado.js"></script>
