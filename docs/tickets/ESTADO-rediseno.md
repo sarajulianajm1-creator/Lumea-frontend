@@ -98,6 +98,27 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - **El texto de Ánimo «Todas las emociones dan el mismo XP: no se premia estar siempre bien.»** se dejó igual (es de Sara y dice una cosa importante), pero choca con la regla 4 (el XP solo en el nivel, las misiones y la celebración). En Inicio no está (el esquema trae otra nota). Dime si lo cambio.
 - Falta que `tema.js` no tenga paleta predeterminada y que haya dónde elegir el set (R4): hasta entonces, para probarlo: `LumeaCaras.poner("gaze")` en la consola.
 
+## R4 · Paleta y caras, sin predeterminados: LISTA (7 oct 2026)
+
+**Qué quedó listo** (`herramientas/generar_paletas.py`, `estilos/paletas.css`, `estilos/tokens.json`, `docs/validacion-paletas.md`, `tema.js`, `selector-colores.js`, `index-ingresado.html`, `avatar.html`, `indexx.js`, `estilos/app.css`, `MARCA.md`)
+- **Estado neutro.** `generar_paletas.py` tiene una paleta nueva, «neutro», que es la de `:root` (cuando no hay `data-paleta`). Superficies casi blancas (h 85, croma ≤ 0,006: el más alto es 0,0059) y texto sin tono; los **colores de rol son los de siempre** (los de Laguna), y el botón principal sigue en aguacate. Pasa los mismos 12 chequeos de contraste WCAG y de daltonismo que las demás. `paletas.css`, `tokens.json` y el informe se regeneraron con la herramienta (no se editaron a mano). Laguna ya no es la de `:root`: es una paleta más, igual que las otras cuatro.
+- **Cuidado que ya está resuelto:** el bloque de `:root` tiene la misma especificidad que `[data-paleta="x"]`, así que **tiene que ir primero** en el CSS; si no, taparía a las paletas que quedaran antes. El generador lo pone primero y una prueba lo vigila. Las cinco paletas de siempre no cambiaron ni un color (se comparó contra el `tokens.json` anterior).
+- **El estado neutro no se puede elegir:** no está en `LumeaTema.PALETAS` ni en el selector, y `ponerPaleta('neutro')` no hace nada. `tema.js` ya no cae en ninguna paleta; suma `paletaActual()` y `modoGuardado()`.
+- **`selector-colores.js`:** un componente (lo llenan los contenedores `[data-selector-colores]`) con tres `radiogroup` de botones de radio de verdad (teclado, flechas y lector de pantalla sin código extra): **Colores** (cada opción es una tira con los cinco colores de rol de su paleta y su nombre; la tira usa el `data-paleta` de la opción, y `data-modo` el modo de ahora), **Modo** (Claro, Oscuro, Como mi dispositivo) y **Caras** (Miradas y Gestos, con sus cinco caras quietas en el color de emoción de la paleta activa). **Al elegir se aplica y se guarda al instante** (`LumeaTema.ponerPaleta` / `ponerModo`, `LumeaCaras.poner`), y los botones del check-in cambian en el mismo momento.
+- **Inicio:** arriba aparece la tarjeta «Elige tus colores y tus caras» mientras **falte la paleta o el set de caras**. No es un diálogo (no impide registrar una comida) y no cuenta como superficie ni como botón relleno. **«Listo»** la cierra y no vuelve a aparecer (se recuerda en el navegador: `lumea-colores-listo`); **«Ahora no»** la esconde solo durante esta sesión. Una vez abierta se queda abierta aunque elijas las dos cosas, hasta que la cierres. El foco pasa a «Registrar comida».
+- **Avatar:** sección «Mis colores y caras» con el mismo selector, sin «Listo» ni «Ahora no», para cambiarlos cuando sea.
+- **Páginas públicas:** se ven en el estado neutro o en la paleta que ese navegador ya tenga guardada (`tema.js` la aplica); no se tocó ninguna. **Crear cuenta** no tiene ningún paso nuevo (hay una prueba).
+- **`MARCA.md`** ya no dice «Laguna Verde (predeterminada)»: dice que ninguna lo es y describe el estado neutro.
+
+**Pruebas:** `.venv/bin/pytest pruebas` → **418 pasan, 1 `xfail`**. `.venv/bin/pytest pruebas -m capturas` → 234 casos (ahora con el **estado neutro** además de las 5 paletas × claro/oscuro) con **0 errores de contraste en todas las páginas**.
+- **Nuevas:** `pruebas/test_paletas.py` (32: el neutro pasa contraste y daltonismo como Laguna, sin tono, conserva los colores de rol y la marca, va primero en el CSS, y los archivos generados están al día con el script; en el navegador, sin paleta guardada se ve el neutro y no Laguna —en claro y oscuro, en Inicio, Progreso y la Bienvenida—, elegir aplica la suya, el neutro no se puede elegir, los nombres viejos siguen funcionando) y `pruebas/test_selector_colores.py` (37: cuándo aparece la tarjeta, que no es un diálogo, Listo y Ahora no, los tres grupos, las tiras con los colores de cada paleta en claro y oscuro, elegir aplica y guarda, las caras toman el color de la paleta, sin internet, teclado y foco, la sección de Avatar y que Crear cuenta no cambió).
+- **Cambiaron** (ninguna se borró ni se debilitó): `test_index_ingresado.py`: «cuatro superficies» y «cada bloque es una sección» ahora excluyen la tarjeta de colores (la misión dice «sin contar la tarjeta»); `test_capturas.py` suma el estado neutro (sin paleta guardada).
+
+**Para decidir**
+- **«Listo» se recuerda.** La misión dice «Listo cierra la tarjeta» y «mientras falte la paleta o el set»; sin recordar «Listo», alguien que prefiere las caras solo con palabra vería la tarjeta en cada visita. Si prefieres que reaparezca mientras falte algo, se quita una línea de `indexx.js`.
+- **No hay una opción «solo la palabra»** en las caras (la misión no la pide): para volver a no tener caras hay que borrar la elección (`LumeaCaras.poner(null)`). Dime si la quieres como tercera opción.
+- **Los tonos de las tarjetas elegidas** (fondo `--c-marca-suave` y borde `--c-marca-tinta`) toman el color de marca de la paleta: en Carnaval se ven verde lima, como el botón principal de esa paleta.
+
 ## Textos nuevos para que Isabella revise
 
 **Inicio (R2)**
@@ -107,6 +128,14 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - Títulos que solo oye el lector de pantalla: «Nivel y racha» y «. Ver mi progreso» (al final de la franja del nivel)
 - Racha dentro de la franja del nivel: «Te faltan 35 XP para el nivel 3. Racha: 3 días»
 - Aviso si falla la foto directa: «No se pudo abrir la foto. Prueba con «Registrar comida».» (antes decía «Cámara en vivo»)
+
+**Selector de colores y caras (R4)**
+- Tarjeta de Inicio: «Elige tus colores y tus caras» · botones «Listo» y «Ahora no»
+- Sección de Avatar: «Mis colores y caras»
+- Títulos de los grupos: «Colores», «Modo», «Caras»
+- Nombres de las paletas: Laguna, Neblina, Carnaval, Colibrí, Cosecha (los de `MARCA.md`; **siguen pendientes de votar** con estudiantes y familias)
+- Modos: «Claro», «Oscuro», «Como mi dispositivo»
+- Sets de caras (nombres provisionales de la misión): «Miradas» (`gaze`, solo ojos) y «Gestos» (`moods`, ojos y boca)
 
 *(Se llena fase por fase.)*
 
