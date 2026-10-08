@@ -11,10 +11,8 @@
      - Cuatro radios: --r-control, --r-tarjeta, --r-panel y --r-pildora (o 50 % en círculos).
      - Nada baja de --t-xs (12,8 px) y nada va en MAYÚSCULAS por CSS.
 
-   Esta hoja REEMPLAZA a style.css, pantallas-sara.css y puente-sara.css en estas seis
-   pantallas. Las secciones marcadas «PROVISIONAL» le dan aspecto al marcado viejo de Sara
-   mientras cada pantalla se rehace: se borran en R2 (Inicio), R3 (Ánimo), R5 (Registrar)
-   y R6 (Progreso y Mis registros).
+   Esta hoja REEMPLAZA a style.css, pantallas-sara.css, puente-sara.css y el CSS de Bootstrap en
+   estas seis pantallas (Bootstrap Icons se queda: son los íconos). Ya no queda nada provisional.
    ===================================================================== */
 
 /* ---------- 0. Base ---------- */
@@ -29,17 +27,6 @@ html { background: var(--c-fondo); }                  /* el fondo cubre toda la 
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* Bootstrap (mientras siga cargado en alguna pantalla) → tokens */
-:root {
-  --bs-body-bg: var(--c-fondo);
-  --bs-body-color: var(--c-tinta);
-  --bs-body-font-family: var(--f-familia);
-  --bs-emphasis-color: var(--c-tinta);
-  --bs-secondary-color: var(--c-tinta-suave);
-  --bs-border-color: var(--c-borde);
-  --bs-link-color: var(--c-marca-tinta);
-  --bs-link-hover-color: var(--c-marca-tinta);
-}
 a { color: var(--c-marca-tinta); }
 a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón no va subrayado */
 
@@ -83,7 +70,7 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
     border-radius: var(--r-control);
   }
   .nav-app__enlace--registrar:hover, .nav-app__enlace--registrar[aria-current="page"] { background: var(--c-marca-hover); color: var(--c-sobre-marca); }
-  .footer-lumea { padding-bottom: calc(var(--alto-barra-inferior) + var(--e-5)); }
+  .pie-app { padding-bottom: calc(var(--alto-barra-inferior) + var(--e-5)); }
   /* «Cerrar sesión» no cabe en la barra: vive al final de Avatar (ver .salir-celular) */
 }
 
@@ -122,63 +109,6 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
   background: var(--c-marca-suave); color: var(--c-marca-tinta);
 }
 .pildora--logro { background: var(--c-logro-suave); color: var(--c-logro-tinta); }
-.nivel-badge {
-  display: inline-block; padding: var(--e-1) var(--e-3);
-  border-radius: var(--r-pildora); background: var(--c-logro); color: var(--c-sobre-logro);
-  font-size: var(--t-s); font-weight: var(--t-peso-fuerte);
-}
-
-/* Cuando una barra de nivel o de meta lleva su avance en línea (style="width: N%") */
-.progress { height: 12px; background: var(--c-logro-suave); border-radius: var(--r-pildora); overflow: hidden; }
-.progress-bar { background: var(--c-logro); border-radius: var(--r-pildora); }
-
-/* ---------- 3. Bootstrap con la piel de Lumea (PROVISIONAL) ----------
-   Bootstrap sigue cargado en Inicio, Ánimo, Progreso, Registrar y Mis registros solo por sus
-   utilidades de grilla (d-flex, row, col, gap, mb-*…). Su aspecto sale de aquí, con tokens. */
-.card {
-  background: var(--c-superficie); color: var(--c-tinta);
-  border: 1px solid var(--c-borde) !important; border-radius: var(--r-tarjeta);
-}
-.shadow, .shadow-sm { box-shadow: none !important; }
-.rounded-2, .rounded-3, .rounded-4 { border-radius: var(--r-tarjeta) !important; }
-.rounded-pill { border-radius: var(--r-pildora) !important; }
-.border { border: 1px solid var(--c-borde) !important; }
-.border-light-subtle { border-color: var(--c-borde) !important; }
-.bg-light, .bg-white { background-color: var(--c-superficie) !important; }
-.text-dark { color: var(--c-tinta) !important; }
-.text-muted, .text-secondary { color: var(--c-tinta-suave) !important; }
-.text-success { color: var(--c-comida-tinta) !important; }
-.text-primary { color: var(--c-marca-tinta) !important; }
-.text-danger { color: var(--c-error) !important; }
-
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
-  min-height: 44px; padding: 0 var(--e-4);
-  border: 1.5px solid transparent; border-radius: var(--r-control) !important;
-  font: inherit; font-size: var(--t-m); font-weight: var(--t-peso-medio); text-decoration: none;
-}
-.btn-lumea { background: var(--c-marca); color: var(--c-sobre-marca); }
-.btn-lumea:hover { background: var(--c-marca-hover); color: var(--c-sobre-marca); }
-.btn-lumea-outline, .btn-outline-secondary, .btn-outline-success, .btn-light {
-  background: var(--c-superficie); color: var(--c-marca-tinta); border-color: var(--c-borde-fuerte);
-}
-.btn-lumea-outline:hover, .btn-outline-secondary:hover, .btn-outline-success:hover, .btn-light:hover {
-  background: var(--c-marca-suave); color: var(--c-marca-tinta);
-}
-.btn-close { border-radius: var(--r-control) !important; }
-
-.badge {
-  display: inline-block; padding: var(--e-1) var(--e-3);
-  border-radius: var(--r-pildora) !important; font-size: var(--t-xs); font-weight: var(--t-peso-fuerte);
-  background: var(--c-marca-suave); color: var(--c-marca-tinta);
-}
-.badge.text-bg-success { background-color: var(--c-marca-suave) !important; color: var(--c-marca-tinta) !important; }
-.badge.text-bg-warning { background-color: var(--c-logro-suave) !important; color: var(--c-logro-tinta) !important; }
-
-.alert { border-radius: var(--r-tarjeta); border: 1px solid var(--c-borde); }
-.alert-danger { background: var(--c-error-suave); color: var(--c-tinta); }
-.container { max-width: var(--ancho-contenido); }
-
 /* ---------- 4. Inicio (rediseño R2) ----------
    Dos tarjetas y dos franjas planas. Color solo en los momentos: el botón principal, la barra
    de logro, los chips y la cara elegida; las tarjetas quedan casi neutras. */
@@ -293,18 +223,22 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .animo-day-pill__letra, .animo-day-pill__nombre { display: block; font-size: var(--t-xs); color: var(--c-tinta-suave); }
 .animo-day-pill__nombre { min-height: 1.2em; }
 
-/* ---------- 6. Progreso (PROVISIONAL hasta R6) ---------- */
-/* Encabezados y avisos que todavía usan Progreso y Ánimo (PROVISIONAL hasta R3 y R6) */
-.user-greeting-title { font-size: var(--t-2xl); }
-.user-greeting-sub, .progreso-subtitulo { color: var(--c-tinta-suave); font-size: var(--t-s); font-weight: var(--t-peso-medio); }
-.avatar-header-btn {
-  display: flex; align-items: center; gap: var(--e-2);
-  min-height: 44px; padding: var(--e-1) var(--e-3) var(--e-1) var(--e-1);
-  border: 1px solid var(--c-borde-fuerte); border-radius: var(--r-pildora);
-  background: var(--c-superficie); color: var(--c-tinta); text-decoration: none; font-weight: var(--t-peso-medio);
-}
-.avatar-header-btn:hover { background: var(--c-marca-suave); }
-.avatar-header-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--c-emocion-contenedor); overflow: hidden; flex: none; }
+/* ---------- 6. Progreso (rediseño R6) ----------
+   Cinco superficies como máximo: el nivel, la racha, las comidas de la semana, el ánimo de la semana y
+   el enlace al álbum (una franja plana). El color va en los momentos: la barra y el chip de logro, las barras de comida. */
+.progreso__contenido { display: grid; gap: var(--e-5); }
+.progreso__bloque { display: grid; gap: var(--e-3); align-content: start; }
+.progreso__cabeza { display: flex; justify-content: space-between; align-items: center; gap: var(--e-3); }
+.progreso__enlace { font-weight: var(--t-peso-medio); }
+.progreso-faltan { font-size: var(--t-l); }
+.progreso__bloque .pildora { justify-self: start; }
+.progreso__rachas { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--e-5); }
+.progreso__racha { display: flex; gap: var(--e-3); align-items: flex-start; }
+.progreso__racha > .bi { font-size: var(--t-xl); color: var(--c-logro-tinta); line-height: 1; }
+.progreso__cifra { font-size: var(--t-xl); font-weight: var(--t-peso-fuerte); line-height: 1.1; }
+.progreso__acciones { display: flex; justify-content: flex-start; }
+.progreso__album { border-bottom: 1px solid var(--c-borde); font-weight: var(--t-peso-medio); color: var(--c-marca-tinta); }
+.progreso__album:hover { text-decoration: underline; }
 .card-bienvenida-calida {
   display: flex; align-items: center; gap: var(--e-3);
   padding: var(--e-4); border-radius: var(--r-tarjeta);
@@ -312,12 +246,7 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 }
 .card-bienvenida-calida .bi { color: var(--c-emocion-tinta); }
 .card-bienvenida-calida p { flex: 1; font-weight: var(--t-peso-medio); }
-.grafica-semanal-container {
-  background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta); padding: var(--e-5);
-}
-.racha-rotulo { font-size: var(--t-xs); }
 
-.progreso-faltan { font-size: var(--t-l); }
 .bars-chart-wrapper { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--e-1); height: 170px; padding-top: var(--e-6); }
 .bar-col-item { display: flex; flex-direction: column; align-items: center; gap: var(--e-2); flex: 1; min-width: 0; text-align: center; }
 .bar-col-item--futuro { opacity: .55; }
@@ -362,9 +291,31 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .resultado__logros li { padding: var(--e-1) var(--e-3); border-radius: var(--r-pildora); background: var(--c-logro-suave); color: var(--c-logro-tinta); font-size: var(--t-s); font-weight: var(--t-peso-medio); }
 #backend-mensaje:empty, #backend-dato:empty { display: none; }
 
-/* ---------- 8. Mis registros (PROVISIONAL hasta R6) ---------- */
-.auth-card { width: 100%; max-width: 500px; background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta); }
-.step-badge { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--r-control); background: var(--c-marca-suave); color: var(--c-marca-tinta); }
-.hero-title { color: var(--c-tinta); }
-.footer-lumea { background: var(--c-superficie); border-top: 1px solid var(--c-borde); }
-.footer-lumea .list-inline { display: flex; flex-wrap: wrap; gap: var(--e-2); justify-content: center; padding: 0; list-style: none; }
+/* ---------- 8. Mis registros (rediseño R6) ----------
+   Una lista de filas, no de tarjetas: el nombre y la fecha a la izquierda, calorías y certeza a la derecha,
+   y los sellos de advertencia debajo. */
+.registros__pantalla { display: grid; gap: var(--e-5); }
+.registros { list-style: none; margin: 0; padding: 0; }
+.registro {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--e-2) var(--e-5); align-items: start;
+  padding: var(--e-4) 0; border-top: 1px solid var(--c-borde);
+}
+.registro:last-child { border-bottom: 1px solid var(--c-borde); }
+.registro__nombre { font-size: var(--t-l); overflow-wrap: anywhere; }
+.registro__quien, .registro__datos { display: grid; gap: var(--e-1); min-width: 0; }
+.registro__datos { justify-items: end; text-align: right; }
+.registro__dato { font-size: var(--t-s); color: var(--c-tinta-suave); }
+.registro__dato .bi { margin-right: var(--e-1); }
+.registro__sellos { grid-column: 1 / -1; margin-top: var(--e-2); }
+@media (max-width: 560px) {
+  .registro { grid-template-columns: minmax(0, 1fr); }
+  .registro__datos { justify-items: start; text-align: left; }
+}
+
+/* El pie: los enlaces a las páginas públicas */
+.pie-app {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--e-3) var(--e-5);
+  padding: var(--e-5) var(--e-6); border-top: 1px solid var(--c-borde); background: var(--c-superficie);
+}
+.pie-app__enlaces { display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-5); margin: 0; padding: 0; list-style: none; }
+.pie-app__enlaces a { display: inline-block; padding: var(--e-2) 0; font-size: var(--t-s); }
