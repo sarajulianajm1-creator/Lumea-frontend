@@ -1,3 +1,10 @@
+// Decisión de Isabella, 7 oct 2026: se muestran.
+// true  -> el resultado trae UNA línea secundaria: «Calorías aproximadas: 60 kcal por 100 g»
+//          (sin color de alerta ni juicio).
+// false -> las calorías no se dibujan.
+// Es lo único que hay que cambiar para quitarlas de la pantalla.
+const MOSTRAR_CALORIAS = true;
+
 // =====================================================================
 // lumea-camara.js — LÓGICA de la cámara (sin diseño). Necesita api.js antes.
 //
@@ -6,7 +13,9 @@
 //
 //   Cámara:     webcam (<video>), btn-encender, btn-tomar, btn-otra,
 //               btn-apagar, btn-subir
-//   Resultado:  backend-alimento, backend-precision, backend-energia,
+//   Resultado:  resultado (el contenedor: lleva data-estado="segura" o "duda"
+//               cuando hay respuesta, para que el CSS pinte «IA segura» o «IA duda»),
+//               backend-alimento, backend-precision, backend-energia,
 //               backend-sellos, backend-dato, backend-mensaje,
 //               backend-opciones (botones para confirmar), backend-estado,
 //               backend-foto (<img> con la foto que se analiza),
@@ -35,6 +44,9 @@
 
   const $ = (id) => document.getElementById(id);
   const poner = (id, texto) => { const el = $(id); if (el) el.textContent = texto; };
+  // «EXCESO EN AZÚCARES» -> «Exceso en azúcares»: el nombre accesible del sello va en minúsculas normales
+  // para que el lector de pantalla lo lea como una frase y no lo deletree
+  const enFrase = (t) => t.charAt(0) + t.slice(1).toLowerCase();
 
   let stream = null, ocupado = false, catalogo = null;
   const video = $("webcam");
@@ -126,12 +138,19 @@
     caja.replaceChildren();
     if (sellos === null || sellos === undefined) { caja.textContent = "—"; return; }   // null = no se sabe: no se afirma nada
     if (sellos.length === 0) { caja.textContent = "Sin sellos de advertencia"; return; }   // nunca «saludable»
+    // Los sellos van dentro de un .sellos: en modo oscuro esa envoltura les pone una placa clara alrededor
+    // (el negro solo no se ve, WCAG 1.4.11). El filtro no puede ir en el sello mismo porque su clip-path lo recorta.
+    const envoltura = document.createElement("div");
+    envoltura.className = "sellos";
     sellos.forEach((s) => {
       const el = document.createElement("span");
       el.className = "sello";
       el.textContent = TEXTO_SELLO[s] || String(s).toUpperCase();
-      caja.appendChild(el);
+      el.setAttribute("role", "img");                 // el nombre accesible, en minúsculas normales
+      el.setAttribute("aria-label", enFrase(el.textContent));
+      envoltura.appendChild(el);
     });
+    caja.appendChild(envoltura);
   }
 
   function mostrarOpciones(r) {
@@ -157,7 +176,7 @@
       lista.forEach((o) => {
         const b = document.createElement("button");
         b.type = "button";
-        b.className = "lumea-btn-pill";
+        b.className = "opciones__boton";
         b.textContent = o.nombre;
         b.addEventListener("click", () => confirmar(o.codigo));
         caja.appendChild(b);
@@ -201,9 +220,21 @@
     const opcionesDuda = r.seleccion_manual && (r.opciones_detalle || r.opciones_sugeridas || []).length > 0;
     // IA duda con opciones: el título es la pregunta, no "No identificado"
     poner("backend-alimento", opcionesDuda ? "¿Cuál de estos es?" : (r.alimento_app || r.alimento || "No identificado"));
-    poner("backend-precision", r.certeza != null ? `${Math.round(r.certeza)}% seguridad` : "--% seguridad");
+    // «IA segura» o «IA duda»: el CSS pinta el contenedor según este estado (la duda va en el rol «duda»)
+    const resultado = $("resultado");
+    if (resultado) resultado.dataset.estado = r.seleccion_manual ? "duda" : "segura";
+    // La certeza, en palabras y en número
+    poner("backend-precision", r.certeza != null
+      ? `${r.seleccion_manual ? "La IA no está segura" : "La IA está segura"}: ${Math.round(r.certeza)} %`
+      : (r.seleccion_manual ? "La IA no está segura" : ""));
     const kcal = kcalDe(r);
-    poner("backend-energia", kcal != null ? `${kcal} kcal / 100 g` : "—");
+    const energia = $("backend-energia");
+    if (energia) {
+      // Mientras la IA duda todavía no se sabe qué es: no se muestran las calorías de una suposición
+      const verla = MOSTRAR_CALORIAS && kcal != null && !r.seleccion_manual;
+      energia.hidden = !verla;
+      energia.textContent = verla ? `Calorías aproximadas: ${kcal} kcal por 100 g` : "";   // el catálogo da kcal por cada 100 g
+    }
     mostrarSellos(r.sellos_advertencia);
     poner("backend-dato", r.dato_curioso || "");
     let msg = r.mensaje_educativo || "";
