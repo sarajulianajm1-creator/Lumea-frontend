@@ -34,7 +34,7 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - **Radios:** solo `--r-control`, `--r-tarjeta`, `--r-panel` y `--r-pildora` (o 50 % en círculos), medido por prueba. **Sombras:** una sola (`--s-2`), para la barra inferior y los avisos; las tarjetas se separan con un borde (`componentes.css`: `.tarjeta`, `.panel` y `.etiqueta`). No se tocó `tokens.css`.
 - **Fondo y ancho:** el fondo es del `<html>` y cubre toda la altura; el contenido tiene `--ancho-contenido` como máximo. Se arregló además un desborde horizontal en el celular (la grilla del armazón y de `.contenido` usan `minmax(0, 1fr)`).
 - **Quitado:** la hora en Inicio, la flecha de volver en Progreso **y en Ánimo**, el 🌿 y «LUMEA» en mayúsculas (el pie de Mis registros también usaba «LUMEA»: ahora es el logo).
-- **Sello de advertencia (Res. 810):** el octágono mide 148 px para que su texto llegue a 12,8 px; es lo único con `text-transform: uppercase` (la prueba lo exceptúa). `.sello` y `.sello-mini` (Mis registros) comparten la misma regla. **Falta** el nombre accesible en minúsculas (`role="img"` + `aria-label`): en la cámara se hizo en R5; en Mis registros va en R6, donde esa pantalla se rehace y su prueba cambia.
+- **Sello de advertencia (Res. 810):** el octágono mide 148 px para que su texto llegue a 12,8 px; es lo único con `text-transform: uppercase` (la prueba lo exceptúa). `.sello` y `.sello-mini` (Mis registros) comparten la misma regla. El nombre accesible en minúsculas (`role="img"` + `aria-label`) se hizo en la cámara (R5) y en Mis registros (R6).
 - **Foco:** `componentes.css` usa `--c-foco` (el que mide `generar_paletas.py`) y ya no fuerza un radio al enfocar (deformaba círculos y píldoras).
 - **«Cerrar sesión» en el celular:** botón de texto al final de Avatar, visible **solo ≤ 720 px** (en el computador ya está en el menú; mostrarlo dos veces en la misma pantalla era redundante). Si prefieres que se vea siempre, es borrar la regla `.salir-celular` de `app.css`.
 - **Logo:** una sola imagen, `<img class="marca" src="img/logo.svg" alt="Lumea">`. `img/logo.svg` es un marcador que dice «Lumea» en texto (se adapta al modo oscuro del sistema, no a `data-modo`). **Cuando llegue el logo de Isabella en PNG:** copiarlo a `img/` y cambiar la constante `LOGO` de `herramientas/menu_privado.py`, correr la herramienta y reemplazar la misma ruta en el `<img class="marca">` del pie de `mis-registros.html` (y, en R7, en las páginas públicas).
@@ -139,6 +139,25 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - **Mientras «IA duda» no se muestran las calorías ni los sellos** (son de una suposición que la persona todavía no confirmó). Al confirmar, aparecen con la comida elegida. Antes se mostraba la energía de la suposición.
 - **El mensaje de «IA duda»** («La IA no está segura. Toca el que es para guardarlo en tu historial.») no cambió.
 
+## R6 · Avatar, Progreso y Mis registros, en armonía: LISTA (7 oct 2026)
+
+**Qué quedó listo** (`avatar.html`, `avatar.js`, `estilos/avatar.css`, `progreso.html`, `mis-registros.html`, `estilos/app.css`)
+- **Avatar.** Sin el gran fondo rosado: la vitrina es una tarjeta con borde sobre una superficie tranquila y la figura va sobre el fondo de la página; las misiones también son tarjetas con borde (antes cada una era una caja lila de «misión»: el color quedó en el chip «+10 XP» y en la calcomanía). **Dos columnas desde 992 px** (avatar y nivel a la izquierda, pestañas a la derecha) y una sola debajo (antes el corte era 840 px). La sección «Mis colores y caras» (R4) y «Cerrar sesión» del celular (R1) siguen debajo.
+- **Progreso.** **Cinco superficies:** el nivel, la racha, las comidas de la semana, el ánimo de la semana y el enlace al álbum (una franja plana, no una tarjeta). Se quitó el botón «Ver mi avatar» de arriba (el menú ya lleva a Avatar) y la flecha de volver (R1). El mensaje de regreso va arriba, como en Inicio. La racha actual y la mejor ahora viven en una sola superficie (antes eran dos cajitas dentro de la del nivel). Sin Bootstrap; ningún botón relleno (el enlace al check-in es secundario).
+- **Mis registros.** **Una lista de filas, no de tarjetas:** nombre y fecha a la izquierda, calorías y certeza a la derecha, y los sellos debajo; se separan con una línea. Sin Bootstrap (el «cargando» es una línea de texto, no un spinner; el error es un `role="alert"`). El título pasó de «Mis Registros» a «Mis registros», como el menú. El pie sigue llevando a las páginas públicas (ahora con el logo, no con «LUMEA»).
+- **Sellos de advertencia en Mis registros:** nombre accesible en minúsculas (`role="img"` + `aria-label`) y dentro de un `.sellos`, que en modo oscuro les pone la placa clara alrededor.
+- **Algo que arreglé de paso (venía desde R1):** al dejar de cargar `puente-sara.css` se perdió la «placa» de los sellos en modo oscuro; en realidad nunca funcionó (un `drop-shadow` puesto sobre un elemento con `clip-path` queda recortado). Ahora el filtro va en la envoltura `.sellos`, que no se recorta, en la cámara (R5) y en esta lista. Una prueba lo comprueba en las dos.
+- `app.css` ya **no tiene nada provisional ni de Bootstrap**; el CSS de Bootstrap ya no se carga en ninguna pantalla privada (Bootstrap Icons sí).
+
+**Pruebas:** `.venv/bin/pytest pruebas` → **452 pasan, 1 `xfail`**. Contraste de Progreso, Avatar (las tres pestañas) y Mis registros en 5 paletas + neutro × claro/oscuro: 0 errores.
+- **Se reescribió `test_mis_registros.py`** (conserva las pruebas de seguridad, sellos, vacío, error y sesión): la primera comparaba el HTML exacto de la tarjeta con la plantilla vieja y, al pasar a filas, no tiene sentido. Se reemplazó por una que comprueba que **cada fila muestra los mismos datos que la tarjeta de antes** (nombre, fecha, kcal y certeza de los tres registros) y que es una `<li>` sin sombra. `test_el_texto_del_servidor_nunca_es_html` sigue comprobando lo mismo. Nuevas: íconos de Bootstrap Icons, sellos con nombre accesible y placa en oscuro, sin sesión, mismo armazón y escala, y el pie.
+- **`test_progreso.py`:** `.nivel-badge` y `.progress-bar` pasaron a `.lumea-bind-nivel` y `[role=progressbar]` (el marcado cambió; los textos esperados son los mismos). Nuevas: cinco superficies, sin flecha ni botón del avatar, sin Bootstrap ni clases suyas, jerarquía de tamaños, la racha en una superficie, sin botón relleno, y en celular cabe y apila.
+- **`test_avatar.py`** (nuevas, ninguna existente cambió): la vitrina y las misiones sobre superficie tranquila, dos columnas desde 992 px (se mide en 1280, 992, 991 y 390), sin Bootstrap.
+
+**Para decidir**
+- **El botón «Ver mi avatar» de Progreso se quitó** (el menú ya lleva a Avatar). Si lo quieres de vuelta, es un enlace de texto en el encabezado.
+- En la franja del ánimo de Progreso, la insignia «Es tuyo y no se compara con nadie» pasó a ser parte de la nota (mismo mensaje, sin la píldora).
+
 ## Textos nuevos para que Isabella revise
 
 **Inicio (R2)**
@@ -164,6 +183,10 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - Certeza: «La IA está segura: 94 %» y «La IA no está segura: 65 %»
 - Calorías: «Calorías aproximadas: 120 kcal por 100 g»
 - Rótulo de los sellos: «Sellos de advertencia» (antes «Sellos»); nombres accesibles de cada sello: «Exceso en sodio», «Exceso en azúcares», «Exceso en grasas saturadas», «Exceso en grasas trans», «Contiene edulcorantes»
+
+**Progreso y Mis registros (R6)**
+- Progreso: título de sección «Racha» (nuevo) · nota del ánimo: «Las caras de tu avatar a lo largo de los días. Es tuyo y no se compara con nadie.» (antes: «Las caras de tu avatar reflejadas a lo largo de los días:» más la insignia «Es tuyo y no se compara con nadie»)
+- Mis registros: título «Mis registros» (antes «Mis Registros»)
 
 *(Se llena fase por fase.)*
 
