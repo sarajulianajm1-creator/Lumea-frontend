@@ -1,0 +1,21 @@
+{
+  "success": true,
+  "seleccion_manual": false,
+  "guardado_baseDatos": true,
+  "mensaje_educativo": null,
+  "gamificacion": null,
+  "alimento": "banano",
+  "alimento_app": "Banano",
+  "alimento_codigo": "banano",
+  "certeza": 96.0,
+  "calorias": 89,
+  "sellos_advertencia": [],
+  "dato_curioso": "El banano se cosecha verde y madura después de cortarlo.",
+  "consejo": {
+    "grupo": "frutas",
+    "aporta": "El banano aporta potasio y fibra, y su azúcar natural da energía para seguir con tu día.",
+    "para_completar": "Con un puñado de maní o un poco de yogur te dura más la energía.",
+    "a_tener_en_cuenta": "",
+    "sellos": []
+  }
+}

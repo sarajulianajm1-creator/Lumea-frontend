@@ -264,3 +264,109 @@ def test_en_computador_la_camara_y_el_resultado_van_lado_a_lado_y_en_celular_api
     pagina.set_viewport_size({"width": 390, "height": 800})
     apilado = pagina.evaluate("[document.querySelector('.registro__camara').getBoundingClientRect().bottom, document.querySelector('#resultado').getBoundingClientRect().top]")
     assert apilado[1] >= apilado[0]
+
+
+# ---------- Camino del cuidado, K0.5: consejos en el resultado ----------
+# El backend agrega r.consejo a /predecir y /confirmar-alimento. Las respuestas simuladas
+# (predecir_banano, predecir_gaseosa y predecir_bandeja_paisa) los traen; predecir_segura no (backend viejo).
+
+TITULOS = "#backend-consejos .consejo__titulo, #titulo-dato:not([hidden])"
+
+
+def titulos(pagina):
+    """Los títulos de los bloques que se ven, de arriba abajo."""
+    return pagina.eval_on_selector_all(TITULOS, "es => es.map(e => e.textContent)")
+
+
+def texto_de(pagina, titulo):
+    return pagina.locator(f".consejo:has(> h3:text-is('{titulo}')) > p").inner_text()
+
+
+def test_los_consejos_salen_en_el_orden_de_la_mision_y_son_cuatro_como_maximo(pagina, backend, foto):
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_bandeja_paisa"))
+    assert titulos(pagina) == ["Lo que aporta", "Para completar tu plato", "A tener en cuenta", "¿Sabías que…?"]
+    assert pagina.locator("#backend-consejos .consejo").count() == 3          # el cuarto es el dato curioso
+    assert texto_de(pagina, "Para completar tu plato") == cargar_respuesta("predecir_bandeja_paisa")["consejo"]["para_completar"]
+    # van debajo del nombre, los sellos y las calorías
+    orden = pagina.evaluate("""() => ['backend-alimento', 'backend-energia', 'backend-sellos', 'backend-consejos', 'backend-dato']
+        .map(id => document.getElementById(id).getBoundingClientRect().top)""")
+    assert orden == sorted(orden)
+
+
+def test_sin_para_completar_ni_a_tener_en_cuenta_salen_la_idea_y_el_dato_del_primer_sello(pagina, backend, foto):
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_gaseosa"))
+    sello = cargar_respuesta("predecir_gaseosa")["consejo"]["sellos"][0]
+    assert titulos(pagina) == ["Lo que aporta", "Una idea", "A tener en cuenta", "¿Sabías que…?"]
+    assert texto_de(pagina, "Una idea") == sello["idea"]
+    assert texto_de(pagina, "A tener en cuenta") == sello["dato"]
+
+
+def test_un_bloque_vacio_no_se_dibuja(pagina, backend, foto):
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_banano"))      # sin a_tener_en_cuenta y sin sellos
+    assert titulos(pagina) == ["Lo que aporta", "Para completar tu plato", "¿Sabías que…?"]
+    assert pagina.locator("#backend-consejos .consejo").count() == 2
+    # sin aporta, sin dato curioso y con espacios en blanco: tampoco se dibujan ni dejan un título suelto
+    r = cargar_respuesta("predecir_banano")
+    r["consejo"] = {"aporta": "   ", "para_completar": "", "a_tener_en_cuenta": None, "sellos": []}
+    r["dato_curioso"] = ""
+    backend.poner("POST", "/predecir", r)
+    pagina.set_input_files("input[type=file]", str(foto))
+    pagina.locator("#backend-consejos").wait_for(state="attached")
+    pagina.wait_for_function("document.getElementById('backend-alimento').textContent === 'Banano'")
+    assert titulos(pagina) == []
+    assert pagina.locator("#consejo-dato").is_hidden()
+
+
+def test_sin_consejo_la_pantalla_queda_como_antes(pagina, backend, foto):
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_segura"))          # backend viejo: sin «consejo»
+    assert titulos(pagina) == []
+    assert pagina.locator("#backend-consejos .consejo").count() == 0
+    assert pagina.locator("#backend-dato").inner_text() == "La arepa es de maíz."
+    assert pagina.locator("#titulo-dato").is_hidden()
+
+
+def test_mientras_la_ia_duda_no_se_aconseja_sobre_una_suposicion(pagina, backend, foto):
+    r = cargar_respuesta("predecir_grupo") | {"consejo": cargar_respuesta("predecir_banano")["consejo"]}
+    analizar(pagina, foto, backend, r)
+    assert titulos(pagina) == []
+    # al confirmar el plato sí aparecen (también /confirmar-alimento trae «consejo»)
+    backend.poner("POST", "/confirmar-alimento", cargar_respuesta("confirmar") | {"consejo": cargar_respuesta("predecir_gaseosa")["consejo"]})
+    pagina.get_by_role("button", name="Ajiaco").click()
+    pagina.locator("#backend-consejos .consejo").first.wait_for()
+    assert titulos(pagina)[0] == "Lo que aporta"
+
+
+def test_el_texto_de_un_consejo_nunca_es_html(pagina, backend, foto):
+    malo = "<b>negrita</b><img src=x onerror=\"window.__roto = 1\">"
+    r = cargar_respuesta("predecir_banano")
+    r["consejo"] = {"aporta": malo, "para_completar": malo, "a_tener_en_cuenta": malo, "sellos": [{"sello": "sodio", "dato": malo, "idea": malo}]}
+    analizar(pagina, foto, backend, r)
+    assert pagina.locator("#backend-consejos .consejo__texto").first.inner_text() == malo
+    assert pagina.locator("#backend-consejos b, #backend-consejos img").count() == 0
+    assert pagina.evaluate("window.__roto") is None
+
+
+def test_los_consejos_no_llevan_color_de_alerta_ni_iconos_de_advertencia(pagina, backend, foto):
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_bandeja_paisa"))
+    assert pagina.locator("#backend-consejos .bi, #backend-consejos svg, #backend-consejos img, #backend-consejos [role=alert], #backend-consejos .alert").count() == 0
+    tinta = variable_en_rgb(pagina, "--c-tinta")
+    tinta_suave = variable_en_rgb(pagina, "--c-tinta-suave")
+    assert pagina.locator("#backend-consejos .consejo__texto").first.evaluate("e => getComputedStyle(e).color") == tinta
+    assert pagina.locator("#backend-consejos .consejo__titulo").first.evaluate("e => getComputedStyle(e).color") == tinta_suave
+    fondos = pagina.eval_on_selector_all("#backend-consejos, #backend-consejos .consejo, #consejo-dato",
+                                         "es => es.map(e => getComputedStyle(e).backgroundColor)")
+    assert set(fondos) == {"rgba(0, 0, 0, 0)"}                                       # sin recuadro de aviso
+    assert "advertencia" not in pagina.locator("#backend-consejos").inner_text().lower()
+
+
+@pytest.mark.parametrize("ancho", [375, 1280])
+def test_los_consejos_se_leen_bien_y_no_desbordan(pagina, backend, foto, ancho):
+    pagina.set_viewport_size({"width": ancho, "height": 800})
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_bandeja_paisa"))
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= ancho
+    chicos = pagina.evaluate("""() => [...document.querySelectorAll('#backend-consejos *, #consejo-dato *')]
+        .filter(e => e.textContent.trim() && e.getBoundingClientRect().width > 1 && parseFloat(getComputedStyle(e).fontSize) < 12.79)
+        .map(e => e.className)""")
+    assert chicos == []
+    # el título es menor que el texto y es un h3 dentro de la sección «Lo que reconoció Lumea»
+    assert pagina.locator("#resultado h3").count() == 4

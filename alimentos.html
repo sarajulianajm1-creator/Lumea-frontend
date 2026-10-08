@@ -97,7 +97,13 @@
             <!-- Cuando la IA duda: las opciones para confirmar -->
             <div id="backend-opciones" class="opciones"></div>
             <p id="backend-mensaje"></p>
-            <p id="backend-dato" class="inicio__nota"></p>
+            <!-- Consejos (K0.5): hasta tres bloques cortos que dibuja lumea-camara.js con textContent, y el dato curioso
+                 como cuarto. Sin «consejo» en la respuesta (backend viejo) no se dibuja ningún título: queda como antes. -->
+            <div id="backend-consejos" class="consejos"></div>
+            <div id="consejo-dato" class="consejo">
+              <h3 id="titulo-dato" class="consejo__titulo" hidden>¿Sabías que…?</h3>
+              <p id="backend-dato" class="inicio__nota"></p>
+            </div>
             <ul id="backend-logros" class="resultado__logros" aria-live="polite"></ul>
           </div>
         </section>

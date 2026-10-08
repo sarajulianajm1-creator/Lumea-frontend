@@ -16,7 +16,7 @@ const MOSTRAR_CALORIAS = true;
 //   Resultado:  resultado (el contenedor: lleva data-estado="segura" o "duda"
 //               cuando hay respuesta, para que el CSS pinte «IA segura» o «IA duda»),
 //               backend-alimento, backend-precision, backend-energia,
-//               backend-sellos, backend-dato, backend-mensaje,
+//               backend-sellos, backend-consejos (bloques de consejo), backend-dato, backend-mensaje,
 //               backend-opciones (botones para confirmar), backend-estado,
 //               backend-foto (<img> con la foto que se analiza),
 //               backend-logros (<ul>: XP, misiones, calcomanías, nivel, meta del día)
@@ -153,6 +153,45 @@ const MOSTRAR_CALORIAS = true;
     caja.appendChild(envoltura);
   }
 
+  // Consejos (K0.5). El backend manda r.consejo = {aporta, para_completar, a_tener_en_cuenta, sellos: [{sello, dato, idea}]}.
+  // Se dibujan, en este orden y como máximo cuatro, bloques cortos con título (el cuarto es el dato curioso):
+  //   1. «Lo que aporta»            <- aporta
+  //   2. «Para completar tu plato»  <- para_completar; si no hay, «Una idea» <- idea del primer sello
+  //   3. «A tener en cuenta»        <- a_tener_en_cuenta; si no hay, el dato del primer sello
+  //   4. «¿Sabías que…?»            <- dato_curioso (su título solo sale si hay consejo)
+  // Un bloque vacío no se dibuja. Sin consejo (backend viejo) no se dibuja nada nuevo. Es información,
+  // no una alerta: sin color de advertencia ni íconos. Todo el texto entra con textContent.
+  function mostrarConsejos(r) {
+    const caja = $("backend-consejos");
+    if (caja) caja.replaceChildren();
+    const c = r.consejo && typeof r.consejo === "object" ? r.consejo : null;
+    // Mientras la IA duda no se sabe qué es el plato: no se aconseja sobre una suposición (igual que las calorías y los sellos)
+    const hay = c !== null && !r.seleccion_manual;
+    const dato = $("backend-dato");
+    const titulo = $("titulo-dato");
+    if (titulo) titulo.hidden = !(hay && dato && dato.textContent.trim() !== "");
+    if (!caja || !hay) return;
+    const limpio = (v) => (typeof v === "string" ? v.trim() : "");
+    const sello = (Array.isArray(c.sellos) && c.sellos[0]) || {};
+    [
+      ["Lo que aporta", limpio(c.aporta)],
+      limpio(c.para_completar) ? ["Para completar tu plato", limpio(c.para_completar)] : ["Una idea", limpio(sello.idea)],
+      ["A tener en cuenta", limpio(c.a_tener_en_cuenta) || limpio(sello.dato)],
+    ].forEach(([tit, texto]) => {
+      if (!texto) return;
+      const bloque = document.createElement("div");
+      bloque.className = "consejo";
+      const h = document.createElement("h3");
+      h.className = "consejo__titulo";
+      h.textContent = tit;
+      const p = document.createElement("p");
+      p.className = "consejo__texto";
+      p.textContent = texto;
+      bloque.append(h, p);
+      caja.appendChild(bloque);
+    });
+  }
+
   function mostrarOpciones(r) {
     const caja = $("backend-opciones");
     if (!caja) return;
@@ -237,6 +276,7 @@ const MOSTRAR_CALORIAS = true;
     }
     mostrarSellos(r.sellos_advertencia);
     poner("backend-dato", r.dato_curioso || "");
+    mostrarConsejos(r);
     let msg = r.mensaje_educativo || "";
     if (r.seleccion_manual && !(r.opciones_detalle || r.opciones_sugeridas || []).length) {
       msg = "La IA no está segura. Intenta con más luz o más cerca del plato.";

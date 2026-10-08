@@ -290,6 +290,12 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .resultado__logros { display: flex; flex-wrap: wrap; gap: var(--e-2); margin: 0; padding: 0; list-style: none; }
 .resultado__logros li { padding: var(--e-1) var(--e-3); border-radius: var(--r-pildora); background: var(--c-logro-suave); color: var(--c-logro-tinta); font-size: var(--t-s); font-weight: var(--t-peso-medio); }
 #backend-mensaje:empty, #backend-dato:empty { display: none; }
+/* Consejos (K0.5): bloques cortos con título. Información, no alerta: tinta normal, sin color de aviso ni íconos */
+.consejos { display: grid; gap: var(--e-3); }
+.consejos:empty, #consejo-dato:has(#backend-dato:empty) { display: none; }
+.consejo { display: grid; gap: var(--e-1); min-width: 0; }
+.consejo__titulo { font-size: var(--t-s); font-weight: var(--t-peso-fuerte); color: var(--c-tinta-suave); }
+.consejo__texto { max-width: 65ch; overflow-wrap: anywhere; }
 
 /* ---------- 8. Mis registros (rediseño R6) ----------
    Una lista de filas, no de tarjetas: el nombre y la fecha a la izquierda, calorías y certeza a la derecha,

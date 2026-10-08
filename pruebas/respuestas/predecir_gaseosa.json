@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "seleccion_manual": false,
+  "guardado_baseDatos": true,
+  "mensaje_educativo": null,
+  "gamificacion": null,
+  "alimento": "gaseosa",
+  "alimento_app": "Gaseosa",
+  "alimento_codigo": "gaseosa",
+  "certeza": 91.0,
+  "calorias": 42,
+  "sellos_advertencia": [
+    "azucares"
+  ],
+  "dato_curioso": "Las burbujas de las bebidas gaseosas son dióxido de carbono disuelto bajo presión.",
+  "consejo": {
+    "grupo": "gaseosas_bebidas_azucaradas",
+    "aporta": "Una gaseosa aporta agua y azúcar añadida: es energía rápida, con pocos otros nutrientes.",
+    "para_completar": "",
+    "a_tener_en_cuenta": "",
+    "sellos": [
+      {
+        "sello": "azucares",
+        "dato": "Una lata de 330 ml trae cerca de 35 g de azúcar; la OMS sugiere no pasar de 25 g en todo el día.",
+        "idea": "Otro día, el agua con limón o un jugo de fruta natural también refrescan."
+      }
+    ]
+  }
+}
