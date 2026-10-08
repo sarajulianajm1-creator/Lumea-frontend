@@ -75,6 +75,29 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - **El rebote de la canasta con movimiento reducido:** se borró porque la canasta ya no existe (no hay nada que rebote). El movimiento de la cara elegida se prueba en R3 y R8.
 - **Nuevas** (el diseño nuevo): cuatro superficies y un solo botón relleno, XP ≤ 3, secciones con título, jerarquía de tamaños, la fecha en `<time>` sin hora.
 
+## R3 · Caras del check-in con DiceBear: LISTA (7 oct 2026)
+
+**Qué quedó listo** (`caras-checkin.js`, `emociones.html`, `emociones.js`, `index-ingresado.html`, `estilos/app.css`)
+- **`caras-checkin.js`** con un solo objeto `ESTILOS` que Isabella puede leer y editar (los sets `gaze` y `moods` de la misión, tal cual). API: `LumeaCaras.poner("gaze" | "moods" | null)`, `actual()`, `url()`, `imagen()` (la usará el selector de R4) y `dibujar()`.
+- **Cada persona elige su set; ninguno es predeterminado.** La elección se guarda en `localStorage` con la clave `lumea-caras` (con `try/catch`, como `tema.js`) y emite `lumea:caras`. Sin elección, o con un valor desconocido, no hay imagen: queda la palabra, y el hueco no ocupa lugar.
+- **El color del cuerpo** sale de `--c-emocion` de la paleta activa y las caras se vuelven a dibujar con `lumea:tema` (al cambiar de paleta o de modo).
+- **Quietas por defecto** (`animationVariant=none`); solo la del botón con `aria-pressed="true"` va con `medium`. Un `MutationObserver` redibuja solo esa cara cuando cambia el botón elegido, así que el movimiento sigue a lo que la persona hace y nunca hay cinco caras moviéndose. La animación vive dentro del SVG y se apaga sola con `prefers-reduced-motion`.
+- **Accesibilidad:** `alt=""`; la palabra visible es el nombre del botón; la selección es `aria-pressed`. Sin internet, la imagen se quita y queda la palabra; el botón funciona igual.
+- **Las diez direcciones se verificaron en el navegador** (200, `image/svg+xml`, el color llega en la dirección) y se comprobó que `animationVariant=none` quita las animaciones del SVG y `medium` las trae con su `prefers-reduced-motion`.
+- **Ánimo (`emociones.html`) se rehízo con el mismo componente de Inicio** (`.animo-caras` / `.animo-cara`) y dejó de cargar el CSS de Bootstrap (como no tiene fase propia, se terminó aquí). Sin la flecha (R1), sin la píldora «+5 XP para todos los ánimos», sin «+5 XP» en los botones ni «(+5 XP)» en «Guardar mi ánimo». La cara **grande** y la **semana** siguen con la cara del avatar (decisión de la misión).
+- **Marcado:** los botones del check-in ya no usan `data-cara`; usan `data-cara-checkin` (así `lumea-ui.js` no les pinta la cara del avatar).
+- **Privacidad y límite conocido** anotados en `docs/defensa/privacidad-y-limites-rediseno.md` (la dirección no lleva datos de la persona; la paleta y las caras se guardan en el navegador, no en la cuenta).
+- **Créditos:** no había pantalla de créditos ni README; se creó un `README.md` corto con la sección «Créditos» («Caras del check-in: DiceBear (CC0)», más la fuente y los íconos). Si prefieres la pantalla de créditos, se mueve esa línea.
+
+**Pruebas:** `.venv/bin/pytest pruebas` → **349 pasan, 1 `xfail`**. Contraste de Inicio y Ánimo en 5 paletas × claro/oscuro: 0 errores.
+- **Nueva:** `pruebas/test_caras_checkin.py` (45 casos) en Inicio y en Ánimo, con los tres estados (sin elección, `gaze` y `moods`): dirección sin datos personales, `alt=""`, `aria-pressed`, solo la elegida se anima, el color sigue a la paleta y al modo, el redibujo con `lumea:tema` y con `lumea:caras`, un valor guardado desconocido, `localStorage` que falla, sin internet, y que ningún botón dice «XP» ni tiene un color distinto por ánimo.
+- **Cambiaron en `test_emociones.py`** (ninguna se borró ni se debilitó): `.btn-face-mood` / `.face-name-label` pasaron a `.animo-cara` / `.animo-cara__nombre`; «los cinco estados con la cara del avatar» pasó a «con su palabra y sin XP» (las caras de cada set van en la prueba nueva); «sin internet» ahora parte de un set elegido; el botón se llama «Guardar mi ánimo» (sin «(+5 XP)»). Nuevas: sin píldora, sin flecha y sin «+5»; las caras de los botones son las del set y la grande sigue siendo la del avatar.
+
+**Para decidir**
+- **La cara elegida** va sobre un fondo suave de «emoción» con borde del mismo rol y no sobre el color pleno: el cuerpo de la cara ya es `--c-emocion`, y sobre ese mismo color se perdía.
+- **El texto de Ánimo «Todas las emociones dan el mismo XP: no se premia estar siempre bien.»** se dejó igual (es de Sara y dice una cosa importante), pero choca con la regla 4 (el XP solo en el nivel, las misiones y la celebración). En Inicio no está (el esquema trae otra nota). Dime si lo cambio.
+- Falta que `tema.js` no tenga paleta predeterminada y que haya dónde elegir el set (R4): hasta entonces, para probarlo: `LumeaCaras.poner("gaze")` en la consola.
+
 ## Textos nuevos para que Isabella revise
 
 **Inicio (R2)**
