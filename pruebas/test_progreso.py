@@ -143,6 +143,20 @@ def test_las_fechas_del_servidor_se_leen_en_utc(pagina, backend):
     assert "Miércoles (hoy): 1 comida" in pagina.locator("#grafica-barras-semana").inner_text()
 
 
+def test_la_semana_de_animo_va_quieta_y_es_la_cara_de_cada_estado_del_companero(pagina, backend):
+    """K4: [data-cara]/dibujarSemanaAnimo ya usan urls_por_estado; ninguna se anima, ni en Progreso hay nada con movimiento."""
+    animo = [{"id": 4, "estado": "bien", "fecha": fecha(7)}, {"id": 3, "estado": "muy_mal", "fecha": fecha(6)},
+             {"id": 2, "estado": "neutral", "fecha": fecha(5)}]
+    abrir(pagina, backend, animo=animo)
+    imgs = pagina.locator("#animo-semana-fila img")
+    assert imgs.count() == 3
+    src = imgs.evaluate_all("e => e.map(i => i.src)")
+    assert [s.split("eyesVariant=")[1] for s in src] == ["dots", "bars", "happy"]       # lunes, martes, miércoles
+    assert all("animationVariant" not in s and "/10.x/gaze/" in s and "seed=lumea-sol" in s for s in src)   # quietas, del compañero
+    assert imgs.evaluate_all("e => e.every(i => i.alt === '')")
+    assert pagina.locator('img[src*="animationVariant=slow"], img[src*="animationVariant=medium"]').count() == 0
+
+
 def test_animo_de_la_semana_con_las_caras_del_avatar(pagina, backend):
     animo = [{"id": 3, "estado": "bien", "fecha": fecha(7)}, {"id": 2, "estado": "mal", "fecha": fecha(7)},    # el último del día manda
              {"id": 1, "estado": "neutral", "fecha": fecha(5)}]

@@ -1,5 +1,6 @@
 """emociones.html (Ánimo): la cara grande cambia en vivo, los cinco botones llevan las caras del compañero y guardar celebra."""
 import json
+from datetime import datetime
 
 import pytest
 
@@ -131,6 +132,23 @@ def test_esta_semana_viene_del_backend_no_de_ejemplos(pagina, backend):
     pagina.locator("#animo-semana-fila .animo-day-pill").first.wait_for()
     lectores = pagina.locator("#animo-semana-fila .solo-lector").all_inner_texts()
     assert len(lectores) == 7 and all("sin check-in" in t or "todavía no llega" in t for t in lectores)
+
+
+def test_la_semana_va_quieta_y_en_toda_la_pantalla_solo_se_mueve_la_cara_elegida(pagina, backend):
+    """K4: la semana de ánimo usa la cara de cada estado del compañero, quieta; la animada es solo el botón elegido."""
+    pagina.clock.set_fixed_time(datetime(2026, 10, 7, 12, 0))                     # miércoles; la semana va del lunes 5 al domingo 11
+    backend.poner("GET", "/estado-animo", {"success": True, "cantidad": 2, "historial": [
+        {"id": 2, "estado": "muy_mal", "fecha": "Tue, 06 Oct 2026 00:00:00 GMT"},
+        {"id": 1, "estado": "bien", "fecha": "Mon, 05 Oct 2026 00:00:00 GMT"}]})
+    abrir(pagina, backend)
+    pagina.locator("#animo-semana-fila img").first.wait_for()
+    semana = pagina.locator("#animo-semana-fila img").evaluate_all("e => e.map(i => i.src)")
+    assert [s.split("eyesVariant=")[1] for s in semana] == ["happy", "bars"]                # lunes y martes
+    assert all("animationVariant" not in s and "seed=lumea-sol" in s for s in semana)
+    boton(pagina, "Mal").click()
+    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
+    movimiento = 'img[src*="animationVariant=slow"], img[src*="animationVariant=medium"]'
+    assert pagina.locator(movimiento).count() == 1                                          # la elegida; ni la grande ni la semana
 
 
 def test_sin_internet_para_las_caras_queda_el_nombre(pagina, backend):
