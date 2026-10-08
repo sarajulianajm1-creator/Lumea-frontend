@@ -319,3 +319,23 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 }
 .pie-app__enlaces { display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-5); margin: 0; padding: 0; list-style: none; }
 .pie-app__enlaces a { display: inline-block; padding: var(--e-2) 0; font-size: var(--t-s); }
+
+/* ---------- 9. Movimiento (rediseño R8) ----------
+   Movimiento con propósito: UNA entrada por pantalla, la celebración (celebracion.css) y las respuestas a lo
+   que la persona hace (pasar el cursor, enfocar, elegir, ponerse algo). Nada más se mueve, todo dura 420 ms
+   o menos, y con prefers-reduced-motion las cosas solo aparecen: tokens.css pone las tres duraciones en 0 ms.
+     --m-rapido (120 ms)  responder al cursor, al foco y al toque
+     --m-base   (220 ms)  la entrada de la pantalla y el cambio de paleta
+     --m-lento  (420 ms)  la celebración y los logros */
+
+/* La entrada: el contenido principal aparece y sube un poco, una sola vez */
+@keyframes entrada {
+  from { opacity: 0; transform: translateY(var(--e-2)); }
+  to   { opacity: 1; transform: none; }
+}
+.contenido { animation: entrada var(--m-base) var(--m-salida) both; }
+@media (prefers-reduced-motion: reduce) { .contenido { animation: none; } }
+
+/* Al cambiar de paleta (o de modo), el fondo y el texto cambian de color en 220 ms. La transición va SOLO en
+   estas dos propiedades y SOLO en la página: no hay ningún «transition: all» ni se mueve cada elemento. */
+html, body { transition: background-color var(--m-base) var(--m-salida), color var(--m-base) var(--m-salida); }

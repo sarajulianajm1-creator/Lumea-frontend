@@ -43,12 +43,8 @@ p { margin: 0; text-wrap: pretty; }
      deformaba los círculos y las píldoras justo al enfocarlos. */
 }
 
-/* Transición suave al cambiar de página (Chrome 126+, Safari 18.2+).
-   En navegadores viejos simplemente no pasa nada: degradación elegante. */
-@view-transition { navigation: auto; }
-@media (prefers-reduced-motion: reduce) {
-  @view-transition { navigation: none; }
-}
+/* Sin transición automática entre páginas (rediseño R8): cada pantalla tiene UNA entrada propia
+   (.contenido, en app.css) y la transición del navegador sumaría una segunda. */
 
 .icono {
   width: 20px; height: 20px;
@@ -207,7 +203,7 @@ p { margin: 0; text-wrap: pretty; }
 .barra-xp__relleno {
   height: 100%; width: var(--avance, 0%);
   border-radius: inherit; background: var(--c-logro);
-  transition: width var(--m-lento) var(--m-resorte);   /* el rebote = logro */
+  /* Sin transición (R8): la barra aparece llena hasta donde va; nada se mueve solo al abrir la pantalla. */
 }
 .numero { font-variant-numeric: tabular-nums; }        /* cifras que no "bailan" */
 
@@ -291,23 +287,12 @@ p { margin: 0; text-wrap: pretty; }
 .opciones__boton:hover { border-color: var(--c-marca); background: var(--c-marca-suave); }
 .opciones__pista { font-weight: var(--t-peso-normal); font-size: var(--t-s); color: var(--c-tinta-suave); }
 
-/* Entrada de la etiqueta: el ÚNICO movimiento automático de la pantalla.
-   Aparece como si la colgaran: baja un poco y se balancea una vez. */
-.etiqueta--entrando { animation: colgar var(--m-lento) var(--m-resorte) both; transform-origin: 30px 42px; }
-@keyframes colgar {
-  from { opacity: 0; transform: translateY(-12px) rotate(-2.5deg); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ---------- 9. Esqueleto de carga (mientras la IA piensa) ---------- */
+/* ---------- 9. Esqueleto de carga ----------
+   Quieto y de un solo color (R8): un destello que se repite sin parar es un movimiento que nadie pidió. */
 .esqueleto {
   border-radius: var(--r-control);
-  background: linear-gradient(90deg, var(--c-borde) 0%, var(--c-fondo) 50%, var(--c-borde) 100%);
-  background-size: 200% 100%;
-  animation: brillo 1.2s linear infinite;
+  background: var(--c-borde);
 }
-@keyframes brillo { to { background-position: -200% 0; } }
-@media (prefers-reduced-motion: reduce) { .esqueleto { animation: none; } }
 
 /* ---------- 10. Estructura de la app: lateral en computador, barra abajo en celular ---------- */
 /* UN solo <nav> en el HTML. El CSS decide si es columna o barra:
