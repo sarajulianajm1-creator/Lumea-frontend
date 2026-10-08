@@ -158,6 +158,21 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - **El botón «Ver mi avatar» de Progreso se quitó** (el menú ya lleva a Avatar). Si lo quieres de vuelta, es un enlace de texto en el encabezado.
 - En la franja del ánimo de Progreso, la insignia «Es tuyo y no se compara con nadie» pasó a ser parte de la nota (mismo mensaje, sin la píldora).
 
+## R7 · Páginas públicas, solo con CSS: LISTA (7 oct 2026)
+
+**Qué quedó listo** (`estilos/publico.css`, y el `<head>` y el logo de las seis páginas: `index.html`, `conocenos.html`, `guialumea.html`, `crear-cuenta.html`, `iniciar-sesion.html` y `terminos.html`)
+- **`estilos/publico.css`**, cargado después de `style.css` (y de `puente-sara.css`, que ya les pasó los colores a los tokens) en las seis páginas. Hace esto:
+  - **Colores:** los verdes de Sara que quedaban pasan a tokens (el verde oscuro de `text-success-emphasis` era el último que no seguía la paleta); las páginas se ven en el **estado neutro** o en la paleta que ese navegador ya tenga guardada. Se midió: ningún color verdoso que no sea un token.
+  - **Tipografía:** Bricolage Grotesque en todo el texto y la **escala de tipos** de `tokens.css` (los títulos de página en `--t-3xl` en pantallas anchas y `--t-2xl` en celular, las secciones en `--t-xl`, el cuerpo en `--t-m`, lo secundario en `--t-s`); ningún texto por debajo de 12,8 px.
+  - **Radios:** los cuatro de siempre (los botones —también los «pastilla» de Sara— pasan a `--r-control`; las insignias, a `--r-pildora`; las tarjetas, a `--r-tarjeta`). Se logra redefiniendo las variables `--bs-border-radius-*` de Bootstrap y corrigiendo las clases propias de Sara.
+  - **Sin mayúsculas** por CSS (el `text-uppercase` de las insignias), y **sin sombras**: las tarjetas y avisos se separan con un borde.
+- **`<head>`:** se quitaron las fuentes de Google (la fuente única es local) y se agregó `publico.css`. **Logo:** las líneas de `.logo-brand` pasaron de `<span>🌿</span> LUMEA` a `<img class="marca" src="img/logo.svg" alt="Lumea">` (la misma imagen y el mismo lugar para cambiarla que el menú privado). **No se cambió ningún texto ni ninguna otra parte del `<body>`:** se comprobó, comparando el texto de cada página con el del commit anterior (idéntico en las seis, salvo el enlace del logo).
+- **Crear cuenta** no tiene ningún paso nuevo (una prueba lo vigila: ni el selector de colores ni `caras-checkin.js`).
+
+**Pruebas:** `.venv/bin/pytest pruebas` → **555 pasan, 1 `xfail`**, con **`pruebas/test_publico.py`** nuevo (103 casos, 6 páginas × 1280 y 390 px): `publico.css` va después de `style.css`; ya no piden fuentes a Google; el logo es una imagen sin 🌿 ni «LUMEA»; los radios son los cuatro tokens; nada en mayúsculas por CSS; todo el texto en Bricolage y en la escala de tipos (y ≥ 12,8 px); sin sombras; sin barra horizontal; los botones son controles y las insignias, píldoras; sin paleta guardada se ve el neutro y con una guardada, esa; Crear cuenta sin pasos nuevos.
+
+**Para después de unir:** cinco cosas que no se hicieron porque tocan el `<body>` de una página de Isabella (el pie con emoji y «LUMEA», los emojis de Crear cuenta, «LUMEA» en mayúsculas dentro de los textos, estilos en línea y dos `innerHTML`): están en la sección «Para después de unir», más abajo.
+
 ## Textos nuevos para que Isabella revise
 
 **Inicio (R2)**
@@ -193,3 +208,9 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 ## Para después de unir
 
 (Cambios que necesitan tocar el `<body>` de una página pública o un archivo de Isabella; no se hicieron.)
+
+1. **El pie de las seis páginas públicas** lleva `<span class="fw-bold hero-title">🌿 LUMEA</span>`: un emoji como ícono y «LUMEA» en mayúsculas, que `MARCA.md` prohíbe. Debería ser `<img class="marca" src="img/logo.svg" alt="Lumea">`, igual que el encabezado.
+2. **`crear-cuenta.html`**: las cinco opciones de «Objetivo Principal» usan emojis como íconos (🥗 💧 🏃 🌙 🔍). Deberían ser Bootstrap Icons.
+3. **«LUMEA» escrito en mayúsculas dentro de los textos** («Bienvenido a LUMEA», «Guía LUMEA», «¿Cómo utilizar LUMEA?»…): el menú y el logo dicen «Lumea». Decide cuál es la forma de la marca y se unifica.
+4. **`style="font-size: …"` escritos en el HTML** (`terminos.html` en los `step-badge`, `conocenos.html` en dos párrafos): `publico.css` los lleva a la escala con `!important`. Cuando se unan los textos conviene quitar esos estilos del HTML.
+5. (Ya anotado antes) `crear-cuenta.html`, función `mostrarAlerta`, escribe el mensaje con `innerHTML`; y `sesion-nav.js` escribe el correo con `innerHTML`.
