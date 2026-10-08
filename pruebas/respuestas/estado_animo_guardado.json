@@ -1,7 +1,7 @@
 {
   "success": true,
   "estado": "bien",
-  "avatar_url": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=smile",
+  "avatar_url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=happy",
   "gamificacion": {
     "accion": "estado_animo",
     "xp_ganado": 5,

@@ -36,7 +36,7 @@ def test_ia_segura_muestra_logros(pagina, foto):
     pagina.set_input_files("input[type=file]", str(foto))
     pagina.locator("#backend-alimento", has_text="Arepa").wait_for()
     assert pagina.locator("#backend-precision").inner_text() == "La IA está segura: 94 %"      # la certeza, en palabras y en número
-    assert "+10 XP" in pagina.locator("#backend-logros").inner_text()
+    assert "+10 semillas" in pagina.locator("#backend-logros").inner_text()
     assert "Guardado en tu historial" in pagina.locator("#backend-mensaje").inner_text()
 
 
@@ -86,8 +86,8 @@ def test_confirmar_guarda_y_celebra(pagina, backend, foto):
     pagina.locator("#backend-logros li", has_text="Misión cumplida").wait_for()
     assert ("POST", "/confirmar-alimento") in backend.llamadas
     textos = pagina.locator("#backend-logros").inner_text()
-    assert "+20 XP" in textos and "Subiste al nivel 3" in textos
-    assert "Calcomanía nueva: Tres al día" in textos
+    assert "+20 semillas" in textos and "Llegaste a la etapa 3" in textos
+    assert "Calcomanía nueva: Un día completo" in textos
 
 
 # ---------- Rediseño R5: el aspecto ----------
@@ -294,17 +294,27 @@ def test_los_consejos_salen_en_el_orden_de_la_mision_y_son_cuatro_como_maximo(pa
     assert orden == sorted(orden)
 
 
-def test_sin_para_completar_ni_a_tener_en_cuenta_salen_la_idea_y_el_dato_del_primer_sello(pagina, backend, foto):
+def test_sin_para_completar_sale_la_idea_del_primer_sello(pagina, backend, foto):
+    # el contrato real: la gaseosa trae para_completar null (no es un plato) y un sello de azúcares
     analizar(pagina, foto, backend, cargar_respuesta("predecir_gaseosa"))
-    sello = cargar_respuesta("predecir_gaseosa")["consejo"]["sellos"][0]
+    consejo = cargar_respuesta("predecir_gaseosa")["consejo"]
+    assert consejo["para_completar"] is None
     assert titulos(pagina) == ["Lo que aporta", "Una idea", "A tener en cuenta", "¿Sabías que…?"]
-    assert texto_de(pagina, "Una idea") == sello["idea"]
-    assert texto_de(pagina, "A tener en cuenta") == sello["dato"]
+    assert texto_de(pagina, "Una idea") == consejo["sellos"][0]["idea"]
+    assert texto_de(pagina, "A tener en cuenta") == consejo["a_tener_en_cuenta"]            # el texto propio gana al dato del sello
+
+
+def test_sin_a_tener_en_cuenta_sale_el_dato_del_primer_sello(pagina, backend, foto):
+    r = cargar_respuesta("predecir_gaseosa")
+    r["consejo"]["a_tener_en_cuenta"] = None
+    analizar(pagina, foto, backend, r)
+    assert titulos(pagina) == ["Lo que aporta", "Una idea", "A tener en cuenta", "¿Sabías que…?"]
+    assert texto_de(pagina, "A tener en cuenta") == r["consejo"]["sellos"][0]["dato"]
 
 
 def test_un_bloque_vacio_no_se_dibuja(pagina, backend, foto):
-    analizar(pagina, foto, backend, cargar_respuesta("predecir_banano"))      # sin a_tener_en_cuenta y sin sellos
-    assert titulos(pagina) == ["Lo que aporta", "Para completar tu plato", "¿Sabías que…?"]
+    analizar(pagina, foto, backend, cargar_respuesta("predecir_banano"))      # el contrato real: sin para_completar (es una fruta) y sin sellos
+    assert titulos(pagina) == ["Lo que aporta", "A tener en cuenta", "¿Sabías que…?"]
     assert pagina.locator("#backend-consejos .consejo").count() == 2
     # sin aporta, sin dato curioso y con espacios en blanco: tampoco se dibujan ni dejan un título suelto
     r = cargar_respuesta("predecir_banano")
@@ -450,7 +460,7 @@ def test_la_certeza_sigue_en_palabras_y_numero_y_el_medidor_la_acompana(pagina, 
 def test_ningun_boton_del_resultado_ni_del_visor_promete_xp(pagina, backend, foto):
     analizar(pagina, foto, backend, cargar_respuesta("predecir_grupo"))
     botones = pagina.locator("main button").all_inner_texts()
-    assert botones and not [b for b in botones if "XP" in b]                          # R5: la referencia trae «+10 XP» en «Sí, es esto»; aquí no
+    assert botones and not [b for b in botones if "XP" in b or "semilla" in b]                          # R5: la referencia trae «+10 XP» en «Sí, es esto»; aquí no
 
 
 # ---------- Camino del cuidado, K0.5: el dato curioso largo ----------

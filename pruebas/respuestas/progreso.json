@@ -1,10 +1,10 @@
 {
   "success": true,
   "progreso": {
-    "xp_total": 20,
+    "xp_total": 45,
     "nivel": 2,
-    "xp_inicio_nivel": 15,
-    "xp_siguiente_nivel": 55,
+    "xp_inicio_nivel": 30,
+    "xp_siguiente_nivel": 80,
     "xp_faltante_siguiente_nivel": 35,
     "racha_actual": 3,
     "racha_maxima": 5,
@@ -19,33 +19,35 @@
     "avatar": {
       "id": "sol",
       "nombre": "Sol",
-      "url": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=default",
+      "forma": "circle",
+      "color": "F6B73C",
+      "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=dots",
       "estado_animo_hoy": "bien",
-      "url_con_animo": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=smile",
+      "url_con_animo": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=happy",
       "urls_por_estado": {
-        "muy_mal": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=sad",
-        "mal": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=concerned",
-        "neutral": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=serious",
-        "bien": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=smile",
-        "muy_bien": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=twinkle"
+        "muy_mal": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=bars",
+        "mal": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=small",
+        "neutral": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=dots",
+        "bien": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=happy",
+        "muy_bien": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=grin"
       }
     },
     "misiones": [
       {
         "id": "fruta",
-        "nombre": "Registra una fruta",
+        "nombre": "Agradece y disfruta una fruta de la creación",
         "xp": 10,
         "cumplida": true
       },
       {
         "id": "tres_comidas",
-        "nombre": "Registra 3 comidas",
+        "nombre": "Cuida de ti en tus tres comidas",
         "xp": 10,
         "cumplida": false
       },
       {
         "id": "check_in_animo",
-        "nombre": "Haz tu check-in de ánimo",
+        "nombre": "Haz una pausa y escucha cómo te sientes",
         "xp": 10,
         "cumplida": false
       }
@@ -53,6 +55,55 @@
     "calcomanias": {
       "ganadas": 3,
       "total": 10
+    },
+    "reglas": {
+      "acciones": {
+        "bonus_registro": {
+          "maximo_por_dia": 3,
+          "xp": 5
+        },
+        "comida_registrada": {
+          "maximo_por_dia": 5,
+          "xp": 10
+        },
+        "estado_animo": {
+          "maximo_por_dia": 1,
+          "xp": 5
+        }
+      },
+      "meta_diaria_xp": 15,
+      "misiones_diarias": [
+        {
+          "id": "fruta",
+          "nombre": "Agradece y disfruta una fruta de la creación",
+          "xp": 10
+        },
+        {
+          "id": "tres_comidas",
+          "nombre": "Cuida de ti en tus tres comidas",
+          "xp": 10
+        },
+        {
+          "id": "check_in_animo",
+          "nombre": "Haz una pausa y escucha cómo te sientes",
+          "xp": 10
+        }
+      ],
+      "niveles": [
+        0,
+        30,
+        80,
+        150,
+        250,
+        400,
+        600,
+        850,
+        1150,
+        1500
+      ],
+      "tope_perdida_por_periodo": 0,
+      "xp_penalizacion_ultraprocesado": 0,
+      "xp_perdido_por_dia_inactivo": 0
     }
   }
 }

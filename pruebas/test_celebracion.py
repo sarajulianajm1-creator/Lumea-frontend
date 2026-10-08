@@ -37,7 +37,7 @@ def test_el_xp_aparece_y_se_va_solo(pagina):
     celebrar(pagina, gamificacion(xp_ganado=10, meta_diaria={"recien_cumplida": True}))
     chip = pagina.locator(".celebracion__chip").first
     chip.wait_for()
-    assert chip.inner_text() == "+10 XP"
+    assert chip.inner_text() == "+10 semillas"
     assert pagina.locator(".celebracion__chip--meta").inner_text() == "Meta de hoy cumplida"
     pagina.locator(".celebracion__chip").first.wait_for(state="detached")
 
@@ -62,12 +62,12 @@ def test_los_momentos_van_de_a_uno_y_en_orden(pagina):
         momento = pagina.locator(".celebracion > *").first.element_handle()
         texto = momento.inner_text()
         orden.append(texto.split("\n")[0])
-        if "Le ayudaste" in texto:
+        if "Inteligencia humana al rescate" in texto:
             break
         pagina.wait_for_function("e => !e.isConnected", arg=momento)    # ese momento en concreto ya se fue
-    assert orden[0] == "+20 XP"
-    assert orden[1] == "Misión cumplida: Registra 3 comidas"
-    assert orden[2] == "Calcomanía nueva: Le ayudaste a la IA"
+    assert orden[0] == "+20 semillas"
+    assert orden[1] == "Misión cumplida: Cuida de ti en tus tres comidas"
+    assert orden[2] == "Calcomanía nueva: Inteligencia humana al rescate"
 
 
 def test_la_calcomania_de_mision_se_pega_con_su_mision(pagina):
@@ -119,8 +119,8 @@ def test_el_nivel_es_modal_con_lo_que_se_abrio(pagina):
     assert dialogo.get_attribute("open") is not None
     assert pagina.evaluate("document.querySelector('dialog.celebracion__nivel').matches(':modal')")
     texto = dialogo.inner_text()
-    assert "Subiste al nivel 3" in texto
-    assert "Camiseta Lumea" in texto and "Avatar nuevo" in texto and "Río" in texto
+    assert "Llegaste a la etapa 3" in texto
+    assert "Camiseta Lumea" in texto and "Compañero nuevo" in texto and "Río" in texto
     assert dialogo.get_attribute("aria-labelledby") == "celebracion-nivel-titulo"
     assert dialogo.get_by_role("link", name="Ponérmelo").get_attribute("href") == "avatar.html#armario"
 

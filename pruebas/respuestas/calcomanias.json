@@ -5,8 +5,8 @@
   "calcomanias": [
     {
       "id": "primera_foto",
-      "nombre": "Primera foto",
-      "descripcion": "Registraste tu primera comida.",
+      "nombre": "Primer paso",
+      "descripcion": "Has dado el primer paso en el camino del cuidado.",
       "como_se_gana": "Registra tu primera comida.",
       "rol": "comida",
       "ganada": true,
@@ -14,8 +14,8 @@
     },
     {
       "id": "diez_registros",
-      "nombre": "Diez registros",
-      "descripcion": "Llevas 10 comidas registradas.",
+      "nombre": "Diez momentos",
+      "descripcion": "Llevas 10 comidas registradas, cuidando de ti y de tu cuerpo.",
       "como_se_gana": "Registra 10 comidas.",
       "rol": "comida",
       "ganada": false,
@@ -23,8 +23,8 @@
     },
     {
       "id": "tres_al_dia",
-      "nombre": "Tres al día",
-      "descripcion": "Registraste 3 comidas en un mismo día.",
+      "nombre": "Un día completo",
+      "descripcion": "Prestas atención a tu alimentación tres veces en el día.",
       "como_se_gana": "Cumple la misión de registrar 3 comidas en un día.",
       "rol": "mision",
       "ganada": false,
@@ -32,8 +32,8 @@
     },
     {
       "id": "fruta",
-      "nombre": "Fruta del día",
-      "descripcion": "Registraste una fruta.",
+      "nombre": "Una fruta para alegrar tu día",
+      "descripcion": "Has comido y registrado una fruta.",
       "como_se_gana": "Cumple la misión de registrar una fruta.",
       "rol": "mision",
       "ganada": true,
@@ -42,7 +42,7 @@
     {
       "id": "como_llegas",
       "nombre": "Cómo llegas",
-      "descripcion": "Hiciste tu primer check-in de ánimo.",
+      "descripcion": "Te detuviste un momento a reconocer cómo te sientes.",
       "como_se_gana": "Haz tu primer check-in de ánimo.",
       "rol": "emocion",
       "ganada": true,
@@ -50,7 +50,7 @@
     },
     {
       "id": "ayudaste_ia",
-      "nombre": "Le ayudaste a la IA",
+      "nombre": "Inteligencia humana al rescate",
       "descripcion": "Confirmaste un plato cuando la IA dudó.",
       "como_se_gana": "Confirma un plato cuando la IA no esté segura.",
       "rol": "duda",
@@ -59,8 +59,8 @@
     },
     {
       "id": "racha_3",
-      "nombre": "Tres días seguidos",
-      "descripcion": "Registraste actividad 3 días seguidos.",
+      "nombre": "Tres días caminando juntos",
+      "descripcion": "Mantuviste tu actividad durante 3 días seguidos.",
       "como_se_gana": "Llega a una racha de 3 días.",
       "rol": "logro",
       "ganada": false,
@@ -68,8 +68,8 @@
     },
     {
       "id": "racha_7",
-      "nombre": "Una semana",
-      "descripcion": "Registraste actividad 7 días seguidos.",
+      "nombre": "Siete días caminando juntos",
+      "descripcion": "Cuidaste de ti con perseverancia durante una semana completa.",
       "como_se_gana": "Llega a una racha de 7 días.",
       "rol": "logro",
       "ganada": false,
@@ -77,8 +77,8 @@
     },
     {
       "id": "volviste",
-      "nombre": "Volviste",
-      "descripcion": "Regresaste después de unos días sin actividad.",
+      "nombre": "El camino continua",
+      "descripcion": "Después de una pausa vuelves a cuidar de ti y de tu cuerpo.",
       "como_se_gana": "Vuelve después de 3 o más días sin actividad.",
       "rol": "logro",
       "ganada": false,
@@ -86,9 +86,9 @@
     },
     {
       "id": "nivel_5",
-      "nombre": "Nivel 5",
-      "descripcion": "Llegaste al nivel 5.",
-      "como_se_gana": "Llega al nivel 5.",
+      "nombre": "Etapa: El Jardín",
+      "descripcion": "Llegaste a una etapa nueva en tu camino de bienestar",
+      "como_se_gana": "Llega a la etapa 5.",
       "rol": "logro",
       "ganada": false,
       "fecha": null

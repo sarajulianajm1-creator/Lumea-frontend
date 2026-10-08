@@ -16,7 +16,7 @@ def abrir(pagina, backend, **cambios):
     backend.poner("GET", "/progreso", cuerpo)
     pagina.clock.set_fixed_time(HOY)
     pagina.goto(f"{pagina.servidor}/index-ingresado.html")
-    pagina.locator("main .lumea-bind-nivel", has_text="Nivel").first.wait_for()
+    pagina.locator("main .lumea-bind-nivel", has_text="Etapa").first.wait_for()
     pagina.evaluate(CORTO)
 
 
@@ -38,12 +38,12 @@ def test_el_plural_de_la_racha(pagina, backend, racha, cifra):
 
 def test_meta_cumplida_no_dice_20_de_15(pagina, backend):
     abrir(pagina, backend, meta_diaria={"xp_hoy": 20, "meta": 15, "cumplida": True})
-    assert texto(pagina, ".inicio__dia .lumea-bind-xp-valor") == "Meta cumplida: 20 XP hoy"
+    assert texto(pagina, ".inicio__dia .lumea-bind-xp-valor") == "Meta cumplida: 20 semillas hoy"
 
 
 def test_meta_sin_cumplir_dice_cuanto_lleva(pagina, backend):
     abrir(pagina, backend, meta_diaria={"xp_hoy": 10, "meta": 15, "cumplida": False})
-    assert texto(pagina, ".inicio__dia .lumea-bind-xp-valor") == "10 de 15 XP hoy"
+    assert texto(pagina, ".inicio__dia .lumea-bind-xp-valor") == "10 de 15 semillas hoy"
 
 
 def test_tu_dia_no_muestra_el_xp_total_del_nivel(pagina, backend):
@@ -60,16 +60,16 @@ def test_las_comidas_son_de_tres_no_de_quince(pagina, backend):
     assert barra.get_attribute("aria-valuenow") == "33" and barra.get_attribute("aria-label") == "Comidas registradas hoy"
 
 
-def test_la_mision_de_hoy_es_la_proxima_con_su_chip_de_10_xp(pagina, backend):
+def test_la_mision_de_hoy_es_la_proxima_con_su_chip_de_10_semillas(pagina, backend):
     abrir(pagina, backend)                                                  # solo la fruta está cumplida
     assert texto(pagina, ".inicio__franja[aria-labelledby=titulo-mision] .inicio__rotulo") == "Misión de hoy"
-    assert texto(pagina, "#proxima-mision-titulo") == "Registra 3 comidas"
-    assert texto(pagina, "#proxima-mision-xp") == "+10 XP"                 # antes decía +20
+    assert texto(pagina, "#proxima-mision-titulo") == "Cuida de ti en tus tres comidas"
+    assert texto(pagina, "#proxima-mision-xp") == "+10 semillas"                 # antes decía +20
 
 
 def test_con_las_tres_misiones_cumplidas_se_celebra_sin_pedir_mas(pagina, backend):
     misiones = [{"id": i, "nombre": n, "xp": 10, "cumplida": True}
-                for i, n in (("fruta", "Registra una fruta"), ("tres_comidas", "Registra 3 comidas"), ("check_in_animo", "Haz tu check-in de ánimo"))]
+                for i, n in (("fruta", "Agradece y disfruta una fruta de la creación"), ("tres_comidas", "Cuida de ti en tus tres comidas"), ("check_in_animo", "Haz una pausa y escucha cómo te sientes"))]
     abrir(pagina, backend, misiones=misiones)
     assert texto(pagina, "#proxima-mision-titulo") == "Hoy cumpliste tus tres misiones"
     assert not pagina.locator("#proxima-mision-xp").is_visible()            # no hay recompensa que pedir
@@ -77,9 +77,9 @@ def test_con_las_tres_misiones_cumplidas_se_celebra_sin_pedir_mas(pagina, backen
 
 def test_nivel_y_cuanto_falta_con_el_numero_escrito(pagina, backend):
     abrir(pagina, backend)
-    assert texto(pagina, ".inicio__nivel .lumea-bind-xp-text") == "Te faltan 35 XP para el nivel 3"
+    assert texto(pagina, ".inicio__nivel .lumea-bind-xp-text") == "Te faltan 35 semillas para la etapa 3"
     assert texto(pagina, ".inicio__nivel .lumea-bind-racha") == "3 días"
-    assert pagina.locator(".inicio__nivel [role=progressbar]").get_attribute("aria-valuenow") == "13"
+    assert pagina.locator(".inicio__nivel [role=progressbar]").get_attribute("aria-valuenow") == "30"
     assert pagina.locator("a.inicio__nivel").get_attribute("href") == "progreso.html"       # la franja enlaza a Progreso
 
 
@@ -154,7 +154,7 @@ def test_guardar_mi_animo_guarda_celebra_y_queda_registrado(pagina, backend):
     pagina.locator(".animo-cara", has=pagina.get_by_text("Mal", exact=True)).click()
     pagina.get_by_role("button", name="Guardar mi ánimo").click()
     pagina.locator(".celebracion__chip").first.wait_for()
-    assert pagina.locator(".celebracion__chip").first.inner_text() == "+5 XP"
+    assert pagina.locator(".celebracion__chip").first.inner_text() == "+5 semillas"
     envio = next(c for m, u, c in backend.peticiones if m == "POST" and u.endswith("/estado-animo"))
     assert json.loads(envio) == {"email": "prueba@lumea.test", "estado": "mal"}
     pagina.locator("#checkin-confirmado").wait_for()
@@ -220,10 +220,10 @@ def test_cuatro_superficies_como_maximo_y_un_solo_boton_relleno(pagina, backend)
     assert rellenos.get_attribute("href") == "alimentos.html"
 
 
-def test_el_xp_aparece_tres_veces_como_maximo(pagina, backend):
+def test_las_semillas_aparecen_tres_veces_como_maximo(pagina, backend):
     abrir(pagina, backend)
     texto_visible = pagina.locator("main").inner_text()
-    assert texto_visible.count("XP") <= 3                                   # antes eran 11
+    assert texto_visible.count("semilla") <= 3                                   # antes eran 11
 
 
 def test_cada_bloque_es_una_seccion_con_su_titulo(pagina, backend):

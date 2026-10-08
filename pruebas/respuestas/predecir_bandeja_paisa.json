@@ -9,27 +9,13 @@
   "alimento_codigo": "bandeja_paisa",
   "certeza": 88.0,
   "calorias": 210,
-  "sellos_advertencia": [
-    "sodio",
-    "grasas_saturadas"
-  ],
+  "sellos_advertencia": [],
   "dato_curioso": "La bandeja paisa nació como plato de los arrieros y de los trabajadores del campo antioqueño, que necesitaban mucha energía para largas jornadas. Con el tiempo se volvió un plato de celebración y de domingo, y hoy se reconoce como uno de los símbolos de la cocina colombiana. Lleva fríjoles, arroz, carne molida, chicharrón, chorizo, huevo, plátano maduro, aguacate y arepa. Cada ingrediente cuenta una parte de la historia de la región: el fríjol y el maíz vienen de los cultivos de montaña, y el cerdo, de las fincas donde se criaba para las ocasiones especiales. Por eso, más que un plato para comer todos los días, es uno para compartir.",
   "consejo": {
-    "grupo": "platos_fuertes",
-    "aporta": "Los fríjoles y el huevo aportan proteína y hierro, y el arroz y el plátano, energía para varias horas.",
-    "para_completar": "Una ensalada o un jugo de fruta natural acompañan bien este plato.",
-    "a_tener_en_cuenta": "Es un plato abundante, pensado para compartir o para un día de mucha actividad.",
-    "sellos": [
-      {
-        "sello": "sodio",
-        "dato": "Los embutidos y el chicharrón suman sal al plato.",
-        "idea": "Puedes dejar el chorizo para otra ocasión o compartirlo."
-      },
-      {
-        "sello": "grasas_saturadas",
-        "dato": "El chicharrón y el chorizo traen grasa saturada.",
-        "idea": "Una porción más pequeña de chicharrón también funciona."
-      }
-    ]
+    "grupo": "proteinas",
+    "aporta": "Combina casi todos los grupos: fríjol y carne (proteína), arroz y arepa (energía) y aguacate.",
+    "para_completar": "Para completar el plato, súmale una fruta o una verdura: las Guías del ICBF las recomiendan en todas las comidas.",
+    "a_tener_en_cuenta": "Es un plato abundante y muy completo: escucha tu hambre para decidir cuánto comer.",
+    "sellos": []
   }
 }

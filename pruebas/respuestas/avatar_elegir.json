@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "avatar": {
+    "id": "luna",
+    "nombre": "Luna",
+    "forma": "arch",
+    "color": "C9C3F0",
+    "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-luna&shapeVariant=arch&bodyColor=C9C3F0&eyesVariant=dots"
+  }
+}

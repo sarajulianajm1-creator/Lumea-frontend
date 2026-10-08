@@ -1,0 +1,74 @@
+{
+  "success": true,
+  "avatar_actual": "sol",
+  "nivel_maximo": 2,
+  "xp_total": 45,
+  "avatares": [
+    {
+      "id": "sol",
+      "nombre": "Sol",
+      "forma": "circle",
+      "color": "F6B73C",
+      "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=dots",
+      "nivel_requerido": 1,
+      "desbloqueado": true,
+      "niveles_faltantes": 0,
+      "seleccionado": true
+    },
+    {
+      "id": "luna",
+      "nombre": "Luna",
+      "forma": "arch",
+      "color": "C9C3F0",
+      "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-luna&shapeVariant=arch&bodyColor=C9C3F0&eyesVariant=dots",
+      "nivel_requerido": 1,
+      "desbloqueado": true,
+      "niveles_faltantes": 0,
+      "seleccionado": false
+    },
+    {
+      "id": "rio",
+      "nombre": "Río",
+      "forma": "pill",
+      "color": "52DCD8",
+      "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-rio&shapeVariant=pill&bodyColor=52DCD8&eyesVariant=dots",
+      "nivel_requerido": 3,
+      "desbloqueado": false,
+      "niveles_faltantes": 1,
+      "seleccionado": false
+    },
+    {
+      "id": "montana",
+      "nombre": "Montaña",
+      "forma": "triangle",
+      "color": "8FBF7A",
+      "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-montana&shapeVariant=triangle&bodyColor=8FBF7A&eyesVariant=dots",
+      "nivel_requerido": 5,
+      "desbloqueado": false,
+      "niveles_faltantes": 3,
+      "seleccionado": false
+    },
+    {
+      "id": "orquidea",
+      "nombre": "Orquídea",
+      "forma": "diamond",
+      "color": "E89BC4",
+      "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-orquidea&shapeVariant=diamond&bodyColor=E89BC4&eyesVariant=dots",
+      "nivel_requerido": 7,
+      "desbloqueado": false,
+      "niveles_faltantes": 5,
+      "seleccionado": false
+    },
+    {
+      "id": "colibri",
+      "nombre": "Colibrí",
+      "forma": "egg",
+      "color": "3FB6A8",
+      "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-colibri&shapeVariant=egg&bodyColor=3FB6A8&eyesVariant=dots",
+      "nivel_requerido": 9,
+      "desbloqueado": false,
+      "niveles_faltantes": 7,
+      "seleccionado": false
+    }
+  ]
+}

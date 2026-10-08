@@ -47,12 +47,12 @@ def texto(pagina, selector):
 
 def test_muestra_el_nivel_y_la_racha(pagina, backend):
     abrir(pagina, backend)
-    assert texto(pagina, "main .lumea-bind-nivel") == "Nivel 2"
-    assert texto(pagina, "main .progreso-faltan") == "Te faltan 35 XP para el nivel 3"
-    assert pagina.locator("main [role=progressbar]").get_attribute("aria-valuenow") == "13"        # (20-15)/(55-15)
+    assert texto(pagina, "main .lumea-bind-nivel") == "Etapa 2"
+    assert texto(pagina, "main .progreso-faltan") == "Te faltan 35 semillas para la etapa 3"
+    assert pagina.locator("main [role=progressbar]").get_attribute("aria-valuenow") == "30"        # (45-30)/(80-30)
     assert texto(pagina, "main .lumea-bind-racha") == "3 días"
     assert texto(pagina, "main .lumea-bind-mejor-racha") == "5 días"
-    assert texto(pagina, "#meta-hoy-chip") == "Meta cumplida: 20 XP hoy"
+    assert texto(pagina, "#meta-hoy-chip") == "Meta cumplida: 20 semillas hoy"
     assert texto(pagina, "#album-enlace") == "Mi álbum: 3 de 10 calcomanías"
     assert pagina.locator("#album-enlace").get_attribute("href") == "avatar.html#calcomanias"
     assert pagina.errores == []
@@ -62,9 +62,9 @@ def test_el_menu_lateral_muestra_nombre_y_nivel(pagina, backend):
     # Rediseño R1: la zona de usuario del menú es delgada (nombre, nivel y «Cerrar sesión»); la racha
     # ya no va ahí, está en esta pantalla (ver test_muestra_el_nivel_y_la_racha) y en Inicio.
     abrir(pagina, backend)
-    pagina.locator(".nav-app__nivel", has_text="Nivel 2").wait_for()
+    pagina.locator(".nav-app__nivel", has_text="Etapa 2").wait_for()
     usuario = pagina.locator(".nav-app__usuario")
-    assert "Ana" in usuario.inner_text() and "Nivel 2" in usuario.inner_text()
+    assert "Ana" in usuario.inner_text() and "Etapa 2" in usuario.inner_text()
 
 
 def test_un_solo_h1_sin_version_ni_emojis_de_icono(pagina, backend):
@@ -90,7 +90,7 @@ def test_sin_racha_invita_sin_reproche(pagina, backend):
 
 def test_nivel_maximo(pagina, backend):
     abrir(pagina, backend, progreso={"nivel": 10, "xp_siguiente_nivel": None, "xp_faltante_siguiente_nivel": None})
-    assert texto(pagina, "main .progreso-faltan") == "Llegaste al nivel máximo"
+    assert texto(pagina, "main .progreso-faltan") == "Llegaste a la etapa máxima"
     assert pagina.locator("main [role=progressbar]").get_attribute("aria-valuenow") == "100"
 
 
@@ -99,11 +99,11 @@ def test_la_barra_no_baja_de_cero_si_se_perdio_xp(pagina, backend):
     assert pagina.locator("main [role=progressbar]").get_attribute("aria-valuenow") == "0"
 
 
-def test_la_meta_es_de_xp_no_de_comidas_ni_xp_del_nivel(pagina, backend):
+def test_la_meta_es_de_semillas_no_de_comidas_ni_semillas_de_la_etapa(pagina, backend):
     abrir(pagina, backend, progreso={"meta_diaria": {"xp_hoy": 10, "meta": 15, "cumplida": False}})
-    assert texto(pagina, "#meta-hoy-chip") == "10 de 15 XP hoy"
+    assert texto(pagina, "#meta-hoy-chip") == "10 de 15 semillas hoy"
     contenido = pagina.locator("main").inner_text()
-    assert "de 15 comidas" not in contenido and "/55 XP" not in contenido
+    assert "de 15 comidas" not in contenido and "/55 semillas" not in contenido
 
 
 def test_el_mensaje_de_regreso_es_una_bienvenida(pagina, backend):
@@ -151,7 +151,7 @@ def test_animo_de_la_semana_con_las_caras_del_avatar(pagina, backend):
     assert lectores[:3] == ["Lunes: Neutral", "Martes: sin check-in", "Miércoles (hoy): Bien"]
     assert pagina.locator("#animo-semana-fila img").count() == 2          # una cara por día con check-in
     src = pagina.locator("#animo-semana-fila img").last.get_attribute("src")
-    assert "mouth=smile" in src                                           # la cara de «bien» del avatar
+    assert "eyesVariant=happy" in src                                           # la cara de «bien» del avatar
 
 
 def test_sin_internet_para_las_caras_queda_el_nombre(pagina, backend):
@@ -184,7 +184,7 @@ def test_si_faltan_los_campos_nuevos_la_pantalla_funciona(pagina, backend):
     assert not pagina.locator("#album-enlace").is_visible()
     assert not pagina.locator("#semana-comidas-caja").is_visible()
     assert not pagina.locator("#semana-animo-caja").is_visible()
-    assert texto(pagina, "main .lumea-bind-nivel") == "Nivel 2"
+    assert texto(pagina, "main .lumea-bind-nivel") == "Etapa 2"
 
 
 def test_sin_sesion_lleva_a_iniciar_sesion(pagina):
@@ -201,7 +201,7 @@ def test_error_de_conexion_se_puede_reintentar(pagina, backend):
     backend.respuestas.clear()                                         # el backend vuelve
     pagina.get_by_role("button", name="Intentar otra vez").click()
     pagina.locator("#progreso-contenido").wait_for()
-    assert texto(pagina, "main .lumea-bind-nivel") == "Nivel 2"
+    assert texto(pagina, "main .lumea-bind-nivel") == "Etapa 2"
 
 
 def test_no_hay_calorias_ni_comparaciones(pagina, backend):
@@ -241,7 +241,7 @@ def tarjeta_nombres(tarjetas):
     nombres = []
     for t in tarjetas.all():
         titulo = t.locator("h2").first.inner_text().strip()
-        nombres.append("Nivel" if "XP" in titulo or "nivel" in titulo.lower() else titulo)
+        nombres.append("Nivel" if "semilla" in titulo or "etapa" in titulo.lower() else titulo)
     return nombres
 
 

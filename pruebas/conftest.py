@@ -28,6 +28,8 @@ RUTAS = {
     ("GET", "/estado-animo"): "estado_animo.json",
     ("POST", "/estado-animo"): "estado_animo_guardado.json",
     ("GET", "/avatar"): "avatar.json",
+    ("GET", "/avatares"): "avatares.json",
+    ("POST", "/avatar"): "avatar_elegir.json",
     ("POST", "/avatar/equipar"): "avatar_equipar.json",
     ("POST", "/avatar/quitar"): "avatar_quitar.json",
     ("GET", "/calcomanias"): "calcomanias.json",
@@ -44,6 +46,47 @@ def cargar_respuesta(nombre):
 
 _ROPA = [("buzo_verde", "Buzo verde", 1), ("camiseta_lumea", "Camiseta Lumea", 3), ("ruana", "Ruana", 6)]
 _ACCESORIOS = [("gafas", "Gafas", 2), ("audifonos", "Audífonos", 4), ("sombrero_vueltiao", "Sombrero vueltiao", 8)]
+
+
+# ---------- Los seis compañeros (Camino del cuidado): DiceBear 10.x «gaze», como los manda el backend ----------
+# Los valores salen de Backend/gamificacion_config.py (AVATARES y EXPRESION_POR_ESTADO) y las URL, de
+# Backend/docs/CONTRATO_GAMIFICACION.md. Las URL son QUIETAS: la animación (animationVariant) la agrega el frontend.
+COMPANEROS = [  # (id, nombre, forma, color, nivel_requerido)
+    ("sol", "Sol", "circle", "F6B73C", 1), ("luna", "Luna", "arch", "C9C3F0", 1), ("rio", "Río", "pill", "52DCD8", 3),
+    ("montana", "Montaña", "triangle", "8FBF7A", 5), ("orquidea", "Orquídea", "diamond", "E89BC4", 7), ("colibri", "Colibrí", "egg", "3FB6A8", 9),
+]
+OJOS_POR_ESTADO = {"muy_mal": "bars", "mal": "small", "neutral": "dots", "bien": "happy", "muy_bien": "grin"}
+OJOS_NEUTROS = "dots"
+
+
+def url_companero(id_, ojos=OJOS_NEUTROS):
+    _, _, forma, color, _ = next(c for c in COMPANEROS if c[0] == id_)
+    return f"https://api.dicebear.com/10.x/gaze/svg?seed=lumea-{id_}&shapeVariant={forma}&bodyColor={color}&eyesVariant={ojos}"
+
+
+def companero_basico(id_):
+    """El compañero como lo manda `POST /avatar` y `respaldo_dicebear`: id, nombre, forma, color y la URL quieta (ojos neutros)."""
+    _, nombre, forma, color, _ = next(c for c in COMPANEROS if c[0] == id_)
+    return {"id": id_, "nombre": nombre, "forma": forma, "color": color, "url": url_companero(id_)}
+
+
+def companero(id_="sol", estado_hoy="bien"):
+    """`progreso.avatar` de GET /progreso: el compañero con sus cinco caras (`urls_por_estado`) y la del ánimo de hoy."""
+    c = companero_basico(id_)
+    c["estado_animo_hoy"] = estado_hoy
+    c["url_con_animo"] = url_companero(id_, OJOS_POR_ESTADO[estado_hoy]) if estado_hoy else c["url"]
+    c["urls_por_estado"] = {e: url_companero(id_, o) for e, o in OJOS_POR_ESTADO.items()}
+    return c
+
+
+def avatares_estado(nivel=2, actual="sol", xp_total=45):
+    """El cuerpo de GET /avatares: los seis compañeros con lo que la persona ya abrió (por nivel máximo)."""
+    lista = []
+    for id_, nombre, forma, color, requerido in COMPANEROS:
+        lista.append({"id": id_, "nombre": nombre, "forma": forma, "color": color, "url": url_companero(id_),
+                      "nivel_requerido": requerido, "desbloqueado": nivel >= requerido, "niveles_faltantes": max(0, requerido - nivel),
+                      "seleccionado": id_ == actual})
+    return {"success": True, "avatar_actual": actual, "nivel_maximo": nivel, "xp_total": xp_total, "avatares": lista}
 
 
 def avatar_estado(nivel=2, ropa=None, accesorio=None, imagenes=False):
@@ -73,7 +116,7 @@ def avatar_estado(nivel=2, ropa=None, accesorio=None, imagenes=False):
         "bases": [dict(base, seleccionada=True), {"id": "base_2", "nombre": "Base 2", "archivo": "base_2.png", "imagen_lista": imagenes,
                                                    "seleccionada": False, "url": url("base_2.png")}],
         "objetos": objetos,
-        "respaldo_dicebear": {"id": "sol", "nombre": "Sol", "url": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=default"},
+        "respaldo_dicebear": companero_basico("sol"),
     }
 
 

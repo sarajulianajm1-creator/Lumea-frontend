@@ -28,10 +28,10 @@ def prenda(pagina, nombre):
 # ---------- La vitrina ----------
 def test_muestra_nivel_cara_y_barra(pagina, backend):
     abrir(pagina, backend)
-    assert texto(pagina, "#avatar-nivel") == "Nivel 2"
-    assert texto(pagina, "#avatar-faltan") == "Te faltan 35 XP para el nivel 3"
-    assert pagina.locator("#avatar-riel").get_attribute("aria-valuenow") == "13"
-    assert "mouth=smile" in pagina.locator("#avatar-figura img").get_attribute("src")        # el ánimo de hoy: «bien»
+    assert texto(pagina, "#avatar-nivel") == "Etapa 2"
+    assert texto(pagina, "#avatar-faltan") == "Te faltan 35 semillas para la etapa 3"
+    assert pagina.locator("#avatar-riel").get_attribute("aria-valuenow") == "30"
+    assert "eyesVariant=happy" in pagina.locator("#avatar-figura img").get_attribute("src")        # el ánimo de hoy: «bien»
     assert pagina.locator("#avatar-figura").get_attribute("aria-label") == "Tu avatar, tu ánimo de hoy: Bien"
     assert texto(pagina, "#avatar-puesto") == "Todavía no te pusiste nada."
     assert pagina.errores == []
@@ -110,8 +110,8 @@ def test_las_tres_misiones_con_su_xp(pagina, backend):
     abrir(pagina, backend)
     misiones = pagina.locator("#misiones-lista > li")
     assert misiones.count() == 3
-    assert misiones.nth(0).inner_text().split("\n")[0] == "Registra una fruta"
-    assert "+10 XP" in misiones.nth(0).inner_text() and "Cumplida hoy" in misiones.nth(0).inner_text()
+    assert misiones.nth(0).inner_text().split("\n")[0] == "Agradece y disfruta una fruta de la creación"
+    assert "+10 semillas" in misiones.nth(0).inner_text() and "Cumplida hoy" in misiones.nth(0).inner_text()
     assert "Para hoy" in misiones.nth(1).inner_text() and "Para hoy" in misiones.nth(2).inner_text()
 
 
@@ -120,7 +120,7 @@ def test_la_mision_cumplida_lleva_su_calcomania(pagina, backend):
     misiones = pagina.locator("#misiones-lista > li")
     assert misiones.nth(0).locator(".pegatina").count() == 1                    # la fruta ya está ganada en el álbum
     assert misiones.nth(1).locator(".pegatina").count() == 0
-    assert "Calcomanía: Fruta del día" in misiones.nth(0).inner_text()
+    assert "Calcomanía: Una fruta para alegrar tu día" in misiones.nth(0).inner_text()
 
 
 # ---------- Armario ----------
@@ -134,10 +134,10 @@ def test_el_armario_agrupa_ropa_y_accesorios(pagina, backend):
 def test_lo_bloqueado_dice_el_nivel_y_no_hace_nada(pagina, backend):
     abrir(pagina, backend, ruta="avatar.html#armario")
     camiseta = prenda(pagina, "Camiseta Lumea")
-    assert "Se abre en el nivel 3" in camiseta.inner_text()
+    assert "Se abre en la etapa 3" in camiseta.inner_text()
     boton = camiseta.get_by_role("button")
     assert boton.get_attribute("aria-disabled") == "true"
-    assert boton.get_attribute("aria-label") == "Camiseta Lumea, se abre en el nivel 3"
+    assert boton.get_attribute("aria-label") == "Camiseta Lumea, se abre en la etapa 3"
     boton.click(force=True)            # Playwright lo considera «no habilitado» por aria-disabled
     pagina.wait_for_timeout(150)
     assert ("POST", "/avatar/equipar") not in backend.llamadas
@@ -190,7 +190,7 @@ def test_si_el_backend_dice_que_esta_bloqueado(pagina, backend):
     abrir(pagina, backend, ruta="avatar.html#armario")
     prenda(pagina, "Buzo verde").get_by_role("button").click()
     pagina.locator("#avatar-aviso", has_text="Todavía no se abre").wait_for()
-    assert texto(pagina, "#avatar-aviso") == "Todavía no se abre: te falta 1 nivel."
+    assert texto(pagina, "#avatar-aviso") == "Todavía no se abre: te falta 1 etapa."
     assert "Puesto" not in prenda(pagina, "Buzo verde").inner_text()
 
 
@@ -208,9 +208,9 @@ def test_el_album_muestra_ganadas_y_por_ganar(pagina, backend):
     assert texto(pagina, "#album-resumen") == "3 de 10 calcomanías"
     assert pagina.locator(".album__item").count() == 10
     assert pagina.locator(".album__item--ganada").count() == 3
-    ganada = pagina.locator(".album__item--ganada", has_text="Primera foto")
-    assert "Registraste tu primera comida." in ganada.inner_text() and "Ganada el 3 de octubre" in ganada.inner_text()
-    vacia = pagina.locator(".album__item--vacia", has_text="Una semana")
+    ganada = pagina.locator(".album__item--ganada", has_text="Primer paso")
+    assert "Has dado el primer paso en el camino del cuidado." in ganada.inner_text() and "Ganada el 3 de octubre" in ganada.inner_text()
+    vacia = pagina.locator(".album__item--vacia", has_text="Siete días caminando juntos")
     assert "Cómo se gana: Llega a una racha de 7 días." in vacia.inner_text()
     assert vacia.locator(".pegatina--vacia").count() == 1 and ganada.locator(".pegatina--vacia").count() == 0
 
@@ -244,7 +244,7 @@ def test_error_de_conexion_se_puede_reintentar(pagina, backend):
     backend.respuestas.clear()
     pagina.get_by_role("button", name="Intentar otra vez").click()
     pagina.locator("#avatar-contenido").wait_for()
-    assert texto(pagina, "#avatar-nivel") == "Nivel 2"
+    assert texto(pagina, "#avatar-nivel") == "Etapa 2"
 
 
 def test_el_texto_del_servidor_nunca_es_html(pagina, backend):
@@ -305,7 +305,7 @@ def test_las_misiones_son_tarjetas_con_borde_y_el_color_va_en_su_chip(pagina, ba
     abrir(pagina, backend)
     assert color_de(pagina, "#misiones-lista .mision") == token(pagina, "--c-superficie")      # antes: el lila de «misión» en toda la caja
     assert "tarjeta--mision" not in pagina.locator("#misiones-lista .mision").first.get_attribute("class")
-    assert color_de(pagina, "#misiones-lista .chip--mision") == token(pagina, "--c-mision-suave")   # el color, en el chip de +10 XP
+    assert color_de(pagina, "#misiones-lista .chip--mision") == token(pagina, "--c-mision-suave")   # el color, en el chip de +10 semillas
 
 
 def test_en_computador_hay_dos_columnas_desde_992_px_y_debajo_una(pagina, backend):

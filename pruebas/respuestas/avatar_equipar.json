@@ -134,6 +134,8 @@
   "respaldo_dicebear": {
     "id": "sol",
     "nombre": "Sol",
-    "url": "https://api.dicebear.com/9.x/avataaars/svg?seed=lumea-sol&mouth=default"
+    "forma": "circle",
+    "color": "F6B73C",
+    "url": "https://api.dicebear.com/10.x/gaze/svg?seed=lumea-sol&shapeVariant=circle&bodyColor=F6B73C&eyesVariant=dots"
   }
 }

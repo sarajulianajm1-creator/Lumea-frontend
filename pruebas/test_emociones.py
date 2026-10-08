@@ -54,7 +54,7 @@ def test_las_caras_de_los_botones_son_las_del_set_elegido_y_la_grande_sigue_sien
     pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
     assert all("/10.x/moods/" in i.get_attribute("src") for i in pagina.locator(".animo-caras img").all())
     boton(pagina, "Mal").click()
-    assert "mouth=concerned" in pagina.locator("#cara-grande img").get_attribute("src")    # la del avatar, no la del set
+    assert "eyesVariant=small" in pagina.locator("#cara-grande img").get_attribute("src")    # la del avatar, no la del set
 
 
 def test_sin_emojis_ni_version_en_la_pantalla(pagina, backend):
@@ -69,10 +69,10 @@ def test_la_cara_grande_cambia_en_vivo_al_elegir(pagina, backend):
     abrir(pagina, backend)
     assert pagina.locator("#btn-guardar-animo").is_disabled()          # sin elegir no se guarda
     boton(pagina, "Mal").click()
-    assert "mouth=concerned" in pagina.locator("#cara-grande img").get_attribute("src")
+    assert "eyesVariant=small" in pagina.locator("#cara-grande img").get_attribute("src")
     assert pagina.locator("#texto-estado-seleccionado").inner_text() == "Me siento mal"
     boton(pagina, "Muy bien").click()
-    assert "twinkle" in pagina.locator("#cara-grande img").get_attribute("src")
+    assert "eyesVariant=grin" in pagina.locator("#cara-grande img").get_attribute("src")
     assert pagina.locator("#texto-estado-seleccionado").inner_text() == "Me siento muy bien"
     pulsados = pagina.locator(".animo-cara[aria-pressed=true]")
     assert pulsados.count() == 1 and "Muy bien" in pulsados.inner_text()
@@ -98,7 +98,7 @@ def test_guardar_registra_celebra_y_queda_registrado(pagina, backend):
     backend.poner("GET", "/progreso", cuerpo)
     pagina.get_by_role("button", name="Guardar mi ánimo").click()
     pagina.locator(".celebracion__chip").first.wait_for()
-    assert pagina.locator(".celebracion__chip").first.inner_text() == "+5 XP"
+    assert pagina.locator(".celebracion__chip").first.inner_text() == "+5 semillas"
     envio = next(c for m, u, c in backend.peticiones if m == "POST" and u.endswith("/estado-animo"))
     assert json.loads(envio) == {"email": "prueba@lumea.test", "estado": "mal"}
     guardar = pagina.locator("#btn-guardar-animo")

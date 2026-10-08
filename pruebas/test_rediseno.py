@@ -135,9 +135,9 @@ def test_el_menu_es_lateral_en_computador_y_barra_inferior_en_celular(pagina, ta
 
 def test_la_zona_de_usuario_del_menu_muestra_nombre_y_nivel(pagina):
     abrir(pagina, "index-ingresado.html", "1280")
-    pagina.locator(".nav-app__nivel", has_text="Nivel 2").wait_for()
+    pagina.locator(".nav-app__nivel", has_text="Etapa 2").wait_for()
     usuario = pagina.locator(".nav-app__usuario").inner_text()
-    assert "Ana" in usuario and "Nivel 2" in usuario
+    assert "Ana" in usuario and "Etapa 2" in usuario
     assert pagina.locator(".nav-app__salir").is_visible()
 
 

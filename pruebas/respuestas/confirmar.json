@@ -24,7 +24,7 @@
     "misiones_cumplidas": [
       {
         "id": "tres_comidas",
-        "nombre": "Registra 3 comidas",
+        "nombre": "Cuida de ti en tus tres comidas",
         "xp": 10
       }
     ],
@@ -56,13 +56,13 @@
     "calcomanias_nuevas": [
       {
         "id": "tres_al_dia",
-        "nombre": "Tres al día",
-        "descripcion": "Registraste 3 comidas en un mismo día.",
+        "nombre": "Un día completo",
+        "descripcion": "Prestas atención a tu alimentación tres veces en el día.",
         "rol": "mision"
       },
       {
         "id": "ayudaste_ia",
-        "nombre": "Le ayudaste a la IA",
+        "nombre": "Inteligencia humana al rescate",
         "descripcion": "Confirmaste un plato cuando la IA dudó.",
         "rol": "duda"
       }

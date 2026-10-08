@@ -14,15 +14,15 @@
   ],
   "dato_curioso": "Las burbujas de las bebidas gaseosas son dióxido de carbono disuelto bajo presión.",
   "consejo": {
-    "grupo": "gaseosas_bebidas_azucaradas",
-    "aporta": "Una gaseosa aporta agua y azúcar añadida: es energía rápida, con pocos otros nutrientes.",
-    "para_completar": "",
-    "a_tener_en_cuenta": "",
+    "grupo": "azucares",
+    "aporta": "Aporta agua y energía rápida del azúcar, pero no trae vitaminas, minerales ni fibra.",
+    "para_completar": null,
+    "a_tener_en_cuenta": "Una lata de 355 ml trae unos 35 g de azúcar, más que los 25 g que la OMS sugiere como ideal para todo el día.",
     "sellos": [
       {
         "sello": "azucares",
-        "dato": "Una lata de 330 ml trae cerca de 35 g de azúcar; la OMS sugiere no pasar de 25 g en todo el día.",
-        "idea": "Otro día, el agua con limón o un jugo de fruta natural también refrescan."
+        "dato": "Tiene azúcar añadida alta. La OMS sugiere que los azúcares libres sean menos del 10 % de la energía del día: unos 50 g para alguien que come 2.000 kcal.",
+        "idea": "Si otro día quieres algo dulce, una fruta entera trae su propio azúcar junto con fibra y agua."
       }
     ]
   }
