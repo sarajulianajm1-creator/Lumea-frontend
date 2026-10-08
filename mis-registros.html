@@ -3,24 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Paleta, modo y piel (?piel=sara muestra el original) -->
+  <!-- Paleta y modo: antes de las hojas de estilo, para que no haya un destello del tema equivocado -->
   <script src="tema.js"></script>
   <title>LUMEA | Mis Registros</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="lumeaaa.png">
-  <!-- Bootstrap 5.3.3 CSS (copia local en vendor/: funciona sin internet) -->
-  <link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
+  <!-- Bootstrap Icons (los íconos; el aspecto ya no sale de Bootstrap) -->
   <link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
-  <!-- Hoja de Estilos Unificada -->
   <link rel="stylesheet" href="estilos/tokens.css">
   <link rel="stylesheet" href="estilos/paletas.css">
   <link rel="stylesheet" href="estilos/componentes.css">
-  <!-- Lo propio de las pantallas privadas (armazón, piezas y lo que falta de Sara, con tokens) -->
+  <!-- Lo propio de las pantallas privadas -->
   <link rel="stylesheet" href="estilos/app.css">
 </head>
 <body>
-<div class="app">
+  <div class="app">
 
     <!-- menu-privado:nav (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
     <nav class="nav-app" aria-label="Principal">
@@ -35,70 +32,56 @@
       </div>
     </nav>
     <!-- /menu-privado:nav -->
+
     <div class="app__area">
-<main class="contenido">
-    <div class="container">
+      <!-- ============================================================
+           MIS REGISTROS (rediseño R6): tu histórico de comidas como una lista de filas, no de tarjetas.
+           ============================================================ -->
+      <main class="contenido">
 
-      <!-- Aviso: sin sesión -->
-      <div id="sinSesion" class="d-none">
-        <div class="card auth-card mx-auto p-4 p-md-5 border-0 text-center">
-          <div class="step-badge mx-auto mb-3">
-            <i class="bi bi-person-lock fs-4"></i>
+        <!-- Aviso: sin sesión -->
+        <section id="sinSesion" class="tarjeta registro__sesion" aria-labelledby="titulo-sin-sesion" hidden>
+          <h1 id="titulo-sin-sesion" class="contenido__titulo">Inicia sesión para ver tus registros</h1>
+          <div class="inicio__acciones">
+            <a href="iniciar-sesion.html" class="boton">Iniciar Sesión</a>
+            <a href="crear-cuenta.html" class="boton boton--secundario">Crear Cuenta</a>
           </div>
-          <h1 class="h3 fw-bold hero-title mb-2">Inicia sesión para ver tus registros</h1>
-          <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-3">
-            <a href="iniciar-sesion.html" class="btn btn-lumea rounded-pill px-4 py-2">Iniciar Sesión</a>
-            <a href="crear-cuenta.html" class="btn btn-lumea-outline rounded-pill px-4 py-2">Crear Cuenta</a>
+        </section>
+
+        <div id="conSesion" class="registros__pantalla" hidden>
+          <header>
+            <h1 class="contenido__titulo">Mis registros</h1>
+            <p class="contenido__subtitulo">Tu histórico de comidas, sin comparaciones ni juicios -- solo para tu propia reflexión.</p>
+          </header>
+
+          <p id="cargando" class="inicio__nota" role="status">Cargando tu historial...</p>
+
+          <div id="sinRegistros" class="estado-pantalla" hidden>
+            <p>Todavía no tienes comidas registradas.</p>
+            <a href="alimentos.html" class="boton">Registra tu primera comida</a>
           </div>
-        </div>
-      </div>
 
-      <div id="conSesion" class="d-none">
-        <div class="text-center mb-4">
-          <h1 class="fw-bold hero-title mb-1"><i class="bi bi-journal-text me-2"></i>Mis Registros</h1>
-          <p class="text-secondary mb-0">Tu histórico de comidas, sin comparaciones ni juicios -- solo para tu propia reflexión.</p>
+          <div id="errorHistorial" class="estado-pantalla" role="alert" hidden></div>
+
+          <ul id="listaRegistros" class="registros"></ul>
         </div>
 
-        <div id="cargando" class="text-center text-secondary py-5">
-          <span class="spinner-border spinner-border-sm me-2"></span> Cargando tu historial...
-        </div>
+      </main>
 
-        <div id="sinRegistros" class="text-center text-secondary py-5 d-none">
-          <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-          Todavía no tienes comidas registradas.
-          <a href="alimentos.html" class="d-block mt-2">Registra tu primera comida</a>
-        </div>
-
-        <div id="listaRegistros" class="row row-cols-1 row-cols-md-2 g-3"></div>
-      </div>
-
-    </div>
-  </main>
-
-<!-- Pie de Página Unificado -->
-  <footer class="footer-lumea py-4 mt-auto">
-    <div class="container">
-      <div class="row align-items-center gy-3">
-        <div class="col-md-6 text-center text-md-start">
-          <img class="marca d-inline-block align-middle" src="img/logo.svg" alt="Lumea">
-          <span class="small text-secondary ms-2">&copy; 2026. Bienestar y educación nutricional para estudiantes.</span>
-        </div>
-        <div class="col-md-6 text-center text-md-end">
-          <ul class="list-inline mb-0 small">
-            <li class="list-inline-item"><a href="index.html">Inicio</a></li>
-            <li class="list-inline-item">&bull;</li>
-            <li class="list-inline-item"><a href="conocenos.html">Conócenos</a></li>
-            <li class="list-inline-item">&bull;</li>
-            <li class="list-inline-item"><a href="guialumea.html">Guía</a></li>
-            <li class="list-inline-item">&bull;</li>
-            <li class="list-inline-item"><a href="terminos.html">Términos</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </footer>
+      <!-- Pie de página unificado -->
+      <footer class="pie-app">
+        <img class="marca" src="img/logo.svg" alt="Lumea">
+        <span class="inicio__nota">&copy; 2026. Bienestar y educación nutricional para estudiantes.</span>
+        <ul class="pie-app__enlaces">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="conocenos.html">Conócenos</a></li>
+          <li><a href="guialumea.html">Guía</a></li>
+          <li><a href="terminos.html">Términos</a></li>
+        </ul>
+      </footer>
     </div>
   </div>
+
   <script src="api.js"></script>
   <script src="sesion-nav.js"></script>
   <script>
@@ -107,12 +90,13 @@
     const conSesion = document.getElementById("conSesion");
     const cargando = document.getElementById("cargando");
     const sinRegistros = document.getElementById("sinRegistros");
+    const errorHistorial = document.getElementById("errorHistorial");
     const listaRegistros = document.getElementById("listaRegistros");
 
     if (!email) {
-      sinSesion.classList.remove("d-none");
+      sinSesion.hidden = false;
     } else {
-      conSesion.classList.remove("d-none");
+      conSesion.hidden = false;
       cargarHistorial();
     }
 
@@ -126,7 +110,7 @@
     };
 
     // Se arma con createElement y textContent (nunca innerHTML): lo que llega del
-    // servidor es texto, no HTML. El resultado es el mismo que antes.
+    // servidor es texto, no HTML.
     function elemento(etiqueta, clase, texto) {
       const el = document.createElement(etiqueta);
       if (clase) el.className = clase;
@@ -134,33 +118,51 @@
       return el;
     }
 
+    // «EXCESO EN AZÚCARES» -> «Exceso en azúcares»: el nombre accesible del sello va en minúsculas normales
+    // para que el lector de pantalla lo lea como una frase y no lo deletree
+    const enFrase = (t) => t.charAt(0) + t.slice(1).toLowerCase();
+
+    // Los sellos van dentro de un .sellos: en modo oscuro esa envoltura les pone una placa clara alrededor
     function nodoSellos(sellos) {
       if (sellos === null || sellos === undefined) return null;
-      if (sellos.length === 0) return elemento("p", "small text-secondary mb-1", "Sin sellos de advertencia");
-      const caja = elemento("div", "d-flex flex-wrap gap-1 mb-1");
-      sellos.forEach((s) => caja.appendChild(elemento("span", "sello-mini", TEXTO_SELLO[s] ?? s)));
+      if (sellos.length === 0) return elemento("p", "inicio__nota", "Sin sellos de advertencia");
+      const caja = elemento("div", "sellos");
+      sellos.forEach((s) => {
+        const sello = elemento("span", "sello", TEXTO_SELLO[s] ?? s);
+        sello.setAttribute("role", "img");
+        sello.setAttribute("aria-label", enFrase(sello.textContent));
+        caja.appendChild(sello);
+      });
       return caja;
     }
 
     // Una línea con su ícono de Bootstrap Icons delante
-    function lineaConIcono(clase, icono, texto) {
-      const p = elemento("p", clase);
-      p.appendChild(elemento("i", `bi ${icono} me-1`));
-      p.appendChild(document.createTextNode(texto));
+    function lineaConIcono(icono, texto) {
+      const p = elemento("p", "registro__dato");
+      const i = elemento("i", `bi ${icono}`);
+      i.setAttribute("aria-hidden", "true");
+      p.appendChild(i);
+      p.appendChild(document.createTextNode(` ${texto}`));
       return p;
     }
 
-    function tarjetaDeRegistro(registro) {
-      const columna = elemento("div", "col");
-      const tarjeta = elemento("div", "card h-100 rounded-4 shadow-sm p-3");
-      tarjeta.appendChild(elemento("h3", "h6 fw-bold hero-title mb-1", registro.alimento_detectado ?? "Alimento"));
-      tarjeta.appendChild(lineaConIcono("small text-secondary mb-1", "bi-calendar3", formatearFecha(registro.fecha)));
+    // Una fila de la lista: el nombre y la fecha a la izquierda, calorías y certeza a la derecha, y los sellos debajo
+    function filaDeRegistro(registro) {
+      const fila = elemento("li", "registro");
+      const quien = elemento("div", "registro__quien");
+      quien.appendChild(elemento("h3", "registro__nombre", registro.alimento_detectado ?? "Alimento"));
+      quien.appendChild(lineaConIcono("bi-calendar3", formatearFecha(registro.fecha)));
+      fila.appendChild(quien);
+      const datos = elemento("div", "registro__datos");
+      datos.appendChild(lineaConIcono("bi-fire", `${registro.calorias_aprox ?? "—"} kcal aprox.`));
+      datos.appendChild(lineaConIcono("bi-bullseye", `Certeza IA: ${Number(registro.certeza_ia ?? 0).toFixed(1)}%`));
+      fila.appendChild(datos);
       const sellos = nodoSellos(registro.sellos_advertencia);
-      if (sellos) tarjeta.appendChild(sellos);
-      tarjeta.appendChild(lineaConIcono("small text-secondary mb-1", "bi-fire", `${registro.calorias_aprox ?? "—"} kcal aprox.`));
-      tarjeta.appendChild(lineaConIcono("small text-secondary mb-0", "bi-bullseye", `Certeza IA: ${Number(registro.certeza_ia ?? 0).toFixed(1)}%`));
-      columna.appendChild(tarjeta);
-      return columna;
+      if (sellos) {
+        sellos.classList.add("registro__sellos");
+        fila.appendChild(sellos);
+      }
+      return fila;
     }
 
     function formatearFecha(fechaISO) {
@@ -175,17 +177,16 @@
     async function cargarHistorial() {
       try {
         const { cuerpo } = await obtenerHistorial(email);
-        cargando.classList.add("d-none");
-
+        cargando.hidden = true;
         if (!cuerpo.success || !cuerpo.historial || cuerpo.historial.length === 0) {
-          sinRegistros.classList.remove("d-none");
+          sinRegistros.hidden = false;
           return;
         }
-
-        listaRegistros.replaceChildren(...cuerpo.historial.map(tarjetaDeRegistro));
+        listaRegistros.replaceChildren(...cuerpo.historial.map(filaDeRegistro));
       } catch (error) {
-        cargando.classList.add("d-none");
-        listaRegistros.replaceChildren(elemento("div", "alert alert-danger", `No se pudo conectar con el servidor. ¿Está corriendo app.py en ${API_BASE_URL}?`));
+        cargando.hidden = true;
+        errorHistorial.textContent = `No se pudo conectar con el servidor. ¿Está corriendo app.py en ${API_BASE_URL}?`;
+        errorHistorial.hidden = false;
       }
     }
   </script>
