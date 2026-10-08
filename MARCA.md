@@ -42,7 +42,8 @@ Airbnb, Spotify, Raycast, Duolingo y la fluidez de macOS. Las referencias de col
 
 ## Las cinco paletas (nombres de trabajo)
 
-Laguna Verde (predeterminada), Neblina, Carnaval, Colibrí y Cosecha. Cada una con modo claro y oscuro. **Aprobadas el 4 de octubre de 2026.**
+Laguna Verde, Neblina, Carnaval, Colibrí y Cosecha. Cada una con modo claro y oscuro. **Aprobadas el 4 de octubre de 2026.**
+**Ninguna es predeterminada** (decisión de Isabella, 7 de octubre de 2026): cada persona elige la suya, igual que el set de caras del check-in. Mientras no elige, Lumea se ve en un **estado neutro**: superficies casi blancas y texto sin tono (croma ≤ 0,006), con los mismos colores de rol de siempre y el botón principal en aguacate. El estado neutro no se puede elegir: no aparece en el selector.
 Los valores salen de `herramientas/generar_paletas.py`, que mide contraste y daltonismo.
 
 Colibrí reemplazó a Mopa-mopa y Cosecha a Potrerillo: usar el nombre del barniz de Pasto (patrimonio en salvaguardia urgente, UNESCO 2020) exigía el acuerdo de sus maestros, y una plaza concreta ataba la paleta a un lugar. Los nombres nuevos vienen de criaturas y cosechas, como pide la fraternidad con las criaturas del Cántico de Francisco de Asís.

@@ -93,6 +93,20 @@ PALETAS = {
         "claro":  {"h": 265, "c_fondo": 0.010, "L_fondo": 0.965, "L_marca": 0.40},
         "oscuro": {"h": 272, "c_fondo": 0.055, "L_fondo": 0.190},
     },
+    # El estado neutro: lo que se ve mientras la persona no ha elegido una paleta (ninguna es
+    # predeterminada, decisión de Isabella del 7 de octubre de 2026). Superficies casi blancas y
+    # texto sin tono (h 85, croma <= 0,006: no se lee ni crema ni gris), con los MISMOS colores de
+    # rol de siempre (los de Laguna), porque llevan significado. No aparece en el selector.
+    # «tinte» multiplica el croma de la tinta, los bordes y el visor: 1 = como las demás paletas.
+    "neutro": {
+        "nombre": "Neutro", "caracter": "Sin elegir todavía",
+        "origen": "El estado de Lumea antes de que cada persona elija sus colores: superficies casi blancas y sin tono.",
+        "h": {"aguacate": 152, "maracuya": 92, "mango": 57, "guayaba": 345, "mora": 314},
+        "croma": 0.13, "croma_mango": 0.16, "croma_contenedor": 0.07,
+        "tinte": 0.2,
+        "claro":  {"h": 85, "c_fondo": 0.005, "L_fondo": 0.985, "L_marca": 0.42},
+        "oscuro": {"h": 85, "c_fondo": 0.004, "L_fondo": 0.190},
+    },
     "cosecha": {
         "nombre": "Cosecha", "caracter": "Cálida, de mercado",
         "origen": "La cosecha de papas nativas de Nariño: amarillas, rojas y moradas.",
@@ -103,7 +117,7 @@ PALETAS = {
         "oscuro": {"h": 55, "c_fondo": 0.014, "L_fondo": 0.190},
     },
 }
-PREDETERMINADA = "laguna"
+PREDETERMINADA = "neutro"   # la que cae en :root cuando no hay data-paleta (nadie eligió)
 SELLO = "#000000"  # Resolución 810 de 2021: no se rediseña
 
 
@@ -178,24 +192,25 @@ def tema(p, modo):
     hs = S["h"]
     t = {}
     oscuro = modo == "oscuro"
+    tinte = P.get("tinte", 1.0)          # 1 = como siempre; el estado neutro casi no tiñe la tinta ni los bordes
     if not oscuro:
         t["fondo"] = color(S["L_fondo"], S["c_fondo"], hs)
         t["superficie"] = color(0.995, S["c_fondo"] * 0.35, hs)
         t["superficie-2"] = color(1.0, 0, 0)
-        t["tinta"] = color(0.235 if p != "carnaval" else 0.19, 0.02, hs)
-        t["tinta-suave"] = color(0.46, 0.025, hs)
-        t["borde"] = color(0.90, S["c_fondo"] * 0.9 + 0.006, hs)
-        t["borde-fuerte"] = color(0.60, 0.02, hs)
-        t["visor"] = color(0.23, 0.03, hs)
+        t["tinta"] = color(0.235 if p != "carnaval" else 0.19, 0.02 * tinte, hs)
+        t["tinta-suave"] = color(0.46, 0.025 * tinte, hs)
+        t["borde"] = color(0.90, S["c_fondo"] * 0.9 + 0.006 * tinte, hs)
+        t["borde-fuerte"] = color(0.60, 0.02 * tinte, hs)
+        t["visor"] = color(0.23, 0.03 * tinte, hs)
     else:
         L0 = S["L_fondo"]
         t["fondo"] = color(L0, S["c_fondo"], hs)
         t["superficie"] = color(L0 + 0.04, S["c_fondo"] * 1.05, hs)
         t["superficie-2"] = color(L0 + 0.08, S["c_fondo"] * 1.1, hs)
-        t["tinta"] = color(0.93, 0.012, hs)
-        t["tinta-suave"] = color(0.76, 0.02, hs)
+        t["tinta"] = color(0.93, 0.012 * tinte, hs)
+        t["tinta-suave"] = color(0.76, 0.02 * tinte, hs)
         t["borde"] = color(L0 + 0.12, S["c_fondo"] * 1.2, hs)
-        t["borde-fuerte"] = color(0.58, 0.02, hs)
+        t["borde-fuerte"] = color(0.58, 0.02 * tinte, hs)
         t["visor"] = color(max(0.10, L0 - 0.05), S["c_fondo"], hs)
 
     # Marca (aguacate): botón principal, enlaces, selección
@@ -228,7 +243,7 @@ def tema(p, modo):
         t[rol] = color(L, c, h)
         claro_relleno = L >= 0.6
         if oscuro:
-            t[f"sobre-{rol}"] = color(0.18, 0.02, hs)   # texto oscuro sobre relleno luminoso
+            t[f"sobre-{rol}"] = color(0.18, 0.02 * tinte, hs)   # texto oscuro sobre relleno luminoso
         else:
             t[f"sobre-{rol}"] = t["tinta"] if claro_relleno else color(0.99, 0.01, h)
         if oscuro:
@@ -262,12 +277,12 @@ def tema(p, modo):
         t["error-suave"] = color(S["L_fondo"] + 0.08, 0.05, 25)
 
     # Fijos de la pantalla de cámara y la calcomanía de logro
-    t["sobre-visor"] = color(0.93, 0.012, hs)
+    t["sobre-visor"] = color(0.93, 0.012 * tinte, hs)
     hm = P["h"]["maracuya"]
     t["calcomania"] = color(0.80, max(P["croma"], 0.15), hm) if not oscuro else t["logro"]
 
     t["sello"] = SELLO
-    t["sello-placa"] = "transparent" if not oscuro else color(0.92, 0.01, hs)
+    t["sello-placa"] = "transparent" if not oscuro else color(0.92, 0.01 * tinte, hs)
     return t
 
 
@@ -372,7 +387,10 @@ def main():
         "     data-paleta = laguna | neblina | carnaval | colibri | cosecha\n"
         "     data-modo   = claro | oscuro   (sin atributo = sigue al sistema)\n"
         "   ===================================================================== */\n"]
-    for p in PALETAS:
+    # La predeterminada (el estado neutro) va PRIMERO: su bloque lleva :root, que tiene la misma
+    # especificidad que [data-paleta="x"], y entre dos reglas iguales gana la que está después.
+    # Si fuera en medio, taparía a las paletas que quedaran antes.
+    for p in [PREDETERMINADA] + [x for x in PALETAS if x != PREDETERMINADA]:
         P = PALETAS[p]
         # [data-paleta] sin :root para que una tarjeta de muestra también
         # pueda llevar su propia paleta (el selector de paletas lo usa).
@@ -433,7 +451,7 @@ def main():
         print("\nFALLAS:")
         print("\n".join(todas_fallas))
         sys.exit(1)
-    print("\nTodo pasa WCAG AA en los 10 temas.")
+    print(f"\nTodo pasa WCAG AA en los {len(PALETAS) * 2} temas.")
 
 
 if __name__ == "__main__":

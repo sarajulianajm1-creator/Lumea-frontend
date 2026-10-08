@@ -8,8 +8,163 @@
      data-modo   = claro | oscuro   (sin atributo = sigue al sistema)
    ===================================================================== */
 
-/* ---------- Laguna Verde · Original, fresca. El verde de la Laguna Verde del volcán Azufral viene del azufre y las algas. ---------- */
+/* ---------- Neutro · Sin elegir todavía. El estado de Lumea antes de que cada persona elija sus colores: superficies casi blancas y sin tono. ---------- */
 :root,
+[data-paleta="neutro"] {
+  --c-fondo: #FCFAF6;
+  --c-superficie: #FEFDFC;
+  --c-superficie-2: #FFFFFF;
+  --c-tinta: #1F1E1C;
+  --c-tinta-suave: #595855;
+  --c-borde: #E0DEDA;
+  --c-borde-fuerte: #81807D;
+  --c-visor: #1E1D1A;
+  --c-marca: #005D2D;
+  --c-marca-hover: #004B22;
+  --c-sobre-marca: #F7FEF8;
+  --c-marca-suave: #D3F5DB;
+  --c-marca-tinta: #006430;
+  --c-foco: #007137;
+  --c-mision: #6C3884;
+  --c-sobre-mision: #FDFAFF;
+  --c-mision-suave: #F8EAFF;
+  --c-mision-contenedor: #F0D3FF;
+  --c-mision-tinta: #6F3B87;
+  --c-comida: #1E8347;
+  --c-sobre-comida: #F7FEF8;
+  --c-comida-suave: #DEF8E4;
+  --c-comida-contenedor: #BEEEC9;
+  --c-comida-tinta: #006732;
+  --c-emocion: #CD72A7;
+  --c-sobre-emocion: #1F1E1C;
+  --c-emocion-suave: #FFE9F4;
+  --c-emocion-contenedor: #FFD0E9;
+  --c-emocion-tinta: #853166;
+  --c-duda: #FFA156;
+  --c-sobre-duda: #1F1E1C;
+  --c-duda-suave: #FFECDF;
+  --c-duda-contenedor: #FFD7BA;
+  --c-duda-tinta: #1F1E1C;
+  --c-logro: #FFDF7B;
+  --c-sobre-logro: #1F1E1C;
+  --c-logro-suave: #FFF0C2;
+  --c-logro-contenedor: #FADE86;
+  --c-logro-tinta: #1F1E1C;
+  --c-error: #B7191C;
+  --c-sobre-error: #FFFFFF;
+  --c-error-suave: #FFE9E6;
+  --c-sobre-visor: #E8E8E6;
+  --c-calcomania: #E0BA31;
+  --c-sello: #000000;
+  --c-sello-placa: transparent;
+  color-scheme: light;
+}
+[data-paleta="neutro"][data-modo="oscuro"],
+:root[data-paleta="neutro"]:not([data-modo])[data-theme="dark"],
+:root:not([data-paleta])[data-modo="oscuro"],
+:root:not([data-paleta]):not([data-modo])[data-theme="dark"] {
+  --c-fondo: #151412;
+  --c-superficie: #1E1D1B;
+  --c-superficie-2: #272624;
+  --c-tinta: #E8E8E6;
+  --c-tinta-suave: #B2B1AE;
+  --c-borde: #31302E;
+  --c-borde-fuerte: #7B7A78;
+  --c-visor: #0A0907;
+  --c-marca: #78D694;
+  --c-marca-hover: #8CEAA6;
+  --c-sobre-marca: #0B1A0F;
+  --c-marca-suave: #153921;
+  --c-marca-tinta: #7FDC9A;
+  --c-foco: #85E3A0;
+  --c-mision: #B789CF;
+  --c-sobre-mision: #121110;
+  --c-mision-suave: #2F1F37;
+  --c-mision-contenedor: #3E2849;
+  --c-mision-tinta: #E5B5FD;
+  --c-comida: #79C58E;
+  --c-sobre-comida: #121110;
+  --c-comida-suave: #112D1A;
+  --c-comida-contenedor: #163C22;
+  --c-comida-tinta: #92E0A7;
+  --c-emocion: #F1A1CE;
+  --c-sobre-emocion: #121110;
+  --c-emocion-suave: #371C2C;
+  --c-emocion-contenedor: #49253A;
+  --c-emocion-tinta: #FFADDB;
+  --c-duda: #FFB986;
+  --c-sobre-duda: #121110;
+  --c-duda-suave: #2D241E;
+  --c-duda-contenedor: #3C3028;
+  --c-duda-tinta: #FFB986;
+  --c-logro: #F8DC86;
+  --c-sobre-logro: #121110;
+  --c-logro-suave: #29261D;
+  --c-logro-contenedor: #373326;
+  --c-logro-tinta: #E4C973;
+  --c-error: #F7857D;
+  --c-sobre-error: #151412;
+  --c-error-suave: #3B1C1A;
+  --c-sobre-visor: #E8E8E6;
+  --c-calcomania: #F8DC86;
+  --c-sello: #000000;
+  --c-sello-placa: #E5E4E3;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+:root[data-paleta="neutro"]:not([data-modo]):not([data-theme="light"]),
+:root:not([data-paleta]):not([data-modo]):not([data-theme="light"]) {
+  --c-fondo: #151412;
+  --c-superficie: #1E1D1B;
+  --c-superficie-2: #272624;
+  --c-tinta: #E8E8E6;
+  --c-tinta-suave: #B2B1AE;
+  --c-borde: #31302E;
+  --c-borde-fuerte: #7B7A78;
+  --c-visor: #0A0907;
+  --c-marca: #78D694;
+  --c-marca-hover: #8CEAA6;
+  --c-sobre-marca: #0B1A0F;
+  --c-marca-suave: #153921;
+  --c-marca-tinta: #7FDC9A;
+  --c-foco: #85E3A0;
+  --c-mision: #B789CF;
+  --c-sobre-mision: #121110;
+  --c-mision-suave: #2F1F37;
+  --c-mision-contenedor: #3E2849;
+  --c-mision-tinta: #E5B5FD;
+  --c-comida: #79C58E;
+  --c-sobre-comida: #121110;
+  --c-comida-suave: #112D1A;
+  --c-comida-contenedor: #163C22;
+  --c-comida-tinta: #92E0A7;
+  --c-emocion: #F1A1CE;
+  --c-sobre-emocion: #121110;
+  --c-emocion-suave: #371C2C;
+  --c-emocion-contenedor: #49253A;
+  --c-emocion-tinta: #FFADDB;
+  --c-duda: #FFB986;
+  --c-sobre-duda: #121110;
+  --c-duda-suave: #2D241E;
+  --c-duda-contenedor: #3C3028;
+  --c-duda-tinta: #FFB986;
+  --c-logro: #F8DC86;
+  --c-sobre-logro: #121110;
+  --c-logro-suave: #29261D;
+  --c-logro-contenedor: #373326;
+  --c-logro-tinta: #E4C973;
+  --c-error: #F7857D;
+  --c-sobre-error: #151412;
+  --c-error-suave: #3B1C1A;
+  --c-sobre-visor: #E8E8E6;
+  --c-calcomania: #F8DC86;
+  --c-sello: #000000;
+  --c-sello-placa: #E5E4E3;
+  color-scheme: dark;
+}
+}
+
+/* ---------- Laguna Verde · Original, fresca. El verde de la Laguna Verde del volcán Azufral viene del azufre y las algas. ---------- */
 [data-paleta="laguna"] {
   --c-fondo: #EAF8F4;
   --c-superficie: #FAFFFD;
@@ -60,9 +215,7 @@
   color-scheme: light;
 }
 [data-paleta="laguna"][data-modo="oscuro"],
-:root[data-paleta="laguna"]:not([data-modo])[data-theme="dark"],
-:root:not([data-paleta])[data-modo="oscuro"],
-:root:not([data-paleta]):not([data-modo])[data-theme="dark"] {
+:root[data-paleta="laguna"]:not([data-modo])[data-theme="dark"] {
   --c-fondo: #011717;
   --c-superficie: #062020;
   --c-superficie-2: #0F2A2A;
@@ -112,8 +265,7 @@
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
-:root[data-paleta="laguna"]:not([data-modo]):not([data-theme="light"]),
-:root:not([data-paleta]):not([data-modo]):not([data-theme="light"]) {
+:root[data-paleta="laguna"]:not([data-modo]):not([data-theme="light"]) {
   --c-fondo: #011717;
   --c-superficie: #062020;
   --c-superficie-2: #0F2A2A;
