@@ -171,6 +171,15 @@ def test_sin_internet_se_quita_la_imagen_y_queda_la_palabra_y_el_boton_funciona(
 
 
 @pytest.mark.parametrize("nombre", PAGINAS)
+def test_si_localstorage_falla_no_se_rompe_nada(pagina, backend, nombre):
+    """companero.js borra la clave vieja con try/catch: un navegador que bloquea el almacenamiento no rompe el check-in."""
+    pagina.add_init_script("Storage.prototype.removeItem = () => { throw new Error('sin permiso'); };")
+    abrir(pagina, backend, nombre)
+    assert botones(pagina).locator("img").count() == 5
+    assert pagina.errores == []
+
+
+@pytest.mark.parametrize("nombre", PAGINAS)
 def test_si_el_backend_no_manda_companero_solo_se_ve_la_palabra(pagina, backend, nombre):
     abrir(pagina, backend, nombre, compa=None)
     pagina.wait_for_timeout(300)
