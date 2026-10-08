@@ -208,17 +208,18 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 .inicio__cifra { font-size: var(--t-xl); font-weight: var(--t-peso-fuerte); line-height: 1.1; }
 .inicio__cifra .numero { font-size: inherit; }
 
-.inicio__fila { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--e-5); align-items: stretch; }
+.inicio__fila { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--e-5); align-items: start; }
 @media (max-width: 1100px) { .inicio__fila { grid-template-columns: minmax(0, 1fr); } }   /* el menú lateral se come 248 px */
 .inicio__dia, .inicio__animo { display: flex; flex-direction: column; gap: var(--e-3); }
-.inicio__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: auto; padding-top: var(--e-2); }   /* abajo de la tarjeta, alineadas entre las dos */
+.inicio__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-2); }
 
 /* Foto directa: el input va escondido; el botón (la etiqueta) muestra el foco cuando el input lo tiene */
 .foto-directa { cursor: pointer; }
 .foto-directa:focus-within { outline: 3px solid var(--c-foco); outline-offset: 2px; }
 
-/* ¿Cómo llegas hoy?: cinco caras. En una tarjeta angosta van 3 + 2; si cabe, las cinco en una fila */
-.inicio__animo { container-type: inline-size; }
+/* ¿Cómo llegas hoy?: cinco caras. En una tarjeta angosta van 3 + 2; si cabe, las cinco en una fila.
+   Las usan Inicio y Ánimo; la cara de cada botón la dibuja caras-checkin.js (sin set elegido, solo la palabra). */
+.inicio__animo, .animo-escena { container-type: inline-size; }
 .animo-caras { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--e-2); }
 .animo-cara {
   flex: 0 0 calc((100% - 2 * var(--e-2)) / 3);
@@ -231,12 +232,14 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 }
 @container (min-width: 460px) { .animo-cara { flex-basis: calc((100% - 4 * var(--e-2)) / 5); } }
 .animo-cara:hover:not(:disabled) { border-color: var(--c-emocion-tinta); }
-/* La elegida lleva el color del rol «emoción»: es el mismo para todos los ánimos, ninguno es mejor que otro */
-.animo-cara[aria-pressed="true"] { background: var(--c-emocion); border-color: var(--c-emocion); color: var(--c-sobre-emocion); }
+/* La elegida: fondo suave y borde del rol «emoción» (el mismo para los cinco ánimos: ninguno es mejor que otro).
+   Es suave a propósito: el cuerpo de la cara es --c-emocion y tiene que verse sobre este fondo. */
+.animo-cara[aria-pressed="true"] { background: var(--c-emocion-suave); border: 2px solid var(--c-emocion-tinta); padding: calc(var(--e-3) - .5px) calc(var(--e-1) - .5px); }
 .animo-cara:disabled { cursor: default; opacity: .55; }
 .animo-cara[aria-pressed="true"]:disabled { opacity: 1; }
-.animo-cara__imagen { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; }
+.animo-cara__imagen { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; }
 .animo-cara__imagen:empty { display: none; }        /* sin set de caras elegido solo se ve la palabra */
+.caras-checkin__img { display: block; width: 100%; height: 100%; }
 .animo-cara__nombre { font-weight: var(--t-peso-medio); text-align: center; }
 .inicio__confirmacion { font-weight: var(--t-peso-medio); color: var(--c-emocion-tinta); }
 
@@ -262,28 +265,12 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
   .inicio__flecha { grid-column: 2; grid-row: 1 / span 3; }
 }
 
-/* ---------- 5. Check-in de ánimo: Inicio y Ánimo (PROVISIONAL hasta R3) ---------- */
-.animo-faces-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--e-2); }
-.btn-face-mood {
-  display: grid; justify-items: center; align-content: start; gap: var(--e-1);
-  min-height: 44px; padding: var(--e-2) var(--e-1);
-  border: 1.5px solid var(--c-borde); border-radius: var(--r-tarjeta);
-  background: var(--c-fondo); color: var(--c-tinta); font: inherit; cursor: pointer;
-  transition: background var(--m-rapido), border-color var(--m-rapido);
-}
-.btn-face-mood:hover:not(:disabled) { background: var(--c-emocion-suave); border-color: var(--c-emocion-tinta); }
-.btn-face-mood.active { background: var(--c-emocion); border-color: var(--c-emocion-tinta); color: var(--c-sobre-emocion); }
-.btn-face-mood:disabled { cursor: default; opacity: .55; }
-.btn-face-mood.active:disabled { opacity: 1; }
-.face-cara { width: 44px; height: 44px; }
-.face-name-label { font-size: var(--t-s); font-weight: var(--t-peso-medio); }
-.face-xp-tag { font-size: var(--t-xs); }
-.btn-face-mood.active .face-name-label, .btn-face-mood.active .face-xp-tag { color: var(--c-sobre-emocion); }
-
-.animo-stage-box { text-align: center; display: grid; justify-items: center; gap: var(--e-3); }
+/* ---------- 5. Check-in de ánimo: las cinco caras (Inicio y Ánimo) ---------- */
+.animo-escena { display: grid; justify-items: center; gap: var(--e-3); text-align: center; }
+.animo-escena .animo-caras { width: 100%; max-width: 560px; }
 .cara-live-avatar { width: 140px; height: 140px; border-radius: 50%; background: var(--c-emocion-contenedor); overflow: hidden; }
-.animo-stage-box .animo-faces-row, .animo-stage-box [role="group"] { width: 100%; max-width: 560px; justify-content: center; }
-#btn-guardar-animo { width: 100%; max-width: 320px; min-height: 48px; }
+#btn-guardar-animo { min-width: 220px; }
+#semana-animo-caja { display: grid; gap: var(--e-3); }
 
 /* La semana de ánimo (Ánimo y Progreso): una cara por día */
 .animo-semana-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: var(--e-2); }
@@ -312,7 +299,7 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 }
 .card-bienvenida-calida .bi { color: var(--c-emocion-tinta); }
 .card-bienvenida-calida p { flex: 1; font-weight: var(--t-peso-medio); }
-.grafica-semanal-container, .animo-stage-box {
+.grafica-semanal-container {
   background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta); padding: var(--e-5);
 }
 .racha-rotulo { font-size: var(--t-xs); }

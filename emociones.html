@@ -4,20 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Paleta, modo y piel (?piel=sara muestra el original) -->
+  <!-- Paleta y modo: antes de las hojas de estilo, para que no haya un destello del tema equivocado -->
   <script src="tema.js"></script>
   <title>LUMEA | ¿Cómo llegas hoy? - Registro Emocional</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="lumeaaa.png">
-  <!-- Bootstrap 5.3.3 CSS -->
-  <link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
+  <!-- Bootstrap Icons (los íconos; el aspecto ya no sale de Bootstrap) -->
   <link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
-  <!-- Hoja de Estilos Unificada -->
   <link rel="stylesheet" href="estilos/tokens.css">
   <link rel="stylesheet" href="estilos/paletas.css">
   <link rel="stylesheet" href="estilos/componentes.css">
-  <!-- Lo propio de las pantallas privadas (armazón, piezas y lo que falta de Sara, con tokens) -->
+  <!-- Lo propio de las pantallas privadas -->
   <link rel="stylesheet" href="estilos/app.css">
   <link rel="stylesheet" href="estilos/pegatinas.css">
   <link rel="stylesheet" href="estilos/celebracion.css">
@@ -46,97 +43,79 @@
     <!-- /menu-privado:nav -->
 
     <!-- ============================================================
-         ÁREA PRINCIPAL: ÁNIMO (VERSIÓN 1.1)
-         "Un check-in de diez segundos; también vive en Inicio."
+         ÁNIMO: «Un check-in de diez segundos; también vive en Inicio».
+         Las cinco caras de los botones son las del set que la persona eligió (caras-checkin.js);
+         la cara grande y la semana siguen con la cara del avatar.
          ============================================================ -->
     <main class="contenido">
 
-      <!-- Encabezado superior -->
-      <div class="d-flex align-items-center justify-content-between mb-4">
-        <div class="d-flex align-items-center gap-3">
-          <div>
-            <p class="progreso-subtitulo mb-0">Un check-in de diez segundos.</p>
-            <h1 class="user-greeting-title mb-0">¿Cómo llegas hoy?</h1>
-          </div>
-        </div>
-        <span class="pildora pildora--logro">+5 XP para todos los ánimos</span>
-      </div>
+      <header>
+        <h1 class="contenido__titulo">¿Cómo llegas hoy?</h1>
+        <p class="contenido__subtitulo">Un check-in de diez segundos.</p>
+      </header>
 
       <div id="estado-error" class="estado-pantalla" role="alert" hidden>
-        <p class="mb-0">No pudimos cargar tu información. Revisa que el servidor esté encendido.</p>
-        <button type="button" id="estado-reintentar" class="btn btn-lumea rounded-pill px-4">Intentar otra vez</button>
+        <p>No pudimos cargar tu información. Revisa que el servidor esté encendido.</p>
+        <button type="button" id="estado-reintentar" class="boton boton--secundario">Intentar otra vez</button>
       </div>
 
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
-
-          <!-- 1. LA CARA DE TU AVATAR CAMBIA EN VIVO MIENTRAS ELIGES -->
-          <section class="animo-stage-box" aria-labelledby="titulo-check-in">
-            <div id="cara-en-vivo-contenedor" class="cara-live-avatar">
-              <span class="lumea-cara" id="cara-grande"></span>
-            </div>
-
-            <h2 id="texto-estado-seleccionado" class="fw-bold text-dark mb-1">Elige cómo te sientes</h2>
-            <p class="text-muted small mb-4" id="subtexto-estado">Todas las emociones dan el mismo XP: no se premia estar siempre bien.</p>
-
-            <!-- 2. LOS CINCO ESTADOS DEL BACKEND (muy_mal a muy_bien) -->
-            <div id="titulo-check-in" class="visually-hidden">Tu estado de ánimo de hoy</div>
-            <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap" role="group" aria-labelledby="titulo-check-in">
-              <button type="button" class="btn-face-mood px-2 py-2" data-estado="muy_mal" aria-pressed="false">
-                <span class="face-cara lumea-cara" data-cara="muy_mal"></span>
-                <span class="face-name-label">Muy mal</span>
-                <span class="face-xp-tag">+5 XP</span>
-              </button>
-              <button type="button" class="btn-face-mood px-2 py-2" data-estado="mal" aria-pressed="false">
-                <span class="face-cara lumea-cara" data-cara="mal"></span>
-                <span class="face-name-label">Mal</span>
-                <span class="face-xp-tag">+5 XP</span>
-              </button>
-              <button type="button" class="btn-face-mood px-2 py-2" data-estado="neutral" aria-pressed="false">
-                <span class="face-cara lumea-cara" data-cara="neutral"></span>
-                <span class="face-name-label">Neutral</span>
-                <span class="face-xp-tag">+5 XP</span>
-              </button>
-              <button type="button" class="btn-face-mood px-2 py-2" data-estado="bien" aria-pressed="false">
-                <span class="face-cara lumea-cara" data-cara="bien"></span>
-                <span class="face-name-label">Bien</span>
-                <span class="face-xp-tag">+5 XP</span>
-              </button>
-              <button type="button" class="btn-face-mood px-2 py-2" data-estado="muy_bien" aria-pressed="false">
-                <span class="face-cara lumea-cara" data-cara="muy_bien"></span>
-                <span class="face-name-label">Muy bien</span>
-                <span class="face-xp-tag">+5 XP</span>
-              </button>
-            </div>
-
-            <button id="btn-guardar-animo" type="button" class="lumea-btn-primary mx-auto py-3 px-5" data-accion-principal disabled>
-              Guardar mi ánimo (+5 XP)
-            </button>
-
-            <p id="confirmacion-animo" class="mt-3 text-success fw-bold mb-0" role="status" hidden></p>
-          </section>
-
-          <!-- 3. ESTA SEMANA: los 7 días, con las caras de tu avatar -->
-          <section class="card border-0 rounded-4 p-4 shadow-sm bg-white mb-4" id="semana-animo-caja" hidden>
-            <h2 class="h5 fw-bold text-dark mb-3">Esta semana</h2>
-            <div class="animo-semana-row" id="animo-semana-fila" role="list" aria-label="Tu ánimo de cada día de la semana"></div>
-            <p class="text-muted small mt-3 mb-0">Si te sientes mal varios días, hablar con alguien ayuda.</p>
-          </section>
+      <!-- 1. LA CARA DE TU AVATAR CAMBIA EN VIVO MIENTRAS ELIGES -->
+      <section class="tarjeta animo-escena" aria-labelledby="texto-estado-seleccionado">
+        <div id="cara-en-vivo-contenedor" class="cara-live-avatar">
+          <span class="lumea-cara" id="cara-grande"></span>
         </div>
-      </div>
+
+        <h2 id="texto-estado-seleccionado" class="inicio__titulo">Elige cómo te sientes</h2>
+        <p class="inicio__nota" id="subtexto-estado">Todas las emociones dan el mismo XP: no se premia estar siempre bien.</p>
+
+        <!-- 2. LOS CINCO ESTADOS DEL BACKEND (muy_mal a muy_bien) -->
+        <div class="animo-caras" role="group" aria-label="Tu estado de ánimo de hoy">
+          <button type="button" class="animo-cara" data-estado="muy_mal" aria-pressed="false">
+            <span class="animo-cara__imagen" data-cara-checkin="muy_mal"></span>
+            <span class="animo-cara__nombre">Muy mal</span>
+          </button>
+          <button type="button" class="animo-cara" data-estado="mal" aria-pressed="false">
+            <span class="animo-cara__imagen" data-cara-checkin="mal"></span>
+            <span class="animo-cara__nombre">Mal</span>
+          </button>
+          <button type="button" class="animo-cara" data-estado="neutral" aria-pressed="false">
+            <span class="animo-cara__imagen" data-cara-checkin="neutral"></span>
+            <span class="animo-cara__nombre">Neutral</span>
+          </button>
+          <button type="button" class="animo-cara" data-estado="bien" aria-pressed="false">
+            <span class="animo-cara__imagen" data-cara-checkin="bien"></span>
+            <span class="animo-cara__nombre">Bien</span>
+          </button>
+          <button type="button" class="animo-cara" data-estado="muy_bien" aria-pressed="false">
+            <span class="animo-cara__imagen" data-cara-checkin="muy_bien"></span>
+            <span class="animo-cara__nombre">Muy bien</span>
+          </button>
+        </div>
+
+        <button id="btn-guardar-animo" type="button" class="boton" data-accion-principal disabled>Guardar mi ánimo</button>
+
+        <p id="confirmacion-animo" class="inicio__confirmacion" role="status" hidden></p>
+      </section>
+
+      <!-- 3. ESTA SEMANA: los 7 días, con las caras de tu avatar -->
+      <section class="tarjeta" id="semana-animo-caja" aria-labelledby="titulo-semana" hidden>
+        <h2 id="titulo-semana" class="inicio__titulo">Esta semana</h2>
+        <div class="animo-semana-row" id="animo-semana-fila" role="list" aria-label="Tu ánimo de cada día de la semana"></div>
+        <p class="inicio__nota">Si te sientes mal varios días, hablar con alguien ayuda.</p>
+      </section>
 
     </main>
-
   </div>
 
-<!-- Scripts: api.js (único lugar con la dirección del backend), formato.js (textos), el estado y la
-       interfaz de Sara, la celebración y la lógica de esta pantalla (emociones.js) -->
+  <!-- Scripts: api.js (único lugar con la dirección del backend), formato.js (textos), el estado y la
+       interfaz de Sara, la celebración, las caras del check-in y la lógica de esta pantalla (emociones.js) -->
   <script src="api.js"></script>
   <script src="formato.js"></script>
   <script src="pegatinas.js"></script>
   <script src="celebracion.js"></script>
   <script src="lumea-state.js"></script>
   <script src="lumea-ui.js"></script>
+  <script src="caras-checkin.js"></script>
   <script src="emociones.js"></script>
   <script src="menu-privado.js"></script>
 </body>

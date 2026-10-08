@@ -1,8 +1,9 @@
 // =====================================================================
 // emociones.js — la lógica de Ánimo (emociones.html, el diseño es de Sara).
 //
-// Eliges uno de los cinco estados del backend (muy_mal a muy_bien) y la cara de TU avatar
-// (DiceBear, avatar.urls_por_estado de GET /progreso) cambia en vivo. Guardar hace
+// Eliges uno de los cinco estados del backend (muy_mal a muy_bien) y la cara grande, la de TU avatar
+// (DiceBear, avatar.urls_por_estado de GET /progreso), cambia en vivo. Los cinco botones llevan las
+// caras del set que la persona eligió (caras-checkin.js), o solo la palabra si no eligió. Guardar hace
 // POST /estado-animo por api.js y celebra con la misma respuesta (LumeaCelebrar).
 // Todos los estados dan el mismo XP: no se premia estar bien. Sin internet no se ven las
 // caras, pero el nombre del estado siempre está escrito.
@@ -32,10 +33,8 @@
     $("texto-estado-seleccionado").textContent = d ? d.titulo : "Elige cómo te sientes";
     $("subtexto-estado").textContent = d ? d.sub : "Todas las emociones dan el mismo XP: no se premia estar siempre bien.";
     UI.ponerCara($("cara-grande"), estado);
-    document.querySelectorAll(".btn-face-mood").forEach((boton) => {
-      const activo = boton.dataset.estado === estado;
-      boton.classList.toggle("active", activo);
-      boton.setAttribute("aria-pressed", String(activo));
+    document.querySelectorAll(".animo-cara").forEach((boton) => {
+      boton.setAttribute("aria-pressed", String(boton.dataset.estado === estado));   // caras-checkin.js anima la elegida
     });
   }
 
@@ -60,7 +59,7 @@
       guardar.textContent = "Tu ánimo de hoy ya está registrado";
       confirmacion.hidden = false;
       confirmacion.textContent = "Listo: hoy ya hiciste tu check-in. Se registra una vez al día.";
-      document.querySelectorAll(".btn-face-mood").forEach((b) => { b.disabled = b.dataset.estado !== elegido; });
+      document.querySelectorAll(".animo-cara").forEach((b) => { b.disabled = b.dataset.estado !== elegido; });
     } else {
       if (!elegido) mostrarEstado(null);
       guardar.disabled = !elegido;
@@ -80,7 +79,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const store = window.lumeaStore;
-    document.querySelectorAll(".btn-face-mood").forEach((boton) => {
+    document.querySelectorAll(".animo-cara").forEach((boton) => {
       boton.addEventListener("click", () => elegir(boton.dataset.estado));
     });
     $("btn-guardar-animo").addEventListener("click", guardar);

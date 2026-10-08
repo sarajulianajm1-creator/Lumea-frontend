@@ -1,4 +1,4 @@
-"""emociones.html (Ánimo, el diseño es de Sara): las caras del avatar cambian en vivo y guardar celebra."""
+"""emociones.html (Ánimo, rediseño R3): la cara grande cambia en vivo, los cinco botones llevan las caras del set elegido y guardar celebra."""
 import json
 
 import pytest
@@ -11,7 +11,7 @@ CORTO = "LumeaCelebrar.tiempos.xp = 300; LumeaCelebrar.tiempos.mision = 300; Lum
 
 def boton(pagina, nombre):
     """El botón de un estado por su nombre exacto («Mal» no es «Muy mal»)."""
-    return pagina.locator(".btn-face-mood").filter(has=pagina.get_by_text(nombre, exact=True))
+    return pagina.locator(".animo-cara").filter(has=pagina.get_by_text(nombre, exact=True))
 
 
 def sin_animo_hoy(backend):
@@ -24,19 +24,37 @@ def abrir(pagina, backend=None, registrado=False):
     if backend is not None and not registrado:
         sin_animo_hoy(backend)
     pagina.goto(f"{pagina.servidor}/emociones.html")
-    pagina.locator(".btn-face-mood").first.wait_for()
-    pagina.locator(".btn-face-mood img").first.wait_for()
+    pagina.locator(".animo-cara").first.wait_for()
+    pagina.locator("#cara-grande img").first.wait_for()           # la cara grande es la del avatar
     pagina.evaluate(CORTO)
 
 
-def test_los_cinco_estados_con_nombre_y_la_cara_del_avatar(pagina, backend):
+def test_los_cinco_estados_con_su_palabra_y_sin_xp(pagina, backend):
     abrir(pagina, backend)
-    botones = pagina.locator(".btn-face-mood")
-    assert [b.locator(".face-name-label").inner_text() for b in botones.all()] == ESTADOS
-    assert botones.locator("img").count() == 5
-    assert "mouth=sad" in botones.nth(0).locator("img").get_attribute("src")
-    assert "twinkle" in botones.nth(4).locator("img").get_attribute("src")
+    botones = pagina.locator(".animo-cara")
+    assert [b.locator(".animo-cara__nombre").inner_text() for b in botones.all()] == ESTADOS
+    # sin set de caras elegido solo se ve la palabra; las caras de cada set se prueban en test_caras_checkin.py
+    assert botones.locator("img").count() == 0
+    for b in botones.all():
+        assert "XP" not in b.inner_text()             # ningún botón promete XP (regla 4)
     assert pagina.errores == []                       # ni «suscribir is not a function» ni «null.style»
+
+
+def test_el_boton_de_guardar_no_dice_xp_ni_hay_pildora_ni_flecha_de_volver(pagina, backend):
+    abrir(pagina, backend)
+    assert pagina.get_by_role("button", name="Guardar mi ánimo", exact=True).count() == 1
+    assert pagina.locator(".pildora").count() == 0                              # antes: «+5 XP para todos los ánimos»
+    assert pagina.locator("main .bi-arrow-left").count() == 0                   # sin flecha de volver (para eso está el menú)
+    assert "+5" not in pagina.locator("main").inner_text()
+
+
+def test_las_caras_de_los_botones_son_las_del_set_elegido_y_la_grande_sigue_siendo_la_del_avatar(pagina, backend):
+    pagina.add_init_script("localStorage.setItem('lumea-caras', 'moods')")
+    abrir(pagina, backend)
+    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
+    assert all("/10.x/moods/" in i.get_attribute("src") for i in pagina.locator(".animo-caras img").all())
+    boton(pagina, "Mal").click()
+    assert "mouth=concerned" in pagina.locator("#cara-grande img").get_attribute("src")    # la del avatar, no la del set
 
 
 def test_sin_emojis_ni_version_en_la_pantalla(pagina, backend):
@@ -56,7 +74,7 @@ def test_la_cara_grande_cambia_en_vivo_al_elegir(pagina, backend):
     boton(pagina, "Muy bien").click()
     assert "twinkle" in pagina.locator("#cara-grande img").get_attribute("src")
     assert pagina.locator("#texto-estado-seleccionado").inner_text() == "Me siento muy bien"
-    pulsados = pagina.locator(".btn-face-mood[aria-pressed=true]")
+    pulsados = pagina.locator(".animo-cara[aria-pressed=true]")
     assert pulsados.count() == 1 and "Muy bien" in pulsados.inner_text()
     assert pagina.locator("#btn-guardar-animo").is_enabled()
 
@@ -78,7 +96,7 @@ def test_guardar_registra_celebra_y_queda_registrado(pagina, backend):
     cuerpo = cargar_respuesta("progreso")
     cuerpo["progreso"]["avatar"]["estado_animo_hoy"] = "mal"
     backend.poner("GET", "/progreso", cuerpo)
-    pagina.get_by_role("button", name="Guardar mi ánimo (+5 XP)").click()
+    pagina.get_by_role("button", name="Guardar mi ánimo").click()
     pagina.locator(".celebracion__chip").first.wait_for()
     assert pagina.locator(".celebracion__chip").first.inner_text() == "+5 XP"
     envio = next(c for m, u, c in backend.peticiones if m == "POST" and u.endswith("/estado-animo"))
@@ -93,8 +111,8 @@ def test_si_ya_hizo_el_checkin_hoy_no_se_puede_repetir(pagina, backend):
     abrir(pagina, backend, registrado=True)
     pagina.locator("#btn-guardar-animo", has_text="ya está registrado").wait_for()
     assert pagina.locator("#btn-guardar-animo").is_disabled()
-    assert "Bien" in pagina.locator(".btn-face-mood[aria-pressed=true]").inner_text()
-    assert pagina.locator(".btn-face-mood:enabled").count() == 1
+    assert "Bien" in pagina.locator(".animo-cara[aria-pressed=true]").inner_text()
+    assert pagina.locator(".animo-cara:enabled").count() == 1
 
 
 def test_si_guardar_falla_se_avisa_y_se_puede_intentar_otra_vez(pagina, backend):
@@ -116,10 +134,12 @@ def test_esta_semana_viene_del_backend_no_de_ejemplos(pagina, backend):
 
 
 def test_sin_internet_para_las_caras_queda_el_nombre(pagina, backend):
+    pagina.add_init_script("localStorage.setItem('lumea-caras', 'gaze')")
     abrir(pagina, backend)
+    pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
     pagina.evaluate("document.querySelectorAll('img').forEach(i => i.dispatchEvent(new Event('error')))")
-    assert pagina.locator(".btn-face-mood img").count() == 0
-    assert [b.locator(".face-name-label").inner_text() for b in pagina.locator(".btn-face-mood").all()] == ESTADOS
+    assert pagina.locator(".animo-cara img").count() == 0
+    assert [b.locator(".animo-cara__nombre").inner_text() for b in pagina.locator(".animo-cara").all()] == ESTADOS
 
 
 def test_sin_sesion_lleva_a_iniciar_sesion(pagina):
