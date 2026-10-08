@@ -19,7 +19,7 @@ const MOSTRAR_CALORIAS = true;
 //               backend-sellos, backend-consejos (bloques de consejo), backend-dato (+ btn-dato-mas: «Leer más»), backend-mensaje,
 //               backend-opciones (botones para confirmar), backend-estado,
 //               backend-foto (<img> con la foto que se analiza),
-//               backend-logros (<ul>: XP, misiones, calcomanías, nivel, meta del día)
+//               backend-logros (<ul>: semillas, misiones, calcomanías, etapa, meta del día)
 //   Celebración: si la página carga pegatinas.js y celebracion.js (en ese
 //               orden), después de cada resultado se llama a
 //               LumeaCelebrar(r.gamificacion). Si no están, no pasa nada.
@@ -267,7 +267,10 @@ const MOSTRAR_CALORIAS = true;
     });
   }
 
-  // XP, misiones, nivel y meta del día (contrato de gamificación). Nunca es un
+  // «1 semilla», «5 semillas» (en pantalla XP = semillas; formato.js es el único lugar de los plurales)
+  const semillas = (n) => (window.LumeaFormato ? window.LumeaFormato.semillas(n) : `${n} semillas`);
+
+  // Semillas, misiones, etapa y meta del día (contrato de gamificación). Nunca es un
   // juicio sobre la comida: celebra lo que la persona hizo.
   function mostrarLogros(g) {
     const lista = $("backend-logros");
@@ -275,10 +278,10 @@ const MOSTRAR_CALORIAS = true;
     lista.replaceChildren();
     if (!g) return true;
     const frases = [];
-    if (g.xp_ganado > 0) frases.push(`+${g.xp_ganado} XP`);
+    if (g.xp_ganado > 0) frases.push(`+${semillas(g.xp_ganado)}`);
     (g.misiones_cumplidas || []).forEach((m) => frases.push(`Misión cumplida: ${m.nombre}`));
     (g.calcomanias_nuevas || []).forEach((c) => frases.push(`Calcomanía nueva: ${c.nombre}`));
-    if (g.subio_de_nivel) frases.push(`¡Subiste al nivel ${g.nivel}!`);
+    if (g.subio_de_nivel) frases.push(`Llegaste a la etapa ${g.nivel}`);
     if (g.meta_diaria && g.meta_diaria.recien_cumplida) frases.push("Cumpliste la meta de hoy");
     frases.forEach((f) => {
       const li = document.createElement("li");
@@ -341,7 +344,7 @@ const MOSTRAR_CALORIAS = true;
       msg = (msg ? msg + " " : "") + "Guardado en tu historial.";
     }
     const hayLista = mostrarLogros(r.gamificacion);
-    if (!hayLista && r.gamificacion && r.gamificacion.xp_ganado) msg += ` +${r.gamificacion.xp_ganado} XP`;
+    if (!hayLista && r.gamificacion && r.gamificacion.xp_ganado) msg += ` +${semillas(r.gamificacion.xp_ganado)}`;
     poner("backend-mensaje", msg);
     mostrarOpciones(r);
     if (window.LumeaCelebrar) LumeaCelebrar(r.gamificacion);

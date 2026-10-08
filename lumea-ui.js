@@ -99,13 +99,13 @@
     const u = s.usuario;
 
     poner(".lumea-bind-nombre", u.nombre || (u.correo ? u.correo.split("@")[0] : "Estudiante"));
-    poner(".lumea-bind-nivel", `Nivel ${u.nivel}`);
+    poner(".lumea-bind-nivel", `Etapa ${u.nivel}`);
 
     const pct = F.porcentajeNivel(u);
     todos(".lumea-bind-xp-bar").forEach((barra) => {
       barra.style.width = `${pct}%`;
       barra.setAttribute("aria-valuenow", String(pct));
-      barra.setAttribute("aria-label", u.xp_siguiente_nivel == null ? "Nivel máximo" : `Avance hacia el nivel ${u.nivel + 1}`);
+      barra.setAttribute("aria-label", u.xp_siguiente_nivel == null ? "Etapa máxima" : `Avance hacia la etapa ${u.nivel + 1}`);
     });
     poner(".lumea-bind-xp-text", F.textoNivel(u));
     poner(".lumea-bind-xp-valor", s.meta_diaria ? F.textoMeta(s.meta_diaria) : "--");
@@ -134,7 +134,7 @@
       ponerCara(el, cual === "hoy" ? estado : cual);
     });
 
-    // Bienvenida cálida (solo si el backend manda mensaje_regreso; nunca «perdiste XP»)
+    // Bienvenida cálida (solo si el backend manda mensaje_regreso; nunca «perdiste semillas»)
     const aviso = document.getElementById("aviso-regreso");
     if (aviso) {
       const texto = aviso.querySelector(".lumea-bind-regreso");
@@ -160,7 +160,7 @@
     }
     titulo.textContent = pendiente.titulo;
     if (recompensa) {
-      recompensa.textContent = `+${pendiente.recompensa} XP`;
+      recompensa.textContent = `+${F.semillas(pendiente.recompensa)}`;
       recompensa.hidden = false;
     }
   }

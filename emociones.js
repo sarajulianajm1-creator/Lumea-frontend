@@ -5,7 +5,7 @@
 // (DiceBear, avatar.urls_por_estado de GET /progreso), cambia en vivo. Los cinco botones llevan las
 // caras del set que la persona eligió (caras-checkin.js), o solo la palabra si no eligió. Guardar hace
 // POST /estado-animo por api.js y celebra con la misma respuesta (LumeaCelebrar).
-// Todos los estados dan el mismo XP: no se premia estar bien. Sin internet no se ven las
+// Todos los estados dan las mismas semillas: no se premia estar bien. Sin internet no se ven las
 // caras, pero el nombre del estado siempre está escrito.
 // Necesita api.js, formato.js, lumea-state.js y lumea-ui.js antes.
 // =====================================================================
@@ -31,7 +31,7 @@
   function mostrarEstado(estado) {
     const d = DESCRIPCION[estado];
     $("texto-estado-seleccionado").textContent = d ? d.titulo : "Elige cómo te sientes";
-    $("subtexto-estado").textContent = d ? d.sub : "Todas las emociones dan el mismo XP: no se premia estar siempre bien.";
+    $("subtexto-estado").textContent = d ? d.sub : "Todas las emociones dan las mismas semillas: no se premia estar siempre bien.";
     UI.ponerCara($("cara-grande"), estado);
     document.querySelectorAll(".animo-cara").forEach((boton) => {
       boton.setAttribute("aria-pressed", String(boton.dataset.estado === estado));   // caras-checkin.js anima la elegida

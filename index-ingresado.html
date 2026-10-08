@@ -35,7 +35,7 @@
       <div class="nav-app__pie">
       <div class="nav-app__usuario">
         <p class="nav-app__nombre lumea-bind-nombre">Cargando...</p>
-        <p class="nav-app__nivel lumea-bind-nivel">Nivel --</p>
+        <p class="nav-app__nivel lumea-bind-nivel">Etapa --</p>
       </div>
         <button type="button" class="nav-app__salir" data-cerrar-sesion><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Cerrar sesión</button>
       </div>
@@ -56,7 +56,7 @@
           <h1 class="contenido__titulo">Hola, <span class="lumea-bind-nombre">Cargando...</span></h1>
           <time class="inicio__fecha lumea-bind-fecha">Cargando fecha...</time>
         </div>
-        <span class="chip chip--logro lumea-bind-nivel">Nivel --</span>
+        <span class="chip chip--logro lumea-bind-nivel">Etapa --</span>
       </header>
 
       <!-- Bienvenida cálida cuando vuelve después de días (solo si el backend manda mensaje_regreso) -->
@@ -97,7 +97,7 @@
           </div>
         </section>
 
-        <!-- ¿CÓMO LLEGAS HOY?: eliges una cara y la guardas; el XP aparece en la celebración, no aquí -->
+        <!-- ¿CÓMO LLEGAS HOY?: eliges una cara y la guardas; las semillas aparecen en la celebración, no aquí -->
         <section class="tarjeta inicio__animo" aria-labelledby="titulo-animo" id="card-checkin-inicio">
           <h2 id="titulo-animo" class="inicio__titulo">¿Cómo llegas hoy?</h2>
           <p class="inicio__nota">Elige la cara que más se parece a tu día</p>
@@ -142,14 +142,14 @@
 
       <!-- NIVEL Y RACHA: enlaza a Progreso -->
       <section aria-labelledby="titulo-nivel">
-        <h2 id="titulo-nivel" class="solo-lector">Nivel y racha</h2>
+        <h2 id="titulo-nivel" class="solo-lector">Etapa y racha</h2>
         <a href="progreso.html" class="inicio__franja inicio__nivel">
-          <span class="inicio__rotulo lumea-bind-nivel">Nivel --</span>
+          <span class="inicio__rotulo lumea-bind-nivel">Etapa --</span>
           <div class="barra-xp__riel">
-            <div class="barra-xp__relleno lumea-bind-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia el siguiente nivel" style="width: 0%;"></div>
+            <div class="barra-xp__relleno lumea-bind-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia la siguiente etapa" style="width: 0%;"></div>
           </div>
           <i class="bi bi-chevron-right inicio__flecha" aria-hidden="true"></i>
-          <p class="inicio__nota"><span class="lumea-bind-xp-text">Cargando XP...</span>. Racha: <span class="lumea-bind-racha">--</span><span class="solo-lector">. Ver mi progreso</span></p>
+          <p class="inicio__nota"><span class="lumea-bind-xp-text">Cargando semillas...</span>. Racha: <span class="lumea-bind-racha">--</span><span class="solo-lector">. Ver mi progreso</span></p>
         </a>
       </section>
 

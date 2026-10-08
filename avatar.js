@@ -5,7 +5,7 @@
 //
 // Tres pestañas (patrón ARIA de «tabs»; abren con #misiones, #armario o
 // #calcomanias, que es a donde apuntan los botones de la celebración):
-//   Misiones     las tres misiones diarias de GET /progreso (con +XP)
+//   Misiones     las tres misiones diarias de GET /progreso (con +semillas)
 //   Armario      ropa y accesorios de GET /avatar; ponerse y quitarse
 //   Calcomanías  el álbum de GET /calcomanias
 //
@@ -20,7 +20,7 @@
   "use strict";
 
   const $ = (id) => document.getElementById(id);
-  const { plural, porcentajeNivel, textoNivel } = window.LumeaFormato;
+  const { plural, semillas, porcentajeNivel, textoNivel } = window.LumeaFormato;
   const NS = "http://www.w3.org/2000/svg";
   const PESTANAS = ["misiones", "armario", "calcomanias"];
   const NOMBRE_ANIMO = { muy_mal: "Muy mal", mal: "Mal", neutral: "Neutral", bien: "Bien", muy_bien: "Muy bien" };
@@ -104,13 +104,13 @@
   function dibujarCabeza() {
     const p = estado.progreso;
     if (!p) return;
-    $("avatar-nivel").textContent = `Nivel ${p.nivel}`;
+    $("avatar-nivel").textContent = `Etapa ${p.nivel}`;
     $("avatar-faltan").textContent = textoNivel(p);
     const pct = porcentajeNivel(p);
     $("avatar-relleno").style.setProperty("--avance", `${pct}%`);
     const riel = $("avatar-riel");
     riel.setAttribute("aria-valuenow", String(pct));
-    riel.setAttribute("aria-label", p.xp_siguiente_nivel == null ? "Nivel máximo" : `Avance hacia el nivel ${p.nivel + 1}`);
+    riel.setAttribute("aria-label", p.xp_siguiente_nivel == null ? "Etapa máxima" : `Avance hacia la etapa ${p.nivel + 1}`);
   }
 
   function dibujarPuesto() {
@@ -134,7 +134,7 @@
       const cabeza = crear("div", "mision__cuerpo");
       cabeza.appendChild(crear("h3", "mision__nombre", m.nombre));
       const fila = crear("p", "mision__fila");
-      fila.appendChild(crear("span", "chip chip--mision numero", `+${m.xp} XP`));
+      fila.appendChild(crear("span", "chip chip--mision numero", `+${semillas(m.xp)}`));
       const estadoTexto = crear("span", "mision__estado");
       if (m.cumplida) estadoTexto.appendChild(icono("check"));
       estadoTexto.appendChild(document.createTextNode(m.cumplida ? "Cumplida hoy" : "Para hoy"));
@@ -192,7 +192,7 @@
     }
     li.appendChild(imagen);
     li.appendChild(crear("p", "prenda__nombre", o.nombre));
-    li.appendChild(crear("p", "prenda__estado", bloqueado ? `Se abre en el nivel ${o.nivel_requerido}` : (o.puesto ? "Puesto" : "Disponible")));
+    li.appendChild(crear("p", "prenda__estado", bloqueado ? `Se abre en la etapa ${o.nivel_requerido}` : (o.puesto ? "Puesto" : "Disponible")));
 
     const boton = crear("button", "boton prenda__boton" + (o.puesto ? " boton--secundario" : ""));
     boton.type = "button";
@@ -200,8 +200,8 @@
     if (bloqueado) {
       boton.classList.add("boton--secundario");
       boton.setAttribute("aria-disabled", "true");          // se puede enfocar y leer, pero no hace nada
-      boton.textContent = `Nivel ${o.nivel_requerido}`;
-      boton.setAttribute("aria-label", `${o.nombre}, se abre en el nivel ${o.nivel_requerido}`);
+      boton.textContent = `Etapa ${o.nivel_requerido}`;
+      boton.setAttribute("aria-label", `${o.nombre}, se abre en la etapa ${o.nivel_requerido}`);
     } else {
       boton.textContent = o.puesto ? "Quitar" : "Ponerme";
       boton.setAttribute("aria-label", `${o.puesto ? "Quitar" : "Ponerme"} ${o.nombre}`);
@@ -229,7 +229,7 @@
         : await quitarObjeto(estado.email, objeto.tipo);
       if (!ok || !cuerpo.objetos) {
         const faltan = cuerpo && cuerpo.niveles_faltantes;
-        throw new Error(faltan ? `Todavía no se abre: te ${faltan === 1 ? "falta 1 nivel" : `faltan ${faltan} niveles`}.` : "No se pudo guardar el cambio.");
+        throw new Error(faltan ? `Todavía no se abre: te ${faltan === 1 ? "falta 1 etapa" : `faltan ${faltan} etapas`}.` : "No se pudo guardar el cambio.");
       }
       estado.avatar = cuerpo;                                              // el backend responde con el avatar completo
       dibujarFigura();

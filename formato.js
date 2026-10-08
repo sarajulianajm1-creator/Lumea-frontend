@@ -3,10 +3,11 @@
 // Sin diseño y sin tocar la página: son funciones puras.
 //
 //   LumeaFormato.plural(3, "día", "días")   -> "3 días"
+//   LumeaFormato.semillas(1) / semillas(5)  -> "1 semilla" / "5 semillas"   (en pantalla, XP = «semillas»)
 //   LumeaFormato.porcentajeNivel(progreso)  -> 0 a 100
-//   LumeaFormato.textoNivel(progreso)       -> "Te faltan 35 XP para el nivel 3"
+//   LumeaFormato.textoNivel(progreso)       -> "Te faltan 35 semillas para la etapa 3"   (en pantalla, nivel = «etapa»)
 //   LumeaFormato.textoRacha(3)              -> "3 días"      notaRacha(0) -> invita, sin reproche
-//   LumeaFormato.textoMeta(meta_diaria)     -> "10 de 15 XP hoy" / "Meta cumplida: 20 XP hoy"
+//   LumeaFormato.textoMeta(meta_diaria)     -> "10 de 15 semillas hoy" / "Meta cumplida: 20 semillas hoy"
 //   LumeaFormato.semanaDe(hoy)              -> los 7 días (lunes a domingo) de esa semana
 //   LumeaFormato.comidasPorDia(historial, semana), animoPorDia(registros, semana)
 //   LumeaFormato.NOMBRE_ANIMO               -> { muy_mal: "Muy mal", ... }
@@ -17,6 +18,13 @@
   // «1 día», «3 días»
   function plural(n, singular, pluralTexto) {
     return `${n} ${n === 1 ? singular : pluralTexto}`;
+  }
+
+  // Camino del cuidado: lo que se ve dice «semillas» donde el contrato dice XP y «etapa» donde dice nivel.
+  // Las claves del contrato (xp_total, nivel, xp_siguiente_nivel…) NO cambian: solo el texto en pantalla.
+  // «1 semilla», «5 semillas»
+  function semillas(n) {
+    return plural(n, "semilla", "semillas");
   }
 
   // Cuánto de la barra se llena (0 a 100). Después de perder XP el XP puede quedar por
@@ -30,8 +38,8 @@
 
   function textoNivel(p) {
     return p.xp_siguiente_nivel === null || p.xp_siguiente_nivel === undefined
-      ? "Llegaste al nivel máximo"
-      : `Te faltan ${p.xp_faltante_siguiente_nivel} XP para el nivel ${p.nivel + 1}`;
+      ? "Llegaste a la etapa máxima"
+      : `${p.xp_faltante_siguiente_nivel === 1 ? "Te falta" : "Te faltan"} ${semillas(p.xp_faltante_siguiente_nivel)} para la etapa ${p.nivel + 1}`;
   }
 
   function textoRacha(n) {
@@ -44,9 +52,9 @@
     return n === 1 ? "¡Empezó tu racha!" : "seguidos con actividad";
   }
 
-  // La meta del día es de XP (no de comidas). Si ya pasó la meta: «Meta cumplida: 20 XP hoy»
+  // La meta del día es de semillas (no de comidas). Si ya pasó la meta: «Meta cumplida: 20 semillas hoy»
   function textoMeta(m) {
-    return m.cumplida ? `Meta cumplida: ${m.xp_hoy} XP hoy` : `${m.xp_hoy} de ${m.meta} XP hoy`;
+    return m.cumplida ? `Meta cumplida: ${semillas(m.xp_hoy)} hoy` : `${m.xp_hoy} de ${semillas(m.meta)} hoy`;
   }
 
   const NOMBRE_ANIMO = { muy_mal: "Muy mal", mal: "Mal", neutral: "Neutral", bien: "Bien", muy_bien: "Muy bien" };
@@ -101,7 +109,7 @@
   }
 
   window.LumeaFormato = {
-    plural, porcentajeNivel, textoNivel, textoRacha, notaRacha, textoMeta,
+    plural, semillas, porcentajeNivel, textoNivel, textoRacha, notaRacha, textoMeta,
     NOMBRE_ANIMO, DIAS_CORTO, DIAS_LARGO, claveDeHoy, semanaDe, claveDeFechaDelServidor, comidasPorDia, animoPorDia,
   };
 })();

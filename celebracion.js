@@ -9,10 +9,10 @@
 // Cada campo es opcional: si el backend no manda uno, ese momento no ocurre.
 //
 // Los momentos van en cola, UNO A LA VEZ, del más pequeño al más grande:
-//   1. XP        un chip «+10 XP» que se va solo (y «Meta de hoy cumplida»)
+//   1. XP        un chip «+10 semillas» que se va solo (y «Meta de hoy cumplida»)
 //   2. Misión    «Misión cumplida: …» (con su calcomanía pegándose, si la hay)
 //   3. Calcomanía nueva: se pega; botones «Ver mi álbum» y «Seguir»
-//   4. Nivel     el único modal: <dialog> con «Nivel N» y lo que se abrió
+//   4. Nivel     el único modal: <dialog> con «Llegaste a la etapa N» y lo que se abrió
 // Solo la subida de nivel bloquea la pantalla; lo demás deja seguir registrando.
 //
 // Todo texto que llega del servidor se escribe con textContent.
@@ -70,7 +70,7 @@
   function momentoXP(g) {
     return () => {
       const nodos = [];
-      const xp = crear("p", "celebracion__chip momento momento--logro", `+${g.xp_ganado} XP`);
+      const xp = crear("p", "celebracion__chip momento momento--logro", `+${(window.LumeaFormato ? window.LumeaFormato.semillas(g.xp_ganado) : g.xp_ganado + " semillas")}`);
       nodos.push(xp);
       if (g.meta_diaria && g.meta_diaria.recien_cumplida) {
         nodos.push(crear("p", "celebracion__chip celebracion__chip--meta momento", "Meta de hoy cumplida"));
@@ -143,7 +143,7 @@
       const dialogo = crear("dialog", "celebracion__nivel");
       dialogo.setAttribute("aria-labelledby", "celebracion-nivel-titulo");
       dialogo.appendChild(crear("p", "celebracion__numero", String(g.nivel)));
-      const titulo = crear("h2", null, `¡Subiste al nivel ${g.nivel}!`);
+      const titulo = crear("h2", null, `Llegaste a la etapa ${g.nivel}`);
       titulo.id = "celebracion-nivel-titulo";
       dialogo.appendChild(titulo);
 
@@ -154,7 +154,7 @@
         dialogo.appendChild(ul);
       }
       if (avatares.length) {
-        dialogo.appendChild(crear("p", null, "Avatar nuevo:"));
+        dialogo.appendChild(crear("p", null, "Compañero nuevo:"));
         const ul = crear("ul", "celebracion__lista");
         avatares.forEach((d) => ul.appendChild(crear("li", null, d.nombre)));
         dialogo.appendChild(ul);
