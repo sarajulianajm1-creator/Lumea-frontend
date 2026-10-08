@@ -236,6 +236,55 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 4. Mirar la sección «Para después de unir» (cinco cosas del `<body>` de sus páginas públicas que no se tocaron).
 5. Con las pruebas en verde, pasar `rediseno` a `main`.
 
+## Camino del cuidado
+
+Misión: `docs/tickets/MISION-camino.md` (rama `rediseno`). Isabella aprobó el plan K0 el 8 de oct de 2026. Fases, en orden: K0.5, K1, K2, K3, K4 y K5. Se actualiza al cerrar cada fase.
+
+### K0.5 · Consejos en el resultado y páginas públicas: LISTA (8 oct 2026)
+
+**Qué quedó listo** (cuatro commits, uno por idea, más el de la misión: `73415a1`, `76cfa9d`, `3073be0`, `ee52cbd`, `d5c2710`)
+
+1. **Consejos en el resultado de Registrar** (`lumea-camara.js`, `alimentos.html`, `estilos/app.css`). Con `consejo` en la respuesta de `/predecir` o `/confirmar-alimento`, debajo del nombre, la certeza, las calorías y los sellos salen como máximo cuatro bloques cortos, en este orden: «Lo que aporta» (`aporta`); «Para completar tu plato» (`para_completar`) o, si no hay, «Una idea» (la `idea` del primer sello); «A tener en cuenta» (`a_tener_en_cuenta`) o, si no hay, el `dato` del primer sello; y «¿Sabías que…?» (el dato curioso de siempre). Los bloques vacíos no se dibujan; sin `consejo` (backend viejo) la pantalla queda como antes y el dato curioso no lleva título. Todo entra con `textContent`; sin color de alerta ni íconos. **Mientras «IA duda» no se aconseja** (igual que con las calorías y los sellos: es una suposición todavía sin confirmar); al confirmar el plato sí salen. Respuestas simuladas con consejo para banano (completo, sin «a tener en cuenta»), gaseosa (con sello de azúcares y los dos respaldos «Una idea» y «A tener en cuenta») y bandeja paisa (completo, dos sellos y un dato de 641 caracteres): `pruebas/respuestas/predecir_banano.json`, `predecir_gaseosa.json` y `predecir_bandeja_paisa.json`. **Los textos de esas tres respuestas son de ejemplo, escritos por la IA solo para las pruebas**; los reales son del backend.
+2. **Registrar sigue a `ejemplo-camara.html`.** Qué se adoptó y qué no (donde choca, gana R5):
+
+   | Pieza | `ejemplo-camara.html` | `alimentos.html` ahora | Decisión |
+   |---|---|---|---|
+   | Subtítulo bajo el `h1` | «Toma una foto de lo que vas a comer. Lumea te dice qué es y algo que vale la pena saber.» | Igual | **Adoptado** |
+   | Visor vacío | «La cámara está apagada» + «Encender cámara» dentro del visor | Igual; el visor vacío se esconde con la cámara encendida o con una foto, y vuelve con «Otra foto» o «Apagar» | **Adoptado** (decisión de Isabella) |
+   | Botón «Encender cámara» | Relleno | **Secundario** (y ya no está en el grupo de controles) | **R5:** «Tomar foto» es la única acción principal |
+   | «Lumea cree que es» | Sobre el nombre | Sobre el nombre, con «…» al final, solo con la IA segura | **Adoptado** (decisión de Isabella). Con «IA duda» no sale: el nombre ya es la pregunta («¿Cuál de estos es?») |
+   | Certeza | «Segura al 94 %» + medidor | «La IA está segura: 94 %» + el medidor al lado | **R5:** palabras y número; el medidor acompaña, no reemplaza (queda con `aria-hidden`) |
+   | Calorías | «42 kcal por cada 100 ml», grande | Una línea secundaria: «Calorías aproximadas: N kcal por 100 g» | **R5** (decisión de Isabella del 7 de oct) |
+   | «Sí, es esto +10 XP» / «No, es otra cosa» | Dos botones | Las opciones para confirmar de siempre; **ningún botón dice «XP»** | **R5:** nada de «+10 XP» en el botón de confirmar (una prueba lo vigila) |
+   | «Tomar foto» y «Subir una foto» | Botones grandes | «Tomar foto» (relleno) y «Subir foto» de texto | **R5:** una sola acción principal |
+   | Título de la tarjeta | No tiene | «Lo que reconoció Lumea» se queda; con respuesta pasa a ser solo para el lector de pantalla | R5 (estructura de encabezados) |
+   | Íconos | Lucide con `<use>` | Bootstrap Icons | **R5** |
+
+3. **El dato curioso largo** (500 a 860 caracteres): líneas de 65 caracteres como máximo y el interlineado del token (`--t-interlineado`, 1,5). Si pasa de cuatro líneas se corta y sale el botón de texto «Leer más» (`aria-expanded`, `aria-controls`; pasa a «Leer menos»), sin animación. Se vuelve a medir si cambia el ancho (solo se mira el ancho, para que cortar el texto no dispare otra medida) y con cada respuesta nueva.
+4. **Páginas públicas: R7 + paleta, respetando el blanco** (solo `estilos/publico.css`; ningún HTML ni texto cambió: `git diff 6561468 -- conocenos.html index.html crear-cuenta.html` sale vacío).
+   - **Blanco en modo claro:** el fondo de la página y el de las tarjetas, el menú y el pie son `#FFFFFF` en las 5 paletas y en el estado neutro. Vale con «Claro» guardado y con «Como mi dispositivo» cuando el sistema está en claro (`prefers-color-scheme`). Con «Oscuro», o con el sistema en oscuro y «Como mi dispositivo», siguen las superficies oscuras de la paleta. La paleta solo pone color en los acentos (botón principal, enlaces, íconos y chips).
+   - **Las hojas, formas y destellos de Sara vuelven** al inicio (`.hero-section`) y a la tarjeta del inicio de sesión (y de Crear cuenta, que usa el mismo `.auth-container`), con su composición. `puente-sara.css` los había aplanado. `Lumen.png` trae un fondo crema y por eso no se puede teñir tal cual sin dejar de ser blanco: **`herramientas/hojas_mascara.py`** saca de ella una máscara (`img/hojas-mascara.png`, 137 KB: el alpha es lo que se aparta del crema) y el CSS la pinta de **un color plano** de la paleta, `--c-marca-tinta`, a baja opacidad (**0,22 en claro y 0,16 en oscuro**, variable `--publico-adorno`). No se mezclan colores: si en alguna paleta queda turbio, se baja esa opacidad. Se eligió `--c-marca-tinta` y no `--c-marca` porque en Carnaval `--c-marca` es casi negro y las hojas salían grises.
+   - La piel de comparación de Sara (`?piel=sara`) no cambia. La tarjeta `.auth-card` conserva su composición, sin sombra (R7: borde, no sombra).
+
+**Pruebas:** `.venv/bin/pytest pruebas` → **742 pasan, 1 `xfail`** (antes 636 + 1). `.venv/bin/pytest pruebas -m capturas` → **282 casos pasan** (258 de R9 + 24 del resultado con consejos), con **0 errores de contraste** en las pantallas privadas y, ahora, también en las seis públicas. **Contraste: 0 errores** en las seis públicas (ahora estrictas en `test_capturas.py`: 5 paletas + neutro × claro/oscuro), y en Registrar con consejos (dato largo cerrado y abierto) en las 12 combinaciones.
+- **Nuevas:** `test_camara.py` +27 casos (consejos: orden y máximo cuatro, respaldos, vacíos, sin consejo, duda, HTML, sin alerta, 375 y 1280 px; el visor vacío con la cámara apagada, con foto y encendida; «Lumea cree que es…»; la certeza con el medidor; ningún botón con «XP»; el dato largo: corta, abre y cierra, 65 caracteres, interlineado, teclado y foco, 44 px, sin animación, reinicio, cambio de ancho). `test_publico.py` +79 (blanco en las 6 páginas × 6 paletas, «Como mi dispositivo» en claro y en oscuro, «Oscuro» con el sistema en claro, los acentos, los adornos y su opacidad, que no tapan nada, la máscara). Se comprobó que detectan: se rompió a propósito el CSS del blanco, la opacidad y el JS de los consejos, y fallaron; después se deshizo.
+- **Cambiaron, y por qué** (ninguna se borró; ninguna de accesibilidad se debilitó):
+  - `test_camara.py::test_los_iconos_son_de_bootstrap_icons_y_no_hay_svg_a_mano`: los cinco botones siguen con su ícono, pero «Encender cámara» pasó al visor vacío (ya no está en `.controles`) y el visor trae un sexto ícono: ahora cuenta `main .controles .bi, main .visor__vacio button .bi` (5) y los 6 de `aria-hidden`.
+  - `test_paletas.py::test_sin_paleta_guardada_se_ve_el_estado_neutro_y_no_laguna[index.html, claro]` y `test_una_paleta_guardada_se_aplica_tambien_en_las_paginas_publicas` (5 casos): comprobaban que la página pública tiene el `--c-fondo` de la paleta; ahora ese fondo es `#FFFFFF` en claro (decisión de Isabella). Se conserva la intención: fondo y superficie deben ser `#FFFFFF`, y la paleta se comprueba por `--c-marca`, `--c-marca-suave`, `--c-marca-tinta`, `--c-tinta` y `--c-borde`.
+  - `test_capturas.py`: las seis públicas pasan a `ESTRICTAS` (refuerzo) y `test_resultado_de_la_camara_sin_errores_de_contraste` suma los estados «consejos» y «consejos-abierto».
+
+**Capturas** de lo que cambió (56, en `pruebas/capturas/despues-K0.5/`, carpeta que git ignora: **Isabella elige cuáles guarda**): Registrar (vacío, banano, gaseosa, bandeja paisa cerrada y con «Leer más» abierto, y con la IA en duda) a 1280 y 390 px, en claro y oscuro; las seis públicas en el estado neutro a 1280 y 390 px, claro y oscuro; e Inicio e Iniciar sesión con Carnaval y con Colibrí (claro y oscuro) a 1280 px.
+
+**Para decidir**
+1. **«Lumea cree que es…»** lleva «…» (la referencia no); y con «IA duda» no se muestra. Si prefieres otra frase para la duda, es un texto más.
+2. **El subtítulo de Registrar** se adoptó de la referencia (no lo pedías de forma explícita): si no lo quieres, es borrar el `<p class="contenido__subtitulo">` de `alimentos.html`.
+3. **La opacidad de los adornos** (0,22 y 0,16): es una variable (`--publico-adorno`) al final de `estilos/publico.css`.
+4. **«Guardado en tu historial.»** (el mensaje) queda arriba de los consejos, no abajo. Si lo quieres después, se mueve en `alimentos.html`.
+5. **En el computador, la tarjeta del resultado mide unos 310 px**, así que las líneas del dato curioso salen de unos 40 caracteres; el tope de 65 solo se nota en una columna (< 960 px). Para ver 65 a 1280 px habría que ensanchar la columna del resultado.
+6. **«Leer más» pasa a «Leer menos»** (la misión pide solo «Leer más»): ambos son textos nuevos.
+7. `herramientas/hojas_mascara.py` necesita Pillow y numpy, que no están en `pruebas/requirements.txt` (las pruebas no los usan: solo comprueban que el PNG existe, tiene alpha y es liviano).
+8. **El backend todavía no manda `consejo`** (`MISION_CAMINO_BACKEND.md`, fase C0.5): por ahora solo se ve con respuestas simuladas.
+
 ## Textos nuevos para que Isabella revise
 
 **Inicio (R2)**
@@ -265,6 +314,14 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 **Progreso y Mis registros (R6)**
 - Progreso: título de sección «Racha» (nuevo) · nota del ánimo: «Las caras de tu avatar a lo largo de los días. Es tuyo y no se compara con nadie.» (antes: «Las caras de tu avatar reflejadas a lo largo de los días:» más la insignia «Es tuyo y no se compara con nadie»)
 - Mis registros: título «Mis registros» (antes «Mis Registros»)
+
+**Registrar · Camino del cuidado, K0.5**
+- Títulos de los bloques de consejo: «Lo que aporta» · «Para completar tu plato» · «Una idea» · «A tener en cuenta» · «¿Sabías que…?»
+- Botón del dato largo: «Leer más» · «Leer menos»
+- Subtítulo (de `ejemplo-camara.html`): «Toma una foto de lo que vas a comer. Lumea te dice qué es y algo que vale la pena saber.»
+- Sobre el nombre: «Lumea cree que es…»
+- Visor vacío: «La cámara está apagada»
+- Los textos de las tres respuestas simuladas (banano, gaseosa y bandeja paisa) son de ejemplo para las pruebas: no son textos de la app.
 
 *(Se llena fase por fase.)*
 

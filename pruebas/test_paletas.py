@@ -111,7 +111,10 @@ def test_sin_paleta_guardada_se_ve_el_estado_neutro_y_no_laguna(pagina, pagina_n
     assert pagina.evaluate("document.documentElement.dataset.paleta") is None
     assert pagina.evaluate("LumeaTema.paletaActual()") is None
     for nombre in ("fondo", "superficie", "tinta", "marca"):
-        assert valor(pagina, f"--c-{nombre}") == hex_de("neutro", modo, nombre)
+        esperado = hex_de("neutro", modo, nombre)
+        if pagina_nombre == "index.html" and modo == "claro" and nombre in ("fondo", "superficie"):
+            esperado = "#FFFFFF"        # K0.5: las páginas públicas en modo claro son blancas (publico.css); el resto sigue al neutro
+        assert valor(pagina, f"--c-{nombre}") == esperado
     assert valor(pagina, "--c-fondo") != hex_de("laguna", modo, "fondo")
 
 
@@ -131,7 +134,10 @@ def test_una_paleta_guardada_se_aplica_tambien_en_las_paginas_publicas(pagina, p
     pagina.emulate_media(color_scheme="light")
     pagina.add_init_script(f"localStorage.setItem('lumea-paleta', '{paleta}')")
     pagina.goto(f"{pagina.servidor}/index.html")
-    assert valor(pagina, "--c-fondo") == hex_de(paleta, "claro", "fondo")
+    # K0.5: en claro el fondo de las públicas es blanco, así que la paleta se comprueba por sus acentos y su tinta
+    assert valor(pagina, "--c-fondo") == "#FFFFFF"
+    for nombre in ("marca", "marca-suave", "marca-tinta", "tinta", "borde"):
+        assert valor(pagina, f"--c-{nombre}") == hex_de(paleta, "claro", nombre), nombre
 
 
 def test_el_estado_neutro_no_se_puede_elegir(pagina):
