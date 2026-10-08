@@ -54,9 +54,38 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - Las secciones «PROVISIONAL» de `app.css` (Inicio, check-in, Progreso, Registrar, Mis registros) son lo que mantiene presentable el marcado viejo mientras se rehace; no son el diseño final.
 - Hay un fallo del hook `design-drift` en esta sesión (la ruta del plugin tiene espacios): no afecta al repositorio, solo imprime un error al escribir archivos.
 
+## R2 · Inicio nuevo: LISTA (7 oct 2026)
+
+**Qué quedó listo** (`index-ingresado.html`, `indexx.js`, `lumea-ui.js`, `estilos/app.css`; el esquema sale de `docs/rediseno/inicio-nuevo.md` y la estructura semántica, de `inicio.html` de Isabella, que no se tocó)
+- De arriba abajo: saludo (`h1` «Hola, Ana», la fecha en un `<time>` y el chip «Nivel 2»), el aviso de regreso (si el backend lo manda), **dos tarjetas** (Tu día y ¿Cómo llegas hoy?) y **dos franjas planas** (Misión de hoy y Nivel y racha, que enlaza a Progreso). Cada bloque es una `<section aria-labelledby>`.
+- **De 13 cajas a 4 superficies, de 11 textos con «XP» a 3** («10 de 15 XP hoy», el chip «+10 XP» de la misión y «Te faltan 35 XP para el nivel 3»). Una prueba lo mide.
+- **«Registrar comida» es el único botón relleno** (`data-accion-principal`). «Foto directa» queda como botón de texto dentro de «Tu día» (aprobado) y sigue pasando la foto a Registrar.
+- **«Tu día»:** «1 de 3 comidas» y la barra de la meta de comidas (`lumea-bind-comidas-bar`, nueva en `lumea-ui.js`) más la nota de XP de hoy.
+- **Check-in:** eliges una cara (`aria-pressed`) y la guardas con **«Guardar mi ánimo»** (secundario, sin «+5 XP»). Antes tocar una cara guardaba al instante. Si ya hiciste el check-in hoy, se ve «Hoy llegaste: Bien…», los otros cuatro quedan en reposo y el botón de guardar se esconde. Cada botón trae un hueco `data-cara-checkin` para la cara del set que elija la persona (R3); mientras no haya set solo se ve la palabra. En una tarjeta angosta las cinco opciones van 3 + 2; si caben, en una fila (`container query`).
+- Se conservaron las clases `lumea-bind-*` y los ids que usan `lumea-ui.js` y las pruebas. Inicio **ya no carga el CSS de Bootstrap**.
+- **Quitado de Inicio:** el atajo «Acceso directo a la cámara» con «+10 XP», la canasta de cuatro formas, «¿Sabías que?», el botón del avatar de arriba, la frase «Cada bocado y cada emoción cuentan en tu bienestar» (el esquema solo trae la fecha) y «Mejor racha» (sigue en Progreso). La cara del avatar de hoy ya no sale en Inicio.
+- **Ánimo se abre desde Inicio** con un enlace de texto dentro del check-in, «Ver mi semana de ánimo» (la decisión de navegación lo exige y la franja de ánimo de la canasta, que antes lo enlazaba, ya no existe).
+
+**Pruebas:** `.venv/bin/pytest pruebas` → **304 pasan, 1 `xfail`**. Contraste de Inicio en 5 paletas × claro/oscuro: 0 errores.
+
+**Pruebas que cambiaron en R2, y por qué** (`test_index_ingresado.py`; ninguna se borró ni se debilitó)
+- Las de la meta, las comidas, el nivel y la misión cambiaron de selector (`#shape-*`, `.card-racha-nivel` y `.progress-bar` pasaron a `.inicio__dia`, `.inicio__nivel` y `[role=progressbar]`); los textos esperados son los mismos («Meta cumplida: 20 XP hoy», «1 de 3», «Te faltan 35 XP para el nivel 3», «+10 XP»). La comida suma una comprobación de la barra (33 %).
+- **Misiones listas «N de 3» (la forma de la canasta)** y **la cara de ánimo de hoy en la canasta**: ya no existen en el diseño nuevo. La primera se reemplazó por la prueba de la franja «Misión de hoy» (con tres cumplidas, el chip se esconde); la segunda, por la de «si ya hizo el check-in hoy».
+- **Check-in:** «usa las caras del avatar» pasó a «cinco estados con su palabra y sin XP»; «guarda, celebra y queda registrado» ahora toca una cara y luego «Guardar mi ánimo»; nuevas: elegir no guarda, si guardar falla se puede reintentar, y el enlace a la semana de ánimo.
+- **El rebote de la canasta con movimiento reducido:** se borró porque la canasta ya no existe (no hay nada que rebote). El movimiento de la cara elegida se prueba en R3 y R8.
+- **Nuevas** (el diseño nuevo): cuatro superficies y un solo botón relleno, XP ≤ 3, secciones con título, jerarquía de tamaños, la fecha en `<time>` sin hora.
+
 ## Textos nuevos para que Isabella revise
 
-(Se llena fase por fase.)
+**Inicio (R2)**
+- «Tu día» · «comidas» (en «1 de 3 comidas») · «Registrar comida»
+- «Elige la cara que más se parece a tu día» (viene del esquema del documento) · «Guardar mi ánimo» · «Ver mi semana de ánimo»
+- «Misión de hoy»
+- Títulos que solo oye el lector de pantalla: «Nivel y racha» y «. Ver mi progreso» (al final de la franja del nivel)
+- Racha dentro de la franja del nivel: «Te faltan 35 XP para el nivel 3. Racha: 3 días»
+- Aviso si falla la foto directa: «No se pudo abrir la foto. Prueba con «Registrar comida».» (antes decía «Cámara en vivo»)
+
+*(Se llena fase por fase.)*
 
 ## Para después de unir
 
