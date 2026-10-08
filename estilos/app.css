@@ -128,24 +128,6 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
   font-size: var(--t-s); font-weight: var(--t-peso-fuerte);
 }
 
-/* Botones de Sara (lumea-btn-*) con el aspecto de .boton */
-.lumea-btn-primary, .lumea-btn-secondary, .lumea-btn-pill {
-  display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
-  min-height: 44px; padding: 0 var(--e-5);
-  border: 1.5px solid transparent; border-radius: var(--r-control);
-  font: inherit; font-weight: var(--t-peso-medio); text-decoration: none; cursor: pointer;
-  transition: background var(--m-rapido) var(--m-salida), transform var(--m-rapido) var(--m-salida);
-}
-.lumea-btn-primary { background: var(--c-marca); color: var(--c-sobre-marca); }
-.lumea-btn-primary:hover { background: var(--c-marca-hover); color: var(--c-sobre-marca); }
-.lumea-btn-secondary, .lumea-btn-pill { background: var(--c-superficie); color: var(--c-marca-tinta); border-color: var(--c-borde-fuerte); }
-.lumea-btn-secondary:hover, .lumea-btn-pill:hover { background: var(--c-marca-suave); }
-.lumea-btn-primary:active, .lumea-btn-secondary:active, .lumea-btn-pill:active { transform: scale(.97); }
-.lumea-btn-primary:disabled, .lumea-btn-secondary:disabled, .lumea-btn-pill:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-
-/* El sello de advertencia (Res. 810 de 2021) va siempre en negro; sus medidas están en componentes.css */
-#backend-sellos { display: flex; flex-wrap: wrap; gap: var(--e-2); justify-content: center; }
-
 /* Cuando una barra de nivel o de meta lleva su avance en línea (style="width: N%") */
 .progress { height: 12px; background: var(--c-logro-suave); border-radius: var(--r-pildora); overflow: hidden; }
 .progress-bar { background: var(--c-logro); border-radius: var(--r-pildora); }
@@ -345,46 +327,44 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .bar-day-name { font-size: var(--t-xs); font-weight: var(--t-peso-medio); color: var(--c-tinta-suave); }
 .bar-col-item.today .bar-day-name { color: var(--c-marca-tinta); font-weight: var(--t-peso-fuerte); }
 
-/* ---------- 7. Registrar (PROVISIONAL hasta R5) ---------- */
-.lumea-dashboard-screen { display: grid; justify-items: center; }
-.lumea-dashboard-card {
-  width: 100%; max-width: 620px; padding: var(--e-5);
-  background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta);
-}
-.card-section-title { font-size: var(--t-s); font-weight: var(--t-peso-fuerte); color: var(--c-tinta-suave); margin-bottom: var(--e-3); text-transform: none; }
-.camera-preview-container {
-  position: relative; aspect-ratio: 4 / 3; width: 100%; overflow: hidden;
-  display: grid; place-items: center;
-  border-radius: var(--r-tarjeta); background: var(--c-visor); color: var(--c-sobre-visor);
-}
-.camera-video-stream, .camera-foto { width: 100%; height: 100%; object-fit: cover; }
-.camera-foto { position: absolute; inset: 0; }
-.camera-preview-container .corner { position: absolute; width: 24px; height: 24px; border: 3px solid var(--c-sobre-visor); pointer-events: none; }
+/* ---------- 7. Registrar (rediseño R5) ----------
+   La cámara a la izquierda y «Lo que reconoció Lumea» a la derecha (una columna en el celular).
+   Una sola acción principal, «Tomar foto»: lo demás es secundario o de texto. */
+.camara { align-items: start; }
+.registro__camara { display: grid; gap: var(--e-3); min-width: 0; }
+.registro__sesion { display: grid; gap: var(--e-3); max-width: 560px; }
+.camara .controles { margin-top: 0; }
+.controles--texto .boton { flex: 1 1 auto; }
+
+/* El visor: el video, la foto quieta mientras la IA la analiza y las esquinas de enfoque */
+.camera-video-stream { width: 100%; height: 100%; object-fit: cover; }
+.camera-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.visor .corner { position: absolute; width: 24px; height: 24px; border: 0 solid var(--c-sobre-visor); pointer-events: none; }
 .corner.top-left { top: var(--e-3); left: var(--e-3); border-width: 3px 0 0 3px; }
 .corner.top-right { top: var(--e-3); right: var(--e-3); border-width: 3px 3px 0 0; }
 .corner.bottom-left { bottom: var(--e-3); left: var(--e-3); border-width: 0 0 3px 3px; }
 .corner.bottom-right { bottom: var(--e-3); right: var(--e-3); border-width: 0 3px 3px 0; }
-.camera-actions-main { display: flex; flex-wrap: wrap; gap: var(--e-3); margin: var(--e-4) 0 var(--e-3); }
-.camera-actions-main > * { flex: 1 1 200px; }
-.camera-actions-sub { display: flex; flex-wrap: wrap; gap: var(--e-2); margin-bottom: var(--e-5); }
-.camera-actions-sub > * { flex: 1 1 120px; }
-.btn-icon, .pill-icon { flex: none; }
-.criterios-grid-nuevos { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--e-2); margin-top: var(--e-3); }
-.criterio-card { display: grid; justify-items: center; gap: var(--e-1); padding: var(--e-3); text-align: center; border-radius: var(--r-tarjeta); background: var(--c-comida-suave); border: 1px solid var(--c-borde); }
-.criterio-card.highlight { background: var(--c-marca); color: var(--c-sobre-marca); border-color: var(--c-marca); }
-.criterio-title { font-size: var(--t-s); font-weight: var(--t-peso-fuerte); }
-.criterio-desc { font-size: var(--t-s); }
-.criterio-icon-wrap { display: grid; place-items: center; }
-#backend-opciones .lumea-btn-pill {
-  flex: 1 1 100%; max-width: 100%; height: auto; padding: var(--e-2) var(--e-4);
-  line-height: 1.25; white-space: normal; overflow-wrap: anywhere; text-align: left; justify-content: flex-start;
-}
-.opciones__grupo { flex-basis: 100%; margin: var(--e-2) 0 0; font-size: var(--t-xs); font-weight: var(--t-peso-medio); color: var(--c-duda-tinta); text-transform: none; }
-#backend-logros li { display: inline-block; margin: 0 var(--e-1) var(--e-1) 0; padding: 2px var(--e-3); border-radius: var(--r-pildora); background: var(--c-logro-suave); color: var(--c-logro-tinta); }
+
+/* Lo que reconoció Lumea. Sin foto todavía: solo la invitación. Con respuesta: «segura» o «duda» */
+.resultado__contenido { display: grid; gap: var(--e-3); }
+#resultado[data-estado=""] .resultado__contenido { display: none; }
+#resultado:not([data-estado=""]) .resultado__vacio { display: none; }
+.etiqueta__nombre { overflow-wrap: anywhere; }
+.resultado__certeza { font-weight: var(--t-peso-medio); }
+.resultado__rotulo { font-size: var(--t-s); font-weight: var(--t-peso-fuerte); color: var(--c-tinta-suave); margin-bottom: var(--e-2); }
+/* IA duda: el contenedor del rol «duda» (el mango nunca va como texto: el texto sigue en tinta) */
+#resultado[data-estado="duda"] { background: var(--c-duda-contenedor); }
+/* …y mientras duda no se afirma nada de la comida: ni sellos ni calorías, hasta que la persona confirma */
+#resultado[data-estado="duda"] .resultado__sellos { display: none; }
+.opciones__grupo { margin: var(--e-2) 0 0; font-size: var(--t-s); font-weight: var(--t-peso-fuerte); color: var(--c-tinta); }
+.opciones__boton { overflow-wrap: anywhere; line-height: 1.25; padding-block: var(--e-2); text-align: left; }
+.resultado__logros { display: flex; flex-wrap: wrap; gap: var(--e-2); margin: 0; padding: 0; list-style: none; }
+.resultado__logros li { padding: var(--e-1) var(--e-3); border-radius: var(--r-pildora); background: var(--c-logro-suave); color: var(--c-logro-tinta); font-size: var(--t-s); font-weight: var(--t-peso-medio); }
+#backend-mensaje:empty, #backend-dato:empty { display: none; }
+
+/* ---------- 8. Mis registros (PROVISIONAL hasta R6) ---------- */
 .auth-card { width: 100%; max-width: 500px; background: var(--c-superficie); border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta); }
 .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--r-control); background: var(--c-marca-suave); color: var(--c-marca-tinta); }
 .hero-title { color: var(--c-tinta); }
-
-/* ---------- 8. Mis registros (PROVISIONAL hasta R6) ---------- */
 .footer-lumea { background: var(--c-superficie); border-top: 1px solid var(--c-borde); }
 .footer-lumea .list-inline { display: flex; flex-wrap: wrap; gap: var(--e-2); justify-content: center; padding: 0; list-style: none; }

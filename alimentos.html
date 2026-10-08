@@ -1,29 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- Paleta, modo y piel (?piel=sara muestra el original) -->
-<script src="tema.js"></script>
-<title>LUMEA | Registrar comida</title>
-<!-- Favicon -->
-<link rel="icon" type="image/png" href="lumeaaa.png">
-<!-- Bootstrap 5.3.3 CSS (copia local en vendor/: funciona sin internet) -->
-<link href="vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
-<!-- Hoja de Estilos Unificada -->
-<link rel="stylesheet" href="estilos/tokens.css">
-<link rel="stylesheet" href="estilos/paletas.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Paleta y modo: antes de las hojas de estilo, para que no haya un destello del tema equivocado -->
+  <script src="tema.js"></script>
+  <title>LUMEA | Registrar comida</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="lumeaaa.png">
+  <!-- Bootstrap Icons (los íconos; el aspecto ya no sale de Bootstrap) -->
+  <link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="estilos/tokens.css">
+  <link rel="stylesheet" href="estilos/paletas.css">
   <link rel="stylesheet" href="estilos/componentes.css">
-  <!-- Lo propio de las pantallas privadas (armazón, piezas y lo que falta de Sara, con tokens) -->
+  <!-- Lo propio de las pantallas privadas -->
   <link rel="stylesheet" href="estilos/app.css">
-<!-- Celebración de XP, misiones, calcomanías y nivel (lógica en celebracion.js) -->
-<link rel="stylesheet" href="estilos/pegatinas.css">
-<link rel="stylesheet" href="estilos/celebracion.css">
+  <!-- Celebración de XP, misiones, calcomanías y nivel (lógica en celebracion.js) -->
+  <link rel="stylesheet" href="estilos/pegatinas.css">
+  <link rel="stylesheet" href="estilos/celebracion.css">
 </head>
 <body>
-<div class="app">
+  <div class="app">
+
     <!-- menu-privado:nav (lo genera herramientas/menu_privado.py; no lo edites a mano) -->
     <nav class="nav-app" aria-label="Principal">
       <div class="nav-app__marca"><img class="marca" src="img/logo.svg" alt="Lumea"></div>
@@ -37,124 +35,78 @@
       </div>
     </nav>
     <!-- /menu-privado:nav -->
-<main class="contenido">
-    <h1 class="visually-hidden">Registrar comida</h1>
 
-    <!-- Sin sesión: no se registra nada (viene de registrar-comida.html).
-         lumea-camara.js lo muestra si no hay correo guardado. -->
-    <section id="sin-sesion" class="container py-5" hidden>
-      <div class="card auth-card mx-auto p-4 p-md-5 border-0 text-center">
-        <div class="step-badge mx-auto mb-3">
-          <i class="bi bi-person-lock fs-4" aria-hidden="true"></i>
+    <!-- ============================================================
+         REGISTRAR (rediseño R5). Una sola acción principal: «Tomar foto».
+         La lógica es lumea-camara.js y no depende de este diseño: solo de los id de abajo
+         (el contrato está en su encabezado).
+         ============================================================ -->
+    <main class="contenido">
+      <h1 class="contenido__titulo">Registrar comida</h1>
+
+      <!-- Sin sesión: no se registra nada. lumea-camara.js lo muestra si no hay correo guardado. -->
+      <section id="sin-sesion" class="tarjeta registro__sesion" aria-labelledby="titulo-sin-sesion" hidden>
+        <h2 id="titulo-sin-sesion" class="inicio__titulo">Inicia sesión para registrar una comida</h2>
+        <p class="inicio__nota">Necesitamos saber quién eres para guardar tu historial.</p>
+        <div class="inicio__acciones">
+          <a href="iniciar-sesion.html" class="boton">Iniciar sesión</a>
+          <a href="crear-cuenta.html" class="boton boton--secundario">Crear cuenta</a>
         </div>
-        <h2 class="h3 fw-bold hero-title mb-2">Inicia sesión para registrar una comida</h2>
-        <p class="text-secondary small mb-4">Necesitamos saber quién eres para guardar tu historial.</p>
-        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-          <a href="iniciar-sesion.html" class="btn btn-lumea rounded-pill px-4 py-2">Iniciar sesión</a>
-          <a href="crear-cuenta.html" class="btn btn-lumea-outline rounded-pill px-4 py-2">Crear cuenta</a>
-        </div>
+      </section>
+
+      <div id="flujo-registro" class="camara">
+
+        <!-- LA CÁMARA -->
+        <section class="registro__camara" aria-labelledby="titulo-plato">
+          <h2 id="titulo-plato" class="inicio__titulo">Muéstrale tu plato</h2>
+          <div class="visor">
+            <video id="webcam" autoplay playsinline muted class="camera-video-stream"></video>
+            <img id="backend-foto" class="camera-foto" alt="La foto que estás registrando" hidden>
+            <!-- Esquinas de enfoque: solo decoran, ayudan a centrar el plato -->
+            <span class="corner top-left" aria-hidden="true"></span>
+            <span class="corner top-right" aria-hidden="true"></span>
+            <span class="corner bottom-left" aria-hidden="true"></span>
+            <span class="corner bottom-right" aria-hidden="true"></span>
+          </div>
+          <!-- Una acción principal (relleno); lo demás es secundario o de texto -->
+          <div class="controles">
+            <button type="button" id="btn-encender" class="boton boton--secundario"><i class="bi bi-camera" aria-hidden="true"></i> Encender cámara</button>
+            <button type="button" id="btn-tomar" class="boton" data-accion-principal aria-keyshortcuts="Space"><i class="bi bi-camera-fill" aria-hidden="true"></i> Tomar foto</button>
+          </div>
+          <div class="controles controles--texto">
+            <button type="button" id="btn-subir" class="boton boton--fantasma"><i class="bi bi-upload" aria-hidden="true"></i> Subir foto</button>
+            <button type="button" id="btn-otra" class="boton boton--fantasma"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Otra foto</button>
+            <button type="button" id="btn-apagar" class="boton boton--fantasma"><i class="bi bi-power" aria-hidden="true"></i> Apagar</button>
+          </div>
+          <p id="backend-estado" class="inicio__nota" aria-live="polite"></p>
+        </section>
+
+        <!-- LO QUE RECONOCIÓ LUMEA (lo llena lumea-camara.js). data-estado vacío = todavía no hay foto;
+             «segura» o «duda» según la respuesta: la duda usa el contenedor del rol «duda». -->
+        <section id="resultado" class="etiqueta" aria-labelledby="titulo-resultado" data-estado="">
+          <h2 id="titulo-resultado" class="inicio__titulo">Lo que reconoció Lumea</h2>
+          <p class="resultado__vacio inicio__nota">Toma una foto de tu plato o súbela y aquí verás lo que reconoció Lumea.</p>
+          <div class="resultado__contenido">
+            <p id="backend-alimento" class="etiqueta__nombre">—</p>
+            <p id="backend-precision" class="resultado__certeza"></p>
+            <p id="backend-energia" class="inicio__nota" hidden></p>
+            <div class="resultado__sellos">
+              <p class="resultado__rotulo">Sellos de advertencia</p>
+              <div id="backend-sellos"></div>
+            </div>
+            <!-- Cuando la IA duda: las opciones para confirmar -->
+            <div id="backend-opciones" class="opciones"></div>
+            <p id="backend-mensaje"></p>
+            <p id="backend-dato" class="inicio__nota"></p>
+            <ul id="backend-logros" class="resultado__logros" aria-live="polite"></ul>
+          </div>
+        </section>
+
       </div>
-    </section>
-
-    <div id="flujo-registro" class="lumea-dashboard-screen">
-  
-  <div class="lumea-dashboard-card">
-    
-    <!-- Título de la sección -->
-    <div class="card-section-title">
-      <span>1. MUÉSTRALE TU PLATO</span>
-    </div>
-
-    <!-- Visor de la Cámara -->
-    <div class="camera-preview-container">
-      <video id="webcam" autoplay playsinline muted class="camera-video-stream"></video>
-      <img id="backend-foto" class="camera-foto" alt="La foto que estás registrando" hidden>
-      
-      <!-- Esquinas decorativas de enfoque -->
-      <div class="corner top-left"></div>
-      <div class="corner top-right"></div>
-      <div class="corner bottom-left"></div>
-      <div class="corner bottom-right"></div>
-    </div>
-
-    <!-- Botones principales de acción -->
-    <div class="camera-actions-main">
-      <button type="button" id="btn-encender" class="lumea-btn-secondary">
-        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Encender cámara
-      </button>
-      <button type="button" id="btn-tomar" class="lumea-btn-primary" data-accion-principal>
-        <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-        Tomar foto (espacio)
-      </button>
-    </div>
-
-    <!-- Botones secundarios de control -->
-    <div class="camera-actions-sub">
-      <button type="button" id="btn-otra" class="lumea-btn-pill">
-        <svg class="pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        Otra foto
-      </button>
-      <button type="button" id="btn-apagar" class="lumea-btn-pill">
-        <svg class="pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
-        Apagar
-      </button>
-      <button type="button" id="btn-subir" class="lumea-btn-pill">
-        <svg class="pill-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Subir foto
-      </button>
-    </div>
-
-    <!-- Resultado de la IA (lo llena lumea-camara.js) -->
-    <div class="card-section-title mt-3"><span>2. LO QUE VE LA IA</span></div>
-    <h2 id="backend-alimento" class="h4 fw-bold mb-1">—</h2>
-    <p id="backend-estado" class="small text-secondary mb-2" aria-live="polite"></p>
-
-    <!-- Criterios inferiores preparados para recibir datos del backend -->
-    <div class="criterios-grid-nuevos">
-      
-      <!-- 1. Sellos de advertencia -->
-      <div class="criterio-card">
-        <div class="criterio-icon-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        </div>
-        <div class="criterio-title">Sellos</div>
-        <div id="backend-sellos" class="criterio-desc">Esperando análisis...</div>
-      </div>
-
-      <!-- 2. Energía -->
-      <div class="criterio-card">
-        <div class="criterio-icon-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <div class="criterio-title">Energía</div>
-        <div id="backend-energia" class="criterio-desc">-- kcal</div>
-      </div>
-
-      <!-- 3. Precisión -->
-      <div class="criterio-card highlight">
-        <div class="criterio-icon-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-        </div>
-        <div class="criterio-title">Precisión IA</div>
-        <div id="backend-precision" class="criterio-desc">--% seguridad</div>
-      </div>
-
-    </div>
-
-    <!-- Confirmación, mensaje y dato curioso (los llena lumea-camara.js) -->
-    <div id="backend-opciones" class="d-flex flex-wrap gap-2 mt-3"></div>
-    <p id="backend-mensaje" class="small mt-2 mb-1"></p>
-    <p id="backend-dato" class="small text-secondary mb-0"></p>
-    <ul id="backend-logros" class="list-unstyled small fw-semibold text-success mt-2 mb-0" aria-live="polite"></ul>
-
+    </main>
   </div>
-</div>
 
-</main>
-  </div>
-<!-- api.js (dirección y llamadas al backend) + lógica de la cámara, sin diseño -->
-
+  <!-- api.js (dirección y llamadas al backend) + lógica de la cámara, sin diseño -->
   <script src="api.js"></script>
   <script src="pegatinas.js"></script>
   <script src="celebracion.js"></script>
