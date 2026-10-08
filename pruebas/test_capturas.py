@@ -1,4 +1,4 @@
-"""Capturas de cada página en 5 paletas x claro/oscuro (y con ?piel=sara).
+"""Capturas de cada página en 5 paletas x claro/oscuro, más el estado neutro (y con ?piel=sara).
 
 No corre por defecto:  pytest pruebas -m capturas
 Deja las imágenes en pruebas/capturas/ y un resumen de contraste (axe-core,
@@ -13,7 +13,7 @@ from axe_playwright_python.sync_playwright import Axe
 from test_humo import PAGINAS, VACIAS
 
 CARPETA = Path(__file__).resolve().parent / "capturas"
-PALETAS = ["laguna", "neblina", "carnaval", "colibri", "cosecha"]
+PALETAS = ["laguna", "neblina", "carnaval", "colibri", "cosecha", None]      # None = el estado neutro: nadie ha elegido paleta
 MODOS = ["claro", "oscuro"]
 ESTRICTAS = {"progreso.html", "avatar.html"}      # pantallas nuevas: 0 errores de contraste
 
@@ -38,11 +38,12 @@ def _combinaciones():
 def test_captura(pagina, nombre, paleta, modo, sara, ancla):
     if nombre in VACIAS:
         pytest.skip(f"página vacía: {VACIAS[nombre]}")
-    pagina.add_init_script(
-        f"localStorage.setItem('lumea-paleta', '{paleta}'); localStorage.setItem('lumea-modo', '{modo}')")
+    # sin paleta guardada se ve el estado neutro (ninguna paleta es predeterminada)
+    guardar_paleta = f"localStorage.setItem('lumea-paleta', '{paleta}'); " if paleta else ""
+    pagina.add_init_script(guardar_paleta + f"localStorage.setItem('lumea-modo', '{modo}')")
     pagina.goto(f"{pagina.servidor}/{nombre}" + ("?piel=sara" if sara else "") + ancla)
     pagina.wait_for_load_state("networkidle")
-    etiqueta = ("sara" if sara else f"{paleta}-{modo}") + (f"-{ancla[1:]}" if ancla else "")
+    etiqueta = ("sara" if sara else f"{paleta or 'neutro'}-{modo}") + (f"-{ancla[1:]}" if ancla else "")
     CARPETA.mkdir(exist_ok=True)
     pagina.screenshot(path=str(CARPETA / f"{nombre[:-5]}__{etiqueta}.png"), full_page=True)
 

@@ -7,6 +7,8 @@
 
    Dos ejes independientes sobre <html>:
      data-paleta = laguna | neblina | carnaval | colibri | cosecha
+                   (sin atributo = el estado NEUTRO: ninguna paleta es predeterminada,
+                    cada persona elige la suya; el estado neutro no se puede «elegir»)
      data-modo   = claro | oscuro   (sin atributo = sigue al sistema)
    Y uno más, solo para comparar con el diseño original de Sara:
      data-piel   = sara              (?piel=sara en la dirección; ver puente-sara.css)
@@ -14,6 +16,8 @@
    Uso desde otra página:
      LumeaTema.ponerPaleta('neblina');
      LumeaTema.ponerModo('oscuro');   // 'claro' | 'oscuro' | 'auto'
+     LumeaTema.paletaActual();        // 'neblina', o null si la persona todavía no eligió
+     LumeaTema.modoGuardado();        // 'claro' | 'oscuro' | 'auto'
      LumeaTema.ponerPiel('sara');     // 'sara' | 'lumea' (solo esta pestaña)
    ===================================================================== */
 (function () {
@@ -41,6 +45,16 @@
     html.dispatchEvent(new CustomEvent('lumea:tema'));
   }
 
+  // La paleta que eligió la persona, o null mientras no haya elegido (se ve el estado neutro)
+  function paletaActual() {
+    return PALETAS.indexOf(html.dataset.paleta) !== -1 ? html.dataset.paleta : null;
+  }
+
+  // Lo que eligió de modo: 'claro', 'oscuro' o 'auto' («como mi dispositivo»)
+  function modoGuardado() {
+    return html.dataset.modo === 'claro' || html.dataset.modo === 'oscuro' ? html.dataset.modo : 'auto';
+  }
+
   function modoEfectivo() {
     if (html.dataset.modo) return html.dataset.modo;
     return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro';
@@ -66,7 +80,7 @@
     else html.setAttribute('data-bs-theme', modoEfectivo() === 'oscuro' ? 'dark' : 'light');
   }
 
-  // Al cargar: aplicar lo guardado (si no hay nada, Laguna Verde y modo del sistema)
+  // Al cargar: aplicar lo guardado (si no hay nada, el estado neutro y el modo del sistema)
   var paleta = leer('lumea-paleta');
   if (RENOMBRADAS[paleta]) { paleta = RENOMBRADAS[paleta]; guardar('lumea-paleta', paleta); }
   var modo = leer('lumea-modo');
@@ -85,5 +99,6 @@
   }
 
   window.LumeaTema = { PALETAS: PALETAS, ponerPaleta: ponerPaleta, ponerModo: ponerModo,
+                       paletaActual: paletaActual, modoGuardado: modoGuardado,
                        modoEfectivo: modoEfectivo, ponerPiel: ponerPiel };
 })();
