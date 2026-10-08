@@ -173,6 +173,26 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 
 **Para después de unir:** cinco cosas que no se hicieron porque tocan el `<body>` de una página de Isabella (el pie con emoji y «LUMEA», los emojis de Crear cuenta, «LUMEA» en mayúsculas dentro de los textos, estilos en línea y dos `innerHTML`): están en la sección «Para después de unir», más abajo.
 
+## R8 · Movimiento: LISTA (7 oct 2026)
+
+**Qué quedó listo** (`estilos/app.css` sección 9, `estilos/componentes.css`)
+- **Una sola entrada por pantalla:** el `<main class="contenido">` de las seis pantallas aparece y sube 8 px (`--e-2`) **una vez, en 220 ms** (`--m-base`, curva `--m-salida`). Con `prefers-reduced-motion` no hay animación: el contenido solo aparece.
+- **Cambio de paleta:** el fondo y el texto de la página (`html` y `body`) cambian de color en 220 ms. La transición va **solo en esas dos propiedades y solo en la página** (no hay ningún `transition: all`).
+- **Responder a la persona:** pasar el cursor, enfocar o tocar dura 120 ms (`--m-rapido`) en botones, enlaces del menú, caras del check-in, opciones del selector y pestañas (ya era así; ahora una prueba lo comprueba).
+- **La cara elegida del check-in se anima** (R3) y **la celebración queda como está** (no se tocó `celebracion.css`).
+- **Lo que dejó de moverse** (todo era movimiento que nadie pidió):
+  - La **transición automática entre páginas** (`@view-transition` en `componentes.css`): sumaría una segunda entrada.
+  - La **barra de nivel que se llenaba con rebote** cada vez que se abría una pantalla: ahora aparece llena hasta donde va.
+  - El **destello del esqueleto de carga** (se repetía sin parar, con una duración escrita a mano y un degradado): ahora es de un solo color y está quieto.
+  - La entrada `etiqueta--entrando` / `@keyframes colgar` de la etiqueta de plaza (no la usaba nadie).
+- Con movimiento reducido todas las duraciones valen 0 ms (`tokens.css`) y ninguna transición dura nada.
+
+**Pruebas:** `.venv/bin/pytest pruebas` → **590 pasan, 1 `xfail`**. **Nueva:** `pruebas/test_movimiento.py` (35 casos): al abrir cada pantalla se mueve una sola cosa (se anota todo `animationstart` y todo `transitionrun` desde antes de que cargue cualquier script: solo «entrada» y ninguna transición de tamaño o lugar); la entrada es de 220 ms, una vez, sube 8 px y termina quieta; con movimiento reducido no se anima nada; ninguna transición ni animación pasa de 420 ms (se mide en cada elemento de cada pantalla); **ninguna hoja escribe una duración a mano** (todas salen de `tokens.css`); no queda `@view-transition`; el cursor y el foco responden en 120 ms; la transición del cambio de paleta es solo de fondo y texto (y con movimiento reducido es instantánea); el esqueleto está quieto; la barra de nivel no se llena sola. Ninguna prueba existente cambió.
+
+**Para decidir**
+- **El destello del esqueleto y la barra con rebote se quitaron** porque la regla es «nada más se mueve». Si quieres que la barra de nivel «se llene» al abrir Progreso o Avatar como un momento de logro, se vuelve a poner con una línea en `componentes.css`, pero sería una segunda animación por pantalla.
+- `inicio.css` (el ejercicio de Isabella) todavía trae su propio `@view-transition`; no se toca. Solo lo carga `inicio.html`.
+
 ## Textos nuevos para que Isabella revise
 
 **Inicio (R2)**
