@@ -1,4 +1,4 @@
-"""progreso.html (el diseño es de Sara, conectado por api.js): nivel, racha, comidas y ánimo de la semana, bienvenida y estados."""
+"""progreso.html (rediseño R6, conectado por api.js): nivel, racha, comidas y ánimo de la semana, el álbum, la bienvenida y los estados."""
 from datetime import datetime
 
 import pytest
@@ -47,9 +47,9 @@ def texto(pagina, selector):
 
 def test_muestra_el_nivel_y_la_racha(pagina, backend):
     abrir(pagina, backend)
-    assert texto(pagina, "main .nivel-badge") == "Nivel 2"
+    assert texto(pagina, "main .lumea-bind-nivel") == "Nivel 2"
     assert texto(pagina, "main .progreso-faltan") == "Te faltan 35 XP para el nivel 3"
-    assert pagina.locator("main .progress-bar").get_attribute("aria-valuenow") == "13"        # (20-15)/(55-15)
+    assert pagina.locator("main [role=progressbar]").get_attribute("aria-valuenow") == "13"        # (20-15)/(55-15)
     assert texto(pagina, "main .lumea-bind-racha") == "3 días"
     assert texto(pagina, "main .lumea-bind-mejor-racha") == "5 días"
     assert texto(pagina, "#meta-hoy-chip") == "Meta cumplida: 20 XP hoy"
@@ -91,12 +91,12 @@ def test_sin_racha_invita_sin_reproche(pagina, backend):
 def test_nivel_maximo(pagina, backend):
     abrir(pagina, backend, progreso={"nivel": 10, "xp_siguiente_nivel": None, "xp_faltante_siguiente_nivel": None})
     assert texto(pagina, "main .progreso-faltan") == "Llegaste al nivel máximo"
-    assert pagina.locator("main .progress-bar").get_attribute("aria-valuenow") == "100"
+    assert pagina.locator("main [role=progressbar]").get_attribute("aria-valuenow") == "100"
 
 
 def test_la_barra_no_baja_de_cero_si_se_perdio_xp(pagina, backend):
     abrir(pagina, backend, progreso={"xp_total": 10, "xp_inicio_nivel": 15, "xp_faltante_siguiente_nivel": 45})
-    assert pagina.locator("main .progress-bar").get_attribute("aria-valuenow") == "0"
+    assert pagina.locator("main [role=progressbar]").get_attribute("aria-valuenow") == "0"
 
 
 def test_la_meta_es_de_xp_no_de_comidas_ni_xp_del_nivel(pagina, backend):
@@ -184,7 +184,7 @@ def test_si_faltan_los_campos_nuevos_la_pantalla_funciona(pagina, backend):
     assert not pagina.locator("#album-enlace").is_visible()
     assert not pagina.locator("#semana-comidas-caja").is_visible()
     assert not pagina.locator("#semana-animo-caja").is_visible()
-    assert texto(pagina, "main .nivel-badge") == "Nivel 2"
+    assert texto(pagina, "main .lumea-bind-nivel") == "Nivel 2"
 
 
 def test_sin_sesion_lleva_a_iniciar_sesion(pagina):
@@ -201,7 +201,7 @@ def test_error_de_conexion_se_puede_reintentar(pagina, backend):
     backend.respuestas.clear()                                         # el backend vuelve
     pagina.get_by_role("button", name="Intentar otra vez").click()
     pagina.locator("#progreso-contenido").wait_for()
-    assert texto(pagina, "main .nivel-badge") == "Nivel 2"
+    assert texto(pagina, "main .lumea-bind-nivel") == "Nivel 2"
 
 
 def test_no_hay_calorias_ni_comparaciones(pagina, backend):
@@ -223,3 +223,68 @@ def test_a_375px_no_se_desborda(pagina, backend):
     abrir(pagina, backend, historial=[registro(i, 5 + i % 3) for i in range(1, 10)],
           animo=[{"id": 1, "estado": "muy_bien", "fecha": fecha(7)}])
     assert pagina.evaluate("document.documentElement.scrollWidth") <= 375
+
+
+# ---------- Rediseño R6: cinco superficies, sin flecha y sin Bootstrap ----------
+
+def test_cinco_superficies_como_maximo(pagina, backend):
+    abrir(pagina, backend)
+    tarjetas = pagina.locator("main .tarjeta")
+    assert tarjeta_nombres(tarjetas) == ["Nivel", "Racha", "Comidas de la semana", "Tu ánimo de la semana"]      # nivel, racha, comidas, ánimo
+    assert pagina.locator("#album-enlace").is_visible()                                                         # y el enlace al álbum
+    assert tarjetas.count() + pagina.locator("#album-enlace").count() <= 5
+    assert pagina.locator("#album-enlace.tarjeta").count() == 0                                                 # el álbum es una franja plana
+
+
+def tarjeta_nombres(tarjetas):
+    """Cada tarjeta se nombra por su título (el h2 de su aria-labelledby); la del nivel lo tiene dinámico."""
+    nombres = []
+    for t in tarjetas.all():
+        titulo = t.locator("h2").first.inner_text().strip()
+        nombres.append("Nivel" if "XP" in titulo or "nivel" in titulo.lower() else titulo)
+    return nombres
+
+
+def test_no_hay_flecha_de_volver_ni_el_boton_del_avatar_de_arriba(pagina, backend):
+    abrir(pagina, backend)
+    assert pagina.locator("main .bi-arrow-left").count() == 0
+    assert pagina.get_by_role("link", name="Volver a Inicio").count() == 0
+    assert pagina.locator("main .avatar-header-btn").count() == 0                                               # el menú ya lleva a Avatar
+
+
+def test_progreso_ya_no_carga_bootstrap_ni_los_estilos_de_sara(pagina, backend):
+    abrir(pagina, backend)
+    hojas = pagina.eval_on_selector_all("link[rel=stylesheet]", "e => e.map(x => x.getAttribute('href'))")
+    assert not any("bootstrap.min.css" in h or h.endswith("style.css") or "sara" in h for h in hojas)
+    assert pagina.locator("[class*='btn-'], .card, .rounded-4, .shadow-sm, .bg-white").count() == 0               # ni una clase de Bootstrap
+
+
+def test_la_jerarquia_es_titulo_seccion_y_cuerpo(pagina, backend):
+    abrir(pagina, backend)
+    tam = lambda sel: pagina.locator(sel).first.evaluate("e => parseFloat(getComputedStyle(e).fontSize)")
+    assert tam("h1") == pytest.approx(31.25, abs=0.1)            # --t-2xl: el título de la pantalla
+    assert tam("#titulo-comidas") == 20                          # --t-l: una sección
+    assert tam("#titulo-nivel") == 20
+
+
+def test_la_racha_es_una_sola_superficie_con_la_actual_y_la_mejor(pagina, backend):
+    abrir(pagina, backend)
+    racha = pagina.locator("section[aria-labelledby=titulo-racha]")
+    assert racha.locator(".progreso__racha").count() == 2
+    assert "Racha actual" in racha.inner_text() and "Mejor racha" in racha.inner_text()
+    assert racha.locator("i.bi-fire, i.bi-star-fill").count() == 2                                              # Bootstrap Icons, no emojis
+
+
+def test_el_enlace_al_checkin_es_secundario_y_la_pantalla_no_tiene_boton_relleno(pagina, backend):
+    abrir(pagina, backend)
+    assert pagina.locator("main .boton:not(.boton--secundario):not(.boton--fantasma)").count() == 0
+    assert pagina.get_by_role("link", name="Ver mi check-in de hoy").get_attribute("class") == "boton boton--secundario"
+    assert pagina.get_by_role("link", name="Ver mi armario").get_attribute("href") == "avatar.html#armario"
+
+
+def test_progreso_en_celular_cabe_y_apila(pagina, backend):
+    pagina.set_viewport_size({"width": 390, "height": 844})
+    abrir(pagina, backend, historial=[registro(i, 5 + i % 3) for i in range(1, 8)])
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= 390
+    tops = pagina.evaluate("[...document.querySelectorAll('main .tarjeta')].map(e => e.getBoundingClientRect().top)")
+    assert tops == sorted(tops) and len(set(tops)) == len(tops)                                                 # una debajo de otra

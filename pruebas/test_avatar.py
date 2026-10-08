@@ -279,3 +279,49 @@ def test_la_celebracion_lleva_al_armario_y_al_album(pagina, backend):
     assert pagina.locator("#pestana-armario").get_attribute("aria-selected") == "true"
     abrir(pagina, backend, ruta="avatar.html#calcomanias")
     assert pagina.locator("#pestana-calcomanias").get_attribute("aria-selected") == "true"
+
+
+# ---------- Rediseño R6: superficies tranquilas y dos columnas desde 992 px ----------
+
+def color_de(pagina, selector, propiedad="backgroundColor"):
+    return pagina.locator(selector).first.evaluate(f"e => getComputedStyle(e).{propiedad}")
+
+
+def token(pagina, variable):
+    return pagina.evaluate("""(v) => { const e = document.createElement('i'); e.style.backgroundColor = `var(${v})`;
+        document.body.appendChild(e); const c = getComputedStyle(e).backgroundColor; e.remove(); return c }""", variable)
+
+
+def test_sin_el_gran_fondo_rosado_el_avatar_va_sobre_una_superficie_tranquila(pagina, backend):
+    abrir(pagina, backend)
+    assert color_de(pagina, ".avatar-vitrina") == token(pagina, "--c-superficie")
+    assert color_de(pagina, ".avatar-vitrina") != token(pagina, "--c-emocion-contenedor")      # antes: el rosado de «emoción»
+    assert "tarjeta--emocion" not in pagina.locator(".avatar-vitrina").get_attribute("class")
+    assert color_de(pagina, ".avatar-figura") == token(pagina, "--c-fondo")                    # la figura, sobre el fondo de la página
+    assert pagina.locator(".avatar-vitrina").evaluate("e => getComputedStyle(e).boxShadow") == "none"
+
+
+def test_las_misiones_son_tarjetas_con_borde_y_el_color_va_en_su_chip(pagina, backend):
+    abrir(pagina, backend)
+    assert color_de(pagina, "#misiones-lista .mision") == token(pagina, "--c-superficie")      # antes: el lila de «misión» en toda la caja
+    assert "tarjeta--mision" not in pagina.locator("#misiones-lista .mision").first.get_attribute("class")
+    assert color_de(pagina, "#misiones-lista .chip--mision") == token(pagina, "--c-mision-suave")   # el color, en el chip de +10 XP
+
+
+def test_en_computador_hay_dos_columnas_desde_992_px_y_debajo_una(pagina, backend):
+    for ancho, dos_columnas in ((1280, True), (992, True), (991, False), (390, False)):
+        pagina.set_viewport_size({"width": ancho, "height": 900})
+        abrir(pagina, backend)
+        cajas = pagina.evaluate("""() => ({ vitrina: document.querySelector('.avatar-vitrina').getBoundingClientRect().toJSON(),
+                                          panel: document.querySelector('.avatar-panel').getBoundingClientRect().toJSON() })""")
+        lado_a_lado = cajas["panel"]["left"] >= cajas["vitrina"]["right"] - 1 and abs(cajas["panel"]["top"] - cajas["vitrina"]["top"]) < 4
+        assert lado_a_lado == dos_columnas, f"{ancho} px"
+        if not dos_columnas:
+            assert cajas["panel"]["top"] >= cajas["vitrina"]["bottom"] - 1                      # apilados: primero el avatar y su nivel
+        assert pagina.evaluate("document.documentElement.scrollWidth") <= ancho
+
+
+def test_avatar_ya_no_carga_bootstrap_ni_los_estilos_de_sara(pagina, backend):
+    abrir(pagina, backend)
+    hojas = pagina.eval_on_selector_all("link[rel=stylesheet]", "e => e.map(x => x.getAttribute('href'))")
+    assert not any("bootstrap.min.css" in h or h.endswith("style.css") or "sara" in h for h in hojas)
