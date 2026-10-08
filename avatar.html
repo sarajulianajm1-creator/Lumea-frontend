@@ -101,6 +101,15 @@
         <ul id="album-lista" class="album"></ul>
       </div>
     </section>
+
+    <!-- TU COMPAÑERO: los seis (Sol, Luna, Río, Montaña, Orquídea, Colibrí), quietos. Los de una etapa que
+         todavía no llegó llevan candado y no hacen nada. avatar.js llena la lista desde GET /avatares. -->
+    <section class="avatar-companeros" aria-labelledby="titulo-companeros">
+      <h2 id="titulo-companeros" class="panel-pestana__titulo">Tu compañero</h2>
+      <p class="panel-pestana__nota">Te acompaña en Lumea y sus ojos muestran cómo llegas hoy. Los demás se abren al llegar a una etapa nueva.</p>
+      <p id="companeros-error" class="estado-vacio" hidden>No pudimos cargar a tus compañeros. Vuelve a abrir esta pantalla en un momento.</p>
+      <ul id="companeros-lista" class="armario__lista"></ul>
+    </section>
   </div>
 
   <!-- MIS COLORES Y CARAS: el mismo selector de Inicio, para cambiarlos cuando sea. Se guardan en el navegador. -->
@@ -115,10 +124,11 @@
 </main>
 
   </div>
-<!-- api.js (dirección y llamadas al backend), formato.js (textos), pegatinas.js (calcomanías) y avatar.js (llena esta pantalla) -->
+<!-- api.js (dirección y llamadas al backend), formato.js (textos), pegatinas.js (calcomanías), companero.js (el dibujo del compañero) y avatar.js (llena esta pantalla) -->
 <script src="api.js"></script>
 <script src="formato.js"></script>
 <script src="pegatinas.js"></script>
+<script src="companero.js"></script>
 <script src="caras-checkin.js"></script>
 <script src="selector-colores.js"></script>
 <script src="avatar.js"></script>

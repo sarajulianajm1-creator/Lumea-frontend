@@ -1,20 +1,22 @@
 // =====================================================================
 // avatar.js — llena avatar.html (sin diseño propio: las clases están en
 // estilos/avatar.css y estilos/componentes.css). Necesita, antes:
-// api.js, formato.js y pegatinas.js.
+// api.js, formato.js, pegatinas.js y companero.js.
 //
 // Tres pestañas (patrón ARIA de «tabs»; abren con #misiones, #armario o
 // #calcomanias, que es a donde apuntan los botones de la celebración):
 //   Misiones     las tres misiones diarias de GET /progreso (con +semillas)
 //   Armario      ropa y accesorios de GET /avatar; ponerse y quitarse
 //   Calcomanías  el álbum de GET /calcomanias
+// Y debajo, «Tu compañero»: los seis compañeros de GET /avatares, quietos; se elige uno con POST /avatar.
 //
-// El avatar grande: si las imágenes por capas de Laura están listas
-// (imagen_lista), se apilan; si no, se usa la cara DiceBear con el ánimo de
-// hoy (la que manda GET /progreso). Si un dato no llega, esa parte se omite.
+// La figura grande: si las imágenes por capas de Laura están listas
+// (imagen_lista), la persona por capas y el compañero a su lado, más pequeño y quieto; si no, el
+// compañero es la figura principal, grande, con la cara del ánimo de hoy (la que manda GET /progreso)
+// y animado despacio (slow). Si un dato no llega, esa parte se omite.
 //
 // Reglas: nunca se muestran calorías ni comparaciones; lo bloqueado dice «Se
-// abre en el nivel N» y no hace nada; todo texto del servidor va con textContent.
+// abre en la etapa N» y no hace nada; todo texto del servidor va con textContent.
 // =====================================================================
 (function () {
   "use strict";
@@ -38,7 +40,7 @@
     persona: ["M12 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10z", "M20 21a8 8 0 0 0-16 0"],
   };
 
-  const estado = { email: null, progreso: null, avatar: null, calcomanias: null, ocupado: false };
+  const estado = { email: null, progreso: null, avatar: null, calcomanias: null, companeros: null, ocupado: false };
 
   function crear(etiqueta, clase, texto) {
     const el = document.createElement(etiqueta);
@@ -69,36 +71,47 @@
     return !!av && Array.isArray(av.capas) && av.capas.length > 0 && av.capas.every((c) => c.imagen_lista);
   }
 
+  // Sin compañero o sin internet: una silueta (el nombre y el ánimo van escritos en el aria-label y al lado)
+  function silueta() {
+    const respaldo = crear("span", "avatar-figura__silueta");
+    respaldo.appendChild(icono("persona"));
+    return respaldo;
+  }
+
   function dibujarFigura() {
     const caja = $("avatar-figura");
     caja.replaceChildren();
+    caja.classList.remove("avatar-figura--con-persona");
     const av = estado.avatar, p = estado.progreso;
-    const animo = p && p.avatar && p.avatar.estado_animo_hoy;
-    const caraUrl = (p && p.avatar && (p.avatar.url_con_animo || p.avatar.url)) || (av && av.respaldo_dicebear && av.respaldo_dicebear.url);
-    caja.setAttribute("aria-label", animo ? `Tu avatar, tu ánimo de hoy: ${NOMBRE_ANIMO[animo] || animo}` : "Tu avatar");
+    const c = (p && p.avatar) || null;                     // el compañero, con las caras de cada ánimo (GET /progreso)
+    const respaldo = (av && av.respaldo_dicebear) || null;
+    const animo = c && c.estado_animo_hoy;
+    const nombre = (c && c.nombre) || (respaldo && respaldo.nombre) || "";
+    const direccion = (c && (c.url_con_animo || c.url)) || (respaldo && respaldo.url) || null;
+    const conPersona = capasListas(av);
+    const quien = conPersona ? "Tu avatar y tu compañero" : "Tu compañero";
+    caja.setAttribute("aria-label", `${quien}${nombre ? ` ${nombre}` : ""}${animo ? `, tu ánimo de hoy: ${NOMBRE_ANIMO[animo] || animo}` : ""}`);
 
-    if (capasListas(av)) {                                  // el diseño de Laura: una imagen encima de otra
-      av.capas.forEach((c) => {
+    if (conPersona) {                                       // el diseño de Laura: una imagen encima de otra, y el compañero al lado
+      caja.classList.add("avatar-figura--con-persona");
+      const persona = crear("div", "avatar-figura__persona");
+      av.capas.forEach((capa) => {
         const img = document.createElement("img");
         img.className = "avatar-figura__capa";
         img.alt = "";
-        img.src = c.url;
-        caja.appendChild(img);
+        img.src = capa.url;
+        persona.appendChild(img);
       });
+      caja.appendChild(persona);
+      const compa = LumeaCompanero.imagen(direccion, null, "avatar-figura__companero");    // el pequeño va quieto
+      if (compa) caja.appendChild(compa);
       return;
     }
-    // Respaldo: la cara DiceBear con el ánimo de hoy. Sin internet queda una silueta.
-    const respaldo = crear("span", "avatar-figura__silueta");
-    respaldo.appendChild(icono("persona"));
-    caja.appendChild(respaldo);
-    if (caraUrl) {
-      const img = document.createElement("img");
-      img.className = "avatar-figura__cara";
-      img.alt = "";
-      img.src = caraUrl;
-      img.addEventListener("error", () => img.remove());
-      caja.appendChild(img);
-    }
+    // El compañero es la figura principal: grande, con el ánimo de hoy y despacio. Sin internet queda una silueta.
+    const img = LumeaCompanero.imagen(direccion, "slow", "avatar-figura__cara");
+    if (!img) { caja.appendChild(silueta()); return; }
+    img.addEventListener("error", () => caja.replaceChildren(silueta()));
+    caja.appendChild(img);
   }
 
   function dibujarCabeza() {
@@ -244,6 +257,87 @@
     }
   }
 
+  // ---------- Tu compañero ----------
+  // La misma tarjeta que una prenda del armario: imagen, nombre, estado y un botón. Lo bloqueado se puede enfocar y leer,
+  // pero no hace nada (aria-disabled); el compañero de ahora también: ya está elegido.
+  function tarjetaDeCompanero(c) {
+    const bloqueado = !c.desbloqueado;
+    const elegido = !bloqueado && !!c.seleccionado;
+    const li = crear("li", "prenda" + (bloqueado ? " prenda--bloqueada" : "") + (elegido ? " prenda--puesta" : ""));
+    const imagen = crear("span", "prenda__imagen prenda__imagen--companero");
+    imagen.setAttribute("aria-hidden", "true");
+    const img = LumeaCompanero.imagen(c.url, null, "companero__img");                  // quieto: aquí nada se mueve
+    if (img) {
+      img.addEventListener("error", () => imagen.replaceChildren(icono("persona")));   // sin internet: una silueta
+      imagen.appendChild(img);
+    } else {
+      imagen.appendChild(icono("persona"));
+    }
+    li.appendChild(imagen);
+    li.appendChild(crear("p", "prenda__nombre", c.nombre));
+    const detalle = crear("p", "prenda__estado");
+    if (bloqueado) detalle.appendChild(icono("candado", "prenda__candado"));
+    detalle.appendChild(document.createTextNode(bloqueado ? `Se abre en la etapa ${c.nivel_requerido}` : (elegido ? "Tu compañero" : "Disponible")));
+    li.appendChild(detalle);
+
+    const boton = crear("button", "boton boton--secundario prenda__boton");      // la acción principal de Avatar es el armario
+    boton.type = "button";
+    boton.dataset.companero = c.id;
+    if (bloqueado) {
+      boton.setAttribute("aria-disabled", "true");
+      boton.textContent = `Etapa ${c.nivel_requerido}`;
+      boton.setAttribute("aria-label", `${c.nombre}, se abre en la etapa ${c.nivel_requerido}`);
+    } else if (elegido) {
+      boton.setAttribute("aria-disabled", "true");
+      boton.textContent = "Elegido";
+      boton.setAttribute("aria-label", `Elegido: ${c.nombre}`);
+    } else {
+      boton.textContent = "Elegir";
+      boton.setAttribute("aria-label", `Elegir a ${c.nombre}`);
+      boton.addEventListener("click", () => elegirCompanero(c));
+    }
+    li.appendChild(boton);
+    return li;
+  }
+
+  function dibujarCompaneros(enfocarId) {
+    const datos = estado.companeros;
+    const lista = $("companeros-lista");
+    lista.replaceChildren();
+    $("companeros-error").hidden = !!datos;
+    if (!datos) return;
+    datos.avatares.forEach((c) => lista.appendChild(tarjetaDeCompanero(c)));
+    if (enfocarId) {
+      const boton = Array.from(lista.querySelectorAll("button")).find((b) => b.dataset.companero === enfocarId);
+      if (boton) boton.focus();
+    }
+  }
+
+  async function elegirCompanero(c) {
+    if (estado.ocupado) return;
+    estado.ocupado = true;
+    try {
+      const { ok, cuerpo } = await elegirAvatarDiceBear(estado.email, c.id);          // api.js
+      if (!ok || !cuerpo.avatar) {
+        const faltan = cuerpo && cuerpo.niveles_faltantes;
+        throw new Error(faltan ? `Todavía no se abre: te ${faltan === 1 ? "falta 1 etapa" : `faltan ${faltan} etapas`}.` : "No se pudo guardar el cambio.");
+      }
+      estado.companeros.avatar_actual = c.id;
+      estado.companeros.avatares.forEach((x) => { x.seleccionado = x.id === c.id; });
+      // GET /progreso trae al compañero nuevo con las caras de cada ánimo; POST /avatar solo trae la de ojos neutros
+      const nuevo = await obtenerProgreso(estado.email).catch(() => null);
+      if (nuevo && nuevo.ok && nuevo.cuerpo.progreso) estado.progreso = nuevo.cuerpo.progreso;
+      else estado.progreso = { ...estado.progreso, avatar: { ...cuerpo.avatar, estado_animo_hoy: null } };
+      dibujarFigura();
+      dibujarCompaneros(c.id);
+      aviso(`Tu compañero ahora es ${c.nombre}.`);
+    } catch (e) {
+      aviso(e.message && !/fetch|network/i.test(e.message) ? e.message : "No se pudo conectar. Inténtalo otra vez.");
+    } finally {
+      estado.ocupado = false;
+    }
+  }
+
   // ---------- Álbum de calcomanías ----------
   function fechaCorta(iso) {
     if (!iso) return "";
@@ -320,22 +414,25 @@
     if (!estado.email) { pantalla("sin-sesion"); return; }
     pantalla("cargando");
     try {
-      // Avatar y progreso son lo esencial; el álbum es un extra que no tumba la pantalla.
-      const [avatar, progreso, album] = await Promise.all([
+      // Avatar y progreso son lo esencial; el álbum y los compañeros son extras que no tumban la pantalla.
+      const [avatar, progreso, album, companeros] = await Promise.all([
         obtenerAvatar(estado.email),
         obtenerProgreso(estado.email),
         obtenerCalcomanias(estado.email).catch(() => null),
+        obtenerAvataresDiceBear(estado.email).catch(() => null),
       ]);
       if (!avatar.ok || !avatar.cuerpo.objetos || !progreso.ok || !progreso.cuerpo.progreso) throw new Error("sin datos");
       estado.avatar = avatar.cuerpo;
       estado.progreso = progreso.cuerpo.progreso;
       estado.calcomanias = album && album.ok && Array.isArray(album.cuerpo.calcomanias) ? album.cuerpo : null;
+      estado.companeros = companeros && companeros.ok && Array.isArray(companeros.cuerpo.avatares) ? companeros.cuerpo : null;
 
       dibujarFigura();
       dibujarCabeza();
       dibujarPuesto();
       dibujarMisiones();
       dibujarArmario();
+      dibujarCompaneros();
       dibujarAlbum();
       pantalla("listo");
       seleccionar(pestanaDelHash() || "misiones", { escribirHash: false });

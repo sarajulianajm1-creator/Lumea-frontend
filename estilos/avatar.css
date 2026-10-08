@@ -33,6 +33,10 @@
 .avatar-figura__capa { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .avatar-figura__cara { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .avatar-figura__silueta { display: grid; place-items: center; color: var(--c-emocion-tinta); }
+/* Con las imágenes de Laura: la persona por capas y el compañero a su lado, más pequeño y quieto */
+.avatar-figura--con-persona { grid-template-columns: minmax(0, 1fr) 28%; align-items: end; gap: var(--e-2); padding: var(--e-2); }
+.avatar-figura__persona { position: relative; width: 100%; height: 100%; }
+.avatar-figura__companero { width: 100%; aspect-ratio: 1; object-fit: contain; }
 .avatar-figura__silueta .icono { width: 96px; height: 96px; stroke-width: 1.25; }
 /* Al ponerse algo: un saltico (un solo movimiento, con rebote porque es un logro) */
 .avatar-figura--saltico { animation: avatar-saltico var(--m-lento) var(--m-resorte); }
@@ -108,6 +112,13 @@
 .prenda__boton { width: 100%; padding: 0 var(--e-3); }
 .prenda__boton[aria-disabled="true"] { opacity: 1; cursor: not-allowed; color: var(--c-tinta); background: transparent; border-style: dashed; }
 .prenda__boton[aria-disabled="true"]:hover { background: transparent; }
+
+/* ---------- Tu compañero: la tarjeta de una prenda, con el dibujo del compañero (sin caja de color: su forma es su silueta) ---------- */
+.avatar-companeros { display: grid; gap: var(--e-3); align-content: start; grid-column: 1 / -1; }
+.prenda__imagen--companero { width: 88px; background: transparent; }
+.prenda--bloqueada .prenda__imagen--companero { border: 0; }
+.prenda--bloqueada .prenda__imagen--companero .companero__img { opacity: .45; }       /* se ve quién es, pero todavía no se abre */
+.prenda__candado { width: 1em; height: 1em; margin-inline-end: var(--e-1); vertical-align: -.125em; }
 
 /* ---------- Álbum ---------- */
 .album {

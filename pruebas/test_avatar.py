@@ -1,7 +1,9 @@
 """avatar.html: el avatar, las pestañas (misiones, armario, calcomanías) y equipar/quitar."""
 import pytest
 
-from conftest import avatar_estado, cargar_respuesta
+from urllib.parse import parse_qs, urlparse
+
+from conftest import CORREO_PRUEBA, avatar_estado, avatares_estado, cargar_respuesta, companero
 
 
 def abrir(pagina, backend, ruta="avatar.html", avatar=None, progreso=None, calcomanias=None):
@@ -22,7 +24,7 @@ def texto(pagina, selector):
 
 
 def prenda(pagina, nombre):
-    return pagina.locator(".prenda", has_text=nombre)
+    return pagina.locator("#armario-grupos .prenda", has_text=nombre)
 
 
 # ---------- La vitrina ----------
@@ -32,7 +34,7 @@ def test_muestra_nivel_cara_y_barra(pagina, backend):
     assert texto(pagina, "#avatar-faltan") == "Te faltan 35 semillas para la etapa 3"
     assert pagina.locator("#avatar-riel").get_attribute("aria-valuenow") == "30"
     assert "eyesVariant=happy" in pagina.locator("#avatar-figura img").get_attribute("src")        # el ánimo de hoy: «bien»
-    assert pagina.locator("#avatar-figura").get_attribute("aria-label") == "Tu avatar, tu ánimo de hoy: Bien"
+    assert pagina.locator("#avatar-figura").get_attribute("aria-label") == "Tu compañero Sol, tu ánimo de hoy: Bien"
     assert texto(pagina, "#avatar-puesto") == "Todavía no te pusiste nada."
     assert pagina.errores == []
 
@@ -127,7 +129,7 @@ def test_la_mision_cumplida_lleva_su_calcomania(pagina, backend):
 def test_el_armario_agrupa_ropa_y_accesorios(pagina, backend):
     abrir(pagina, backend, ruta="avatar.html#armario")
     assert pagina.locator(".armario__titulo").all_inner_texts() == ["Ropa", "Accesorios"]
-    assert pagina.locator(".prenda").count() == 6
+    assert pagina.locator("#armario-grupos .prenda").count() == 6
     assert "Disponible" in prenda(pagina, "Buzo verde").inner_text()
 
 
@@ -147,7 +149,7 @@ def test_ponerse_algo_guarda_y_lo_dice(pagina, backend):
     backend.poner("POST", "/avatar/equipar", avatar_estado(2, ropa="buzo_verde"))
     abrir(pagina, backend, ruta="avatar.html#armario")
     prenda(pagina, "Buzo verde").get_by_role("button", name="Ponerme Buzo verde").click()
-    pagina.locator(".prenda--puesta").wait_for()
+    pagina.locator("#armario-grupos .prenda--puesta").wait_for()
     assert backend.cuerpo_enviado("POST", "/avatar/equipar") == {"email": "prueba@lumea.test", "tipo": "ropa", "item_id": "buzo_verde"}
     assert "Puesto" in prenda(pagina, "Buzo verde").inner_text()
     assert prenda(pagina, "Buzo verde").get_by_role("button").inner_text() == "Quitar"
@@ -171,7 +173,7 @@ def test_quitar_una_prenda(pagina, backend):
     abrir(pagina, backend, ruta="avatar.html#armario")
     assert texto(pagina, "#avatar-puesto") == "Puesto: Gafas"
     prenda(pagina, "Gafas").get_by_role("button", name="Quitar Gafas").click()
-    pagina.locator(".prenda--puesta").wait_for(state="detached")
+    pagina.locator("#armario-grupos .prenda--puesta").wait_for(state="detached")
     assert backend.cuerpo_enviado("POST", "/avatar/quitar") == {"email": "prueba@lumea.test", "tipo": "accesorio"}
     assert texto(pagina, "#avatar-aviso") == "Te quitaste Gafas."
     assert texto(pagina, "#avatar-puesto") == "Todavía no te pusiste nada."
@@ -182,7 +184,7 @@ def test_equipar_con_el_teclado(pagina, backend):
     abrir(pagina, backend, ruta="avatar.html#armario")
     prenda(pagina, "Buzo verde").get_by_role("button").focus()
     pagina.keyboard.press("Enter")
-    pagina.locator(".prenda--puesta").wait_for()
+    pagina.locator("#armario-grupos .prenda--puesta").wait_for()
 
 
 def test_si_el_backend_dice_que_esta_bloqueado(pagina, backend):
@@ -226,7 +228,7 @@ def test_si_no_carga_el_album_lo_demas_funciona(pagina, backend):
     assert pagina.locator("#album-error").is_visible()
     assert pagina.locator(".album__item").count() == 0
     pagina.locator("#pestana-armario").click()
-    assert pagina.locator(".prenda").count() == 6
+    assert pagina.locator("#armario-grupos .prenda").count() == 6
 
 
 # ---------- Estados, seguridad y tamaño ----------
@@ -253,7 +255,7 @@ def test_el_texto_del_servidor_nunca_es_html(pagina, backend):
     cuerpo["objetos"]["ropa"][0]["nombre"] = malo
     abrir(pagina, backend, ruta="avatar.html#armario", avatar=cuerpo)
     assert pagina.locator(".prenda__nombre", has_text="onerror").count() == 1
-    assert pagina.locator(".prenda img").count() == 0
+    assert pagina.locator("#armario-grupos .prenda img").count() == 0
     assert pagina.evaluate("window.hackeado") is None
 
 
@@ -279,6 +281,205 @@ def test_la_celebracion_lleva_al_armario_y_al_album(pagina, backend):
     assert pagina.locator("#pestana-armario").get_attribute("aria-selected") == "true"
     abrir(pagina, backend, ruta="avatar.html#calcomanias")
     assert pagina.locator("#pestana-calcomanias").get_attribute("aria-selected") == "true"
+
+
+# ---------- Tu compañero (Camino del cuidado, K2) ----------
+
+NOMBRES = ["Sol", "Luna", "Río", "Montaña", "Orquídea", "Colibrí"]
+ETAPAS = {"Río": 3, "Montaña": 5, "Orquídea": 7, "Colibrí": 9}
+
+
+ANIMADAS = 'img[src*="animationVariant=slow"], img[src*="animationVariant=medium"]'      # lo que pide movimiento (none no)
+
+
+def tarjeta_de(pagina, nombre):
+    return pagina.locator("#companeros-lista .prenda", has=pagina.locator(".prenda__nombre", has_text=nombre))
+
+
+def parametros(src):
+    return {k: v[0] for k, v in parse_qs(urlparse(src).query).items()}
+
+
+def test_la_seccion_tu_companero_muestra_los_seis_con_su_nombre_y_su_etapa(pagina, backend):
+    abrir(pagina, backend)
+    assert pagina.get_by_role("heading", name="Tu compañero", level=2).count() == 1
+    tarjetas = pagina.locator("#companeros-lista .prenda")
+    assert [t.locator(".prenda__nombre").inner_text() for t in tarjetas.all()] == NOMBRES
+    assert tarjeta_de(pagina, "Sol").locator(".prenda__estado").inner_text() == "Tu compañero"
+    assert tarjeta_de(pagina, "Luna").locator(".prenda__estado").inner_text() == "Disponible"
+    for nombre, etapa in ETAPAS.items():
+        assert tarjeta_de(pagina, nombre).locator(".prenda__estado").inner_text() == f"Se abre en la etapa {etapa}"
+    assert pagina.errores == []
+
+
+def test_los_bloqueados_llevan_candado_etapa_y_aria_disabled_y_no_hacen_nada(pagina, backend):
+    abrir(pagina, backend)
+    for nombre, etapa in ETAPAS.items():
+        tarjeta = tarjeta_de(pagina, nombre)
+        assert "prenda--bloqueada" in tarjeta.get_attribute("class")
+        assert tarjeta.locator(".prenda__candado").count() == 1                       # el candado, que es un dibujo, no un emoji
+        boton = tarjeta.get_by_role("button")
+        assert boton.inner_text() == f"Etapa {etapa}"
+        assert boton.get_attribute("aria-disabled") == "true"
+        assert boton.get_attribute("aria-label") == f"{nombre}, se abre en la etapa {etapa}"
+        boton.click(force=True)                                                       # aria-disabled: se puede tocar, no hace nada
+    assert ("POST", "/avatar") not in backend.llamadas
+    # Los dos primeros (Sol y Luna) y el elegido no llevan candado
+    assert tarjeta_de(pagina, "Luna").locator(".prenda__candado").count() == 0
+    assert tarjeta_de(pagina, "Sol").locator(".prenda__candado").count() == 0
+
+
+def test_los_seis_van_quietos_sin_datos_de_la_persona_y_con_alt_vacio(pagina, backend):
+    abrir(pagina, backend)
+    imagenes = pagina.locator("#companeros-lista img")
+    assert imagenes.count() == 6
+    for img in imagenes.all():
+        src = img.get_attribute("src")
+        datos = parametros(src)
+        assert src.startswith("https://api.dicebear.com/10.x/gaze/svg?")
+        assert "animationVariant" not in datos                                        # quietos
+        assert datos["seed"].startswith("lumea-") and set(datos) <= {"seed", "shapeVariant", "bodyColor", "eyesVariant"}
+        assert CORREO_PRUEBA.split("@")[0] not in src and "@" not in src
+        assert img.get_attribute("alt") == ""
+    assert pagina.locator("#companeros-lista .prenda__imagen").evaluate_all("e => e.every(x => x.getAttribute('aria-hidden') === 'true')")
+
+
+def test_elegir_un_companero_lo_guarda_lo_marca_y_el_foco_se_queda(pagina, backend):
+    abrir(pagina, backend)
+    backend.poner("GET", "/progreso", _progreso_con(companero("luna", "bien")))        # lo que el backend dirá después de elegir
+    boton = tarjeta_de(pagina, "Luna").get_by_role("button")
+    assert boton.inner_text() == "Elegir" and boton.get_attribute("aria-label") == "Elegir a Luna"
+    boton.click()
+    pagina.locator("#companeros-lista .prenda--puesta .prenda__nombre", has_text="Luna").wait_for()
+    assert backend.cuerpo_enviado("POST", "/avatar") == {"email": CORREO_PRUEBA, "avatar_id": "luna"}
+    assert tarjeta_de(pagina, "Luna").get_by_role("button").inner_text() == "Elegido"
+    assert tarjeta_de(pagina, "Luna").get_by_role("button").get_attribute("aria-label") == "Elegido: Luna"
+    assert tarjeta_de(pagina, "Sol").get_by_role("button").inner_text() == "Elegir"
+    assert pagina.locator("#companeros-lista .prenda--puesta").count() == 1
+    assert pagina.evaluate("document.activeElement.dataset.companero") == "luna"        # el foco no se pierde
+    assert texto(pagina, "#avatar-aviso") == "Tu compañero ahora es Luna."
+    # la figura grande ya es Luna, con los ojos del ánimo de hoy
+    assert "seed=lumea-luna" in pagina.locator("#avatar-figura img").get_attribute("src")
+    assert "eyesVariant=happy" in pagina.locator("#avatar-figura img").get_attribute("src")
+    assert pagina.locator("#avatar-figura").get_attribute("aria-label") == "Tu compañero Luna, tu ánimo de hoy: Bien"
+
+
+def _progreso_con(avatar):
+    cuerpo = cargar_respuesta("progreso")
+    cuerpo["progreso"]["avatar"] = avatar
+    return cuerpo
+
+
+def test_elegir_un_companero_con_el_teclado(pagina, backend):
+    abrir(pagina, backend)
+    backend.poner("GET", "/progreso", _progreso_con(companero("luna", "bien")))
+    tarjeta_de(pagina, "Luna").get_by_role("button").focus()
+    pagina.keyboard.press("Enter")
+    pagina.locator("#companeros-lista .prenda--puesta .prenda__nombre", has_text="Luna").wait_for()
+    assert backend.cuerpo_enviado("POST", "/avatar")["avatar_id"] == "luna"
+
+
+def test_si_el_backend_dice_que_el_companero_esta_bloqueado(pagina, backend):
+    abrir(pagina, backend)
+    backend.poner("POST", "/avatar", {"error": "El avatar \"luna\" todavía está bloqueado.", "nivel_maximo": 1,
+                                       "nivel_requerido": 3, "niveles_faltantes": 2}, estado=403)
+    tarjeta_de(pagina, "Luna").get_by_role("button").click()
+    pagina.wait_for_function("document.getElementById('avatar-aviso').textContent !== ''")
+    assert texto(pagina, "#avatar-aviso") == "Todavía no se abre: te faltan 2 etapas."
+    assert tarjeta_de(pagina, "Sol").locator(".prenda__estado").inner_text() == "Tu compañero"       # nada cambió
+
+
+def test_si_falla_la_conexion_al_elegir_no_cambia_nada(pagina, backend):
+    abrir(pagina, backend)
+    backend.poner("POST", "/avatar", {"success": False}, estado=500)
+    tarjeta_de(pagina, "Luna").get_by_role("button").click()
+    pagina.wait_for_function("document.getElementById('avatar-aviso').textContent !== ''")
+    assert texto(pagina, "#avatar-aviso") == "No se pudo guardar el cambio."
+    assert tarjeta_de(pagina, "Sol").locator(".prenda__estado").inner_text() == "Tu compañero"
+
+
+def test_con_un_compañero_mas_adelante_se_desbloquean_mas(pagina, backend):
+    abrir(pagina, backend)
+    backend.poner("GET", "/avatares", avatares_estado(nivel=5, actual="luna"))
+    abrir(pagina, backend)
+    assert tarjeta_de(pagina, "Luna").locator(".prenda__estado").inner_text() == "Tu compañero"
+    assert tarjeta_de(pagina, "Río").get_by_role("button").inner_text() == "Elegir"
+    assert tarjeta_de(pagina, "Montaña").get_by_role("button").inner_text() == "Elegir"
+    assert tarjeta_de(pagina, "Orquídea").get_by_role("button").inner_text() == "Etapa 7"
+
+
+def test_el_compañero_grande_se_anima_despacio_y_es_lo_unico_que_se_mueve(pagina, backend):
+    abrir(pagina, backend)
+    grande = pagina.locator("#avatar-figura img")
+    datos = parametros(grande.get_attribute("src"))
+    assert datos["animationVariant"] == "slow" and datos["eyesVariant"] == "happy" and datos["seed"] == "lumea-sol"
+    # en toda la pantalla, una sola imagen pide animación: nunca dos caras moviéndose
+    assert pagina.locator(ANIMADAS).count() == 1
+
+
+def test_con_movimiento_reducido_no_se_pide_ninguna_animacion(pagina, backend):
+    pagina.emulate_media(reduced_motion="reduce")
+    abrir(pagina, backend)
+    assert "animationVariant" not in pagina.locator("#avatar-figura img").get_attribute("src")
+    assert pagina.locator(ANIMADAS).count() == 0
+
+
+def test_con_las_imagenes_de_laura_la_persona_y_el_companero_al_lado_mas_pequeño_y_quieto(pagina, backend):
+    abrir(pagina, backend, avatar=avatar_estado(4, ropa="camiseta_lumea", imagenes=True))
+    assert "avatar-figura--con-persona" in pagina.locator("#avatar-figura").get_attribute("class")
+    assert pagina.locator("#avatar-figura .avatar-figura__persona img.avatar-figura__capa").count() == 2
+    lado = pagina.locator("#avatar-figura img.avatar-figura__companero")
+    assert lado.count() == 1
+    src = lado.get_attribute("src")
+    assert "seed=lumea-sol" in src and "animationVariant" not in src                  # el pequeño va quieto
+    cajas = pagina.evaluate("""() => ({ persona: document.querySelector('.avatar-figura__persona').getBoundingClientRect().toJSON(),
+                                      companero: document.querySelector('.avatar-figura__companero').getBoundingClientRect().toJSON() })""")
+    assert cajas["companero"]["left"] >= cajas["persona"]["right"] - 1                 # a su lado, no encima
+    assert cajas["companero"]["width"] < cajas["persona"]["width"] / 2                 # más pequeño
+    assert pagina.locator("#avatar-figura").get_attribute("aria-label") == "Tu avatar y tu compañero Sol, tu ánimo de hoy: Bien"
+    assert pagina.locator(ANIMADAS).count() == 0                   # con la persona, nada se anima
+
+
+def test_sin_internet_los_companeros_quedan_en_silueta_con_su_nombre(pagina, backend):
+    abrir(pagina, backend)
+    pagina.evaluate("document.querySelectorAll('#companeros-lista img').forEach(i => i.dispatchEvent(new Event('error')))")
+    assert pagina.locator("#companeros-lista img").count() == 0
+    assert pagina.locator("#companeros-lista .prenda__imagen svg").count() == 6
+    assert [t.locator(".prenda__nombre").inner_text() for t in pagina.locator("#companeros-lista .prenda").all()] == NOMBRES
+
+
+def test_si_no_cargan_los_companeros_lo_demas_funciona(pagina, backend):
+    backend.poner("GET", "/avatares", {"success": False, "error": "sin perfil"}, estado=404)
+    abrir(pagina, backend)
+    assert pagina.locator("#companeros-error").is_visible()
+    assert pagina.locator("#companeros-lista .prenda").count() == 0
+    assert texto(pagina, "#avatar-nivel") == "Etapa 2"
+    assert pagina.locator("#avatar-figura img").count() == 1
+
+
+def test_el_nombre_del_companero_nunca_es_html(pagina, backend):
+    cuerpo = avatares_estado()
+    cuerpo["avatares"][1]["nombre"] = '<img src=x onerror="window.hackeado=1">'
+    backend.poner("GET", "/avatares", cuerpo)
+    abrir(pagina, backend)
+    assert pagina.locator("#companeros-lista .prenda__nombre", has_text="onerror").count() == 1
+    assert pagina.evaluate("window.hackeado") is None
+
+
+@pytest.mark.parametrize("ancho", [375, 1280])
+def test_la_seccion_de_companeros_no_desborda(pagina, backend, ancho):
+    pagina.set_viewport_size({"width": ancho, "height": 900})
+    abrir(pagina, backend)
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= ancho
+    caja = pagina.locator(".avatar-companeros").bounding_box()
+    assert caja["x"] + caja["width"] <= ancho
+
+
+def test_la_accion_principal_de_avatar_sigue_siendo_el_armario(pagina, backend):
+    abrir(pagina, backend, ruta="avatar.html#armario")
+    # los botones de los compañeros son secundarios: el relleno es de «Ponerme»
+    assert pagina.locator("#companeros-lista .boton:not(.boton--secundario)").count() == 0
+    assert pagina.locator("#armario-grupos .boton:not(.boton--secundario)").count() >= 1
 
 
 # ---------- Rediseño R6: superficies tranquilas y dos columnas desde 992 px ----------

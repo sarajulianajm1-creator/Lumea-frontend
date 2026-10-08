@@ -152,6 +152,7 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 .animo-cara__imagen { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; }
 .animo-cara__imagen:empty { display: none; }        /* sin set de caras elegido solo se ve la palabra */
 .caras-checkin__img { display: block; width: 100%; height: 100%; }
+.companero__img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .animo-cara__nombre { font-weight: var(--t-peso-medio); text-align: center; }
 .inicio__confirmacion { font-weight: var(--t-peso-medio); color: var(--c-emocion-tinta); }
 
