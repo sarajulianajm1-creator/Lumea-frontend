@@ -25,15 +25,16 @@
     return el;
   }
 
-  // «Miércoles 7 de octubre», con la fecha del dispositivo (la hora ya no se muestra: rediseño R1)
+  // «Miércoles, 7 de octubre», con la fecha del dispositivo (sin hora y sin ícono: rediseño R1 y R2).
+  // Va en un <time>, así que también se le pone su fecha en formato de máquina (datetime).
   function actualizarFechaActual() {
     const ahora = new Date();
     let fecha = ahora.toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" });
     fecha = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+    const iso = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}-${String(ahora.getDate()).padStart(2, "0")}`;
     todos(".lumea-bind-fecha").forEach((el) => {
-      const icono = crear("i", "bi bi-calendar-event me-1");
-      icono.setAttribute("aria-hidden", "true");
-      el.replaceChildren(icono, document.createTextNode(` ${fecha}`));
+      el.textContent = fecha;
+      if (el.tagName === "TIME") el.setAttribute("datetime", iso);
     });
   }
 
@@ -114,6 +115,12 @@
     todos(".lumea-bind-racha-nota").forEach((el) => { el.textContent = F.notaRacha(u.racha_actual); });
 
     poner(".lumea-bind-comidas-count", `${s.comidas_hoy.length} de ${s.meta_comidas}`);
+    // La barra de comidas de hoy: lo que lleva sobre la meta de comidas (nunca pasa de 100 %)
+    const pctComidas = s.meta_comidas > 0 ? Math.min(100, Math.round((s.comidas_hoy.length / s.meta_comidas) * 100)) : 0;
+    todos(".lumea-bind-comidas-bar").forEach((barra) => {
+      barra.style.width = `${pctComidas}%`;
+      barra.setAttribute("aria-valuenow", String(pctComidas));
+    });
     const hechas = s.misiones.filter((m) => m.cumplida).length;
     poner(".lumea-bind-misiones-count", `${hechas} de ${s.misiones.length || 3}`);
 
@@ -140,21 +147,21 @@
     }
   }
 
-  // La primera misión sin cumplir; si ya están las tres, se celebra sin pedir nada más
+  // La primera misión sin cumplir, con su recompensa en un chip; si ya están las tres, se celebra sin pedir nada más
   function sincronizarProximaMision(s) {
     const titulo = document.getElementById("proxima-mision-titulo");
-    const detalle = document.getElementById("proxima-mision-xp");
+    const recompensa = document.getElementById("proxima-mision-xp");
     if (!titulo || !s.misiones.length) return;
     const pendiente = s.misiones.find((m) => !m.cumplida);
     if (!pendiente) {
       titulo.textContent = "Hoy cumpliste tus tres misiones";
-      if (detalle) detalle.replaceChildren(document.createTextNode("Lo que registres ahora suma a tu día."));
+      if (recompensa) recompensa.hidden = true;
       return;
     }
     titulo.textContent = pendiente.titulo;
-    if (detalle) {
-      detalle.replaceChildren(crear("span", "badge text-bg-warning me-1 fw-bold", `+${pendiente.recompensa} XP`),
-                              document.createTextNode(pendiente.descripcion || ""));
+    if (recompensa) {
+      recompensa.textContent = `+${pendiente.recompensa} XP`;
+      recompensa.hidden = false;
     }
   }
 

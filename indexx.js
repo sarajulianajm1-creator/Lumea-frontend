@@ -1,9 +1,10 @@
 // =====================================================================
-// indexx.js — la lógica de Inicio (index-ingresado.html, el diseño es de Sara).
+// indexx.js — la lógica de Inicio (index-ingresado.html).
 //
-// Los datos (nivel, XP, racha, misiones, canasta) los pone lumea-ui.js desde el estado
+// Los datos (nivel, XP, racha, misión, comidas) los pone lumea-ui.js desde el estado
 // de lumea-state.js; aquí solo está lo que hace esta pantalla por su cuenta:
-//   - el check-in rápido de ánimo (POST /estado-animo por el estado, con celebración)
+//   - el check-in de ánimo: eliges una cara (aria-pressed) y la guardas con «Guardar mi ánimo»
+//     (POST /estado-animo por el estado, con celebración)
 //   - el atajo «Foto directa» (la foto pasa a alimentos.html una sola vez)
 //   - cerrar la bienvenida de regreso
 // Toda la conexión va por api.js; aquí no hay direcciones ni llamadas a mano.
@@ -16,36 +17,37 @@
   const LADO_MAX_PX = 1024;                    // igual que la cámara: la foto se reduce antes de pasar
   const $ = (id) => document.getElementById(id);
 
-  // ---------- Check-in rápido de ánimo ----------
+  // ---------- Check-in de ánimo ----------
 
-  // Marca el estado de hoy; una vez registrado, los demás quedan en reposo (se registra una vez al día)
+  let elegido = null;                          // el estado que la persona tocó (todavía sin guardar)
+  let guardando = false;
+
+  // Dibuja el check-in según lo elegido y lo ya registrado hoy. Se registra UNA vez al día:
+  // una vez registrado, los demás estados quedan en reposo y el botón de guardar se esconde.
   function pintarCheckin() {
     const s = window.lumeaStore.obtener();
-    if (!s.cargado) return;
-    const registrado = s.animo_hoy.registrado;
-    document.querySelectorAll(".btn-face-mood").forEach((boton) => {
-      const activo = registrado && boton.dataset.estado === s.animo_hoy.estado;
-      boton.classList.toggle("active", activo);
+    const registrado = s.cargado && s.animo_hoy.registrado;
+    if (registrado) elegido = s.animo_hoy.estado;
+    document.querySelectorAll(".animo-cara").forEach((boton) => {
+      const activo = boton.dataset.estado === elegido;
       boton.setAttribute("aria-pressed", String(activo));
       boton.disabled = registrado && !activo;
     });
+    const guardar = $("btn-guardar-animo-inicio");
+    guardar.hidden = registrado;
+    guardar.disabled = !elegido || guardando;
     const aviso = $("checkin-confirmado");
-    if (aviso) {
-      aviso.hidden = !registrado;
-      if (registrado) aviso.textContent = `Hoy llegaste: ${F.NOMBRE_ANIMO[s.animo_hoy.estado] || s.animo_hoy.estado}. Tu check-in ya está registrado.`;
-    }
+    aviso.hidden = !registrado;
+    if (registrado) aviso.textContent = `Hoy llegaste: ${F.NOMBRE_ANIMO[s.animo_hoy.estado] || s.animo_hoy.estado}. Tu check-in ya está registrado.`;
   }
 
-  async function marcarAnimo(estado) {
-    const antes = window.lumeaStore.obtener().animo_hoy.registrado;
-    const respuesta = await window.lumeaStore.registrarAnimo(estado);
-    if (!respuesta || antes) return;
-    // Un solo rebote en la forma de la canasta (el CSS lo apaga con movimiento reducido)
-    const forma = $("shape-animo");
-    if (forma) {
-      forma.classList.add("animate-shape-bounce");
-      forma.addEventListener("animationend", () => forma.classList.remove("animate-shape-bounce"), { once: true });
-    }
+  async function guardarAnimo() {
+    if (!elegido || guardando) return;
+    guardando = true;
+    pintarCheckin();
+    await window.lumeaStore.registrarAnimo(elegido);   // celebra con la misma respuesta; si falla, avisa y se puede intentar otra vez
+    guardando = false;
+    pintarCheckin();
   }
 
   // ---------- Foto directa: del celular a la cámara de registro ----------
@@ -62,7 +64,7 @@
       sessionStorage.setItem("lumea_foto_temporal", lienzo.toDataURL("image/jpeg", 0.9));
       window.location.href = "alimentos.html";
     } catch (e) {
-      window.lumeaStore.mostrarNotificacion("No se pudo abrir la foto. Prueba con «Cámara en vivo».");
+      window.lumeaStore.mostrarNotificacion("No se pudo abrir la foto. Prueba con «Registrar comida».");
     }
   }
 
@@ -70,9 +72,10 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     const store = window.lumeaStore;
-    document.querySelectorAll(".btn-face-mood").forEach((boton) => {
-      boton.addEventListener("click", () => marcarAnimo(boton.dataset.estado));
+    document.querySelectorAll(".animo-cara").forEach((boton) => {
+      boton.addEventListener("click", () => { elegido = boton.dataset.estado; pintarCheckin(); });
     });
+    $("btn-guardar-animo-inicio").addEventListener("click", guardarAnimo);
     const foto = $("input-foto-directa-home");
     if (foto) foto.addEventListener("change", () => { if (foto.files[0]) pasarFotoALaCamara(foto.files[0]); });
     const cerrar = document.querySelector("[data-cerrar-aviso]");
