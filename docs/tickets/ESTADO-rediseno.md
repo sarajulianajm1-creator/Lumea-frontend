@@ -193,6 +193,49 @@ El código del rediseño es de la IA; el plan, las decisiones, los textos y la r
 - **El destello del esqueleto y la barra con rebote se quitaron** porque la regla es «nada más se mueve». Si quieres que la barra de nivel «se llene» al abrir Progreso o Avatar como un momento de logro, se vuelve a poner con una línea en `componentes.css`, pero sería una segunda animación por pantalla.
 - `inicio.css` (el ejercicio de Isabella) todavía trae su propio `@view-transition`; no se toca. Solo lo carga `inicio.html`.
 
+## R9 · Revisión y entrega: LISTA (7 oct 2026)
+
+**Qué quedó listo**
+- **Pruebas:** `.venv/bin/pytest pruebas` → **636 pasan, 1 `xfail`** (el borrador `inicio.html`; los 258 casos de contraste van aparte, con `-m capturas`). Ninguna prueba se borró ni se debilitó (la lista de las que cambiaron está abajo).
+- **Contraste:** `pytest pruebas -m capturas` → **258 casos pasan** (las seis pantallas privadas —Avatar con sus tres pestañas— y las seis públicas, en las 5 paletas + el estado neutro × claro/oscuro, más Registrar con el resultado «IA segura» —con sellos— y «IA duda» en las 12 combinaciones). **0 errores de contraste en todas las pantallas del rediseño** (el resumen está en `pruebas/capturas/contraste.txt`, que git ignora). Lo único con contraste bajo es `?piel=sara` en las páginas públicas (el diseño original de Sara, que ya no es el de Lumea y que solo se conserva para comparar).
+- **Recorrido de accesibilidad, hecho por una prueba nueva** (`pruebas/test_accesibilidad.py`, 46 casos) en vez de a mano, para que se repita cada vez:
+  - **Teclado, sin mouse:** con Tab se recorre cada control de las seis pantallas a 1280 y a 320 px, sin trampa de teclado, cada parada es un control distinto, el foco siempre se ve (borde o anillo de 2 px como mínimo) y nunca queda fuera de la pantalla; lo primero que se alcanza es el menú, en su orden; Shift+Tab vuelve sin perderse.
+  - **Zoom y reflujo (WCAG 1.4.10):** sin barra horizontal a 200 % de zoom (640 px de ancho) y a 320 px, en las seis pantallas; también Registrar con un resultado largo y tres sellos, Mis registros con nombres largos y la tarjeta de colores y caras.
+  - **Flujos solo con teclado:** el check-in de Inicio (elegir una cara con Espacio, guardar con Enter), el menú, cerrar la tarjeta de colores (el foco pasa a la acción principal) y cerrar sesión.
+  - **Nada solo con color:** la cara y la paleta elegidas se distinguen por `aria-pressed` o el radio marcado (lo oye el lector de pantalla) y por un borde más grueso.
+  - Se comprobó que las pruebas detectan: se rompió a propósito el comportamiento que miden y fallaron; después se deshizo el cambio.
+- **Capturas «después»** en `pruebas/capturas/despues/` (carpeta ignorada por git; **Isabella elige cuáles guarda para la defensa**): las seis pantallas privadas y la Bienvenida, en el estado neutro (como las ve una persona nueva), a 1280 y a 390 px (`<pantalla>__1280.png` y `__390.png`), más cuatro con paleta: Inicio en Colibrí oscuro, Progreso en Laguna, Avatar en Carnaval y Mis registros en Cosecha (`<pantalla>-<paleta>-<modo>__<ancho>.png`). Las capturas «antes» siguen en `pruebas/capturas/antes/`. El menú del celular sale a mitad de la captura de página completa porque es una barra pegada abajo.
+- **Documentación:**
+  - `docs/bitacora-ia.md`: una fila por fase (R0 a R9).
+  - `docs/defensa/preguntas-rediseno.md`: **seis preguntas** que un jurado podría hacer (sin paleta predeterminada, DiceBear y la privacidad, `localStorage`, accesibilidad, gamificación sin juicio y movimiento reducido), cada una con el archivo donde está la respuesta y la prueba que la comprueba. **Sin respuestas:** las escribe Isabella.
+  - `docs/defensa/privacidad-y-limites-rediseno.md`, `MARCA.md` y `README.md` (créditos de DiceBear) al día.
+
+**Pruebas que cambiaron en todo el rediseño, y por qué** (ninguna se borró ni se debilitó una de accesibilidad)
+- **R1:** `test_navegacion.py` (el menú del celular ahora es el mismo `nav`, el único), `test_progreso.py` (la zona de usuario del menú es delgada: nombre, nivel y «Cerrar sesión») y `test_mis_registros.py` (lee el sello con `text_content()` porque el CSS lo pone en mayúsculas). `test_avatar.py::test_un_solo_h1_…` ya fallaba (dos `nav`) y ahora pasa.
+- **R2:** `test_index_ingresado.py` (selectores nuevos por el marcado nuevo —`.inicio__dia`, `.inicio__nivel`, `[role=progressbar]`—, con los mismos textos esperados; el check-in ahora elige una cara y luego «Guardar mi ánimo»; se borró la del rebote de la canasta porque la canasta ya no existe).
+- **R3:** `test_emociones.py` (el marcado de Ánimo pasó a `.animo-cara`; mismas comprobaciones de guardado, celebración y errores).
+- **R5:** `test_camara.py` (la certeza ahora dice «La IA está segura: 94 %»).
+- **R6:** `test_progreso.py` (`.nivel-badge` y `.progress-bar` pasaron a `.lumea-bind-nivel` y `[role=progressbar]`) y `test_mis_registros.py` (reescrita para la lista de filas: `ul#listaRegistros > li.registro`, `#errorHistorial`; mismas comprobaciones de datos, errores, sesión y que el texto del servidor nunca es HTML).
+- **R4:** `test_capturas.py` (suma el estado neutro y los resultados «segura» y «duda»). `test_avatar.py` solo sumó pruebas.
+- **Nuevas:** `test_rediseno.py`, `test_caras_checkin.py`, `test_paletas.py`, `test_selector_colores.py`, `test_publico.py`, `test_movimiento.py` y `test_accesibilidad.py`.
+
+**Para decidir** (todo lo que quedó abierto en las fases, en un solo lugar; cada punto dice qué se cambia si prefieres otra cosa)
+1. **Cerrar sesión en el celular:** el botón de texto está solo al final de Avatar y solo ≤ 720 px (R1). Si lo quieres siempre, se borra la regla `.salir-celular` de `app.css`.
+2. **Inicio:** el enlace «Ver mi semana de ánimo» y que no hay frase de bienvenida (R2).
+3. **Ánimo:** el texto «Todas las emociones dan el mismo XP: no se premia estar siempre bien.» se dejó, pero choca con la regla de que el XP solo aparece en el nivel, las misiones y la celebración (R3). Y la cara elegida va sobre un fondo suave de «emoción» y no sobre el color pleno.
+4. **Colores y caras:** «Listo» se recuerda (la tarjeta no vuelve); no hay opción «solo la palabra» para las caras; la tarjeta elegida toma el color de marca de la paleta (en Carnaval, verde lima) (R4).
+5. **Registrar:** «por 100 g» en las calorías; sin calorías ni sellos mientras «IA duda»; `MOSTRAR_CALORIAS` arriba de `lumea-camara.js` si hay que apagarlas (R5).
+6. **Progreso:** se quitó «Ver mi avatar»; la insignia «Es tuyo y no se compara con nadie» quedó dentro de la nota (R6).
+7. **Movimiento:** se quitaron el destello del esqueleto de carga y el rebote de la barra de nivel; volverlos sería una segunda animación por pantalla (R8).
+8. **Nombres** de las cinco paletas y de los dos sets de caras: siguen pendientes de votar (ver «Textos nuevos»).
+
+**Para el viernes: unir y entregar** (lo hace Isabella; no se hizo push ni merge a `main`)
+1. En `.claude/worktrees/rediseno`: `git merge gamificacion-100` (sus textos). Hay **conflictos probables** en `docs/bitacora-ia.md` (las dos ramas agregan filas: conservar las dos), en `docs/tickets/ESTADO-*.md` y en sus páginas públicas y de Inicio si las tocó; en un conflicto de `<body>` gana su texto y se conservan las líneas de `.logo-brand` (la imagen `img/logo.svg`).
+2. Correr `.venv/bin/pytest pruebas` y mirar lo que falle: lo más probable son textos que ella cambió y que una prueba espera tal cual.
+3. **Su logo:** copiarlo a `img/`, cambiar la constante `LOGO` de `herramientas/menu_privado.py`, correr la herramienta y reemplazar la misma ruta en el pie de `mis-registros.html` y en las líneas `.logo-brand` de las seis páginas públicas (`img/logo.svg` es un marcador que dice «Lumea» en texto).
+4. Mirar la sección «Para después de unir» (cinco cosas del `<body>` de sus páginas públicas que no se tocaron).
+5. Con las pruebas en verde, pasar `rediseno` a `main`.
+
 ## Textos nuevos para que Isabella revise
 
 **Inicio (R2)**
