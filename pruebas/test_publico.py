@@ -180,3 +180,155 @@ def test_crear_cuenta_no_tiene_ningun_paso_nuevo(pagina):
     assert pagina.locator("[data-selector-colores], #card-colores, script[src*=selector-colores]").count() == 0
     assert pagina.locator("script[src*=caras-checkin]").count() == 0
     assert pagina.locator("form#registroForm, form").count() >= 1
+
+
+# ---------- Camino del cuidado, K0.5: R7 se conserva y se integra con la paleta, respetando el blanco ----------
+# Modo claro: el fondo y las tarjetas son #FFFFFF, sin tinte de la paleta (que solo pone color en los acentos).
+# «Claro» es la opción guardada; «Como mi dispositivo» es no guardar nada y que el sistema esté en claro (prefers-color-scheme).
+# Los adornos de Sara (hojas, formas y destellos de Lumen.png) vuelven al inicio y a la tarjeta de inicio de sesión,
+# pintados de un color plano de la paleta con una opacidad baja.
+
+BLANCO = "rgb(255, 255, 255)"
+PALETAS_K05 = [None, "laguna", "neblina", "carnaval", "colibri", "cosecha"]        # None = el estado neutro
+SUPERFICIES = "body, .navbar-lumea, .footer-lumea, .auth-card, .quote-box, .card:not([class*='bg-'])"
+
+
+def preparar(pagina, nombre, paleta=None, modo=None, sistema="light", tamano="1280"):
+    """modo: 'claro' | 'oscuro' | None (no guardar nada = «Como mi dispositivo»); sistema: el color-scheme del sistema."""
+    pagina.emulate_media(color_scheme=sistema)
+    if modo:
+        pagina.add_init_script(f"localStorage.setItem('lumea-modo', '{modo}')")
+    abrir(pagina, nombre, tamano, paleta)
+
+
+def fondos(pagina):
+    return pagina.eval_on_selector_all(SUPERFICIES, "es => es.filter(e => e.getBoundingClientRect().width > 0).map(e => [e.className || e.tagName, getComputedStyle(e).backgroundColor])")
+
+
+@pytest.mark.parametrize("paleta", PALETAS_K05, ids=lambda p: p or "neutro")
+@pytest.mark.parametrize("nombre", PUBLICAS)
+def test_en_modo_claro_el_fondo_y_las_tarjetas_son_blancos_en_toda_paleta(pagina, nombre, paleta):
+    preparar(pagina, nombre, paleta, modo="claro")
+    lista = fondos(pagina)
+    assert lista, "no se encontró ninguna superficie"
+    assert [f for f in lista if f[1] != BLANCO] == []
+    assert pagina.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--c-fondo').trim().toUpperCase()") == "#FFFFFF"
+
+
+@pytest.mark.parametrize("paleta", [None, "carnaval"], ids=lambda p: p or "neutro")
+@pytest.mark.parametrize("nombre", ["index.html", "iniciar-sesion.html", "crear-cuenta.html"])
+def test_como_mi_dispositivo_con_el_sistema_en_claro_tambien_es_blanco(pagina, nombre, paleta):
+    preparar(pagina, nombre, paleta, modo=None, sistema="light")
+    assert pagina.evaluate("document.documentElement.dataset.modo") is None             # no hay opción guardada
+    assert [f for f in fondos(pagina) if f[1] != BLANCO] == []
+
+
+@pytest.mark.parametrize("paleta", [None, "neblina", "cosecha"], ids=lambda p: p or "neutro")
+@pytest.mark.parametrize("nombre", ["index.html", "iniciar-sesion.html"])
+def test_claro_guardado_es_blanco_aunque_el_sistema_este_en_oscuro(pagina, nombre, paleta):
+    preparar(pagina, nombre, paleta, modo="claro", sistema="dark")
+    assert [f for f in fondos(pagina) if f[1] != BLANCO] == []
+
+
+@pytest.mark.parametrize("paleta", [None, "laguna", "colibri"], ids=lambda p: p or "neutro")
+@pytest.mark.parametrize("nombre", ["index.html", "iniciar-sesion.html", "terminos.html"])
+def test_como_mi_dispositivo_con_el_sistema_en_oscuro_sigue_la_paleta_oscura(pagina, nombre, paleta):
+    preparar(pagina, nombre, paleta, modo=None, sistema="dark")
+    fondo = pagina.evaluate("getComputedStyle(document.body).backgroundColor")
+    assert fondo != BLANCO and fondo == token(pagina, "--c-fondo")
+    assert pagina.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--c-fondo').trim().toUpperCase()") != "#FFFFFF"
+    assert pagina.evaluate("getComputedStyle(document.querySelector('.auth-card, .card')).backgroundColor") != BLANCO
+
+
+@pytest.mark.parametrize("paleta", [None, "carnaval"], ids=lambda p: p or "neutro")
+@pytest.mark.parametrize("nombre", ["index.html", "iniciar-sesion.html"])
+def test_oscuro_guardado_sigue_la_paleta_oscura_aunque_el_sistema_este_en_claro(pagina, nombre, paleta):
+    preparar(pagina, nombre, paleta, modo="oscuro", sistema="light")
+    fondo = pagina.evaluate("getComputedStyle(document.body).backgroundColor")
+    assert fondo != BLANCO and fondo == token(pagina, "--c-fondo")
+
+
+@pytest.mark.parametrize("paleta", ["laguna", "carnaval"])
+def test_la_paleta_sigue_poniendo_el_color_en_los_acentos_aunque_el_fondo_sea_blanco(pagina, paleta):
+    preparar(pagina, "index.html", paleta, modo="claro")
+    boton = pagina.locator("a.btn-lumea, button.btn-lumea").first
+    assert boton.evaluate("e => getComputedStyle(e).backgroundColor") == token(pagina, "--c-marca")
+    assert token(pagina, "--c-marca") != BLANCO
+    enlace = pagina.locator(".logo-brand, .text-success-emphasis").first
+    assert enlace.evaluate("e => getComputedStyle(e).color") != "rgb(0, 0, 0)"
+
+
+def test_la_piel_de_comparacion_de_sara_no_cambia(pagina):
+    pagina.emulate_media(color_scheme="light")
+    pagina.goto(f"{pagina.servidor}/index.html?piel=sara")
+    assert pagina.evaluate("getComputedStyle(document.body).backgroundColor") == "rgb(248, 250, 248)"       # --lumea-bg-page de Sara
+
+
+ADORNOS = [("index.html", ".hero-section"), ("iniciar-sesion.html", ".auth-container"), ("crear-cuenta.html", ".auth-container")]
+
+
+def adorno(pagina, selector):
+    return pagina.locator(selector).first.evaluate("""e => { const c = getComputedStyle(e, '::before');
+        return { mascara: c.maskImage || c.webkitMaskImage, opacidad: parseFloat(c.opacity), color: c.backgroundColor,
+                 z: c.zIndex, eventos: c.pointerEvents, posicion: c.position } }""")
+
+
+@pytest.mark.parametrize("nombre,selector", ADORNOS)
+def test_las_hojas_y_los_destellos_de_sara_vuelven_con_baja_opacidad(pagina, nombre, selector):
+    preparar(pagina, nombre, "laguna", modo="claro")
+    a = adorno(pagina, selector)
+    assert "hojas-mascara.png" in a["mascara"]
+    assert 0 < a["opacidad"] <= 0.25                                                   # si queda turbio en una paleta, se baja esto
+    assert a["z"] == "-1" and a["eventos"] == "none" and a["posicion"] == "absolute"    # detrás del contenido y sin tapar nada
+    # el fondo de la sección sigue siendo blanco: el color va solo en el adorno
+    assert pagina.locator(selector).first.evaluate("e => getComputedStyle(e).backgroundColor") == BLANCO
+
+
+@pytest.mark.parametrize("nombre,selector", ADORNOS)
+def test_el_adorno_es_un_color_plano_de_la_paleta_y_cambia_con_ella(pagina, nombre, selector):
+    colores = {}
+    for paleta in ["laguna", "neblina", "carnaval", "cosecha"]:
+        preparar(pagina, nombre, paleta, modo="claro")
+        a = adorno(pagina, selector)
+        assert a["color"] == token(pagina, "--c-marca-tinta"), paleta                      # un token de la paleta, sin mezclas
+        colores[paleta] = a["color"]
+    assert len(set(colores.values())) >= 3, colores                                     # cada paleta lo tiñe distinto
+
+
+@pytest.mark.parametrize("nombre,selector", ADORNOS)
+def test_en_oscuro_el_adorno_es_mas_suave_y_sigue_las_superficies_de_la_paleta(pagina, nombre, selector):
+    preparar(pagina, nombre, "colibri", modo="claro")
+    claro = adorno(pagina, selector)["opacidad"]
+    pagina.evaluate("LumeaTema.ponerModo('oscuro')")                                   # como lo haría la persona (el script de arranque vuelve a poner «claro»)
+    oscuro = adorno(pagina, selector)
+    assert 0 < oscuro["opacidad"] < claro
+    assert pagina.evaluate("getComputedStyle(document.body).backgroundColor") == token(pagina, "--c-fondo")
+
+
+@pytest.mark.parametrize("nombre,tamano", [("index.html", "390"), ("iniciar-sesion.html", "390"), ("iniciar-sesion.html", "1280")])
+def test_el_adorno_no_tapa_ni_desborda_nada(pagina, nombre, tamano):
+    preparar(pagina, nombre, "carnaval", modo="claro", tamano=tamano)
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= TAMANOS[tamano][0]
+    # el centro de cada botón y de cada campo sigue siendo suyo: nada del adorno queda encima
+    tapados = pagina.evaluate("""() => [...document.querySelectorAll('main a.btn, main button, main input')]
+        .filter(e => e.getBoundingClientRect().width > 0).filter(e => { const r = e.getBoundingClientRect();
+            const arriba = document.elementFromPoint(r.left + r.width / 2, Math.min(r.top + r.height / 2, innerHeight - 1));
+            return arriba && arriba !== e && !e.contains(arriba) && !arriba.contains(e) && e.getBoundingClientRect().top < innerHeight }).length""")
+    assert tapados == 0
+
+
+def test_la_mascara_de_las_hojas_es_un_png_con_transparencia_y_liviano():
+    import struct
+    datos = (RAIZ / "img" / "hojas-mascara.png").read_bytes()
+    assert datos[:8] == b"\x89PNG\r\n\x1a\n"
+    ancho, alto, profundidad, tipo = struct.unpack(">IIBB", datos[16:26])
+    assert (ancho, alto) == (1152, 768) and tipo == 6                                    # RGBA: el alpha es la máscara
+    assert len(datos) < 300_000                                                          # liviana: se carga en la página de inicio
+    assert (RAIZ / "herramientas" / "hojas_mascara.py").exists()                         # y sale de Lumen.png con esta herramienta
+
+
+@pytest.mark.parametrize("nombre", ["index.html", "iniciar-sesion.html"])
+def test_los_textos_de_isabella_siguen_igual_con_los_adornos(pagina, nombre):
+    """El adorno es un ::before con `content: ""`: no agrega ni quita texto a la página."""
+    preparar(pagina, nombre, "laguna", modo="claro")
+    assert pagina.evaluate("getComputedStyle(document.querySelector('.hero-section, .auth-container'), '::before').content") in ('""', "''")

@@ -12,6 +12,13 @@
      - Los cuatro radios de siempre: --r-control, --r-tarjeta, --r-panel y --r-pildora.
      - Superficies tranquilas: las tarjetas se separan con un borde, no con sombra.
      - Nada en MAYÚSCULAS por CSS.
+
+   Camino del cuidado (K0.5): R7 se conserva y se integra con la paleta, respetando el blanco.
+     - Modo claro: el fondo de la página y el de las tarjetas son #FFFFFF, sin tinte de la paleta (la persona
+       eligió «Claro», o «Como mi dispositivo» con el sistema en claro). Con el sistema u opción en oscuro se
+       siguen las superficies oscuras de la paleta. La paleta solo pone color en los acentos.
+     - Lo que le gusta de Sara se queda: el fondo del inicio (hojas, formas y destellos de Lumen.png) y la tarjeta
+       del inicio de sesión. Los adornos se pintan de UN color plano de la paleta, a baja opacidad (sección 8).
    ===================================================================== */
 
 /* ---------- 1. Bootstrap con los tokens ----------
@@ -29,6 +36,7 @@
   --bs-success-text-emphasis: var(--c-marca-tinta);       /* el verde oscuro de «text-success-emphasis» */
   --bs-success-bg-subtle: var(--c-marca-suave);
   --bs-success-border-subtle: var(--c-borde);
+  --publico-blanco: #FFFFFF;                              /* el blanco de las páginas públicas en modo claro (decisión de Isabella) */
 }
 
 /* ---------- 2. Tipografía: la escala de tokens.css ---------- */
@@ -74,3 +82,49 @@ h1.h3 { font-size: var(--t-2xl); }                        /* el título de Crear
 
 /* ---------- 7. El logo del encabezado: una imagen (img/logo.svg) ---------- */
 .logo-brand .marca { display: block; height: 32px; width: auto; }
+
+/* ---------- 8. Blanco en modo claro (K0.5) ----------
+   Las superficies de las páginas públicas (fondo, tarjetas, menú, pie) salen de --c-fondo y --c-superficie, que en
+   cada paleta llevan un tinte. En modo claro se llevan a blanco puro; en oscuro no se toca nada (siguen a la paleta).
+   «Claro» es data-modo="claro"; «Como mi dispositivo» es no tener data-modo y que el sistema esté en claro. Si el
+   sistema está en oscuro, no entra ninguna de las dos reglas y manda la paleta oscura (paletas.css). La piel
+   de comparación de Sara (?piel=sara) no se toca. */
+html:not([data-piel="sara"])[data-modo="claro"] {
+  --c-fondo: var(--publico-blanco);
+  --c-superficie: var(--publico-blanco);
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-piel="sara"]):not([data-modo]) {
+    --c-fondo: var(--publico-blanco);
+    --c-superficie: var(--publico-blanco);
+  }
+}
+
+/* ---------- 9. Adornos de Sara con la paleta: hojas, formas y destellos (K0.5) ----------
+   puente-sara.css los había aplanado (.hero-section y .auth-container quedaron de un solo color). Aquí vuelven: la imagen
+   es img/hojas-mascara.png (herramientas/hojas_mascara.py la saca de Lumen.png: el ALPHA es lo que se aparta del crema).
+   Se pintan de UN color plano de la paleta, --c-marca-tinta (el verde de marca que siempre es verde: --c-marca en Carnaval es casi negro),
+   con una opacidad baja, sobre el blanco: sin mezclar colores.
+   Si en alguna paleta se ve turbio, se baja --publico-adorno (la opacidad), no se cambia el color. */
+html:not([data-piel="sara"]) {
+  --publico-adorno: .22;
+}
+html:not([data-piel="sara"])[data-modo="oscuro"] { --publico-adorno: .16; }
+@media (prefers-color-scheme: dark) {
+  html:not([data-piel="sara"]):not([data-modo]) { --publico-adorno: .16; }
+}
+html:not([data-piel="sara"]) .hero-section,
+html:not([data-piel="sara"]) .auth-container {
+  position: relative;
+  isolation: isolate;                    /* el adorno va detrás del contenido, sin salirse de su sección */
+}
+html:not([data-piel="sara"]) .hero-section::before,
+html:not([data-piel="sara"]) .auth-container::before {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
+  background: var(--c-marca-tinta);
+  opacity: var(--publico-adorno);
+  -webkit-mask: url("../img/hojas-mascara.png") center / cover no-repeat;
+  mask: url("../img/hojas-mascara.png") center / cover no-repeat;
+  pointer-events: none;
+}

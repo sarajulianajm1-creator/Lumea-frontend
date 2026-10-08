@@ -15,7 +15,9 @@ from test_humo import PAGINAS, VACIAS
 CARPETA = Path(__file__).resolve().parent / "capturas"
 PALETAS = ["laguna", "neblina", "carnaval", "colibri", "cosecha", None]      # None = el estado neutro: nadie ha elegido paleta
 MODOS = ["claro", "oscuro"]
-ESTRICTAS = {"progreso.html", "avatar.html"}      # pantallas nuevas: 0 errores de contraste
+ESTRICTAS = {"progreso.html", "avatar.html",       # pantallas nuevas: 0 errores de contraste
+             # K0.5: las seis públicas también (con el fondo blanco y los adornos de las hojas, en las 5 paletas + neutro × claro/oscuro)
+             "index.html", "conocenos.html", "guialumea.html", "crear-cuenta.html", "iniciar-sesion.html", "terminos.html"}
 
 pytestmark = pytest.mark.capturas
 _resumen = []
