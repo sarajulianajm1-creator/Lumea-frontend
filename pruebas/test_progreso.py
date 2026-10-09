@@ -322,3 +322,25 @@ def test_un_dia_con_0_comidas_no_lleva_barra_solo_la_linea_base_y_cada_barra_mue
         assert ("bar-fill-body--base" in barra.get_attribute("class")) == base
         assert barra.evaluate("e => e.getBoundingClientRect().height") < 4 if base else barra.evaluate("e => e.getBoundingClientRect().height") > 20
     assert pagina.locator(".bar-numero").evaluate_all("e => e.every(x => x.getAttribute('aria-hidden') === 'true' && x.classList.contains('cifra'))")
+
+
+# ---------- P10 · 1: la columna completa nunca pasa del alto del gráfico ----------
+
+@pytest.mark.parametrize("ancho", [320, 390, 1280])
+@pytest.mark.parametrize("maximo", [1, 3, 8])
+def test_el_numero_de_la_barra_mas_alta_nunca_se_monta_sobre_la_descripcion(pagina, backend, ancho, maximo):
+    pagina.set_viewport_size({"width": ancho, "height": 844})
+    dia = 7                                                                    # un día de esta semana, en el pasado o hoy
+    historial = [registro(i + 1, dia) for i in range(maximo)] + [registro(100, dia - 1)]
+    abrir(pagina, backend, historial=historial)
+    medidas = pagina.evaluate("""() => {
+        const caja = document.querySelector('#semana-comidas-caja'), g = document.querySelector('#grafica-barras-semana'), nota = caja.querySelector('.inicio__nota');
+        const rg = g.getBoundingClientRect(), rn = nota.getBoundingClientRect(), zona = g.querySelector('.bar-zona').getBoundingClientRect();
+        return { notaFin: rn.bottom, graficaIni: rg.top, graficaFin: rg.bottom, zona: zona.height,
+                 numeros: [...g.querySelectorAll('.bar-numero')].filter(n => n.textContent).map(n => { const r = n.getBoundingClientRect(); return [r.top, r.bottom] }),
+                 columnas: [...g.querySelectorAll('.bar-col-item')].map(c => { const r = c.getBoundingClientRect(); return [r.top, r.bottom] }),
+                 barras: [...g.querySelectorAll('.bar-fill-body')].map(b => b.getBoundingClientRect().height) } }""")
+    assert all(top >= medidas["notaFin"] - 0.5 for top, _ in medidas["numeros"]), medidas        # ningún número toca la descripción
+    assert all(top >= medidas["graficaIni"] - 0.5 and fin <= medidas["graficaFin"] + 0.5 for top, fin in medidas["columnas"])
+    assert max(medidas["barras"]) <= medidas["zona"]                                              # la barra más alta cabe en su zona
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= ancho

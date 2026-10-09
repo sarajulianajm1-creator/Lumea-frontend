@@ -266,12 +266,15 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .card-bienvenida-calida .bi { color: var(--c-emocion-tinta); }
 .card-bienvenida-calida p { flex: 1; font-weight: var(--t-peso-medio); }
 
-.bars-chart-wrapper { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--e-1); height: 170px; padding-top: var(--e-6); }
+/* El gráfico: cada columna es una zona de barras de alto fijo (con un hueco arriba para el número) y el día debajo.
+   La barra mide un % de esa zona, así que la columna completa nunca pasa del alto del gráfico. */
+.bars-chart-wrapper { --zona-barras: 140px; display: flex; justify-content: space-between; align-items: flex-end; gap: var(--e-1); }
 .bar-col-item { display: flex; flex-direction: column; align-items: center; gap: var(--e-2); flex: 1; min-width: 0; text-align: center; }
+.bar-zona { box-sizing: border-box; height: var(--zona-barras); padding-top: calc(var(--t-s) * 1.25 + var(--e-1)); width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
 .bar-col-item--futuro { opacity: .55; }
 .bar-fill-body { position: relative; width: 26px; background: var(--c-comida); border-radius: var(--r-control) var(--r-control) 0 0; }
 .bar-col-item.today .bar-fill-body { background: var(--c-marca); }
-.bar-numero { min-height: 1.25em; font-size: var(--t-s); font-weight: var(--t-peso-fuerte); line-height: 1.25; }
+.bar-numero { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: var(--e-1); min-height: 1.25em; font-size: var(--t-s); font-weight: var(--t-peso-fuerte); line-height: 1.25; color: var(--c-tinta); }
 .bar-fill-body--base { width: 100%; max-width: 40px; border-radius: 0; background: var(--c-borde-fuerte); }          /* 0 comidas: solo la línea base */
 .bar-col-item.today .bar-fill-body--base { background: var(--c-borde-fuerte); }
 .bar-fruit-floating-icon { position: absolute; top: 0; left: calc(100% + 2px); font-size: var(--t-m); line-height: 1; color: var(--c-comida-tinta); }      /* al lado de la barra: no tapa el número */
