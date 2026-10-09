@@ -12,7 +12,8 @@
 //   1. XP        un chip «+10 semillas» que se va solo (y «Meta de hoy cumplida»)
 //   2. Misión    «Misión cumplida: …» (con su calcomanía pegándose, si la hay)
 //   3. Calcomanía nueva: se pega; botones «Ver mi álbum» y «Seguir»
-//   4. Nivel     el único modal: <dialog> con «Llegaste a la etapa N» y lo que se abrió
+//   4. Nivel     el único modal: <dialog> con «Llegaste a la etapa N» y lo que se abrió («Prenda nueva: …», con la
+//                persona puesta esa prenda, dibujada en el navegador)
 // Solo la subida de nivel bloquea la pantalla; lo demás deja seguir registrando.
 //
 // Todo texto que llega del servidor se escribe con textContent.
@@ -132,6 +133,26 @@
     });
   }
 
+  // La persona con la prenda nueva puesta: se dibuja en el navegador (persona.js) con los rasgos de GET /avatar.
+  // Es un adorno: si algo falla (sin parámetros, sin red, sin persona) queda solo el texto.
+  async function ponerPersona(hueco, d) {
+    try {
+      if (!d.parametros || typeof obtenerAvatar !== "function" || typeof obtenerSesion !== "function") return;
+      const email = obtenerSesion();
+      if (!email) return;
+      const { ok, cuerpo } = await obtenerAvatar(email);
+      if (!ok || !cuerpo.persona) return;
+      const puesto = { ropa: null, accesorio: null, ...(cuerpo.persona.puesto || {}) };
+      puesto[d.tipo] = { parametros: d.parametros };
+      const { urlDePersona } = await import("./persona.js");
+      const img = document.createElement("img");
+      img.alt = "";
+      img.className = "celebracion__persona-img";
+      img.src = await urlDePersona({ rasgos: cuerpo.persona.rasgos, puesto });
+      hueco.appendChild(img);
+    } catch (e) { /* queda el texto */ }
+  }
+
   // ---------- 4. Subida de nivel (modal) ----------
   function momentoNivel(g) {
     return () => new Promise((terminar) => {
@@ -147,12 +168,15 @@
       titulo.id = "celebracion-nivel-titulo";
       dialogo.appendChild(titulo);
 
-      if (objetos.length) {
-        dialogo.appendChild(crear("p", null, "Se abrió en tu armario:"));
-        const ul = crear("ul", "celebracion__lista");
-        objetos.forEach((d) => ul.appendChild(crear("li", null, d.nombre)));
-        dialogo.appendChild(ul);
-      }
+      objetos.forEach((d) => {                          // «Prenda nueva: Overol de jardín», con la persona puesta esa prenda
+        const figura = crear("figure", "celebracion__prenda");
+        const hueco = crear("span", "celebracion__persona");
+        hueco.setAttribute("aria-hidden", "true");
+        figura.appendChild(hueco);
+        figura.appendChild(crear("figcaption", "celebracion__titulo", `Prenda nueva: ${d.nombre}`));
+        dialogo.appendChild(figura);
+        ponerPersona(hueco, d);
+      });
       if (avatares.length) {
         dialogo.appendChild(crear("p", null, "Compañero nuevo:"));
         const ul = crear("ul", "celebracion__lista");

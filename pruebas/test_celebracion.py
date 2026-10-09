@@ -182,3 +182,19 @@ def test_el_texto_de_los_momentos_tiene_contraste(pagina, paleta, modo):
     pagina.wait_for_timeout(500)           # que termine de entrar
     errores = Axe().run(pagina, options={"runOnly": ["color-contrast"], "include": [[".celebracion"]]}).response["violations"]
     assert errores == [], f"{paleta}/{modo}: {[n['html'] for v in errores for n in v['nodes']]}"
+
+
+def test_una_prenda_nueva_se_celebra_con_la_persona_puesta_esa_prenda(pagina, backend):
+    from conftest import avatar_estado
+    backend.poner("GET", "/avatar", avatar_estado(4, ropa="camiseta_lisa"))
+    abrir(pagina)
+    celebrar(pagina, gamificacion(subio_de_nivel=True, nivel=4, nivel_anterior=3, desbloqueos=[
+        {"tipo": "ropa", "id": "overol", "nombre": "Overol de jardín", "nivel_requerido": 4, "parametros": {"outfitVariant": "overalls"}}]))
+    dialogo = pagina.locator("dialog.celebracion__nivel")
+    dialogo.wait_for()
+    assert "Prenda nueva: Overol de jardín" in dialogo.inner_text()
+    img = dialogo.locator("img.celebracion__persona-img")
+    img.wait_for()
+    assert img.get_attribute("src").startswith("data:image/svg+xml") and img.get_attribute("alt") == ""        # dibujada en el navegador
+    assert dialogo.get_by_role("link", name="Ponérmelo").get_attribute("href") == "avatar.html#armario"
+    assert pagina.peticiones_externas == []

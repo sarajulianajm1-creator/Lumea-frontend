@@ -108,6 +108,9 @@
 }
 .celebracion__nivel h2 { margin: 0 0 var(--e-3); font-size: var(--t-xl); line-height: var(--t-interlineado-titulo); }
 .celebracion__nivel p  { margin: 0 0 var(--e-2); }
+.celebracion__prenda { margin: var(--e-3) 0 var(--e-4); display: grid; gap: var(--e-2); justify-items: center; }
+.celebracion__persona { display: block; width: 120px; min-height: 0; }
+.celebracion__persona-img { display: block; width: 100%; height: auto; }
 .celebracion__lista { margin: var(--e-3) 0 var(--e-5); padding: 0; list-style: none; display: grid; gap: var(--e-2); justify-items: center; }
 .celebracion__lista li {
   padding: var(--e-1) var(--e-4); border-radius: var(--r-pildora);
