@@ -222,6 +222,43 @@ En el celular Lumea se ve mucho mejor que en el Mac. Arregla lo que mostraste en
   - lo que hay que mirar en Safari.
 - **`docs/defensa/`.** Dos preguntas nuevas, sin respuesta. Por ejemplo: «¿Por qué los rasgos no se bloquean y la ropa sí?» o «¿Por qué Lumea no le pide nada a DiceBear?».
 
+## P9 · Correcciones de Isabella (9 de octubre, 11:45; van ANTES de P8)
+
+**Nuevo horario.** Isabella movió el congelamiento a la **1:15 p. m.** A esa hora haces el cierre (pruebas, ESTADO y bitácora) y sigues con P8 (unir). P8 queda para después de P9.
+
+**Antes de tocar nada.** Toma capturas a 390×844 de Avatar, Inicio y Términos, y muéstrale a Isabella dónde está hoy «Etapa N» en el celular y dos alternativas, en no más de 10 líneas. Con su respuesta, trabaja en este orden:
+
+1. **Pestañas de Avatar.** Hoy son 5 pastillas que se parten en dos filas y se salen del contenedor redondo.
+   - Van en **una sola fila**, siempre dentro de su contenedor.
+   - Si no caben, la fila se desplaza de lado (`overflow-x: auto`, con *scroll-snap*), sin partirse.
+   - Puedes acortar «Tu compañero» a «Compañero» y reducir el relleno horizontal.
+   - Se conservan el rol `tab`, las flechas del teclado y los `#` de cada pestaña.
+2. **«Cómo me veo», ordenado:**
+   - Una cuadrícula real: `repeat(auto-fill, minmax(88px, 1fr))`, mosaicos del mismo tamaño y etiquetas centradas con espacio fijo para dos líneas, para que las filas queden alineadas.
+   - En ojos, cejas, nariz, boca, mejillas y barba, el mosaico **se acerca a la cara**: un recorte o un zoom del SVG. Así se ve la diferencia, que hoy no se nota con el cuerpo entero.
+   - Secciones con subtítulo:
+     - **Cara:** piel, ojos, cejas, nariz, boca, mejillas y barba.
+     - **Pelo:** peinado y color.
+     - **Ropa:** camiseta, pantalón y zapatos.
+     - **Fondo.**
+   - Los 8 tonos de piel, en una fila o en 4 × 2, sin uno huérfano.
+   - **En el celular,** una vista previa pequeña y fija de la persona arriba del panel mientras se edita.
+   - **Rasgos nuevos** que manda el backend (B8): `eyebrowsVariant`, `noseVariant`, `pantsColor`, `shoesColor` y `backgroundColor` (con «Sin fondo» como `null`). Sus nombres vienen de `rasgos_disponibles`. Si el backend todavía no los manda, no se dibujan.
+3. **Menú lateral (computador).** Hoy su fondo blanco termina a 720 px y debajo se ve el fondo de la página en todas las pantallas largas. Debe ocupar todo el alto: `position: sticky; top: 0; height: 100dvh` o equivalente.
+4. **Mis registros:**
+   - Los sellos van pequeños dentro de la lista (unos 56 px); hoy miden unos 150 y tapan todo.
+   - Las 6 marcas de grupos llevan un rótulo visible corto, «Grupos del plato», y cada marca su nombre accesible («Frutas y verduras: sí»).
+   - En el subtítulo, «--» pasa a ser «:».
+5. **Botones «Volver al Inicio» y «Crear Cuenta»** en Términos, y en las demás páginas públicas que tengan dos botones apilados: en el celular se tocan. Necesitan espacio entre sí (`gap`). No cambies sus textos.
+6. **«Etapa N» en el celular:** la opción que Isabella elija.
+7. **Progreso, «Comidas de la semana»:** un día con 0 comidas no lleva barra (solo la línea base), y cada barra muestra su número.
+8. **«Foto directa» en Inicio:** explícale a Isabella en una línea qué hace. Si para una persona no se entiende, propón quitarlo o renombrarlo, y espera su respuesta.
+
+**Comprobación:**
+- capturas a 1280×800 y 390×844 de las pantallas tocadas;
+- `pytest pruebas` en verde y 0 errores de contraste;
+- un commit por idea y el ESTADO al día.
+
 ## P8 · Unir y README (de 12:00 m. a 1:00 p. m.)
 
 **Lo que ya se sabe.** Hoy `rediseno` ya contiene `main` y los 3 commits de Laura que estaban en `origin/main` (b5ae62e, 902a653 y b89dc7d) según el último `fetch`, que fue del 3 de octubre. Por eso unir debería ser un avance rápido (*fast-forward*), sin conflictos.
