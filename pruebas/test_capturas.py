@@ -23,8 +23,8 @@ pytestmark = pytest.mark.capturas
 _resumen = []
 
 
-# Avatar tiene tres pestañas y solo se ve una a la vez: se mide cada una
-ANCLAS = {"avatar.html": ["", "#armario", "#calcomanias"]}
+# Avatar tiene cinco pestañas y solo se ve una a la vez: se mide cada una
+ANCLAS = {"avatar.html": ["", "#armario", "#como-me-veo", "#misiones", "#calcomanias", "#companero"]}
 
 
 def _combinaciones():
