@@ -68,3 +68,29 @@ def test_cerrar_sesion_borra_las_dos_claves_y_vuelve_a_la_portada(pagina, pagina
     pagina.get_by_role("button", name="Cerrar sesión").click()
     pagina.wait_for_url("**/index.html")
     assert pagina.evaluate("[localStorage.getItem('lumea_email'), localStorage.getItem('lumea_usuario_email')]") == [None, None]
+
+
+# ---------- P9: el menú lateral ocupa todo el alto ----------
+
+import pytest as _pytest
+
+
+@_pytest.mark.parametrize("nombre", ["progreso.html", "avatar.html", "mis-registros.html"])
+def test_el_fondo_del_menu_lateral_ocupa_todo_el_alto_de_la_pagina(pagina, nombre):
+    pagina.set_viewport_size({"width": 1280, "height": 720})
+    pagina.goto(f"{pagina.servidor}/{nombre}")
+    pagina.wait_for_load_state("networkidle")
+    # un alto de página mayor que la ventana: se alarga con un bloque alto al final
+    pagina.evaluate("(() => { const d = document.createElement('div'); d.style.height = '2400px'; document.querySelector('main').appendChild(d); })()")
+    datos = pagina.evaluate("""() => { const a = getComputedStyle(document.querySelector('.app'), '::before'), r = document.querySelector('.app').getBoundingClientRect();
+        return { alto: parseFloat(a.height), pagina: r.height, fondo: a.backgroundColor, ancho: parseFloat(a.width) } }""")
+    assert datos["alto"] >= datos["pagina"] - 1 and datos["pagina"] > 2400            # el fondo llega hasta abajo, no se corta a 720 px
+    assert datos["fondo"] != "rgba(0, 0, 0, 0)" and 240 <= datos["ancho"] <= 260
+    assert pagina.locator(".nav-app").evaluate("e => getComputedStyle(e).position") == "sticky"      # el menú sigue pegado arriba al bajar
+
+
+def test_en_el_celular_el_menu_sigue_siendo_la_barra_de_abajo(pagina):
+    pagina.set_viewport_size({"width": 390, "height": 844})
+    pagina.goto(f"{pagina.servidor}/avatar.html")
+    assert pagina.locator(".nav-app").evaluate("e => getComputedStyle(e).position") == "fixed"
+    assert pagina.evaluate("getComputedStyle(document.querySelector('.app'), '::before').display") == "none"

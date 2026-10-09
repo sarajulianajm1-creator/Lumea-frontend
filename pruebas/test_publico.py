@@ -332,3 +332,16 @@ def test_los_textos_de_isabella_siguen_igual_con_los_adornos(pagina, nombre):
     """El adorno es un ::before con `content: ""`: no agrega ni quita texto a la página."""
     preparar(pagina, nombre, "laguna", modo="claro")
     assert pagina.evaluate("getComputedStyle(document.querySelector('.hero-section, .auth-container'), '::before').content") in ('""', "''")
+
+
+# ---------- P9: dos botones seguidos, con espacio ----------
+
+def test_en_terminos_los_dos_botones_del_final_no_se_tocan_en_el_celular(pagina):
+    pagina.set_viewport_size({"width": 390, "height": 844})
+    pagina.goto(f"{pagina.servidor}/terminos.html")
+    a = pagina.get_by_role("link", name="Volver al Inicio").bounding_box()
+    b = pagina.get_by_role("link", name="Crear Cuenta").bounding_box()
+    separacion = max(b["y"] - (a["y"] + a["height"]), b["x"] - (a["x"] + a["width"]))
+    assert separacion >= 8, f"los botones están a {separacion}px"                      # un gap, no pegados
+    assert pagina.get_by_role("link", name="Volver al Inicio").inner_text().strip() == "Volver al Inicio"        # los textos no cambian
+    assert pagina.get_by_role("link", name="Crear Cuenta").inner_text().strip() == "Crear Cuenta"
