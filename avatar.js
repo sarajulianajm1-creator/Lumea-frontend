@@ -1,22 +1,28 @@
 // =====================================================================
 // avatar.js — llena avatar.html (sin diseño propio: las clases están en
 // estilos/avatar.css y estilos/componentes.css). Necesita, antes:
-// api.js, formato.js, pegatinas.js y companero.js.
+// api.js, formato.js, pegatinas.js y companero.js. La persona se dibuja con persona.js
+// (módulo ES: se carga con import()).
 //
-// Tres pestañas (patrón ARIA de «tabs»; abren con #misiones, #armario o
-// #calcomanias, que es a donde apuntan los botones de la celebración):
-//   Misiones     las tres misiones diarias de GET /progreso (con +semillas)
-//   Armario      ropa y accesorios de GET /avatar; ponerse y quitarse
-//   Calcomanías  el álbum de GET /calcomanias
-// Y debajo, «Tu compañero»: los seis compañeros de GET /avatares, quietos; se elige uno con POST /avatar.
+// La persona es un avatar voxel-art de DiceBear dibujado AQUÍ, en el navegador (vendor/dicebear/):
+// no se le pide nada a DiceBear. GET /avatar trae `persona` (rasgos y lo que lleva puesto).
 //
-// La figura grande: si las imágenes por capas de Laura están listas
-// (imagen_lista), la persona por capas y el compañero a su lado, más pequeño y quieto; si no, el
-// compañero es la figura principal, grande, con la cara del ánimo de hoy (la que manda GET /progreso)
-// y animado despacio (slow). Si un dato no llega, esa parte se omite.
+// Cinco pestañas (patrón ARIA de «tabs»; abren con #armario, #como-me-veo, #misiones, #calcomanias
+// o #companero; la celebración apunta a #armario y #calcomanias):
+//   Mi armario    mosaicos: cada uno es la persona con esa prenda puesta. Tocar uno abierto se lo pone; tocar el
+//                 que lleva puesto se lo quita; lo que falta por etapa lleva candado y no hace nada.
+//   Cómo me veo   los rasgos son libres (piel, peinado, pelo, ojos, boca, pecas o rubor, barba, camiseta):
+//                 la vista previa cambia al instante y «Guardar cómo me veo» llama a POST /avatar/rasgos.
+//   Misiones      las tres misiones diarias de GET /progreso (con +semillas)
+//   Calcomanías   el álbum de GET /calcomanias
+//   Tu compañero  los seis compañeros de GET /avatares, quietos; se elige uno con POST /avatar.
 //
-// Reglas: nunca se muestran calorías ni comparaciones; lo bloqueado dice «Se
-// abre en la etapa N» y no hace nada; todo texto del servidor va con textContent.
+// La vitrina (sticky, columna izquierda): la persona grande y animada despacio (slow), con el compañero pequeño y
+// quieto a su lado. Si GET /avatar no trae `persona` (backend viejo) o no se puede dibujar, el compañero es la figura
+// principal, con la cara del ánimo de hoy. Todo lo de la derecha va en pestañas: nada queda debajo de la vitrina.
+//
+// Reglas: nunca se muestran calorías ni comparaciones; lo bloqueado dice «Etapa N» y no hace nada;
+// todo texto del servidor va con textContent.
 // =====================================================================
 (function () {
   "use strict";
@@ -24,11 +30,15 @@
   const $ = (id) => document.getElementById(id);
   const { plural, semillas, porcentajeNivel, textoNivel } = window.LumeaFormato;
   const NS = "http://www.w3.org/2000/svg";
-  const PESTANAS = ["misiones", "armario", "calcomanias"];
+  const PESTANAS = ["armario", "como-me-veo", "misiones", "calcomanias", "companero"];
   const NOMBRE_ANIMO = { muy_mal: "Muy mal", mal: "Mal", neutral: "Neutral", bien: "Bien", muy_bien: "Muy bien" };
   // Cada misión diaria tiene su calcomanía (la que se gana la primera vez que se cumple)
   const CALCOMANIA_DE_MISION = { fruta: "fruta", tres_comidas: "tres_al_dia", check_in_animo: "como_llegas" };
-  const TITULO_TIPO = { ropa: "Ropa", accesorio: "Accesorios" };
+  // Los rasgos, en el orden en que se muestran; los que se dibujan como muestras redondas y como mosaicos pequeños
+const RASGOS_ORDEN = ["skinColor", "topVariant", "hairColor", "eyesVariant", "mouthVariant", "cheeksVariant", "beardVariant", "shirtColor"];
+const RASGOS_COLOR = ["skinColor", "hairColor", "shirtColor"];
+const RASGOS_MOSAICO = ["topVariant", "eyesVariant", "mouthVariant"];
+const HEX = /^[0-9a-f]{6}$/i;
 
   // Íconos de Lucide (licencia ISC), 24x24
   const ICONOS = {
@@ -40,7 +50,8 @@
     persona: ["M12 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10z", "M20 21a8 8 0 0 0-16 0"],
   };
 
-  const estado = { email: null, progreso: null, avatar: null, calcomanias: null, companeros: null, ocupado: false };
+  const estado = { email: null, progreso: null, avatar: null, calcomanias: null, companeros: null, ocupado: false,
+                   rasgos: null, armarioSucio: false, rasgosDibujados: false, figura: 0 };
 
   function crear(etiqueta, clase, texto) {
     const el = document.createElement(etiqueta);
@@ -66,11 +77,33 @@
     $("avatar-aviso").textContent = texto;
   }
 
-  // ---------- El avatar grande ----------
-  function capasListas(av) {
-    return !!av && Array.isArray(av.capas) && av.capas.length > 0 && av.capas.every((c) => c.imagen_lista);
+  // ---------- La persona (persona.js, DiceBear voxel-art local) ----------
+  let moduloPersona = null;
+  function cargarPersona() {            // un servidor sencillo puede cortar una petición del montón: un reintento
+    if (!moduloPersona) {
+      moduloPersona = import("./persona.js")
+        .catch(() => new Promise((ok) => setTimeout(ok, 200)).then(() => import("./persona.js")))
+        .catch((e) => { moduloPersona = null; throw e; });
+    }
+    return moduloPersona;
   }
 
+  // La dirección data: de la persona con esos rasgos y esa ropa; null si no se puede dibujar
+  async function dibujoDePersona(persona, animada) {
+    try { return await (await cargarPersona()).urlDePersona(persona, { animada: !!animada }); } catch (e) { return null; }
+  }
+
+  // Lo que la persona lleva puesto ahora, con `objeto` (de ropa o accesorio) en lugar de lo que hubiera de su tipo
+  function personaCon(objeto, rasgos) {
+    const actual = (estado.avatar.persona && estado.avatar.persona.puesto) || {};
+    const puesto = { ropa: actual.ropa || null, accesorio: actual.accesorio || null };
+    if (objeto) puesto[objeto.tipo] = objeto;
+    return { rasgos: rasgos || estado.rasgos, puesto };
+  }
+
+  function conPersona() { return !!(estado.avatar && estado.avatar.persona && estado.rasgos); }
+
+  // ---------- El avatar grande ----------
   // Sin compañero o sin internet: una silueta (el nombre y el ánimo van escritos en el aria-label y al lado)
   function silueta() {
     const respaldo = crear("span", "avatar-figura__silueta");
@@ -78,47 +111,67 @@
     return respaldo;
   }
 
-  function dibujarFigura() {
+  async function dibujarFigura() {
     const caja = $("avatar-figura");
-    caja.replaceChildren();
-    caja.classList.remove("avatar-figura--con-persona");
-    const av = estado.avatar, p = estado.progreso;
+    const turno = ++estado.figura;
+    const p = estado.progreso;
     const c = (p && p.avatar) || null;                     // el compañero, con las caras de cada ánimo (GET /progreso)
-    const respaldo = (av && av.respaldo_dicebear) || null;
+    const respaldo = (estado.avatar && estado.avatar.respaldo_dicebear) || null;
     const animo = c && c.estado_animo_hoy;
     const nombre = (c && c.nombre) || (respaldo && respaldo.nombre) || "";
     const direccion = (c && (c.url_con_animo || c.url)) || (respaldo && respaldo.url) || null;
-    const conPersona = capasListas(av);
-    const quien = conPersona ? "Tu avatar y tu compañero" : "Tu compañero";
-    caja.setAttribute("aria-label", `${quien}${nombre ? ` ${nombre}` : ""}${animo ? `, tu ánimo de hoy: ${NOMBRE_ANIMO[animo] || animo}` : ""}`);
+    const detalleAnimo = `${nombre ? ` ${nombre}` : ""}${animo ? `, tu ánimo de hoy: ${NOMBRE_ANIMO[animo] || animo}` : ""}`;
 
-    if (conPersona) {                                       // el diseño de Laura: una imagen encima de otra, y el compañero al lado
+    const dibujo = conPersona() ? await dibujoDePersona(personaCon(null), true) : null;
+    if (turno !== estado.figura) return;                    // llegó otro dibujo más nuevo (un rasgo que cambió)
+
+    if (dibujo) {                                           // la persona grande y animada; el compañero pequeño y quieto
+      caja.setAttribute("aria-label", `Tu avatar y tu compañero${detalleAnimo}`);
+      let img = caja.querySelector(".avatar-figura__persona-img");
+      if (img) {                                            // solo cambia el dibujo: el compañero no se reinicia, salvo que ya sea otro
+        img.src = dibujo;
+        const actual = caja.querySelector(".avatar-figura__companero");
+        const nuevo = LumeaCompanero.imagen(direccion, null, "avatar-figura__companero");
+        if (nuevo && (!actual || actual.dataset.fuente !== nuevo.dataset.fuente)) { if (actual) actual.replaceWith(nuevo); else caja.appendChild(nuevo); }
+        return;
+      }
+      caja.replaceChildren();
       caja.classList.add("avatar-figura--con-persona");
+      img = document.createElement("img");
+      img.alt = "";
+      img.className = "avatar-figura__persona-img";
+      img.src = dibujo;
       const persona = crear("div", "avatar-figura__persona");
-      av.capas.forEach((capa) => {
-        const img = document.createElement("img");
-        img.className = "avatar-figura__capa";
-        img.alt = "";
-        img.src = capa.url;
-        persona.appendChild(img);
-      });
+      persona.appendChild(img);
       caja.appendChild(persona);
       const compa = LumeaCompanero.imagen(direccion, null, "avatar-figura__companero");    // el pequeño va quieto
       if (compa) caja.appendChild(compa);
       return;
     }
     // El compañero es la figura principal: grande, con el ánimo de hoy y despacio. Sin internet queda una silueta.
+    caja.replaceChildren();
+    caja.classList.remove("avatar-figura--con-persona");
+    caja.setAttribute("aria-label", `Tu compañero${detalleAnimo}`);
     const img = LumeaCompanero.imagen(direccion, "slow", "avatar-figura__cara");
     if (!img) { caja.appendChild(silueta()); return; }
     img.addEventListener("error", () => caja.replaceChildren(silueta()));
     caja.appendChild(img);
   }
 
+  // «Te faltan 35 semillas para la etapa 5: Camisa de cuadros»: lo que se abre en la etapa que viene
+  function proximaPrenda(p) {
+    const objetos = (estado.avatar && estado.avatar.objetos) || {};
+    const todos = (objetos.ropa || []).concat(objetos.accesorio || []);
+    const siguiente = todos.find((o) => o.nivel_requerido === p.nivel + 1);
+    return siguiente ? siguiente.nombre : null;
+  }
+
   function dibujarCabeza() {
     const p = estado.progreso;
     if (!p) return;
     $("avatar-nivel").textContent = `Etapa ${p.nivel}`;
-    $("avatar-faltan").textContent = textoNivel(p);
+    const prenda = p.xp_siguiente_nivel == null ? null : proximaPrenda(p);
+    $("avatar-faltan").textContent = textoNivel(p) + (prenda ? `: ${prenda}` : "");
     const pct = porcentajeNivel(p);
     $("avatar-relleno").style.setProperty("--avance", `${pct}%`);
     const riel = $("avatar-riel");
@@ -167,57 +220,54 @@
     $("misiones-vacio").hidden = misiones.length > 0;
   }
 
-  // ---------- Armario ----------
+  // ---------- Mi armario ----------
+  // Una cuadrícula de mosaicos: cada uno muestra a la persona, con sus propios rasgos, con esa prenda puesta.
   function dibujarArmario(enfocarId) {
-    const caja = $("armario-grupos");
-    caja.replaceChildren();
+    const lista = $("armario-lista");
+    lista.replaceChildren();
     const objetos = (estado.avatar && estado.avatar.objetos) || {};
-    ["ropa", "accesorio"].forEach((tipo) => {
-      const lista = objetos[tipo] || [];
-      if (!lista.length) return;
-      const grupo = crear("section", "armario__grupo");
-      const titulo = crear("h3", "armario__titulo", TITULO_TIPO[tipo]);
-      grupo.appendChild(titulo);
-      const ul = crear("ul", "armario__lista");
-      ul.setAttribute("aria-label", TITULO_TIPO[tipo]);
-      lista.forEach((o) => ul.appendChild(tarjetaDePrenda(o)));
-      grupo.appendChild(ul);
-      caja.appendChild(grupo);
-    });
+    (objetos.ropa || []).concat(objetos.accesorio || [])
+      .sort((a, b) => a.nivel_requerido - b.nivel_requerido)
+      .forEach((o) => lista.appendChild(mosaicoDePrenda(o)));
+    estado.armarioSucio = false;
     if (enfocarId) {
-      const boton = caja.querySelector(`[data-objeto="${enfocarId}"]`);
+      const boton = lista.querySelector(`[data-objeto="${enfocarId}"]`);
       if (boton) boton.focus();
     }
   }
 
-  function tarjetaDePrenda(o) {
+  function mosaicoDePrenda(o) {
     const bloqueado = !o.desbloqueado;
-    const li = crear("li", "prenda" + (bloqueado ? " prenda--bloqueada" : "") + (o.puesto ? " prenda--puesta" : ""));
+    const puesto = !!o.puesto && !bloqueado;
+    const li = crear("li", "prenda" + (bloqueado ? " prenda--bloqueada" : "") + (puesto ? " prenda--puesta" : ""));
+    const boton = crear("button", "prenda__mosaico");
+    boton.type = "button";
+    boton.dataset.objeto = o.id;
     const imagen = crear("span", "prenda__imagen");
     imagen.setAttribute("aria-hidden", "true");
-    if (o.imagen_lista && !bloqueado) {
+    if (conPersona()) {
       const img = document.createElement("img");
       img.alt = "";
-      img.src = o.url;
+      img.className = "prenda__persona";
       imagen.appendChild(img);
+      dibujoDePersona(personaCon(o), false).then((dibujo) => { if (dibujo) img.src = dibujo; else img.replaceWith(icono(o.tipo)); });
     } else {
       imagen.appendChild(icono(bloqueado ? "candado" : o.tipo));
     }
-    li.appendChild(imagen);
-    li.appendChild(crear("p", "prenda__nombre", o.nombre));
-    li.appendChild(crear("p", "prenda__estado", bloqueado ? `Se abre en la etapa ${o.nivel_requerido}` : (o.puesto ? "Puesto" : "Disponible")));
+    if (bloqueado) imagen.appendChild(icono("candado", "prenda__candado-grande"));
+    boton.appendChild(imagen);
+    boton.appendChild(crear("span", "prenda__nombre", o.nombre));
+    const detalle = crear("span", "prenda__estado");
+    if (bloqueado) detalle.appendChild(icono("candado", "prenda__candado"));
+    detalle.appendChild(document.createTextNode(bloqueado ? `Etapa ${o.nivel_requerido}` : (puesto ? "Puesto" : "Disponible")));
+    boton.appendChild(detalle);
 
-    const boton = crear("button", "boton prenda__boton" + (o.puesto ? " boton--secundario" : ""));
-    boton.type = "button";
-    boton.dataset.objeto = o.id;
     if (bloqueado) {
-      boton.classList.add("boton--secundario");
-      boton.setAttribute("aria-disabled", "true");          // se puede enfocar y leer, pero no hace nada
-      boton.textContent = `Etapa ${o.nivel_requerido}`;
+      boton.setAttribute("aria-disabled", "true");            // se puede enfocar y leer, pero no hace nada
       boton.setAttribute("aria-label", `${o.nombre}, se abre en la etapa ${o.nivel_requerido}`);
     } else {
-      boton.textContent = o.puesto ? "Quitar" : "Ponerme";
-      boton.setAttribute("aria-label", `${o.puesto ? "Quitar" : "Ponerme"} ${o.nombre}`);
+      boton.setAttribute("aria-pressed", String(puesto));
+      boton.setAttribute("aria-label", o.nombre);
       boton.addEventListener("click", () => alternar(o));
     }
     li.appendChild(boton);
@@ -233,7 +283,7 @@
   }
 
   async function alternar(objeto) {
-    if (estado.ocupado) return;
+    if (estado.ocupado || !objeto.desbloqueado) return;
     estado.ocupado = true;
     const ponerse = !objeto.puesto;
     try {
@@ -245,11 +295,109 @@
         throw new Error(faltan ? `Todavía no se abre: te ${faltan === 1 ? "falta 1 etapa" : `faltan ${faltan} etapas`}.` : "No se pudo guardar el cambio.");
       }
       estado.avatar = cuerpo;                                              // el backend responde con el avatar completo
-      dibujarFigura();
+      dibujarFigura();                                                     // la persona de la vitrina cambia al instante
       dibujarPuesto();
       dibujarArmario(objeto.id);
       aviso(ponerse ? `Te pusiste ${objeto.nombre}.` : `Te quitaste ${objeto.nombre}.`);
       if (ponerse) saltico();
+    } catch (e) {
+      aviso(e.message && !/fetch|network/i.test(e.message) ? e.message : "No se pudo conectar. Inténtalo otra vez.");
+    } finally {
+      estado.ocupado = false;
+    }
+  }
+
+  // ---------- Cómo me veo: los rasgos son libres ----------
+  function rasgosDisponibles() { return (estado.avatar && estado.avatar.rasgos_disponibles) || {}; }
+
+  // Las opciones de un rasgo en el orden del servidor; en mejillas y barba, primero «Ninguno» (que se guarda como null)
+  function opcionesDe(info) {
+    const lista = Object.entries(info.opciones || {});
+    if (info.ninguno) lista.unshift(["", info.ninguno]);
+    return lista;
+  }
+
+  function dibujarRasgos() {
+    const form = $("rasgos-form");
+    form.replaceChildren();
+    const disponibles = rasgosDisponibles();
+    const claves = RASGOS_ORDEN.filter((k) => disponibles[k]);
+    $("rasgos-guardar").hidden = !claves.length;
+    claves.forEach((clave) => {
+      const info = disponibles[clave];
+      const grupo = crear("fieldset", `rasgo rasgo--${RASGOS_COLOR.includes(clave) ? "color" : (RASGOS_MOSAICO.includes(clave) ? "mosaico" : "texto")}`);
+      grupo.appendChild(crear("legend", "rasgo__nombre", info.nombre));
+      const opciones = crear("div", "rasgo__opciones");
+      opcionesDe(info).forEach(([valor, nombre]) => {
+        const etiqueta = crear("label", "rasgo__opcion");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = `rasgo-${clave}`;
+        radio.value = valor;
+        radio.className = "rasgo__radio";
+        radio.checked = String(estado.rasgos[clave] == null ? "" : estado.rasgos[clave]) === valor;
+        radio.addEventListener("change", () => cambiarRasgo(clave, valor));
+        etiqueta.appendChild(radio);
+        if (RASGOS_COLOR.includes(clave)) {
+          const muestra = crear("span", "rasgo__muestra");
+          if (HEX.test(valor)) muestra.style.backgroundColor = `#${valor}`;
+          etiqueta.appendChild(muestra);
+          etiqueta.appendChild(crear("span", "solo-lector", nombre));
+        } else if (RASGOS_MOSAICO.includes(clave)) {
+          const mini = crear("span", "rasgo__mini");
+          mini.setAttribute("aria-hidden", "true");
+          const img = document.createElement("img");
+          img.alt = "";
+          img.dataset.rasgo = clave;
+          img.dataset.valor = valor;
+          mini.appendChild(img);
+          etiqueta.appendChild(mini);
+          etiqueta.appendChild(crear("span", "rasgo__texto", nombre));
+        } else {
+          etiqueta.appendChild(crear("span", "rasgo__texto", nombre));
+        }
+        opciones.appendChild(etiqueta);
+      });
+      grupo.appendChild(opciones);
+      form.appendChild(grupo);
+    });
+    estado.rasgosDibujados = true;
+    redibujarMiniaturas();
+  }
+
+  // Los mosaicos pequeños (peinado, ojos, boca) muestran a la persona con esa opción y sus otros rasgos de ahora
+  let tiempoMiniaturas = null;
+  function redibujarMiniaturas() {
+    clearTimeout(tiempoMiniaturas);
+    tiempoMiniaturas = setTimeout(() => {
+      document.querySelectorAll("#rasgos-form img[data-rasgo]").forEach((img) => {
+        const rasgos = { ...estado.rasgos, [img.dataset.rasgo]: img.dataset.valor };
+        dibujoDePersona(personaCon(null, rasgos), false).then((dibujo) => { if (dibujo) img.src = dibujo; });
+      });
+    }, 60);
+  }
+
+  function cambiarRasgo(clave, valor) {
+    estado.rasgos[clave] = valor === "" ? null : valor;     // «Ninguno» solo existe en mejillas y barba
+    estado.armarioSucio = true;                              // los mosaicos del armario se vuelven a dibujar al abrirlo
+    dibujarFigura();                                         // la vista previa cambia al instante
+    redibujarMiniaturas();
+  }
+
+  async function guardarRasgos() {
+    if (estado.ocupado) return;
+    estado.ocupado = true;
+    try {
+      const disponibles = rasgosDisponibles();
+      const rasgos = {};                                     // solo las claves permitidas
+      RASGOS_ORDEN.forEach((k) => { if (disponibles[k] && k in estado.rasgos) rasgos[k] = estado.rasgos[k]; });
+      const { ok, cuerpo } = await guardarRasgosAvatar(estado.email, rasgos);               // api.js
+      if (!ok || !cuerpo.persona) throw new Error("No se pudo guardar cómo te ves.");
+      estado.avatar = cuerpo;
+      estado.rasgos = { ...cuerpo.persona.rasgos };
+      estado.armarioSucio = true;
+      dibujarFigura();
+      aviso("Guardamos cómo te ves.");
     } catch (e) {
       aviso(e.message && !/fetch|network/i.test(e.message) ? e.message : "No se pudo conectar. Inténtalo otra vez.");
     } finally {
@@ -378,6 +526,8 @@
       $(`panel-${n}`).hidden = !activa;
       if (activa && enfocar) pestana.focus();
     });
+    if (nombre === "armario" && estado.armarioSucio) dibujarArmario();
+    if (nombre === "como-me-veo" && estado.avatar && !estado.rasgosDibujados) dibujarRasgos();
     if (escribirHash && location.hash !== `#${nombre}`) history.replaceState(null, "", `#${nombre}`);
   }
 
@@ -423,6 +573,7 @@
       ]);
       if (!avatar.ok || !avatar.cuerpo.objetos || !progreso.ok || !progreso.cuerpo.progreso) throw new Error("sin datos");
       estado.avatar = avatar.cuerpo;
+      estado.rasgos = avatar.cuerpo.persona ? { ...avatar.cuerpo.persona.rasgos } : null;
       estado.progreso = progreso.cuerpo.progreso;
       estado.calcomanias = album && album.ok && Array.isArray(album.cuerpo.calcomanias) ? album.cuerpo : null;
       estado.companeros = companeros && companeros.ok && Array.isArray(companeros.cuerpo.avatares) ? companeros.cuerpo : null;
@@ -435,7 +586,7 @@
       dibujarCompaneros();
       dibujarAlbum();
       pantalla("listo");
-      seleccionar(pestanaDelHash() || "misiones", { escribirHash: false });
+      seleccionar(pestanaDelHash() || "armario", { escribirHash: false });
     } catch (e) {
       pantalla("error");
     }
@@ -444,6 +595,7 @@
   window.LumeaAvatar = { fechaCorta, CALCOMANIA_DE_MISION };
   document.addEventListener("DOMContentLoaded", () => {
     conectarPestanas();
+    $("rasgos-guardar").addEventListener("click", guardarRasgos);
     $("estado-reintentar").addEventListener("click", cargar);
     cargar();
   });

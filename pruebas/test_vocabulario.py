@@ -9,7 +9,7 @@ import pytest
 
 from conftest import cargar_respuesta
 
-PANTALLAS = ["index-ingresado.html", "progreso.html", "avatar.html", "avatar.html#armario", "avatar.html#calcomanias",
+PANTALLAS = ["index-ingresado.html", "progreso.html", "avatar.html", "avatar.html#como-me-veo", "avatar.html#misiones", "avatar.html#calcomanias", "avatar.html#companero",
              "emociones.html", "alimentos.html", "mis-registros.html"]
 TEXTOS_Y_ETIQUETAS = """() => {
     const textos = [], w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
@@ -100,5 +100,5 @@ def test_los_nombres_de_misiones_y_calcomanias_son_los_del_backend(pagina, backe
     p = cargar_respuesta("progreso")
     p["progreso"]["misiones"][0]["nombre"] = "Un nombre que escribe Isabella en el backend"
     backend.poner("GET", "/progreso", p)
-    pagina.goto(f"{pagina.servidor}/avatar.html")
+    pagina.goto(f"{pagina.servidor}/avatar.html#misiones")
     pagina.locator(".mision__nombre", has_text="Un nombre que escribe Isabella en el backend").wait_for()

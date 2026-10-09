@@ -120,6 +120,12 @@ function iniciarSesion(email, contrasena) {
   return _postJSON("/login", { email, "contraseña": contrasena });
 }
 
+// El dato curioso del día: el mismo para todas las personas, sin correo ni datos personales.
+// 200: { fecha, alimento_codigo, nombre, dato_curioso }; 404 sin datos; 503 sin base de datos.
+function obtenerDatoDelDia() {
+  return _getJSON("/dato-del-dia");
+}
+
 // ===== Estado de ánimo =====
 // estado: "muy_mal" | "mal" | "neutral" | "bien" | "muy_bien"
 function registrarEstadoAnimo(email, estado) {
@@ -153,6 +159,13 @@ function obtenerAvatar(email) {
 
 function elegirBaseAvatar(email, baseId) {
   return _postJSON("/avatar/base", { email, base_id: baseId });
+}
+
+// Cómo se ve la persona (rasgos libres, nunca se bloquean). `rasgos` lleva solo lo que cambió:
+// { skinColor, topVariant, hairColor, eyesVariant, mouthVariant, cheeksVariant, beardVariant, shirtColor }
+// (`null` solo vale en mejillas y barba). 200: el mismo cuerpo de GET /avatar; 400 si algo no vale.
+function guardarRasgosAvatar(email, rasgos) {
+  return _postJSON("/avatar/rasgos", { email, rasgos });
 }
 
 // tipo: "ropa" | "accesorio"

@@ -1,0 +1,105 @@
+{
+  "objetos": [
+    {
+      "id": "camiseta_lisa",
+      "tipo": "ropa",
+      "nombre": "Camiseta lisa",
+      "parametros": {
+        "outfitVariant": "plain"
+      },
+      "nivel_requerido": 1
+    },
+    {
+      "id": "camiseta_rayas",
+      "tipo": "ropa",
+      "nombre": "Camiseta de rayas",
+      "parametros": {
+        "outfitVariant": "stripes"
+      },
+      "nivel_requerido": 2
+    },
+    {
+      "id": "gafas_redondas",
+      "tipo": "accesorio",
+      "nombre": "Gafas redondas",
+      "parametros": {
+        "glassesVariant": "round"
+      },
+      "nivel_requerido": 3
+    },
+    {
+      "id": "overol",
+      "tipo": "ropa",
+      "nombre": "Overol de jardín",
+      "parametros": {
+        "outfitVariant": "overalls"
+      },
+      "nivel_requerido": 4
+    },
+    {
+      "id": "camisa_cuadros",
+      "tipo": "ropa",
+      "nombre": "Camisa de cuadros",
+      "parametros": {
+        "outfitVariant": "checker"
+      },
+      "nivel_requerido": 5
+    },
+    {
+      "id": "buzo_capota",
+      "tipo": "ropa",
+      "nombre": "Buzo con capota",
+      "parametros": {
+        "outfitVariant": "hoodie"
+      },
+      "nivel_requerido": 6
+    },
+    {
+      "id": "gafas_sol",
+      "tipo": "accesorio",
+      "nombre": "Gafas de sol",
+      "parametros": {
+        "glassesVariant": "shades"
+      },
+      "nivel_requerido": 7
+    },
+    {
+      "id": "chaqueta",
+      "tipo": "ropa",
+      "nombre": "Chaqueta",
+      "parametros": {
+        "outfitVariant": "jacket"
+      },
+      "nivel_requerido": 8
+    },
+    {
+      "id": "vestido",
+      "tipo": "ropa",
+      "nombre": "Vestido",
+      "parametros": {
+        "outfitVariant": "dress"
+      },
+      "nivel_requerido": 9
+    },
+    {
+      "id": "traje",
+      "tipo": "ropa",
+      "nombre": "Traje",
+      "parametros": {
+        "outfitVariant": "suit"
+      },
+      "nivel_requerido": 10
+    }
+  ],
+  "rasgos_por_defecto": {
+    "skinColor": "c99062",
+    "topVariant": "short",
+    "hairColor": "3b2f2f",
+    "eyesVariant": "open",
+    "mouthVariant": "smile",
+    "cheeksVariant": null,
+    "beardVariant": null,
+    "shirtColor": "40c057"
+  },
+  "niveles": 10
+}

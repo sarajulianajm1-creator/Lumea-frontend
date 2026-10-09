@@ -1,0 +1,116 @@
+{
+  "skinColor": {
+    "nombre": "Tono de piel",
+    "opciones": {
+      "f5d0b0": "Tono 1",
+      "eab890": "Tono 2",
+      "dda878": "Tono 3",
+      "c99062": "Tono 4",
+      "b07347": "Tono 5",
+      "95562f": "Tono 6",
+      "7d4a26": "Tono 7",
+      "6a3d1f": "Tono 8"
+    }
+  },
+  "topVariant": {
+    "nombre": "Peinado",
+    "opciones": {
+      "short": "Corto",
+      "spiky": "De puntas",
+      "bowl": "Corte totuma",
+      "sideSwept": "De lado",
+      "curly": "Crespo",
+      "mohawk": "Mohicano",
+      "buns": "Moños",
+      "ponytail": "Cola de caballo",
+      "bob": "Melena corta",
+      "shoulderLength": "A los hombros",
+      "longStraight": "Largo liso",
+      "longWavy": "Largo ondulado",
+      "partedLong": "Largo con partidura",
+      "braids": "Trenzas",
+      "twinTails": "Dos colitas",
+      "afro": "Afro",
+      "halfShaved": "Medio rapado"
+    }
+  },
+  "hairColor": {
+    "nombre": "Color de pelo",
+    "opciones": {
+      "2c222b": "Negro",
+      "3b2f2f": "Café muy oscuro",
+      "5a3825": "Café oscuro",
+      "7b4a2d": "Café",
+      "a56b46": "Café claro",
+      "c98850": "Miel",
+      "d9b380": "Rubio oscuro",
+      "e8d4a8": "Rubio",
+      "b55239": "Cobrizo",
+      "d6455d": "Rosado",
+      "6d5acf": "Morado",
+      "3fb27f": "Verde"
+    }
+  },
+  "eyesVariant": {
+    "nombre": "Ojos",
+    "opciones": {
+      "open": "Abiertos",
+      "soft": "Suaves",
+      "happy": "Contentos",
+      "sleepy": "Soñolientos",
+      "side": "Mirando de lado",
+      "closed": "Cerrados",
+      "wide": "Muy abiertos",
+      "star": "De estrella"
+    }
+  },
+  "mouthVariant": {
+    "nombre": "Boca",
+    "opciones": {
+      "smile": "Sonrisa",
+      "bigSmile": "Sonrisa grande",
+      "flat": "Recta",
+      "ooh": "Sorprendida",
+      "tongue": "Lengua afuera",
+      "smirk": "Sonrisa de lado",
+      "laugh": "Risa",
+      "wideSmile": "Sonrisa ancha",
+      "frown": "Boca hacia abajo",
+      "grin": "Dientes"
+    }
+  },
+  "cheeksVariant": {
+    "nombre": "Mejillas",
+    "ninguno": "Ninguno",
+    "opciones": {
+      "blush": "Rubor",
+      "pixel": "Cuadritos",
+      "freckles": "Pecas"
+    }
+  },
+  "beardVariant": {
+    "nombre": "Barba",
+    "ninguno": "Ninguna",
+    "opciones": {
+      "full": "Barba completa",
+      "mustache": "Bigote",
+      "goatee": "Perilla",
+      "stubble": "Barba corta"
+    }
+  },
+  "shirtColor": {
+    "nombre": "Color de la camiseta",
+    "opciones": {
+      "e64980": "Rosado",
+      "f76707": "Naranja",
+      "fab005": "Amarillo",
+      "40c057": "Verde",
+      "12b886": "Turquesa",
+      "228be6": "Azul",
+      "4c6ef5": "Añil",
+      "7950f2": "Morado",
+      "e8590c": "Mandarina",
+      "495057": "Gris"
+    }
+  }
+}

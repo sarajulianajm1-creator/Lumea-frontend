@@ -1,6 +1,281 @@
 {
   "success": true,
   "nivel_maximo": 2,
+  "persona": {
+    "estilo": "voxel-art",
+    "rasgos": {
+      "skinColor": "c99062",
+      "topVariant": "short",
+      "hairColor": "3b2f2f",
+      "eyesVariant": "open",
+      "mouthVariant": "smile",
+      "cheeksVariant": null,
+      "beardVariant": null,
+      "shirtColor": "40c057"
+    },
+    "puesto": {
+      "ropa": {
+        "id": "camiseta_rayas",
+        "nombre": "Camiseta de rayas",
+        "parametros": {
+          "outfitVariant": "stripes"
+        }
+      },
+      "accesorio": null
+    }
+  },
+  "rasgos_disponibles": {
+    "skinColor": {
+      "nombre": "Tono de piel",
+      "opciones": {
+        "f5d0b0": "Tono 1",
+        "eab890": "Tono 2",
+        "dda878": "Tono 3",
+        "c99062": "Tono 4",
+        "b07347": "Tono 5",
+        "95562f": "Tono 6",
+        "7d4a26": "Tono 7",
+        "6a3d1f": "Tono 8"
+      }
+    },
+    "topVariant": {
+      "nombre": "Peinado",
+      "opciones": {
+        "short": "Corto",
+        "spiky": "De puntas",
+        "bowl": "Corte totuma",
+        "sideSwept": "De lado",
+        "curly": "Crespo",
+        "mohawk": "Mohicano",
+        "buns": "Moños",
+        "ponytail": "Cola de caballo",
+        "bob": "Melena corta",
+        "shoulderLength": "A los hombros",
+        "longStraight": "Largo liso",
+        "longWavy": "Largo ondulado",
+        "partedLong": "Largo con partidura",
+        "braids": "Trenzas",
+        "twinTails": "Dos colitas",
+        "afro": "Afro",
+        "halfShaved": "Medio rapado"
+      }
+    },
+    "hairColor": {
+      "nombre": "Color de pelo",
+      "opciones": {
+        "2c222b": "Negro",
+        "3b2f2f": "Café muy oscuro",
+        "5a3825": "Café oscuro",
+        "7b4a2d": "Café",
+        "a56b46": "Café claro",
+        "c98850": "Miel",
+        "d9b380": "Rubio oscuro",
+        "e8d4a8": "Rubio",
+        "b55239": "Cobrizo",
+        "d6455d": "Rosado",
+        "6d5acf": "Morado",
+        "3fb27f": "Verde"
+      }
+    },
+    "eyesVariant": {
+      "nombre": "Ojos",
+      "opciones": {
+        "open": "Abiertos",
+        "soft": "Suaves",
+        "happy": "Contentos",
+        "sleepy": "Soñolientos",
+        "side": "Mirando de lado",
+        "closed": "Cerrados",
+        "wide": "Muy abiertos",
+        "star": "De estrella"
+      }
+    },
+    "mouthVariant": {
+      "nombre": "Boca",
+      "opciones": {
+        "smile": "Sonrisa",
+        "bigSmile": "Sonrisa grande",
+        "flat": "Recta",
+        "ooh": "Sorprendida",
+        "tongue": "Lengua afuera",
+        "smirk": "Sonrisa de lado",
+        "laugh": "Risa",
+        "wideSmile": "Sonrisa ancha",
+        "frown": "Boca hacia abajo",
+        "grin": "Dientes"
+      }
+    },
+    "cheeksVariant": {
+      "nombre": "Mejillas",
+      "ninguno": "Ninguno",
+      "opciones": {
+        "blush": "Rubor",
+        "pixel": "Cuadritos",
+        "freckles": "Pecas"
+      }
+    },
+    "beardVariant": {
+      "nombre": "Barba",
+      "ninguno": "Ninguna",
+      "opciones": {
+        "full": "Barba completa",
+        "mustache": "Bigote",
+        "goatee": "Perilla",
+        "stubble": "Barba corta"
+      }
+    },
+    "shirtColor": {
+      "nombre": "Color de la camiseta",
+      "opciones": {
+        "e64980": "Rosado",
+        "f76707": "Naranja",
+        "fab005": "Amarillo",
+        "40c057": "Verde",
+        "12b886": "Turquesa",
+        "228be6": "Azul",
+        "4c6ef5": "Añil",
+        "7950f2": "Morado",
+        "e8590c": "Mandarina",
+        "495057": "Gris"
+      }
+    }
+  },
+  "objetos": {
+    "ropa": [
+      {
+        "id": "camiseta_lisa",
+        "tipo": "ropa",
+        "nombre": "Camiseta lisa",
+        "parametros": {
+          "outfitVariant": "plain"
+        },
+        "nivel_requerido": 1,
+        "desbloqueado": true,
+        "niveles_faltantes": 0,
+        "puesto": false
+      },
+      {
+        "id": "camiseta_rayas",
+        "tipo": "ropa",
+        "nombre": "Camiseta de rayas",
+        "parametros": {
+          "outfitVariant": "stripes"
+        },
+        "nivel_requerido": 2,
+        "desbloqueado": true,
+        "niveles_faltantes": 0,
+        "puesto": true
+      },
+      {
+        "id": "overol",
+        "tipo": "ropa",
+        "nombre": "Overol de jardín",
+        "parametros": {
+          "outfitVariant": "overalls"
+        },
+        "nivel_requerido": 4,
+        "desbloqueado": false,
+        "niveles_faltantes": 2,
+        "puesto": false
+      },
+      {
+        "id": "camisa_cuadros",
+        "tipo": "ropa",
+        "nombre": "Camisa de cuadros",
+        "parametros": {
+          "outfitVariant": "checker"
+        },
+        "nivel_requerido": 5,
+        "desbloqueado": false,
+        "niveles_faltantes": 3,
+        "puesto": false
+      },
+      {
+        "id": "buzo_capota",
+        "tipo": "ropa",
+        "nombre": "Buzo con capota",
+        "parametros": {
+          "outfitVariant": "hoodie"
+        },
+        "nivel_requerido": 6,
+        "desbloqueado": false,
+        "niveles_faltantes": 4,
+        "puesto": false
+      },
+      {
+        "id": "chaqueta",
+        "tipo": "ropa",
+        "nombre": "Chaqueta",
+        "parametros": {
+          "outfitVariant": "jacket"
+        },
+        "nivel_requerido": 8,
+        "desbloqueado": false,
+        "niveles_faltantes": 6,
+        "puesto": false
+      },
+      {
+        "id": "vestido",
+        "tipo": "ropa",
+        "nombre": "Vestido",
+        "parametros": {
+          "outfitVariant": "dress"
+        },
+        "nivel_requerido": 9,
+        "desbloqueado": false,
+        "niveles_faltantes": 7,
+        "puesto": false
+      },
+      {
+        "id": "traje",
+        "tipo": "ropa",
+        "nombre": "Traje",
+        "parametros": {
+          "outfitVariant": "suit"
+        },
+        "nivel_requerido": 10,
+        "desbloqueado": false,
+        "niveles_faltantes": 8,
+        "puesto": false
+      }
+    ],
+    "accesorio": [
+      {
+        "id": "gafas_redondas",
+        "tipo": "accesorio",
+        "nombre": "Gafas redondas",
+        "parametros": {
+          "glassesVariant": "round"
+        },
+        "nivel_requerido": 3,
+        "desbloqueado": false,
+        "niveles_faltantes": 1,
+        "puesto": false
+      },
+      {
+        "id": "gafas_sol",
+        "tipo": "accesorio",
+        "nombre": "Gafas de sol",
+        "parametros": {
+          "glassesVariant": "shades"
+        },
+        "nivel_requerido": 7,
+        "desbloqueado": false,
+        "niveles_faltantes": 5,
+        "puesto": false
+      }
+    ]
+  },
+  "puesto": {
+    "ropa": {
+      "id": "camiseta_rayas",
+      "nombre": "Camiseta de rayas",
+      "parametros": {
+        "outfitVariant": "stripes"
+      }
+    },
+    "accesorio": null
+  },
   "imagenes_listas": false,
   "base": {
     "id": "base_1",
@@ -9,128 +284,8 @@
     "imagen_lista": false,
     "url": "http://127.0.0.1:5002/static/avatar/base_1.png"
   },
-  "puesto": {
-    "ropa": null,
-    "accesorio": {
-      "id": "gafas",
-      "nombre": "Gafas",
-      "archivo": "accesorio_gafas.png",
-      "imagen_lista": false,
-      "url": "http://127.0.0.1:5002/static/avatar/accesorio_gafas.png"
-    }
-  },
-  "capas": [
-    {
-      "tipo": "base",
-      "id": "base_1",
-      "archivo": "base_1.png",
-      "imagen_lista": false,
-      "url": "http://127.0.0.1:5002/static/avatar/base_1.png"
-    },
-    {
-      "tipo": "accesorio",
-      "id": "gafas",
-      "archivo": "accesorio_gafas.png",
-      "imagen_lista": false,
-      "url": "http://127.0.0.1:5002/static/avatar/accesorio_gafas.png"
-    }
-  ],
-  "bases": [
-    {
-      "id": "base_1",
-      "nombre": "Base 1",
-      "archivo": "base_1.png",
-      "imagen_lista": false,
-      "url": "http://127.0.0.1:5002/static/avatar/base_1.png",
-      "seleccionada": true
-    },
-    {
-      "id": "base_2",
-      "nombre": "Base 2",
-      "archivo": "base_2.png",
-      "imagen_lista": false,
-      "seleccionada": false,
-      "url": "http://127.0.0.1:5002/static/avatar/base_2.png"
-    }
-  ],
-  "objetos": {
-    "ropa": [
-      {
-        "id": "buzo_verde",
-        "tipo": "ropa",
-        "nombre": "Buzo verde",
-        "archivo": "ropa_buzo_verde.png",
-        "imagen_lista": false,
-        "nivel_requerido": 1,
-        "desbloqueado": true,
-        "niveles_faltantes": 0,
-        "puesto": false,
-        "url": "http://127.0.0.1:5002/static/avatar/ropa_buzo_verde.png"
-      },
-      {
-        "id": "camiseta_lumea",
-        "tipo": "ropa",
-        "nombre": "Camiseta Lumea",
-        "archivo": "ropa_camiseta_lumea.png",
-        "imagen_lista": false,
-        "nivel_requerido": 3,
-        "desbloqueado": false,
-        "niveles_faltantes": 1,
-        "puesto": false,
-        "url": "http://127.0.0.1:5002/static/avatar/ropa_camiseta_lumea.png"
-      },
-      {
-        "id": "ruana",
-        "tipo": "ropa",
-        "nombre": "Ruana",
-        "archivo": "ropa_ruana.png",
-        "imagen_lista": false,
-        "nivel_requerido": 6,
-        "desbloqueado": false,
-        "niveles_faltantes": 4,
-        "puesto": false,
-        "url": "http://127.0.0.1:5002/static/avatar/ropa_ruana.png"
-      }
-    ],
-    "accesorio": [
-      {
-        "id": "gafas",
-        "tipo": "accesorio",
-        "nombre": "Gafas",
-        "archivo": "accesorio_gafas.png",
-        "imagen_lista": false,
-        "nivel_requerido": 2,
-        "desbloqueado": true,
-        "niveles_faltantes": 0,
-        "puesto": true,
-        "url": "http://127.0.0.1:5002/static/avatar/accesorio_gafas.png"
-      },
-      {
-        "id": "audifonos",
-        "tipo": "accesorio",
-        "nombre": "Audífonos",
-        "archivo": "accesorio_audifonos.png",
-        "imagen_lista": false,
-        "nivel_requerido": 4,
-        "desbloqueado": false,
-        "niveles_faltantes": 2,
-        "puesto": false,
-        "url": "http://127.0.0.1:5002/static/avatar/accesorio_audifonos.png"
-      },
-      {
-        "id": "sombrero_vueltiao",
-        "tipo": "accesorio",
-        "nombre": "Sombrero vueltiao",
-        "archivo": "accesorio_sombrero_vueltiao.png",
-        "imagen_lista": false,
-        "nivel_requerido": 8,
-        "desbloqueado": false,
-        "niveles_faltantes": 6,
-        "puesto": false,
-        "url": "http://127.0.0.1:5002/static/avatar/accesorio_sombrero_vueltiao.png"
-      }
-    ]
-  },
+  "bases": [],
+  "capas": [],
   "respaldo_dicebear": {
     "id": "sol",
     "nombre": "Sol",

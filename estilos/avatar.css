@@ -30,12 +30,12 @@
   border: 1px solid var(--c-borde);
   display: grid; place-items: center; overflow: hidden;
 }
-.avatar-figura__capa { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .avatar-figura__cara { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .avatar-figura__silueta { display: grid; place-items: center; color: var(--c-emocion-tinta); }
-/* Con las imágenes de Laura: la persona por capas y el compañero a su lado, más pequeño y quieto */
-.avatar-figura--con-persona { grid-template-columns: minmax(0, 1fr) 28%; align-items: end; gap: var(--e-2); padding: var(--e-2); }
+/* La persona (voxel-art, dibujada en el navegador) grande, y el compañero a su lado: más pequeño y quieto */
+.avatar-figura--con-persona { width: min(100%, 360px); grid-template-columns: minmax(0, 1fr) 26%; align-items: end; gap: var(--e-2); padding: var(--e-2); }
 .avatar-figura__persona { position: relative; width: 100%; height: 100%; }
+.avatar-figura__persona-img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .avatar-figura__companero { width: 100%; aspect-ratio: 1; object-fit: contain; }
 .avatar-figura__silueta .icono { width: 96px; height: 96px; stroke-width: 1.25; }
 /* Al ponerse algo: un saltico (un solo movimiento, con rebote porque es un logro) */
@@ -50,14 +50,15 @@
 /* ---------- Pestañas ---------- */
 .avatar-panel { display: grid; gap: var(--e-4); }
 .pestanas {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--e-1);
+  display: flex; flex-wrap: wrap; gap: var(--e-1);
   padding: var(--e-1);
   border-radius: var(--r-pildora);
   background: var(--c-superficie-2);
   border: 1.5px solid var(--c-borde);
 }
 .pestana {
-  min-height: 44px; padding: 0 var(--e-2);
+  flex: 1 1 auto; white-space: nowrap; font-size: var(--t-s);
+  min-height: 44px; padding: 0 var(--e-3);
   border: 0; border-radius: var(--r-pildora);
   background: transparent; color: var(--c-tinta);
   font: inherit; font-weight: var(--t-peso-medio); cursor: pointer;
@@ -104,7 +105,6 @@
   width: 64px; aspect-ratio: 1; border-radius: var(--r-tarjeta);
   background: var(--c-emocion-contenedor); color: var(--c-emocion-tinta);
 }
-.prenda--bloqueada .prenda__imagen { background: transparent; border: 1.5px dashed var(--c-borde-fuerte); color: var(--c-tinta-suave); }
 .prenda__imagen img { width: 100%; height: 100%; object-fit: contain; }
 .prenda__imagen .icono { width: 28px; height: 28px; }
 .prenda__nombre { font-weight: var(--t-peso-fuerte); overflow-wrap: anywhere; }
@@ -113,8 +113,48 @@
 .prenda__boton[aria-disabled="true"] { opacity: 1; cursor: not-allowed; color: var(--c-tinta); background: transparent; border-style: dashed; }
 .prenda__boton[aria-disabled="true"]:hover { background: transparent; }
 
+/* Mi armario: mosaicos. Cada uno es un botón con la persona (con esa prenda puesta), su nombre y su estado. */
+.armario__lista--mosaicos { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); }
+.armario__lista--mosaicos .prenda { padding: 0; }
+.prenda__mosaico {
+  display: grid; gap: var(--e-2); justify-items: center; align-content: start; width: 100%; min-height: 44px;
+  padding: var(--e-3); border: 0; border-radius: var(--r-tarjeta);
+  background: transparent; color: inherit; font: inherit; text-align: center; cursor: pointer;
+  transition: background var(--m-rapido) var(--m-salida), transform var(--m-rapido) var(--m-salida);
+}
+.prenda__mosaico:hover { background: var(--c-marca-suave); }
+.prenda__mosaico:active { transform: scale(.97); }
+.prenda__mosaico:focus-visible { outline: 3px solid var(--c-foco); outline-offset: 2px; }
+.prenda__mosaico .prenda__imagen { position: relative; width: min(100%, 112px); background: var(--c-superficie-2); }
+.prenda--bloqueada .prenda__mosaico { cursor: not-allowed; }
+.prenda--bloqueada .prenda__mosaico:hover { background: transparent; }
+.prenda--bloqueada .prenda__persona { opacity: .45; }                                  /* se ve cómo quedaría, pero todavía no se abre */
+.prenda__candado-grande { position: absolute; top: var(--e-1); right: var(--e-1); width: 20px; height: 20px; color: var(--c-tinta); }
+.prenda__estado { display: inline-flex; align-items: center; justify-content: center; }
+
+/* ---------- Cómo me veo: los rasgos, siempre abiertos ---------- */
+.rasgos { display: grid; gap: var(--e-4); }
+.rasgo { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: var(--e-2); }
+.rasgo__nombre { padding: 0; font-weight: var(--t-peso-fuerte); }
+.rasgo__opciones { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+.rasgo__opcion { position: relative; display: grid; justify-items: center; gap: var(--e-1); cursor: pointer; }
+.rasgo__radio { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.rasgo__muestra { display: block; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--c-borde-fuerte); }
+.rasgo__radio:checked ~ .rasgo__muestra { outline: 3px solid var(--c-tinta); outline-offset: 2px; }
+.rasgo__radio:focus-visible ~ .rasgo__muestra,
+.rasgo__radio:focus-visible ~ .rasgo__mini,
+.rasgo__radio:focus-visible ~ .rasgo__texto { outline: 3px solid var(--c-foco); outline-offset: 2px; }
+.rasgo__mini { display: block; width: 64px; aspect-ratio: 1; border-radius: var(--r-control); background: var(--c-superficie-2); border: 1.5px solid var(--c-borde); }
+.rasgo__mini img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.rasgo__radio:checked ~ .rasgo__mini { border-color: var(--c-tinta); border-width: 3px; }
+.rasgo--mosaico .rasgo__texto { font-size: var(--t-xs); max-width: 88px; text-align: center; overflow-wrap: break-word; }
+.rasgo--texto .rasgo__texto {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--e-3);
+  border-radius: var(--r-pildora); border: 1.5px solid var(--c-borde); background: var(--c-superficie);
+}
+.rasgo--texto .rasgo__radio:checked ~ .rasgo__texto { background: var(--c-marca); color: var(--c-sobre-marca); border-color: var(--c-marca); font-weight: var(--t-peso-fuerte); }
+
 /* ---------- Tu compañero: la tarjeta de una prenda, con el dibujo del compañero (sin caja de color: su forma es su silueta) ---------- */
-.avatar-companeros { display: grid; gap: var(--e-3); align-content: start; grid-column: 1 / -1; }
 .prenda__imagen--companero { width: 88px; background: transparent; }
 .prenda--bloqueada .prenda__imagen--companero { border: 0; }
 .prenda--bloqueada .prenda__imagen--companero .companero__img { opacity: .45; }       /* se ve quién es, pero todavía no se abre */

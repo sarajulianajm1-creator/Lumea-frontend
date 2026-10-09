@@ -74,24 +74,36 @@
       <p id="avatar-faltan" class="avatar-vitrina__faltan"></p>
     </section>
 
-    <!-- Misiones | Armario | Calcomanías (abren con #misiones, #armario y #calcomanias) -->
-    <section class="avatar-panel" aria-label="Misiones, armario y calcomanías">
+    <!-- Armario | Cómo me veo | Misiones | Calcomanías | Compañero (abren con #armario, #como-me-veo, #misiones, #calcomanias y #companero).
+         Todo va en esta columna: nada queda debajo de la vitrina, que es sticky. -->
+    <section class="avatar-panel" aria-label="Armario, cómo me veo, misiones, calcomanías y compañero">
       <div id="pestanas" class="pestanas" role="tablist" aria-label="Tu avatar">
-        <button type="button" role="tab" id="pestana-misiones" class="pestana" aria-controls="panel-misiones" aria-selected="true">Misiones</button>
-        <button type="button" role="tab" id="pestana-armario" class="pestana" aria-controls="panel-armario" aria-selected="false" tabindex="-1">Armario</button>
+        <button type="button" role="tab" id="pestana-armario" class="pestana" aria-controls="panel-armario" aria-selected="true">Mi armario</button>
+        <button type="button" role="tab" id="pestana-como-me-veo" class="pestana" aria-controls="panel-como-me-veo" aria-selected="false" tabindex="-1">Cómo me veo</button>
+        <button type="button" role="tab" id="pestana-misiones" class="pestana" aria-controls="panel-misiones" aria-selected="false" tabindex="-1">Misiones</button>
         <button type="button" role="tab" id="pestana-calcomanias" class="pestana" aria-controls="panel-calcomanias" aria-selected="false" tabindex="-1">Calcomanías</button>
+        <button type="button" role="tab" id="pestana-companero" class="pestana" aria-controls="panel-companero" aria-selected="false" tabindex="-1">Tu compañero</button>
       </div>
 
-      <div role="tabpanel" id="panel-misiones" class="panel-pestana" aria-labelledby="pestana-misiones" tabindex="0">
+      <!-- MI ARMARIO: la acción principal de la pantalla. Cada mosaico es la persona con esa prenda puesta. -->
+      <div role="tabpanel" id="panel-armario" class="panel-pestana" aria-labelledby="pestana-armario" tabindex="0">
+        <h2 class="panel-pestana__titulo">Mi armario</h2>
+        <p class="panel-pestana__nota">Toca una prenda para ponértela y toca la que llevas para quitártela. Lo que se abre al llegar a una etapa nueva es tuyo para siempre.</p>
+        <ul id="armario-lista" class="armario__lista armario__lista--mosaicos" aria-label="Mi armario"></ul>
+      </div>
+
+      <!-- CÓMO ME VEO: los rasgos son libres y nunca se bloquean (la identidad no es un premio) -->
+      <div role="tabpanel" id="panel-como-me-veo" class="panel-pestana" aria-labelledby="pestana-como-me-veo" tabindex="0" hidden>
+        <h2 class="panel-pestana__titulo">Cómo me veo</h2>
+        <p class="panel-pestana__nota">Elige cómo eres. Todo está abierto desde el primer día y lo puedes cambiar cuando quieras.</p>
+        <form id="rasgos-form" class="rasgos" novalidate></form>
+        <button type="button" id="rasgos-guardar" class="boton boton--secundario">Guardar cómo me veo</button>
+      </div>
+
+      <div role="tabpanel" id="panel-misiones" class="panel-pestana" aria-labelledby="pestana-misiones" tabindex="0" hidden>
         <h2 class="panel-pestana__titulo">Misiones de hoy</h2>
         <ul id="misiones-lista" class="misiones"></ul>
         <p id="misiones-vacio" class="estado-vacio" hidden>Hoy no hay misiones para mostrar.</p>
-      </div>
-
-      <div role="tabpanel" id="panel-armario" class="panel-pestana" aria-labelledby="pestana-armario" tabindex="0" hidden>
-        <h2 class="panel-pestana__titulo">Tu armario</h2>
-        <p class="panel-pestana__nota">Lo que se abre al llegar a una etapa nueva es tuyo para siempre.</p>
-        <div id="armario-grupos" class="armario"></div>
       </div>
 
       <div role="tabpanel" id="panel-calcomanias" class="panel-pestana" aria-labelledby="pestana-calcomanias" tabindex="0" hidden>
@@ -100,15 +112,15 @@
         <p id="album-error" class="estado-vacio" hidden>No pudimos cargar tu álbum. Vuelve a abrir esta pantalla en un momento.</p>
         <ul id="album-lista" class="album"></ul>
       </div>
-    </section>
 
-    <!-- TU COMPAÑERO: los seis (Sol, Luna, Río, Montaña, Orquídea, Colibrí), quietos. Los de una etapa que
-         todavía no llegó llevan candado y no hacen nada. avatar.js llena la lista desde GET /avatares. -->
-    <section class="avatar-companeros" aria-labelledby="titulo-companeros">
-      <h2 id="titulo-companeros" class="panel-pestana__titulo">Tu compañero</h2>
-      <p class="panel-pestana__nota">Te acompaña en Lumea y sus ojos muestran cómo llegas hoy. Los demás se abren al llegar a una etapa nueva.</p>
-      <p id="companeros-error" class="estado-vacio" hidden>No pudimos cargar a tus compañeros. Vuelve a abrir esta pantalla en un momento.</p>
-      <ul id="companeros-lista" class="armario__lista"></ul>
+      <!-- TU COMPAÑERO: los seis (Sol, Luna, Río, Montaña, Orquídea, Colibrí), quietos. Los de una etapa que
+           todavía no llegó llevan candado y no hacen nada. avatar.js llena la lista desde GET /avatares. -->
+      <div role="tabpanel" id="panel-companero" class="panel-pestana" aria-labelledby="pestana-companero" tabindex="0" hidden>
+        <h2 id="titulo-companeros" class="panel-pestana__titulo">Tu compañero</h2>
+        <p class="panel-pestana__nota">Te acompaña en Lumea y sus ojos muestran cómo llegas hoy. Los demás se abren al llegar a una etapa nueva.</p>
+        <p id="companeros-error" class="estado-vacio" hidden>No pudimos cargar a tus compañeros. Vuelve a abrir esta pantalla en un momento.</p>
+        <ul id="companeros-lista" class="armario__lista"></ul>
+      </div>
     </section>
   </div>
 
