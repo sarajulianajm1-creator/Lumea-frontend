@@ -339,7 +339,16 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .dia { display: grid; gap: var(--e-3); min-width: 0; }
 .dia__resumen { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2) var(--e-4); }
 .dia__cuantas { font-weight: var(--t-peso-fuerte); }
+.grupos-dia { display: inline-flex; align-items: center; gap: var(--e-2); }
+.grupos-dia__rotulo { font-size: var(--t-s); color: var(--c-tinta-suave); }
 .marcas-grupos { display: inline-flex; gap: var(--e-1); }
+/* Los sellos en la lista: el octágono pequeño (unos 56 px) y su nombre escrito al lado; el texto del sello completo sigue en el HTML
+   y en su nombre accesible. Así no tapan toda la fila. */
+.sellos--lista { align-items: center; gap: var(--e-2) var(--e-3); }
+.sellos--lista .sello { --tam-sello: 56px; padding: 0; font-size: 0; }
+.sellos--lista .sello::before { inset: 3px; }
+.sellos--lista .sello::after { inset: 5px; }
+.registro__sellos-texto { flex: 1 1 100%; font-size: var(--t-s); color: var(--c-tinta); }
 .marca-grupo { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--c-tinta-suave); background: transparent; }
 .marca-grupo--llena { background: var(--c-tinta-suave); }                      /* llena = ese grupo apareció (es información, no una meta) */
 .registro__grupo { justify-self: start; }

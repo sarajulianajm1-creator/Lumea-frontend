@@ -58,8 +58,11 @@ def test_el_resumen_del_dia_marca_los_grupos_que_aparecieron_sin_decir_te_faltan
     resumen = pagina.locator(".dia__resumen").first
     assert resumen.locator(".marca-grupo").count() == 6                    # los seis grupos del plato del ICBF
     assert resumen.locator(".marca-grupo--llena").count() == 2             # frutas y verduras, y cereales
-    assert "Grupos del plato que aparecieron: Cereales, Frutas y verduras" in resumen.text_content()
-    assert resumen.locator(".marcas-grupos").get_attribute("aria-hidden") == "true"
+    assert resumen.locator(".grupos-dia__rotulo").inner_text() == "Grupos del plato"                  # el rótulo visible y corto
+    nombres = resumen.locator(".marca-grupo").evaluate_all("e => e.map(x => x.getAttribute('aria-label'))")
+    assert nombres == ["Cereales: sí", "Frutas y verduras: sí", "Lácteos: no", "Proteínas: no", "Grasas: no", "Azúcares: no"]
+    assert resumen.locator(".marcas-grupos").get_attribute("role") == "group"
+    assert resumen.locator(".marca-grupo").evaluate_all("e => e.every(x => x.getAttribute('role') === 'img')")
     contenido = pagina.locator("main").inner_text().lower()
     assert "te faltan" not in contenido and "te falta" not in contenido
 
@@ -113,9 +116,7 @@ def test_los_sellos_se_leen_como_octagonos_con_nombre_accesible(pagina, backend)
     assert all(s.get_attribute("role") == "img" for s in sellos.all())
     assert pagina.get_by_role("img", name="Exceso en azúcares").count() == 1
     assert pagina.locator("#listaRegistros p", has_text="Sin sellos de advertencia").count() == 2
-    for s in sellos.all():
-        assert s.evaluate("e => parseFloat(getComputedStyle(e).fontSize)") >= 12.8
-        assert s.evaluate("e => e.scrollWidth <= e.clientWidth + 1 && e.scrollHeight <= e.clientHeight + 1")
+    assert pagina.get_by_role("img", name="Exceso en azúcares").count() == 1
 
 
 def test_los_sellos_van_en_una_envoltura_con_placa_para_el_modo_oscuro(pagina, backend):
@@ -181,3 +182,19 @@ def test_el_pie_lleva_a_las_paginas_publicas(pagina, backend):
     enlaces = pagina.locator(".pie-app a")
     assert [e.get_attribute("href") for e in enlaces.all()] == ["index.html", "conocenos.html", "guialumea.html", "terminos.html"]
     assert pagina.locator(".pie-app img.marca").get_attribute("src") == "img/logo.svg"
+
+
+def test_los_sellos_van_pequenos_dentro_de_la_lista_con_su_nombre_escrito_al_lado(pagina, backend):
+    abrir(pagina, backend)
+    for sello in pagina.locator("#listaRegistros .sello").all():
+        caja = sello.bounding_box()
+        assert 50 <= caja["width"] <= 64 and 50 <= caja["height"] <= 64                      # unos 56 px (antes unos 150)
+    fila = pagina.locator("#listaRegistros li.registro", has_text="Coca-Cola")
+    assert fila.locator(".registro__sellos-texto").inner_text() == "Exceso en azúcares · Contiene edulcorantes"
+    assert fila.bounding_box()["height"] < 220                                               # ya no tapan toda la fila
+
+
+def test_el_subtitulo_usa_dos_puntos_y_no_guiones_dobles(pagina, backend):
+    abrir(pagina, backend)
+    texto = pagina.locator("main header .contenido__subtitulo").inner_text()
+    assert "--" not in texto and "sin comparaciones ni juicios: solo para tu propia reflexión" in texto

@@ -52,7 +52,7 @@
         <div id="conSesion" class="registros__pantalla" hidden>
           <header>
             <h1 class="contenido__titulo">Mis registros</h1>
-            <p class="contenido__subtitulo">Tu histórico de comidas, sin comparaciones ni juicios -- solo para tu propia reflexión.</p>
+            <p class="contenido__subtitulo">Tu histórico de comidas, sin comparaciones ni juicios: solo para tu propia reflexión.</p>
           </header>
 
           <p id="cargando" class="inicio__nota" role="status">Cargando tu historial...</p>
@@ -170,6 +170,11 @@
       if (sellos) {
         sellos.classList.add("registro__sellos");
         fila.appendChild(sellos);
+        // Los sellos van pequeños dentro de la lista (el octágono, sin su texto): el nombre se lee en la línea de al lado
+        if (registro.sellos_advertencia && registro.sellos_advertencia.length) {
+          sellos.classList.add("sellos--lista");
+          sellos.appendChild(elemento("p", "registro__sellos-texto", registro.sellos_advertencia.map((x) => enFrase(TEXTO_SELLO[x] ?? x)).join(" · ")));
+        }
       }
       return fila;
     }
@@ -198,12 +203,21 @@
       resumen.appendChild(elemento("p", "dia__cuantas cifra", `${registros.length} ${registros.length === 1 ? "comida" : "comidas"}`));
       if (registros.some((r) => r.grupo)) {
         const presentes = new Set(registros.map((r) => r.grupo));
+        const bloque = elemento("span", "grupos-dia");
+        bloque.appendChild(elemento("span", "grupos-dia__rotulo", "Grupos del plato"));
         const marcas = elemento("span", "marcas-grupos");
-        marcas.setAttribute("aria-hidden", "true");
-        Object.keys(GRUPOS).forEach((clave) => marcas.appendChild(elemento("span", "marca-grupo" + (presentes.has(clave) ? " marca-grupo--llena" : ""))));
-        resumen.appendChild(marcas);
-        const aparecieron = Object.keys(GRUPOS).filter((c) => presentes.has(c)).map((c) => GRUPOS[c]);
-        resumen.appendChild(elemento("span", "solo-lector", aparecieron.length ? `Grupos del plato que aparecieron: ${aparecieron.join(", ")}` : "Ningún grupo del plato identificado"));
+        marcas.setAttribute("role", "group");
+        marcas.setAttribute("aria-label", "Grupos del plato");
+        Object.keys(GRUPOS).forEach((clave) => {
+          const esta = presentes.has(clave);
+          const marca = elemento("span", "marca-grupo" + (esta ? " marca-grupo--llena" : ""));
+          marca.setAttribute("role", "img");
+          marca.setAttribute("aria-label", `${GRUPOS[clave]}: ${esta ? "sí" : "no"}`);
+          marca.title = `${GRUPOS[clave]}: ${esta ? "sí" : "no"}`;
+          marcas.appendChild(marca);
+        });
+        bloque.appendChild(marcas);
+        resumen.appendChild(bloque);
       }
       return resumen;
     }
