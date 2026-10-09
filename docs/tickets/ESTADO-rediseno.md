@@ -406,6 +406,22 @@ Misión: `docs/tickets/MISION-camino.md` (rama `rediseno`). Isabella aprobó el 
 - «Elige tus colores» y «Mis colores» (arriba, en el selector).
 - Sin textos nuevos en los botones del check-in: la palabra de cada estado se queda.
 
+## Pulido final
+
+Misión: `docs/tickets/MISION-pulido.md` (rama `rediseno`, 9 de oct de 2026). Plan P0 aprobado por Isabella; congelamiento a las 12:00 m. Se actualiza al cerrar cada fase.
+
+### P1 · Arreglos que no pueden faltar: LISTA (9 oct 2026)
+
+- **Enchufes de tipografía** (`estilos/componentes.css`, `estilos/inicio.css`): los títulos (`h1`–`h3` y las clases de título) usan `var(--f-titulos, var(--f-familia))` y la clase `.cifra` (`var(--f-cifras, var(--f-familia))` con `tabular-nums lining-nums`) va en la etapa, la racha, las comidas de hoy, las calorías de Registrar, la cifra de la celebración y las semillas de las misiones. No se definieron `--f-titulos` ni `--f-cifras`: son de Isabella (`tokens.css`).
+- **Registrar, botón de play de Safari:** `#webcam` lleva `hidden` hasta el evento `playing`; al apagar se detienen las pistas, `srcObject = null` y vuelve a `hidden`. Respaldo en CSS con `::-webkit-media-controls-start-playback-button`. Prueba nueva en `test_camara.py`. **Isabella: comprobar en Safari** (en Chromium no sale el botón, así que la prueba solo asegura que el video está oculto sin cámara).
+- **Crear cuenta:** sin peso ni altura (campos, ayuda, validación y payload); `min="11"` con «Lumea es para personas de 11 años en adelante.»; casilla «Mi madre, padre o acudiente sabe que uso Lumea» solo con edad de 11 a 17 (obligatoria solo cuando se ve, error con `aria-describedby`) que envía `acudiente_sabe: true`. Pruebas en `test_crear_cuenta.py` (6) y dos existentes ajustadas.
+- **Textos de peso, altura, 14 años e IMC en el frontend** (no se cambiaron): solo `guialumea.html` línea 201, «sin presiones de peso ni comparaciones con otros» (habla de presión, no de pedir el peso). No hay «14 años» ni «IMC».
+- **Avatar: la vitrina que tapa la lista de compañeros** se resuelve con el layout nuevo de P2.
+
+### Textos nuevos para que Isabella revise
+
+- Crear cuenta: «Lumea es para personas de 11 años en adelante.» · «Mi madre, padre o acudiente sabe que uso Lumea» (literal de Isabella) · «Marca la casilla para continuar.»
+
 ## Para después de unir
 
 (Cambios que necesitan tocar el `<body>` de una página pública o un archivo de Isabella; no se hicieron.)
