@@ -47,6 +47,8 @@ const MOSTRAR_CALORIAS = true;
   // «EXCESO EN AZÚCARES» -> «Exceso en azúcares»: el nombre accesible del sello va en minúsculas normales
   // para que el lector de pantalla lo lea como una frase y no lo deletree
   const enFrase = (t) => t.charAt(0) + t.slice(1).toLowerCase();
+  // «EXCESO EN» / «SODIO», como en el empaque: el texto del sello se parte en dos líneas
+  function lineasSello(t) { const m = t.match(/^(EXCESO EN|CONTIENE)\s+(.+)$/i); return m ? [m[1], m[2]] : [t]; }
 
   let stream = null, ocupado = false, catalogo = null;
   const video = $("webcam");
@@ -154,9 +156,16 @@ const MOSTRAR_CALORIAS = true;
     sellos.forEach((s) => {
       const el = document.createElement("span");
       el.className = "sello";
-      el.textContent = TEXTO_SELLO[s] || String(s).toUpperCase();
-      el.setAttribute("role", "img");                 // el nombre accesible, en minúsculas normales
-      el.setAttribute("aria-label", enFrase(el.textContent));
+      const texto = TEXTO_SELLO[s] || String(s).toUpperCase();
+      el.setAttribute("role", "img");                 // el nombre accesible, en minúsculas normales y con el texto completo
+      el.setAttribute("aria-label", enFrase(texto));
+      lineasSello(texto).forEach((l) => {
+        const linea = document.createElement("span");
+        linea.className = "sello__linea";
+        linea.setAttribute("aria-hidden", "true");
+        linea.textContent = l;
+        el.appendChild(linea);
+      });
       envoltura.appendChild(el);
     });
     caja.appendChild(envoltura);

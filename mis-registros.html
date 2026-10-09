@@ -124,15 +124,20 @@
     // para que el lector de pantalla lo lea como una frase y no lo deletree
     const enFrase = (t) => t.charAt(0) + t.slice(1).toLowerCase();
 
+    // «EXCESO EN» / «SODIO», como en el empaque: el texto del sello se parte en dos líneas
+    function lineasSello(t) { const m = t.match(/^(EXCESO EN|CONTIENE)\s+(.+)$/i); return m ? [m[1], m[2]] : [t]; }
+
     // Los sellos van dentro de un .sellos: en modo oscuro esa envoltura les pone una placa clara alrededor
     function nodoSellos(sellos) {
       if (sellos === null || sellos === undefined) return null;
       if (sellos.length === 0) return elemento("p", "inicio__nota", "Sin sellos de advertencia");
       const caja = elemento("div", "sellos");
       sellos.forEach((s) => {
-        const sello = elemento("span", "sello", TEXTO_SELLO[s] ?? s);
+        const sello = elemento("span", "sello");
+        const texto = TEXTO_SELLO[s] ?? s;
         sello.setAttribute("role", "img");
-        sello.setAttribute("aria-label", enFrase(sello.textContent));
+        sello.setAttribute("aria-label", enFrase(texto));            // con el texto COMPLETO, antes de partirlo
+        lineasSello(texto).forEach((l) => { const linea = elemento("span", "sello__linea", l); linea.setAttribute("aria-hidden", "true"); sello.appendChild(linea); });
         caja.appendChild(sello);
       });
       return caja;
@@ -170,11 +175,7 @@
       if (sellos) {
         sellos.classList.add("registro__sellos");
         fila.appendChild(sellos);
-        // Los sellos van pequeños dentro de la lista (el octágono, sin su texto): el nombre se lee en la línea de al lado
-        if (registro.sellos_advertencia && registro.sellos_advertencia.length) {
-          sellos.classList.add("sellos--lista");
-          sellos.appendChild(elemento("p", "registro__sellos-texto", registro.sellos_advertencia.map((x) => enFrase(TEXTO_SELLO[x] ?? x)).join(" · ")));
-        }
+        sellos.classList.add("sellos--lista");                    // en la lista, el sello es más chico (app.css)
       }
       return fila;
     }

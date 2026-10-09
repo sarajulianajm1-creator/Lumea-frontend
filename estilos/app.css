@@ -347,18 +347,20 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .registros__pantalla { display: grid; gap: var(--e-5); }
 .dias { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); align-items: start; }
 .dia { display: grid; gap: var(--e-3); min-width: 0; }
-.dia__resumen { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2) var(--e-4); }
+.dia__resumen { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2) var(--e-4); min-width: 0; }
 .dia__cuantas { font-weight: var(--t-peso-fuerte); }
-.grupos-dia { display: inline-flex; align-items: center; gap: var(--e-2); }
+.grupos-dia { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--e-1) var(--e-2); max-width: 100%; min-width: 0; }
 .grupos-dia__rotulo { font-size: var(--t-s); color: var(--c-tinta-suave); }
 .marcas-grupos { display: inline-flex; gap: var(--e-1); }
-/* Los sellos en la lista: el octágono pequeño (unos 56 px) y su nombre escrito al lado; el texto del sello completo sigue en el HTML
-   y en su nombre accesible. Así no tapan toda la fila. */
-.sellos--lista { align-items: center; gap: var(--e-2) var(--e-3); }
-.sellos--lista .sello { --tam-sello: 56px; padding: 0; text-indent: 100%; white-space: nowrap; overflow: hidden; }   /* el texto queda en el HTML, fuera del octágono */
+/* Los sellos en la lista (Res. 810, modificada por la 2492 de 2022): el mismo octágono del empaque, con su texto DENTRO en dos
+   líneas, más chico (116 px) que el de Registrar. La letra se queda en --t-xs (12,8 px): no se baja. Si no caben en una línea,
+   los octágonos bajan a la siguiente. */
+.sellos--lista { flex-wrap: wrap; align-items: center; max-width: 100%; min-width: 0; }
+.sellos--lista .sello { --tam-sello: 116px; padding: 6px; line-height: 1.1; letter-spacing: -0.01em; }
 .sellos--lista .sello::before { inset: 3px; }
-.sellos--lista .sello::after { inset: 5px; }
-.registro__sellos-texto { flex: 1 1 100%; font-size: var(--t-s); color: var(--c-tinta); }
+.sellos--lista .sello::after  { inset: 5px; }
+.sello__linea { display: block; }
+.sello__linea:first-child { white-space: nowrap; }
 .marca-grupo { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--c-tinta-suave); background: transparent; }
 .marca-grupo--llena { background: var(--c-tinta-suave); }                      /* llena = ese grupo apareció (es información, no una meta) */
 .registro__grupo { justify-self: start; }

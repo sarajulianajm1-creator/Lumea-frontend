@@ -111,7 +111,10 @@ def test_sin_sellos_conocidos_no_pinta_nada_de_sellos(pagina, backend):
 def test_los_sellos_se_leen_como_octagonos_con_nombre_accesible(pagina, backend):
     abrir(pagina, backend)
     sellos = pagina.locator("#listaRegistros .sello")
-    assert sellos.all_text_contents() == ["EXCESO EN AZÚCARES", "CONTIENE EDULCORANTES"]       # el sello oficial va en mayúsculas
+    assert [" ".join(l.strip() for l in t.split("\n")) for t in sellos.evaluate_all("e => e.map(x => [...x.children].map(l => l.textContent).join('\\n'))")] \
+        == ["EXCESO EN AZÚCARES", "CONTIENE EDULCORANTES"]                                         # el sello oficial va en mayúsculas
+    assert [s.locator(".sello__linea").all_text_contents() for s in sellos.all()] == [["EXCESO EN", "AZÚCARES"], ["CONTIENE", "EDULCORANTES"]]   # en dos líneas, como el empaque
+    assert all(l.get_attribute("aria-hidden") == "true" for l in pagina.locator("#listaRegistros .sello__linea").all())
     assert [s.get_attribute("aria-label") for s in sellos.all()] == ["Exceso en azúcares", "Contiene edulcorantes"]
     assert all(s.get_attribute("role") == "img" for s in sellos.all())
     assert pagina.get_by_role("img", name="Exceso en azúcares").count() == 1
@@ -184,14 +187,69 @@ def test_el_pie_lleva_a_las_paginas_publicas(pagina, backend):
     assert pagina.locator(".pie-app img.marca").get_attribute("src") == "img/logo.svg"
 
 
-def test_los_sellos_van_pequenos_dentro_de_la_lista_con_su_nombre_escrito_al_lado(pagina, backend):
+CINCO = ["sodio", "azucares", "grasas_saturadas", "grasas_trans", "edulcorantes"]
+
+# Por cada sello: su octágono (recorte, letra) y, con un Range, el rectángulo real de cada línea de texto; se comprueba que sus cuatro
+# esquinas caen dentro del octágono blanco interior (a 5 px del borde: el filete blanco no se toca).
+MEDIR_SELLOS = """() => [...document.querySelectorAll('#listaRegistros .sello')].map(s => {
+    const c = getComputedStyle(s), r = s.getBoundingClientRect(), W = r.width, H = r.height, corte = 0.293 * (W - 10), m = 5;
+    const dentro = (x, y) => { x -= r.left + m; y -= r.top + m; const w = W - 2 * m, h = H - 2 * m;
+        return x >= 0 && y >= 0 && x <= w && y <= h && x + y >= corte && (w - x) + y >= corte && x + (h - y) >= corte && (w - x) + (h - y) >= corte };
+    const lineas = [...s.querySelectorAll('.sello__linea')].map(l => {
+        const rg = document.createRange(); rg.selectNodeContents(l);
+        return [...rg.getClientRects()].map(q => ({ ancho: q.width, ok: [[q.left, q.top], [q.right, q.top], [q.left, q.bottom], [q.right, q.bottom]].every(([x, y]) => dentro(x, y)) })) }).flat();
+    return { nombre: s.getAttribute('aria-label'), recorte: c.clipPath, tam: parseFloat(c.fontSize), color: c.color, fondo: c.backgroundColor,
+             mayus: c.textTransform, ancho: W, alto: H, lineas, ancestro: s.parentElement.className } })"""
+
+
+@pytest.mark.parametrize("ancho", [320, 390, 1280])
+def test_cada_sello_de_la_lista_es_un_octagono_con_su_texto_adentro_sin_tocar_el_borde(pagina, backend, ancho):
+    pagina.set_viewport_size({"width": ancho, "height": 844})
+    fecha = fecha_http(0)
+    historial = [HISTORIAL[0] | {"fecha": fecha}, HISTORIAL[2] | {"fecha": fecha, "sellos_advertencia": CINCO},
+                 HISTORIAL[1] | {"fecha": fecha, "sellos_advertencia": ["edulcorantes"]}]
+    abrir(pagina, backend, historial=historial)
+    medidas = pagina.evaluate(MEDIR_SELLOS)
+    assert [m["nombre"] for m in medidas] == ["Exceso en sodio", "Exceso en azúcares", "Exceso en grasas saturadas", "Exceso en grasas trans",
+                                              "Contiene edulcorantes", "Contiene edulcorantes"]
+    for m in medidas:
+        assert m["recorte"] != "none", m["nombre"]                                                    # es un octágono, no una etiqueta
+        assert m["fondo"] == "rgb(0, 0, 0)" and m["color"] == "rgb(255, 255, 255)" and m["mayus"] == "uppercase"
+        assert m["tam"] >= 12.8 - 0.05, m["nombre"]                                                    # la letra no baja de 12,8 px
+        assert m["ancho"] == pytest.approx(116, abs=1) and m["alto"] == pytest.approx(116, abs=1)
+        assert 1 <= len(m["lineas"]) and all(l["ok"] for l in m["lineas"]), f"{m['nombre']}: una línea toca el borde {m['lineas']}"
+    assert pagina.locator("#listaRegistros .registro__sellos-texto").count() == 0                       # sin la línea gris que repetía los sellos
+    assert pagina.locator("#listaRegistros .sellos--lista").first.evaluate("e => getComputedStyle(e).flexWrap") == "wrap"
+
+
+def test_si_los_sellos_no_caben_en_una_linea_bajan_a_la_siguiente(pagina, backend):
+    pagina.set_viewport_size({"width": 320, "height": 800})
     abrir(pagina, backend)
-    for sello in pagina.locator("#listaRegistros .sello").all():
-        caja = sello.bounding_box()
-        assert 50 <= caja["width"] <= 64 and 50 <= caja["height"] <= 64                      # unos 56 px (antes unos 150)
-    fila = pagina.locator("#listaRegistros li.registro", has_text="Coca-Cola")
-    assert fila.locator(".registro__sellos-texto").inner_text() == "Exceso en azúcares · Contiene edulcorantes"
-    assert fila.bounding_box()["height"] < 220                                               # ya no tapan toda la fila
+    sellos = pagina.locator("#listaRegistros li.registro", has_text="Coca-Cola").locator(".sello")
+    assert sellos.first.evaluate("e => getComputedStyle(e.parentElement).flexWrap") == "wrap"
+    ys = sellos.evaluate_all("e => e.map(x => Math.round(x.getBoundingClientRect().top))")
+    assert len(set(ys)) == 2                                                                           # a 320 px el segundo baja
+
+
+def test_el_sello_no_lleva_la_palabra_minsalud(pagina, backend):
+    abrir(pagina, backend)
+    assert "minsalud" not in pagina.locator("#listaRegistros").inner_text().lower()
+
+
+@pytest.mark.parametrize("ancho", [320, 390, 1280])
+def test_nada_se_sale_de_la_tarjeta_del_dia(pagina, backend, ancho):
+    pagina.set_viewport_size({"width": ancho, "height": 844})
+    historial = [HISTORIAL[0] | {"fecha": fecha_http(0)}, HISTORIAL[1] | {"fecha": fecha_http(0)}, HISTORIAL[2] | {"fecha": fecha_http(0), "sellos_advertencia": CINCO}]
+    abrir(pagina, backend, historial=historial)
+    fuera = pagina.evaluate("""() => [...document.querySelectorAll('#listaRegistros > li')].flatMap(card => {
+        const c = card.getBoundingClientRect();
+        return [...card.querySelectorAll('*')].filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && !e.classList.contains('solo-lector') && (r.right > c.right + 1 || r.left < c.left - 1) })
+          .map(e => e.className) })""")
+    assert fuera == []
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= ancho
+    # «Grupos del plato» baja a su propia línea cuando no cabe (el rótulo y las marcas no se salen)
+    rot = pagina.locator(".grupos-dia").first.evaluate("e => getComputedStyle(e).flexWrap")
+    assert rot == "wrap"
 
 
 def test_el_subtitulo_usa_dos_puntos_y_no_guiones_dobles(pagina, backend):
