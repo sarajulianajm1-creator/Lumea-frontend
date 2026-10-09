@@ -260,6 +260,7 @@ def test_el_resultado_no_desborda_la_pagina(pagina, backend, foto, ancho):
 
 def test_en_computador_la_camara_y_el_resultado_van_lado_a_lado_y_en_celular_apilados(pagina):
     abrir(pagina)
+    pagina.wait_for_timeout(600)                                                     # que termine la entrada escalonada (cada bloque sube 8 px con su retraso)
     lado = pagina.evaluate("[document.querySelector('.registro__camara').getBoundingClientRect().top, document.querySelector('#resultado').getBoundingClientRect().top]")
     assert abs(lado[0] - lado[1]) < 4                                                # a la misma altura
     pagina.set_viewport_size({"width": 390, "height": 800})
