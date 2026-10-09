@@ -33,21 +33,35 @@ def abrir(pagina, nombre, espiar=True):
 @pytest.mark.parametrize("nombre", PRIVADAS)
 def test_al_abrir_la_pantalla_se_mueve_una_sola_cosa_la_entrada(pagina, nombre):
     abrir(pagina, nombre)
-    assert pagina.evaluate("window.__animaciones") == ["entrada"]
+    animaciones = pagina.evaluate("window.__animaciones")
+    assert animaciones and set(animaciones) == {"entrada"}                    # una sola entrada (la misma para cada tarjeta, escalonada: P10)
     movimientos = [p for p in pagina.evaluate("window.__transiciones") if p in MOVIMIENTO]
-    assert set(movimientos) <= {"width"}                                      # solo las barras se llenan (una vez, P6); nada más se corre solo
+    assert set(movimientos) <= {"width", "height", "transform"}               # solo las barras se llenan (una vez, P6/P10) y el indicador de Avatar se coloca; nada más se corre solo
+
+
+BLOQUES = "main.contenido :is(header, .tarjeta, .inicio__franja, .camara > section, .avatar-panel)"
 
 
 @pytest.mark.parametrize("nombre", PRIVADAS)
-def test_la_entrada_hace_aparecer_y_subir_un_poco_el_contenido_una_vez_en_220_ms(pagina, nombre):
+def test_la_entrada_hace_aparecer_y_subir_un_poco_cada_tarjeta_una_vez_en_220_ms(pagina, nombre):
     abrir(pagina, nombre)
-    datos = pagina.locator("main.contenido").evaluate("""e => { const c = getComputedStyle(e); const a = e.getAnimations()[0];
+    datos = pagina.locator(BLOQUES).evaluate_all("""els => els.filter(e => e.offsetParent !== null).slice(0, 1).map(e => { const c = getComputedStyle(e); const a = e.getAnimations()[0];
         return { nombre: c.animationName, duracion: c.animationDuration, repeticion: c.animationIterationCount,
-                 relleno: c.animationFillMode, cuadros: a.effect.getKeyframes().map(k => [k.opacity, k.transform]) } }""")
+                 relleno: c.animationFillMode, cuadros: a.effect.getKeyframes().map(k => [k.opacity, k.transform]) } })""")[0]
     assert datos["nombre"] == "entrada" and datos["duracion"] == "0.22s"          # --m-base
     assert datos["repeticion"] == "1" and datos["relleno"] == "both"               # una sola vez
     assert datos["cuadros"][0] == ["0", "translateY(8px)"]                         # sube un poco (--e-2)…
     assert datos["cuadros"][1] == ["1", "none"]                                    # …y termina quieto
+
+
+def test_las_tarjetas_entran_escalonadas_de_40_a_60_ms_una_tras_otra_en_inicio(pagina):
+    abrir(pagina, "index-ingresado.html")
+    pagina.locator("#card-dato-dia").wait_for()
+    retardos = pagina.locator(BLOQUES).evaluate_all("els => els.filter(e => e.offsetParent !== null).map(e => parseFloat(getComputedStyle(e).animationDelay) * 1000)")
+    assert len(retardos) >= 4 and retardos[0] == 0
+    pasos = {round(b - a) for a, b in zip(retardos, retardos[1:]) if b > a}
+    assert pasos and all(40 <= p <= 60 for p in pasos), retardos                   # --m-escalon: 50 ms
+    assert retardos == sorted(retardos) and max(retardos) <= 6 * 50 + 1            # nunca pasa de medio segundo
 
 
 @pytest.mark.parametrize("nombre", PRIVADAS)
@@ -55,8 +69,8 @@ def test_con_movimiento_reducido_nada_se_mueve_las_cosas_solo_aparecen(pagina, n
     pagina.emulate_media(reduced_motion="reduce")
     abrir(pagina, nombre)
     assert pagina.evaluate("window.__animaciones") == []
-    assert pagina.locator("main.contenido").evaluate("e => getComputedStyle(e).animationName") == "none"
-    assert pagina.locator("main.contenido").evaluate("e => getComputedStyle(e).opacity") == "1"          # y se ve de una vez
+    assert pagina.locator(BLOQUES).evaluate_all("els => els.map(e => getComputedStyle(e).animationName + '/' + getComputedStyle(e).opacity)") \
+        == ["none/1"] * pagina.locator(BLOQUES).count()                                              # y se ven de una vez
     duraciones = pagina.evaluate("""[...new Set([...document.querySelectorAll('*')].flatMap(e => getComputedStyle(e).transitionDuration.split(', ')))]""")
     assert set(duraciones) <= {"0s"}                                                                       # ninguna transición dura nada
 
@@ -198,3 +212,54 @@ def test_con_movimiento_reducido_la_barra_se_llena_de_golpe(pagina):
     pagina.emulate_media(reduced_motion="reduce")
     abrir(pagina, "index-ingresado.html", espiar=False)
     assert pagina.locator(".barra-xp__relleno").first.evaluate("e => getComputedStyle(e).transitionDuration") == "0s"
+
+
+# ---------- P10 · 4: barras que crecen, botones que responden y la pestaña activa que se desliza ----------
+
+def test_las_barras_de_comidas_de_la_semana_crecen_desde_cero_una_vez(pagina):
+    pagina.add_init_script("window.__alturas = []; new MutationObserver(() => { const b = document.querySelector('#grafica-barras-semana .bar-fill-body:not(.bar-fill-body--base)'); if (b && window.__alturas.length < 3) window.__alturas.push(b.style.height) }).observe(document, { subtree: true, attributes: true, childList: true });")
+    abrir(pagina, "progreso.html", espiar=False)
+    datos = pagina.locator("#grafica-barras-semana .bar-fill-body:not(.bar-fill-body--base)").first.evaluate("e => [getComputedStyle(e).transitionProperty, getComputedStyle(e).transitionDuration]")
+    assert datos == ["height", "0.42s"]                                                                   # --m-lento
+    assert pagina.evaluate("window.__alturas")[0] == "0px"                                                # empieza en cero…
+    assert pagina.locator("#grafica-barras-semana .bar-fill-body:not(.bar-fill-body--base)").first.evaluate("e => parseFloat(getComputedStyle(e).height)") > 10   # …y termina con su altura
+
+
+def test_con_movimiento_reducido_las_barras_de_la_semana_no_se_animan(pagina):
+    pagina.emulate_media(reduced_motion="reduce")
+    abrir(pagina, "progreso.html", espiar=False)
+    assert pagina.locator("#grafica-barras-semana .bar-fill-body").first.evaluate("e => getComputedStyle(e).transitionDuration") == "0s"
+
+
+def test_el_boton_responde_al_toque_y_se_eleva_apenas_al_pasar_el_raton(pagina):
+    abrir(pagina, "index-ingresado.html", espiar=False)
+    boton = pagina.locator("[data-accion-principal]")
+    boton.hover()
+    pagina.wait_for_timeout(300)
+    assert boton.evaluate("e => getComputedStyle(e).transform") == "matrix(1, 0, 0, 1, 0, -1)"             # elevación sutil: 1 px
+    pagina.mouse.down()
+    try:
+        pagina.wait_for_timeout(300)
+        assert boton.evaluate("e => getComputedStyle(e).transform") == "matrix(0.97, 0, 0, 0.97, 0, 0)"     # scale(.97) gana
+    finally:
+        pagina.mouse.up()
+
+
+def test_el_indicador_de_la_pestana_activa_se_desliza(pagina):
+    abrir(pagina, "avatar.html", espiar=False)
+    pagina.locator(".pestana[aria-selected=true]").wait_for()
+    indicador = pagina.locator(".pestanas__indicador")
+    assert indicador.count() == 1 and indicador.get_attribute("aria-hidden") == "true"
+    assert indicador.evaluate("e => [getComputedStyle(e).transitionProperty, getComputedStyle(e).transitionDuration]") == ["transform, width", "0.22s, 0.22s"]   # --m-base
+    antes = indicador.evaluate("e => e.getBoundingClientRect().left")
+    pagina.get_by_role("tab", name="Misiones").click()
+    pagina.wait_for_timeout(400)
+    despues = indicador.evaluate("e => e.getBoundingClientRect().left")
+    activa = pagina.locator(".pestana[aria-selected=true]").evaluate("e => e.getBoundingClientRect().left")
+    assert despues > antes and abs(despues - activa) < 1.5                                                 # termina justo debajo de la pestaña activa
+
+
+def test_con_movimiento_reducido_el_indicador_de_pestanas_salta_de_una_vez(pagina):
+    pagina.emulate_media(reduced_motion="reduce")
+    abrir(pagina, "avatar.html", espiar=False)
+    assert pagina.locator(".pestanas__indicador").evaluate("e => getComputedStyle(e).transitionDuration") == "0s, 0s"

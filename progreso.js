@@ -19,6 +19,7 @@
   const $ = (id) => document.getElementById(id);
 
   // ---------- Comidas de la semana: barras simples; la fruta lleva su ícono, no solo color ----------
+  let barrasYaCrecieron = false;                                                           // crecen desde cero una sola vez
   function dibujarSemanaComidas(semana) {
     const caja = $("semana-comidas-caja");
     if (!semana) { caja.hidden = true; return; }
@@ -26,6 +27,7 @@
     const lista = $("grafica-barras-semana");
     lista.replaceChildren();
     const maximo = Math.max(3, ...semana.map((d) => d.comidas));
+    const alturas = [];
     semana.forEach((d) => {
       const sinBarra = d.comidas === 0 || d.futuro;                                       // un día con 0 comidas no lleva barra: solo la línea base
       // la barra es un % de la zona de barras (alto fijo en el CSS): la columna completa nunca pasa del alto del gráfico
@@ -35,7 +37,8 @@
       if (d.esHoy) columna.setAttribute("aria-current", "date");
       const barra = UI.crear("div", "bar-fill-body" + (sinBarra ? " bar-fill-body--base" : ""));
       barra.setAttribute("aria-hidden", "true");
-      barra.style.height = altura;
+      barra.style.height = barrasYaCrecieron ? altura : "0px";
+      if (!barrasYaCrecieron) alturas.push([barra, altura]);
       const numero = UI.crear("span", "bar-numero cifra", d.futuro ? "" : String(d.comidas));     // cada barra muestra su número, encima de ella
       numero.setAttribute("aria-hidden", "true");
       barra.appendChild(numero);
@@ -53,6 +56,10 @@
       columna.append(zona, letra, UI.crear("span", "solo-lector", `${d.nombre}${d.esHoy ? " (hoy)" : ""}: ${detalle}`));
       lista.appendChild(columna);
     });
+    if (alturas.length) {                                                                  // dos cuadros después, para que la transición parta de 0
+      barrasYaCrecieron = true;
+      requestAnimationFrame(() => requestAnimationFrame(() => alturas.forEach(([barra, altura]) => { barra.style.height = altura; })));
+    }
   }
 
   // ---------- Ánimo de la semana: las caras del avatar; el nombre siempre escrito ----------

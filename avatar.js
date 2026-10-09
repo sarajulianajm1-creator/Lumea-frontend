@@ -564,9 +564,30 @@ const HEX = /^[0-9a-f]{6}$/i;
         fila.scrollLeft = Math.max(0, pestana.offsetLeft - (fila.clientWidth - pestana.offsetWidth) / 2);
       }
     });
+    moverIndicador($(`pestana-${nombre}`), true);
     if (nombre === "armario" && estado.armarioSucio) dibujarArmario();
     if (nombre === "como-me-veo" && estado.avatar && !estado.rasgosDibujados) dibujarRasgos();
     if (escribirHash && location.hash !== `#${nombre}`) history.replaceState(null, "", `#${nombre}`);
+  }
+
+  // El indicador de la pestaña activa: una píldora (aria-hidden) que se desliza hasta ella. La primera vez, y al cambiar el tamaño de la
+  // ventana, se coloca sin deslizarse. Si la pestaña no se ve todavía (ancho 0), no se pone y la pestaña activa lleva su propio fondo.
+  function moverIndicador(pestana, animar) {
+    const fila = pestana.parentElement;
+    if (!pestana.offsetWidth) return;
+    let indicador = fila.querySelector(".pestanas__indicador");
+    const nuevo = !indicador;
+    if (nuevo) {
+      indicador = document.createElement("span");
+      indicador.className = "pestanas__indicador";
+      indicador.setAttribute("aria-hidden", "true");
+      fila.prepend(indicador);
+    }
+    if (nuevo || !animar) indicador.style.transition = "none";
+    indicador.style.width = `${pestana.offsetWidth}px`;
+    indicador.style.transform = `translateX(${pestana.offsetLeft}px)`;
+    if (nuevo || !animar) { indicador.getBoundingClientRect(); indicador.style.transition = ""; }
+    fila.dataset.indicador = "1";
   }
 
   function pestanaDelHash() {
@@ -586,6 +607,7 @@ const HEX = /^[0-9a-f]{6}$/i;
       e.preventDefault();
       seleccionar(PESTANAS[destino], { enfocar: true });
     });
+    window.addEventListener("resize", () => { const activa = document.querySelector(".pestana[aria-selected='true']"); if (activa) moverIndicador(activa, false); });
     window.addEventListener("hashchange", () => { const n = pestanaDelHash(); if (n) seleccionar(n, { escribirHash: false }); });
   }
 

@@ -282,7 +282,7 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .bar-col-item { display: flex; flex-direction: column; align-items: center; gap: var(--e-2); flex: 1; min-width: 0; text-align: center; }
 .bar-zona { box-sizing: border-box; height: var(--zona-barras); padding-top: calc(var(--t-s) * 1.25 + var(--e-1)); width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
 .bar-col-item--futuro { opacity: .55; }
-.bar-fill-body { position: relative; width: 26px; background: var(--c-comida); border-radius: var(--r-control) var(--r-control) 0 0; }
+.bar-fill-body { position: relative; width: 26px; background: var(--c-comida); border-radius: var(--r-control) var(--r-control) 0 0; transition: height var(--m-lento) var(--m-salida); }   /* crece desde cero, una vez */
 .bar-col-item.today .bar-fill-body { background: var(--c-marca); }
 .bar-numero { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: var(--e-1); min-height: 1.25em; font-size: var(--t-s); font-weight: var(--t-peso-fuerte); line-height: 1.25; color: var(--c-tinta); }
 .bar-fill-body--base { width: 100%; max-width: 40px; border-radius: 0; background: var(--c-borde-fuerte); }          /* 0 comidas: solo la línea base */
@@ -415,8 +415,17 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
   from { opacity: 0; transform: translateY(var(--e-2)); }
   to   { opacity: 1; transform: none; }
 }
-.contenido { animation: entrada var(--m-base) var(--m-salida) both; }
-@media (prefers-reduced-motion: reduce) { .contenido { animation: none; } }
+/* Una sola entrada escalonada (P10): cada tarjeta (y el encabezado) aparece con la misma entrada, 50 ms después de la anterior.
+   El orden (--orden: 0, 1, 2…) lo pone menu-privado.js al cargar; lo que aparece más tarde entra con su orden o sin espera. */
+:root { --m-escalon: 50ms; }                       /* 40 a 60 ms entre una y otra */
+.contenido :is(header, .tarjeta, .inicio__franja, .camara > section, .avatar-panel) {
+  animation: entrada var(--m-base) var(--m-salida) both;
+  animation-delay: calc(var(--orden, 0) * var(--m-escalon));
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --m-escalon: 0ms; }
+  .contenido :is(header, .tarjeta, .inicio__franja, .camara > section, .avatar-panel) { animation: none; }
+}
 
 /* Al cambiar de paleta (o de modo), el fondo y el texto cambian de color en 220 ms. La transición va SOLO en
    estas dos propiedades y SOLO en la página: no hay ningún «transition: all» ni se mueve cada elemento. */
@@ -435,6 +444,9 @@ html, body { transition: background-color var(--m-base) var(--m-salida), color v
 .boton:active, .pestana:active, .animo-cara:active, .selector__opcion:active, .opciones__boton:active,
 .prenda__mosaico:active, .rasgo__opcion:active, .nav-app__enlace:active, .nav-app__salir:active { transition: none; }
 .animo-cara:active, .selector__opcion:active, .opciones__boton:active, .rasgo__opcion:active { transform: scale(.97); }
+/* Computador (con ratón): el botón se eleva apenas al pasar el cursor; al presionar, scale(.97) gana (va después, con la misma fuerza) */
+@media (hover: hover) and (pointer: fine) { .boton:hover:not(:disabled) { transform: translateY(-1px); } }
+.boton:active:not(:disabled) { transform: scale(.97); }
 
 /* Los párrafos no pasan de unos 70 caracteres por línea (en el computador) */
 .contenido__subtitulo, .inicio__nota, .panel-pestana__nota { max-width: 70ch; }
