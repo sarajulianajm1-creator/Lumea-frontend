@@ -128,3 +128,8 @@ html:not([data-piel="sara"]) .auth-container::before {
   mask: url("../img/hojas-mascara.png") center / cover no-repeat;
   pointer-events: none;
 }
+
+/* Dos botones seguidos (p. ej. «Volver al Inicio» y «Crear Cuenta» en Términos): en el celular se apilaban pegados y se tocaban.
+   Con espacio entre sí; los textos no cambian. */
+.text-center:has(> .btn + .btn) { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--e-3); }
+.text-center:has(> .btn + .btn) > .btn { margin: 0 !important; }
