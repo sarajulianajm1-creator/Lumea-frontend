@@ -264,6 +264,9 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 
 /* El visor: el video, la foto quieta mientras la IA la analiza y las esquinas de enfoque */
 .camera-video-stream { width: 100%; height: 100%; object-fit: cover; }
+.camera-video-stream[hidden] { display: none; }
+/* Respaldo: Safari no dibuja su botón de reproducir encima del visor */
+.camera-video-stream::-webkit-media-controls-start-playback-button { display: none !important; -webkit-appearance: none; }
 .camera-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* Visor vacío (de ejemplo-camara.html): encima del video apagado, con el botón para encenderlo */
 .visor__vacio { position: absolute; inset: 0; align-content: center; }

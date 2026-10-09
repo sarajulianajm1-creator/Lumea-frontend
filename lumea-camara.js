@@ -50,6 +50,8 @@ const MOSTRAR_CALORIAS = true;
 
   let stream = null, ocupado = false, catalogo = null;
   const video = $("webcam");
+  // Safari dibuja su botón de reproducir sobre un <video> sin imagen: el video se oculta hasta que empieza a mostrarse.
+  if (video) video.addEventListener("playing", () => { video.hidden = false; });
   const canvas = document.createElement("canvas");            // invisible: solo para capturar
   const inputArchivo = Object.assign(document.createElement("input"),
     { type: "file", accept: "image/*", hidden: true });
@@ -108,7 +110,7 @@ const MOSTRAR_CALORIAS = true;
   function apagar() {
     if (stream) stream.getTracks().forEach((t) => t.stop());
     stream = null;
-    if (video) video.srcObject = null;
+    if (video) { video.srcObject = null; video.hidden = true; }
     actualizarBotones();
   }
 

@@ -427,6 +427,21 @@ def test_el_visor_vacio_se_esconde_con_la_camara_encendida(pagina):
     assert pagina.locator("#visor-vacio").is_visible()
 
 
+def test_el_video_esta_oculto_sin_camara_y_solo_se_muestra_al_reproducir(pagina):
+    """Safari dibuja su botón de reproducir sobre un <video> sin imagen: no puede verse con la cámara apagada."""
+    pagina.add_init_script("""navigator.mediaDevices.getUserMedia = async () => {
+        const c = Object.assign(document.createElement('canvas'), { width: 64, height: 48 });
+        c.getContext('2d').fillRect(0, 0, 64, 48); return c.captureStream(5); };""")
+    abrir(pagina)
+    assert pagina.locator("#webcam").is_hidden()
+    assert "La cámara está apagada" in pagina.locator("#visor-vacio").inner_text()          # el aviso se ve completo
+    pagina.get_by_role("button", name="Encender cámara").click()
+    pagina.locator("#webcam").wait_for(state="visible")
+    pagina.get_by_role("button", name="Apagar").click()
+    assert pagina.locator("#webcam").is_hidden()
+    assert pagina.evaluate("document.getElementById('webcam').srcObject") is None
+
+
 def test_lumea_cree_que_es_abre_la_tarjeta_con_la_ia_segura_y_no_cuando_duda(pagina, backend, foto):
     abrir(pagina)
     assert not pagina.get_by_text("Lumea cree que es…").is_visible()                  # antes de la foto solo está la invitación
