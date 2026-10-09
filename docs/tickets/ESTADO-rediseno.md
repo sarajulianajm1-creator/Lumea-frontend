@@ -418,7 +418,25 @@ Misión: `docs/tickets/MISION-pulido.md` (rama `rediseno`, 9 de oct de 2026). Pl
 - **Textos de peso, altura, 14 años e IMC en el frontend** (no se cambiaron): solo `guialumea.html` línea 201, «sin presiones de peso ni comparaciones con otros» (habla de presión, no de pedir el peso). No hay «14 años» ni «IMC».
 - **Avatar: la vitrina que tapa la lista de compañeros** se resuelve con el layout nuevo de P2.
 
-### Textos nuevos para que Isabella revise
+### P2 · La persona (DiceBear voxel-art) y el armario por etapas: LISTA (9 oct 2026)
+
+- **Todo DiceBear se dibuja en el navegador** (`vendor/dicebear/`, commit aparte): `persona.js` (módulo ES, `dibujarPersona`, semilla fija `lumea`, fondo transparente, probabilidades en 100 o 0) y `companero.js` (gaze, a partir de los parámetros de la URL que manda el backend). Cada `<img>` lleva su dirección en `data-fuente` y el dibujo en `src` (dirección `data:`). `test_sin_dicebear.py`: ninguna página privada pide nada fuera de la máquina. Un servidor sencillo puede cortar alguna de las ~40 peticiones de módulos que llegan juntas (pasó en las pruebas): por eso hay un reintento al cargar el núcleo; **si en la demo la persona no sale a la primera, recargar**.
+- **Avatar** (`avatar.html`, `avatar.js`, `estilos/avatar.css`): la vitrina sticky lleva la persona grande y animada (`slow`) con el compañero pequeño y quieto, la etapa y «Te faltan 35 semillas para la etapa 5: Camisa de cuadros». **Todo lo demás va en cinco pestañas en la columna derecha** (Mi armario, Cómo me veo, Misiones, Calcomanías, Tu compañero; anclas `#armario`, `#como-me-veo`, `#misiones`, `#calcomanias`, `#companero`), así que nada queda debajo del `sticky`. Abre en «Mi armario».
+- **Mi armario:** mosaicos con la persona (con sus rasgos) puesta cada prenda; bloqueados atenuados, con candado, «Etapa N» y `aria-disabled`; tocar uno abierto lo pone, tocar el puesto lo quita; la vitrina cambia al instante.
+- **Cómo me veo:** radios con `<label>` por rasgo (muestras redondas para los colores, mosaicos dibujados para peinado, ojos y boca, chips para mejillas y barba con «Ninguno»/«Ninguna» → `null`). «Guardar cómo me veo» → `POST /avatar/rasgos` solo con las 8 claves permitidas.
+- **Celebración:** «Prenda nueva: Overol de jardín» con la persona puesta esa prenda (pide `GET /avatar` para los rasgos).
+- **Respuestas simuladas:** `objetos_avatar.json` y `rasgos_disponibles.json` salen de la configuración REAL del backend (`gamificacion_config` y `gamificacion.rasgos_disponibles()`, importadas en solo lectura); `avatar_estado()` en `conftest.py` arma el cuerpo del contrato. **El proceso que corre en el 5002 (arrancó a las 8:33) es el backend viejo**: sin `persona` ni `/dato-del-dia`. Hay que reiniciarlo para ver P2 con datos reales.
+- **Cambiaron, y por qué:** `test_avatar.py` (el armario, la vitrina y las pestañas se reescribieron: ya no hay imágenes por capas ni listas de ropa/accesorios; los de compañeros abren `#companero`); los tests de caras (`test_emociones`, `test_caras_checkin`, `test_progreso`, `test_selector_colores`) leen `data-fuente` en vez de `src`; `test_vocabulario` abre `#misiones`.
+
+### Textos nuevos (P2) para que Isabella revise
+
+- Armario: «Mi armario» · «Toca una prenda para ponértela y toca la que llevas para quitártela. Lo que se abre al llegar a una etapa nueva es tuyo para siempre.» · «Etapa N» · «Disponible» · «Puesto»
+- Cómo me veo: «Cómo me veo» · «Elige cómo eres. Todo está abierto desde el primer día y lo puedes cambiar cuando quieras.» · «Guardar cómo me veo» · «Guardamos cómo te ves.» · «No se pudo guardar cómo te ves.» · los nombres de los rasgos y sus opciones son del backend
+- Vitrina: «Te faltan 35 semillas para la etapa 5: Camisa de cuadros»
+- Pestañas: «Mi armario» · «Cómo me veo» · «Tu compañero»
+- Celebración: «Prenda nueva: Overol de jardín» (también para los accesorios)
+
+### Textos nuevos (P1) para que Isabella revise
 
 - Crear cuenta: «Lumea es para personas de 11 años en adelante.» · «Mi madre, padre o acudiente sabe que uso Lumea» (literal de Isabella) · «Marca la casilla para continuar.»
 
