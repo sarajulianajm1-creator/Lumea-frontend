@@ -111,20 +111,21 @@
           </div>
         </div>
 
-        <!-- Fila de Datos Biométricos (Edad, Género, Altura, Peso) -->
+        <!-- Fila de datos: edad y género (el peso y la altura ya no se piden) -->
         <div class="row g-3 mb-3">
-          
+
           <!-- Edad -->
-          <div class="col-6 col-md-3">
+          <div class="col-6">
             <label for="edad" class="form-label fw-semibold small text-secondary">Edad</label>
             <div class="input-group">
-              <input type="number" class="form-control" id="edad" name="edad" placeholder="20" min="14" max="120" required />
+              <input type="number" class="form-control" id="edad" name="edad" placeholder="20" min="11" max="120" required aria-describedby="edad-error" />
               <span class="input-group-text bg-light text-secondary small">años</span>
             </div>
+            <p id="edad-error" class="small text-danger mt-1 mb-0" hidden></p>
           </div>
 
           <!-- Género -->
-          <div class="col-6 col-md-3">
+          <div class="col-6">
             <label for="genero" class="form-label fw-semibold small text-secondary">Género</label>
             <select class="form-select" id="genero" name="genero" required>
               <option value="" disabled selected>Selecciona</option>
@@ -134,24 +135,13 @@
             </select>
           </div>
 
-          <!-- Altura -->
-          <div class="col-6 col-md-3">
-            <label for="altura" class="form-label fw-semibold small text-secondary">Altura (cm)</label>
-            <div class="input-group">
-              <input type="number" class="form-control" id="altura" name="altura" placeholder="170" min="100" max="250" required />
-              <span class="input-group-text bg-light text-secondary small">cm</span>
-            </div>
-          </div>
+        </div>
 
-          <!-- Peso -->
-          <div class="col-6 col-md-3">
-            <label for="peso" class="form-label fw-semibold small text-secondary">Peso (kg)</label>
-            <div class="input-group">
-              <input type="number" step="0.1" class="form-control" id="peso" name="peso" placeholder="65.0" min="30" max="300" required />
-              <span class="input-group-text bg-light text-secondary small">kg</span>
-            </div>
-          </div>
-
+        <!-- Menores de 18: aviso al acudiente (aparece solo si la edad es menor de 18) -->
+        <div id="acudiente-bloque" class="form-check mb-3 small" hidden>
+          <input class="form-check-input" type="checkbox" id="acudiente" name="acudiente_sabe" aria-describedby="acudiente-error" />
+          <label class="form-check-label text-secondary" for="acudiente">Mi madre, padre o acudiente sabe que uso Lumea</label>
+          <p id="acudiente-error" class="small text-danger mt-1 mb-0" hidden></p>
         </div>
 
         <!-- Selección de Objetivo (Exactamente 5 opciones como botones seleccionables) -->
@@ -254,6 +244,39 @@
       alertFeedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
+    // Edad mínima y casilla para menores de 18
+    const EDAD_MINIMA = 11, MAYORIA_DE_EDAD = 18;
+    const MENSAJE_EDAD = 'Lumea es para personas de 11 años en adelante.';
+    const MENSAJE_ACUDIENTE = 'Marca la casilla para continuar.';
+    const edadInput = document.getElementById('edad');
+    const edadError = document.getElementById('edad-error');
+    const acudiente = document.getElementById('acudiente');
+    const acudienteBloque = document.getElementById('acudiente-bloque');
+    const acudienteError = document.getElementById('acudiente-error');
+
+    function mostrarError(campo, caja, mensaje) {
+      caja.textContent = mensaje;
+      caja.hidden = !mensaje;
+      if (mensaje) campo.setAttribute('aria-invalid', 'true'); else campo.removeAttribute('aria-invalid');
+    }
+
+    function revisarEdad() {
+      const edad = parseInt(edadInput.value, 10);
+      const muyJoven = edadInput.value !== '' && edad < EDAD_MINIMA;
+      edadInput.setCustomValidity(muyJoven ? MENSAJE_EDAD : '');
+      mostrarError(edadInput, edadError, muyJoven ? MENSAJE_EDAD : '');
+      const menor = edad >= EDAD_MINIMA && edad < MAYORIA_DE_EDAD;
+      acudienteBloque.hidden = !menor;
+      acudiente.required = menor;                       // obligatoria solo cuando se muestra
+      if (!menor) { acudiente.checked = false; mostrarError(acudiente, acudienteError, ''); }
+    }
+    edadInput.addEventListener('input', revisarEdad);
+    edadInput.addEventListener('invalid', () => {
+      if (edadInput.value !== '' && edadInput.validity.customError) mostrarError(edadInput, edadError, MENSAJE_EDAD);
+    });
+    acudiente.addEventListener('invalid', () => mostrarError(acudiente, acudienteError, MENSAJE_ACUDIENTE));
+    acudiente.addEventListener('change', () => { if (acudiente.checked) mostrarError(acudiente, acudienteError, ''); });
+
     // 2. Escuchamos el evento 'submit' del formulario
     registerForm.addEventListener('submit', async function (event) {
       // Evitamos que la página se recargue (comportamiento por defecto de HTML)
@@ -276,11 +299,11 @@
         email: document.getElementById('email').value.trim(),
         edad: parseInt(document.getElementById('edad').value, 10),
         genero: document.getElementById('genero').value,
-        peso: parseFloat(document.getElementById('peso').value),
-        altura: parseFloat(document.getElementById('altura').value),
         objetivo: objetivoSeleccionado.value,
         "contraseña": document.getElementById('contrasena').value
       };
+      // Solo menores de 18: el aviso al acudiente (con 18 o más, la casilla no se ve y no se envía)
+      if (datosUsuario.edad < 18 && acudiente.checked) datosUsuario.acudiente_sabe = true;
 
       // 4. Cambiamos el estado del botón a "Cargando..." para evitar dobles clics
       const textoOriginalBoton = btnSubmit.innerHTML;

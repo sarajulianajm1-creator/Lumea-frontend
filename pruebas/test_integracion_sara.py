@@ -92,8 +92,7 @@ def test_crear_cuenta_manda_la_contrasena_a_la_api_y_entra(pagina, backend):
     pagina.fill("#email", "ana@lumea.test")
     pagina.fill("#edad", "15")
     pagina.select_option("#genero", "otro")
-    pagina.fill("#peso", "55")
-    pagina.fill("#altura", "165")
+    pagina.locator("#acudiente").check()
     pagina.fill("#contrasena", "clave-de-prueba")
     pagina.locator("input[name=objetivo]").first.check(force=True)
     pagina.locator("#terminosCheck").check()
@@ -108,8 +107,9 @@ def test_el_error_del_servidor_en_el_registro_se_escribe_como_texto(pagina, back
     backend.poner("POST", "/perfil", {"success": False, "error": "<img src=x onerror=window.__roto=1>"}, estado=400)
     pagina.add_init_script("localStorage.clear()")
     pagina.goto(f"{pagina.servidor}/crear-cuenta.html")
-    for campo, valor in (("nombre", "Ana"), ("email", "ana@lumea.test"), ("edad", "15"), ("peso", "55"), ("altura", "165"), ("contrasena", "clave-de-prueba")):
+    for campo, valor in (("nombre", "Ana"), ("email", "ana@lumea.test"), ("edad", "15"), ("contrasena", "clave-de-prueba")):
         pagina.fill(f"#{campo}", valor)
+    pagina.locator("#acudiente").check()
     pagina.select_option("#genero", "otro")
     pagina.locator("input[name=objetivo]").first.check(force=True)
     pagina.locator("#terminosCheck").check()
