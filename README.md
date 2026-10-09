@@ -89,15 +89,12 @@ backend, solo en `api.js`.
 
 ## Créditos del equipo
 
-> **[Isabella: confirma los roles]**
+Son los mismos del README del backend:
 
-Salen de `git shortlog -sn` y de los ESTADO:
-
-- **Isabella** (cuenta de GitHub `Fer-geniee`, 150 commits): el rediseño y el sistema de diseño, las paletas, el Camino del cuidado, el
-  pulido final, los textos y las decisiones de producto.
-- **Sara**: el diseño original de las pantallas y de sus hojas y destellos (el repositorio está en su cuenta de GitHub).
-- **Laura Jiménez** (4 commits): el proyecto inicial, la conexión del frontend con el backend, el login y las pantallas de la persona
-  ya registrada.
+- **Isabella Fernanda Obando Ordóñez**: líder técnica y de producto, arquitecta de software. Backend (Python, Flask, MySQL), modelos de IA y datos nutricionales, gamificación «Camino del cuidado», consejos y dirección del rediseño. En este repositorio sus commits salen con su cuenta de GitHub, `Fer-geniee`.
+- **Sara Jiménez**: desarrolladora frontend y diseñadora UI (páginas, estilos y primera interfaz web). Los 4 commits de este repositorio que aparecen a nombre de «Laura Jiménez» son suyos: vienen de su correo y su cuenta de GitHub, pero tenía mal configurado su nombre en git.
+- **Laura Narváez**: diseñadora UX/UI y redactora de contenidos (diseños en Figma, logo, paleta original, textos de la app, términos y condiciones y «Conócenos»). No tiene commits porque su trabajo fue en Figma y en los textos.
+- **Claude (Anthropic)**: consultora (planeación, revisión y acompañamiento). **Claude Code**: asistente de programación bajo la dirección de Isabella; cada aporte está registrado en la bitácora de IA.
 
 ## Uso de IA
 
