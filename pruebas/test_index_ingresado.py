@@ -367,3 +367,31 @@ def test_si_no_llegan_ni_el_historial_ni_el_animo_la_franja_no_se_dibuja(pagina,
     backend.poner("GET", "/estado-animo", {"error": "x"}, estado=500)
     abrir(pagina, backend)
     assert not pagina.locator("#franja-semana").is_visible()
+
+
+# ---------- P9: «Etapa N» en el celular y «Tomar foto ahora» ----------
+
+def test_en_el_celular_la_pastilla_de_la_etapa_no_se_parte_y_va_debajo_de_la_fecha(pagina, backend):
+    pagina.set_viewport_size({"width": 390, "height": 844})
+    abrir(pagina, backend)
+    chip = pagina.locator(".inicio__saludo > .chip")
+    assert chip.evaluate("e => getComputedStyle(e).whiteSpace") == "nowrap"
+    assert chip.bounding_box()["height"] < 36                                       # una sola línea (antes se partía en dos)
+    fecha = pagina.locator(".inicio__fecha").bounding_box()
+    assert chip.bounding_box()["y"] >= fecha["y"] + fecha["height"] - 1             # debajo de la fecha
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= 390
+
+
+def test_en_el_computador_la_pastilla_de_la_etapa_sigue_a_la_derecha_del_saludo(pagina, backend):
+    pagina.set_viewport_size({"width": 1280, "height": 800})
+    abrir(pagina, backend)
+    chip = pagina.locator(".inicio__saludo > .chip").bounding_box()
+    titulo = pagina.locator("main h1").bounding_box()
+    assert chip["x"] > titulo["x"] + titulo["width"] and abs(chip["y"] - titulo["y"]) < 60
+
+
+def test_el_atajo_de_la_camara_se_llama_tomar_foto_ahora(pagina, backend):
+    abrir(pagina, backend)
+    etiqueta = pagina.locator("label.foto-directa")
+    assert etiqueta.inner_text().strip() == "Tomar foto ahora"
+    assert pagina.locator("[data-accion-principal]").inner_text().strip() == "Registrar comida"      # sigue siendo el único botón principal
