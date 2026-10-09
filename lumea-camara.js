@@ -243,6 +243,7 @@ const MOSTRAR_CALORIAS = true;
         b.className = "opciones__boton";
         b.textContent = o.nombre;
         b.addEventListener("click", () => confirmar(o.codigo));
+        b.style.setProperty("--i", String(caja.querySelectorAll(".opciones__boton").length));       // las opciones entran escalonadas
         caja.appendChild(b);
       });
     });
@@ -290,7 +291,12 @@ const MOSTRAR_CALORIAS = true;
     poner("backend-alimento", opcionesDuda ? "¿Cuál de estos es?" : (r.alimento_app || r.alimento || "No identificado"));
     // «IA segura» o «IA duda»: el CSS pinta el contenedor según este estado (la duda va en el rol «duda»)
     const resultado = $("resultado");
-    if (resultado) resultado.dataset.estado = r.seleccion_manual ? "duda" : "segura";
+    if (resultado) {
+      resultado.classList.remove("resultado--entra");              // el resultado aparece por partes (CSS): se reinicia con cada respuesta
+      void resultado.offsetWidth;
+      resultado.classList.add("resultado--entra");
+      resultado.dataset.estado = r.seleccion_manual ? "duda" : "segura";
+    }
     // La certeza, en palabras y en número (y el medidor la acompaña, no la reemplaza)
     const medidor = $("backend-medidor");
     if (medidor) {
@@ -332,10 +338,17 @@ const MOSTRAR_CALORIAS = true;
   }
 
   // ---------- Acciones ----------
+  // La línea de luz sobre la foto: solo mientras dura la espera del backend (data-mirando en el visor)
+  function mirando(si) {
+    const visor = document.querySelector(".visor");
+    if (visor) visor.toggleAttribute("data-mirando", si);
+  }
+
   async function analizar(archivo) {
     ocupado = true; actualizarBotones();
     mostrarFoto(archivo);
-    poner("backend-estado", "Analizando…");
+    mirando(true);
+    poner("backend-estado", "Mirando tu plato…");
     try {
       const { ok, cuerpo } = await predecirComida(archivo, email);   // api.js
       if (!ok || cuerpo.error) throw new Error(cuerpo.error || "el servidor respondió con error");
@@ -344,6 +357,7 @@ const MOSTRAR_CALORIAS = true;
     } catch (e) {
       poner("backend-estado", `No se pudo analizar: ${e.message}. ¿Está corriendo app.py?`);
     } finally {
+      mirando(false);
       ocupado = false; actualizarBotones();
     }
   }

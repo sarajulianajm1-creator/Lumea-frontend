@@ -582,6 +582,7 @@ def test_cortar_y_abrir_el_dato_no_lleva_animacion(pagina, backend, foto):
         d = pagina.locator(sel).evaluate("e => { const c = getComputedStyle(e); return [c.transitionDuration, c.animationName] }")
         assert d == ["0s", "none"], (sel, d)
     # nada se anima al abrirlo: se anota todo transitionrun y animationstart mientras se abre
+    pagina.wait_for_timeout(700)                                                         # que termine la entrada del resultado (P11) antes de mirar
     pagina.evaluate("window.__mov = []; ['transitionrun', 'animationstart'].forEach(t => document.addEventListener(t, e => window.__mov.push(t + ' ' + e.target.id), true))")
     pagina.get_by_role("button", name="Leer más").click()
     assert pagina.evaluate("window.__mov") == []

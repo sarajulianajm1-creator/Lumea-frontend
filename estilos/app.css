@@ -473,3 +473,43 @@ html, body { transition: background-color var(--m-base) var(--m-salida), color v
 .card-bienvenida-calida .bi { color: var(--c-logro-tinta); }
 .inicio__confirmacion { padding: var(--e-2) var(--e-3); border-radius: var(--r-control); background: var(--c-logro-suave); color: var(--c-tinta); }
 .inicio__confirmacion[hidden] { display: none; }
+
+
+/* ---------- Registrar: el momento de la verdad (P11) ----------
+   Mientras espera al backend, una línea de luz color marca recorre la foto de arriba abajo (solo mientras dura la espera) y dice
+   «Mirando tu plato…». Cuando llega la respuesta, el resultado aparece por partes, 60 ms una tras otra (--m-parte): el nombre, la
+   certeza y las kcal (sin conteo animado: no destacamos las calorías), los sellos y el consejo. Los sellos entran con fundido y escala de
+   0,96 a 1 en --m-base, SIN rebote: Lumea no castiga. Si la IA duda, las opciones entran escalonadas. Con prefers-reduced-motion todo es instantáneo. */
+:root { --m-parte: 60ms; }
+.visor__luz, .visor__mirando { display: none; }
+.visor[data-mirando] .visor__luz {
+  display: block; position: absolute; left: 0; right: 0; top: 0; height: 3px; z-index: 2; pointer-events: none;
+  background: var(--c-marca);
+  animation: linea-de-luz calc(var(--m-lento) * 4) var(--m-salida) infinite;
+}
+.visor[data-mirando] .visor__mirando {
+  display: block; position: absolute; left: 50%; bottom: var(--e-4); z-index: 2; margin: 0; transform: translateX(-50%);
+  padding: var(--e-1) var(--e-4); border-radius: var(--r-pildora); white-space: nowrap;
+  background: var(--c-superficie); color: var(--c-tinta); font-size: var(--t-s); font-weight: var(--t-peso-medio);
+}
+@keyframes linea-de-luz { from { top: 0; } to { top: calc(100% - 3px); } }
+
+@keyframes resultado-parte { from { opacity: 0; transform: translateY(var(--e-1)); } to { opacity: 1; transform: none; } }
+@keyframes sello-entra { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+.resultado--entra .etiqueta__pregunta, .resultado--entra .etiqueta__nombre,
+.resultado--entra .etiqueta__certeza, .resultado--entra #backend-energia,
+.resultado--entra .resultado__rotulo, .resultado--entra #backend-opciones > *,
+.resultado--entra #backend-mensaje, .resultado--entra #backend-consejos, .resultado--entra #consejo-dato, .resultado--entra #backend-logros {
+  animation: resultado-parte var(--m-base) var(--m-salida) both;
+  animation-delay: calc(var(--paso, 0) * var(--m-parte));
+}
+.resultado--entra .etiqueta__certeza, .resultado--entra #backend-energia { --paso: 1; }          /* nombre (0) · certeza y kcal (1) · sellos (2) · consejo (3) */
+.resultado--entra .resultado__rotulo { --paso: 2; }
+.resultado--entra #backend-mensaje, .resultado--entra #backend-consejos, .resultado--entra #consejo-dato, .resultado--entra #backend-logros { --paso: 3; }
+.resultado--entra #backend-opciones > * { --paso: calc(2 + var(--i, 0)); }
+.resultado--entra #backend-sellos .sello { animation: sello-entra var(--m-base) var(--m-salida) both; animation-delay: calc(2 * var(--m-parte)); }
+@media (prefers-reduced-motion: reduce) {
+  :root { --m-parte: 0ms; }
+  .visor[data-mirando] .visor__luz { animation: none; display: none; }
+  .resultado--entra * { animation: none !important; }
+}
