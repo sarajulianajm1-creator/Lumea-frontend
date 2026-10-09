@@ -25,6 +25,7 @@ body {
 }
 
 h1, h2, h3 {
+  font-family: var(--f-titulos, var(--f-familia));
   margin: 0;
   line-height: var(--t-interlineado-titulo);
   font-weight: var(--t-peso-fuerte);

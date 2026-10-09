@@ -33,6 +33,12 @@ h1, h2, h3 {
   letter-spacing: -0.01em;
   text-wrap: balance;                 /* títulos sin una palabra huérfana */
 }
+/* Enchufe de tipografía (Isabella): si define --f-titulos en tokens.css, los títulos cambian de letra; si no, todo se ve igual. */
+h1, h2, h3,
+.contenido__titulo, .tarjeta__titulo, .inicio__titulo, .inicio__rotulo,
+.panel-pestana__titulo, .armario__titulo, .consejo__titulo, .celebracion__titulo {
+  font-family: var(--f-titulos, var(--f-familia));
+}
 p { margin: 0; text-wrap: pretty; }
 
 /* Foco visible SOLO cuando se navega con teclado */
@@ -206,6 +212,11 @@ p { margin: 0; text-wrap: pretty; }
   /* Sin transición (R8): la barra aparece llena hasta donde va; nada se mueve solo al abrir la pantalla. */
 }
 .numero { font-variant-numeric: tabular-nums; }        /* cifras que no "bailan" */
+/* Enchufe de las cifras (Isabella): calorías, gramos, semillas, etapa y racha. Sin --f-cifras se ven como el resto. */
+.cifra {
+  font-family: var(--f-cifras, var(--f-familia));
+  font-variant-numeric: tabular-nums lining-nums;
+}
 
 /* ---------- 7. Selector de ánimo ---------- */
 .animo { display: flex; gap: var(--e-2); flex-wrap: wrap; }

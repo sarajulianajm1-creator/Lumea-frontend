@@ -56,7 +56,7 @@
           <h1 class="contenido__titulo">Hola, <span class="lumea-bind-nombre">Cargando...</span></h1>
           <time class="inicio__fecha lumea-bind-fecha">Cargando fecha...</time>
         </div>
-        <span class="chip chip--logro lumea-bind-nivel">Etapa --</span>
+        <span class="chip chip--logro lumea-bind-nivel cifra">Etapa --</span>
       </header>
 
       <!-- Bienvenida cálida cuando vuelve después de días (solo si el backend manda mensaje_regreso) -->
@@ -82,7 +82,7 @@
         <!-- TU DÍA: las comidas de hoy y la única acción principal de la pantalla -->
         <section class="tarjeta inicio__dia" aria-labelledby="titulo-dia">
           <h2 id="titulo-dia" class="inicio__titulo">Tu día</h2>
-          <p class="inicio__cifra"><span class="lumea-bind-comidas-count numero">-- de --</span> comidas</p>
+          <p class="inicio__cifra"><span class="lumea-bind-comidas-count numero cifra">-- de --</span> comidas</p>
           <div class="barra-xp__riel">
             <div class="barra-xp__relleno lumea-bind-comidas-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Comidas registradas hoy" style="width: 0%;"></div>
           </div>
@@ -144,12 +144,12 @@
       <section aria-labelledby="titulo-nivel">
         <h2 id="titulo-nivel" class="solo-lector">Etapa y racha</h2>
         <a href="progreso.html" class="inicio__franja inicio__nivel">
-          <span class="inicio__rotulo lumea-bind-nivel">Etapa --</span>
+          <span class="inicio__rotulo lumea-bind-nivel cifra">Etapa --</span>
           <div class="barra-xp__riel">
             <div class="barra-xp__relleno lumea-bind-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia la siguiente etapa" style="width: 0%;"></div>
           </div>
           <i class="bi bi-chevron-right inicio__flecha" aria-hidden="true"></i>
-          <p class="inicio__nota"><span class="lumea-bind-xp-text">Cargando semillas...</span>. Racha: <span class="lumea-bind-racha">--</span><span class="solo-lector">. Ver mi progreso</span></p>
+          <p class="inicio__nota"><span class="lumea-bind-xp-text">Cargando semillas...</span>. Racha: <span class="lumea-bind-racha cifra">--</span><span class="solo-lector">. Ver mi progreso</span></p>
         </a>
       </section>
 

@@ -142,7 +142,7 @@
 
       const dialogo = crear("dialog", "celebracion__nivel");
       dialogo.setAttribute("aria-labelledby", "celebracion-nivel-titulo");
-      dialogo.appendChild(crear("p", "celebracion__numero", String(g.nivel)));
+      dialogo.appendChild(crear("p", "celebracion__numero cifra", String(g.nivel)));
       const titulo = crear("h2", null, `Llegaste a la etapa ${g.nivel}`);
       titulo.id = "celebracion-nivel-titulo";
       dialogo.appendChild(titulo);

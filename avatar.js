@@ -147,7 +147,7 @@
       const cabeza = crear("div", "mision__cuerpo");
       cabeza.appendChild(crear("h3", "mision__nombre", m.nombre));
       const fila = crear("p", "mision__fila");
-      fila.appendChild(crear("span", "chip chip--mision numero", `+${semillas(m.xp)}`));
+      fila.appendChild(crear("span", "chip chip--mision numero cifra", `+${semillas(m.xp)}`));
       const estadoTexto = crear("span", "mision__estado");
       if (m.cumplida) estadoTexto.appendChild(icono("check"));
       estadoTexto.appendChild(document.createTextNode(m.cumplida ? "Cumplida hoy" : "Para hoy"));
