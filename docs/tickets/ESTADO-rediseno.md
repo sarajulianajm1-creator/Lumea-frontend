@@ -428,6 +428,42 @@ Misión: `docs/tickets/MISION-pulido.md` (rama `rediseno`, 9 de oct de 2026). Pl
 - **Respuestas simuladas:** `objetos_avatar.json` y `rasgos_disponibles.json` salen de la configuración REAL del backend (`gamificacion_config` y `gamificacion.rasgos_disponibles()`, importadas en solo lectura); `avatar_estado()` en `conftest.py` arma el cuerpo del contrato. **El proceso que corre en el 5002 (arrancó a las 8:33) es el backend viejo**: sin `persona` ni `/dato-del-dia`. Hay que reiniciarlo para ver P2 con datos reales.
 - **Cambiaron, y por qué:** `test_avatar.py` (el armario, la vitrina y las pestañas se reescribieron: ya no hay imágenes por capas ni listas de ropa/accesorios; los de compañeros abren `#companero`); los tests de caras (`test_emociones`, `test_caras_checkin`, `test_progreso`, `test_selector_colores`) leen `data-fuente` en vez de `src`; `test_vocabulario` abre `#misiones`.
 
+### P3 · El Inicio nuevo: LISTA (9 oct 2026)
+
+- **El compañero que saluda** (`index-ingresado.html`, `indexx.js`): junto al «Hola, Ana», grande (140 px en computador, 96 en celular), animado `slow`, con la cara del ánimo de hoy (`neutral` si todavía no hay check-in); al guardar el ánimo cambia a esa cara. Decorativo (`alt=""`, `aria-hidden`). **Es lo único que se mueve en Inicio:** las cinco caras del check-in quedan quietas (`data-caras-quietas`; `companero.js` ya no anima la elegida allí; en Ánimo sigue igual). Ver «Cambiaron» abajo.
+- **«¿Sabías que…?» del día:** `obtenerDatoDelDia()` en `api.js`, sin correo ni parámetros; subtítulo con el nombre del alimento; reutiliza «Leer más» (ahora en `leer-mas.js`, compartido con Registrar, que se refactorizó); decorada con emoción y estrella. Si la petición falla o no hay dato, la tarjeta no se dibuja.
+- **«Tu semana», en una franja:** los últimos 7 días con hoy a la derecha (`F.ultimosDias`, `lumea-state.js` → `ultimos_dias`), cada uno con su inicial, cuántas comidas y la cara quieta del último ánimo (un círculo vacío si no hubo check-in). Una lista para el lector de pantalla («martes 29: 0 comidas, sin check-in»); la franja entera lleva a `progreso.html` («Ver mi progreso»). Ningún día va en rojo ni se marca como malo.
+- **Respuesta simulada** `dato_del_dia.json`: el dato REAL del banano de `Backend/datos/datos_curiosos.csv`.
+
+### P4 · La forma decorativa y Mis registros: LISTA (9 oct 2026)
+
+- **`estilos/formas.css`** (`.con-forma`, roles `comida`, `marca`, `logro`, `emocion`, `mision`; formas `sol`, `luna`, `estrella`, `gota`, `hoja`, `flor` en `img/formas/*.svg`, originales y de un solo trazado; sin dibujo con `forced-colors: active`). La de `marca` no tiene `--c-marca-contenedor` en `paletas.css`: usa un `color-mix` (9 %) de `--c-marca` con `--c-marca-suave`, el máximo que cumple 4,5:1 en las 5 paletas y los dos modos (`test_formas.py`) (si Isabella define ese token, se usa solo).
+- **Dónde va:** los bloques de consejo de Registrar («Lo que aporta» comida y hoja; «Para completar tu plato» y «Una idea» marca y flor; «A tener en cuenta» logro y gota, nunca color de alerta), los «¿Sabías que…?» de Registrar (emoción y estrella) y de Inicio, y la tarjeta «Hoy» de Mis registros (comida y sol).
+- **Mis registros:** una tarjeta por día («Hoy», «Ayer», «martes 6 de octubre»), del más reciente al más viejo; resumen «3 comidas» con seis marcas de los grupos del plato del ICBF (llenas las que aparecieron; es información, nunca «te faltan»), y una fila por registro con el nombre, el chip de su grupo, los sellos y las calorías en segundo plano (`.cifra`). **Sin hora:** `/historial` manda solo la fecha, así que las filas no llevan hora. **Cambió lo que se ve:** ya no sale la fecha en cada fila (es el título del día) ni «Certeza IA». Estado vacío: «Registrar comida». Sin `grupo` en el backend no se dibujan ni el chip ni las marcas. Las respuestas simuladas de `historial.json` llevan `grupo` y `sellos` (el texto de los sellos es de ejemplo).
+
+### P5 · El computador: LISTA con el recorte (3 problemas) (9 oct 2026)
+
+1. **Inicio:** el dato del día y, a su lado, la misión y la etapa apiladas (antes eran dos franjas de una sola línea a todo el ancho).
+2. **Progreso:** la racha y las comidas de la semana, lado a lado (antes cada una ocupaba todo el ancho con casi nada adentro).
+3. **Párrafos de unos 70 caracteres** (`max-width: 70ch` en subtítulos y notas).
+- Ya estaban: el contenido a unos 1120 px y centrado a la derecha del menú, Mis registros en dos columnas y Avatar con su vitrina. **No se revisaron a 1728×1117 todas las pantallas ni se tocó Registrar**: queda para después.
+
+### P6 · Movimiento con propósito: LISTA con el recorte (9 oct 2026)
+
+- **Entre pantallas:** `@view-transition { navigation: auto; }` dentro de `prefers-reduced-motion: no-preference`, un fundido de `--m-base`; el menú (`menu`) y el logo (`logo`) llevan `view-transition-name`. **Isabella: comprobar en Safari** (el fundido entre páginas lo admite Safari 18.2 o más nuevo; en uno anterior solo no hay fundido).
+- **Al tocar:** `:active` sin transición (respuesta inmediata, < 0,1 s) en botones, pestañas, caras, opciones, mosaicos y menú, con el «hundirse» a 0,97. El cursor sigue con `--m-rapido` (120 ms; el token es de Isabella).
+- **Barras:** se llenan una vez al cargar (`transition: width var(--m-lento)`); con movimiento reducido, de golpe. **Con movimiento reducido nada se mueve:** ni la persona ni el compañero (pruebas).
+- **Cambiaron, y por qué:** `test_movimiento.py` (el R8 prohibía el fundido entre páginas y la barra que se llena; la misión de pulido los pide: se reemplazaron por pruebas del fundido, de `view-transition-name`, de `:active` inmediato y de la barra); `test_index_ingresado.py` (hasta 6 superficies y 6 secciones, por el dato del día y la franja de la semana); `test_camara.py` (los bloques de consejo ahora llevan el color suave de su rol, nunca el de duda ni el de error); `test_caras_checkin.py` (en Inicio los botones van quietos y el compañero que saluda es lo único que se mueve).
+
+### Lo que quedó pendiente / para Isabella
+
+- **El backend que corre en el 5002 es el viejo** (arrancó a las 8:33): sin `persona`, `/dato-del-dia` ni `grupo` en `/historial`. Hay que reiniciarlo con la rama `gamificacion-100` para ver P2 a P4 con datos reales.
+- **Si un menor de 18 edita su perfil, hay que volver a mandar `acudiente_sabe: true`:** hoy el frontend no tiene pantalla de editar perfil (`crearOActualizarPerfil` solo se llama desde Crear cuenta), así que no hay nada que cambiar todavía; queda anotado.
+- **Safari:** (1) que no salga el botón de play sobre «La cámara está apagada» en Registrar; (2) el fundido entre páginas y que el menú no parpadee; (3) la persona y los compañeros dibujados (SVG animados dentro de `<img>`); (4) `mask` con `-webkit-mask` en las formas decorativas.
+- **Servidor de la demo:** `python3 -m http.server` puede cortar alguna de las ~40 peticiones de módulos de DiceBear al abrir una pantalla por primera vez; el código reintenta una vez. Si la persona no sale, recargar.
+- **Sin hacer (recorte):** revisión completa del computador a 1728×1117 (P5, solo 3 problemas), Registrar a dos columnas con lista de consejos, y las tarjetas del compañero (K2) en 2 o 3 columnas más compactas.
+- **Textos de peso, altura, 14 años e IMC** (P1): solo `guialumea.html` línea 201 («sin presiones de peso…»); no se tocó.
+
 ### Textos nuevos (P2) para que Isabella revise
 
 - Armario: «Mi armario» · «Toca una prenda para ponértela y toca la que llevas para quitártela. Lo que se abre al llegar a una etapa nueva es tuyo para siempre.» · «Etapa N» · «Disponible» · «Puesto»
@@ -435,6 +471,11 @@ Misión: `docs/tickets/MISION-pulido.md` (rama `rediseno`, 9 de oct de 2026). Pl
 - Vitrina: «Te faltan 35 semillas para la etapa 5: Camisa de cuadros»
 - Pestañas: «Mi armario» · «Cómo me veo» · «Tu compañero»
 - Celebración: «Prenda nueva: Overol de jardín» (también para los accesorios)
+
+### Textos nuevos (P3 a P6) para que Isabella revise
+
+- Inicio: «Tu semana» · «Ver mi progreso» · «martes 29: 0 comidas, sin check-in» (para el lector de pantalla) · «¿Sabías que…?» · «Leer más» / «Leer menos»
+- Mis registros: «Hoy» · «Ayer» · «martes 6 de octubre» · «3 comidas» · los nombres cortos de los seis grupos: Cereales, Frutas y verduras, Lácteos, Proteínas, Grasas, Azúcares · «Grupos del plato que aparecieron: …» (para el lector de pantalla) · el botón vacío «Registrar comida»
 
 ### Textos nuevos (P1) para que Isabella revise
 

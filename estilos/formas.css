@@ -31,7 +31,7 @@
 }
 
 .con-forma--comida  { --forma-fondo: var(--c-comida-suave);  --forma-color: var(--c-comida-contenedor); }
-.con-forma--marca   { --forma-fondo: var(--c-marca-suave);   --forma-color: var(--c-marca-contenedor, color-mix(in srgb, var(--c-marca) 20%, var(--c-marca-suave))); }
+.con-forma--marca   { --forma-fondo: var(--c-marca-suave);   --forma-color: var(--c-marca-contenedor, color-mix(in srgb, var(--c-marca) 9%, var(--c-marca-suave))); }
 .con-forma--logro   { --forma-fondo: var(--c-logro-suave);   --forma-color: var(--c-logro-contenedor); }
 .con-forma--emocion { --forma-fondo: var(--c-emocion-suave); --forma-color: var(--c-emocion-contenedor); }
 .con-forma--mision  { --forma-fondo: var(--c-mision-suave);  --forma-color: var(--c-mision-contenedor); }
