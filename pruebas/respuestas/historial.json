@@ -11,7 +11,9 @@
       "certeza_ia": 97.0,
       "fecha": "Mon, 05 Oct 2026 00:00:00 GMT",
       "sellos_advertencia": [],
-      "es_fruta": true
+      "es_fruta": true,
+      "grupo": "frutas_verduras",
+      "sellos": []
     },
     {
       "id": 2,
@@ -22,7 +24,9 @@
       "certeza_ia": 91.0,
       "fecha": "Sun, 04 Oct 2026 00:00:00 GMT",
       "sellos_advertencia": [],
-      "es_fruta": false
+      "es_fruta": false,
+      "grupo": "cereales",
+      "sellos": []
     },
     {
       "id": 1,
@@ -36,7 +40,20 @@
         "azucares",
         "edulcorantes"
       ],
-      "es_fruta": false
+      "es_fruta": false,
+      "grupo": "azucares",
+      "sellos": [
+        {
+          "sello": "azucares",
+          "dato": "Tiene azúcar añadida alta.",
+          "idea": "Si otro día quieres algo dulce, una fruta también lo es."
+        },
+        {
+          "sello": "edulcorantes",
+          "dato": "Lleva edulcorantes.",
+          "idea": "El agua es la mejor compañera de la comida."
+        }
+      ]
     }
   ]
 }

@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="estilos/componentes.css">
   <!-- Lo propio de las pantallas privadas -->
   <link rel="stylesheet" href="estilos/app.css">
+  <link rel="stylesheet" href="estilos/formas.css">
 </head>
 <body>
   <div class="app">
@@ -58,12 +59,13 @@
 
           <div id="sinRegistros" class="estado-pantalla" hidden>
             <p>Todavía no tienes comidas registradas.</p>
-            <a href="alimentos.html" class="boton">Registra tu primera comida</a>
+            <a href="alimentos.html" class="boton"><i class="bi bi-camera-fill" aria-hidden="true"></i> Registrar comida</a>
           </div>
 
           <div id="errorHistorial" class="estado-pantalla" role="alert" hidden></div>
 
-          <ul id="listaRegistros" class="registros"></ul>
+          <!-- Una tarjeta por día, del más reciente al más viejo (mis-registros: «Hoy», «Ayer», «martes 6 de octubre») -->
+          <ul id="listaRegistros" class="dias"></ul>
         </div>
 
       </main>
@@ -146,16 +148,23 @@
       return p;
     }
 
-    // Una fila de la lista: el nombre y la fecha a la izquierda, calorías y certeza a la derecha, y los sellos debajo
+    // Los seis grupos del plato del ICBF (las claves son las de /historial → grupo). Son información, no una meta.
+    const GRUPOS = {
+      cereales: "Cereales", frutas_verduras: "Frutas y verduras", lacteos: "Lácteos",
+      proteinas: "Proteínas", grasas: "Grasas", azucares: "Azúcares",
+    };
+
+    // Una fila de la lista: el nombre, el chip de su grupo, los sellos y, en segundo plano, las calorías.
+    // (El backend manda la fecha sin hora: la fecha es el título de la tarjeta del día.)
     function filaDeRegistro(registro) {
       const fila = elemento("li", "registro");
       const quien = elemento("div", "registro__quien");
       quien.appendChild(elemento("h3", "registro__nombre", registro.alimento_detectado ?? "Alimento"));
-      quien.appendChild(lineaConIcono("bi-calendar3", formatearFecha(registro.fecha)));
+      if (registro.grupo && GRUPOS[registro.grupo]) quien.appendChild(elemento("span", "chip chip--comida registro__grupo", GRUPOS[registro.grupo]));
       fila.appendChild(quien);
       const datos = elemento("div", "registro__datos");
       datos.appendChild(lineaConIcono("bi-fire", `${registro.calorias_aprox ?? "—"} kcal aprox.`));
-      datos.appendChild(lineaConIcono("bi-bullseye", `Certeza IA: ${Number(registro.certeza_ia ?? 0).toFixed(1)}%`));
+      datos.querySelector(".registro__dato").classList.add("cifra");
       fila.appendChild(datos);
       const sellos = nodoSellos(registro.sellos_advertencia);
       if (sellos) {
@@ -165,13 +174,61 @@
       return fila;
     }
 
-    function formatearFecha(fechaISO) {
-      if (!fechaISO) return "";
-      const fecha = new Date(fechaISO);
-      if (Number.isNaN(fecha.getTime())) return fechaISO;
-      // El backend manda la fecha como "Sun, 27 Sep 2026 00:00:00 GMT" (medianoche
-      // en UTC). Sin timeZone: "UTC", en Colombia (UTC-5) saldría el día anterior.
-      return fecha.toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+    // El día de un registro como «2026-10-06»: el backend manda medianoche en UTC («Mon, 05 Oct 2026 00:00:00 GMT»)
+    function claveDeDia(fechaISO) {
+      const f = new Date(fechaISO);
+      return Number.isNaN(f.getTime()) ? null : f.toISOString().slice(0, 10);
+    }
+
+    const claveLocal = (f) => `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, "0")}-${String(f.getDate()).padStart(2, "0")}`;
+
+    // «Hoy», «Ayer» o «martes 6 de octubre»
+    function tituloDelDia(clave) {
+      const hoy = new Date();
+      const ayer = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - 1);
+      if (clave === claveLocal(hoy)) return "Hoy";
+      if (clave === claveLocal(ayer)) return "Ayer";
+      return new Date(`${clave}T00:00:00Z`).toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).replace(",", "");
+    }
+
+    // La línea de resumen del día: «3 comidas» y los seis grupos del plato como seis marcas, llenas las de los grupos que
+    // aparecieron. Es información, no una meta: nunca dice «te faltan». Sin `grupo` en el backend, no se dibujan.
+    function resumenDelDia(registros) {
+      const resumen = elemento("div", "dia__resumen");
+      resumen.appendChild(elemento("p", "dia__cuantas cifra", `${registros.length} ${registros.length === 1 ? "comida" : "comidas"}`));
+      if (registros.some((r) => r.grupo)) {
+        const presentes = new Set(registros.map((r) => r.grupo));
+        const marcas = elemento("span", "marcas-grupos");
+        marcas.setAttribute("aria-hidden", "true");
+        Object.keys(GRUPOS).forEach((clave) => marcas.appendChild(elemento("span", "marca-grupo" + (presentes.has(clave) ? " marca-grupo--llena" : ""))));
+        resumen.appendChild(marcas);
+        const aparecieron = Object.keys(GRUPOS).filter((c) => presentes.has(c)).map((c) => GRUPOS[c]);
+        resumen.appendChild(elemento("span", "solo-lector", aparecieron.length ? `Grupos del plato que aparecieron: ${aparecieron.join(", ")}` : "Ningún grupo del plato identificado"));
+      }
+      return resumen;
+    }
+
+    // Una tarjeta por día. La de hoy lleva la forma decorativa (formas.css).
+    function tarjetaDelDia(clave, registros) {
+      const titulo = tituloDelDia(clave);
+      const tarjeta = elemento("li", "tarjeta dia" + (titulo === "Hoy" ? " con-forma con-forma--comida con-forma--sol" : ""));
+      tarjeta.appendChild(elemento("h2", "dia__titulo inicio__titulo", titulo));
+      tarjeta.appendChild(resumenDelDia(registros));
+      const lista = elemento("ul", "registros");
+      registros.forEach((r) => lista.appendChild(filaDeRegistro(r)));
+      tarjeta.appendChild(lista);
+      return tarjeta;
+    }
+
+    // Agrupa por día sin perder el orden en que llegan, y del más reciente al más viejo
+    function agruparPorDia(historial) {
+      const dias = new Map();
+      historial.forEach((r) => {
+        const clave = claveDeDia(r.fecha) || "sin-fecha";
+        if (!dias.has(clave)) dias.set(clave, []);
+        dias.get(clave).push(r);
+      });
+      return [...dias.entries()].sort((a, b) => (a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0));
     }
 
     async function cargarHistorial() {
@@ -182,7 +239,7 @@
           sinRegistros.hidden = false;
           return;
         }
-        listaRegistros.replaceChildren(...cuerpo.historial.map(filaDeRegistro));
+        listaRegistros.replaceChildren(...agruparPorDia(cuerpo.historial).map(([clave, registros]) => tarjetaDelDia(clave, registros)));
       } catch (error) {
         cargando.hidden = true;
         errorHistorial.textContent = `No se pudo conectar con el servidor. ¿Está corriendo app.py en ${API_BASE_URL}?`;

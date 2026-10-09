@@ -1,4 +1,6 @@
-"""mis-registros.html (rediseño R6): el historial como una lista de filas, con el texto del servidor como texto (no como HTML)."""
+"""mis-registros.html: el historial en una tarjeta por día (con una fila por registro), con el texto del servidor como texto (no como HTML)."""
+from datetime import date, timedelta
+
 import pytest
 
 from conftest import cargar_respuesta
@@ -10,45 +12,96 @@ def abrir(pagina, backend, historial=None):
     if historial is not None:
         backend.poner("GET", "/historial", {"success": True, "cantidad_registros": len(historial), "historial": historial})
     pagina.goto(f"{pagina.servidor}/mis-registros.html")
-    pagina.locator("#listaRegistros > li.registro").first.wait_for()
+    pagina.locator("#listaRegistros li.registro").first.wait_for()
 
 
-def test_cada_registro_es_una_fila_de_una_lista_y_no_una_tarjeta(pagina, backend):
+def fecha_http(dias_atras):
+    """La fecha como la manda el backend: medianoche en UTC («Mon, 05 Oct 2026 00:00:00 GMT»), de hace `dias_atras` días."""
+    return (date.today() - timedelta(days=dias_atras)).strftime("%a, %d %b %Y 00:00:00 GMT")
+
+
+def test_cada_registro_es_una_fila_dentro_de_la_tarjeta_de_su_dia(pagina, backend):
     abrir(pagina, backend)
-    lista = pagina.locator("ul#listaRegistros")
-    assert lista.count() == 1
-    assert lista.locator("> li.registro").count() == 3
-    assert pagina.locator("main .tarjeta:visible").count() == 0            # «las tarjetas pasan a filas de lista»
-    sombras = pagina.locator("#listaRegistros > li").evaluate_all("e => e.map(x => getComputedStyle(x).boxShadow)")
-    assert set(sombras) == {"none"}                                        # sin sombra: la fila se separa con una línea
+    dias = pagina.locator("ul#listaRegistros > li.dia")
+    assert dias.count() == 3                                               # tres días distintos en el historial de prueba
+    assert pagina.locator("#listaRegistros li.registro").count() == 3
+    assert all("tarjeta" in c for c in dias.evaluate_all("e => e.map(x => x.className)"))
+    sombras = pagina.locator("#listaRegistros .registro").evaluate_all("e => e.map(x => getComputedStyle(x).boxShadow)")
+    assert set(sombras) == {"none"}                                        # las filas se separan con una línea
 
 
-def test_la_fila_muestra_lo_mismo_que_la_tarjeta_de_antes(pagina, backend):
-    """Los datos de cada registro son los de siempre; cambió cómo se ven, no qué se ve."""
-    abrir(pagina, backend)
-    esperado = [
-        ("Banano", "5 de octubre de 2026", "89 kcal aprox.", "Certeza IA: 97.0%"),
-        ("Arepa", "4 de octubre de 2026", "120 kcal aprox.", "Certeza IA: 91.0%"),
-        ("Coca-Cola Original", "3 de octubre de 2026", "30 kcal aprox.", "Certeza IA: 100.0%"),
+def test_los_dias_van_del_mas_reciente_al_mas_viejo_con_hoy_y_ayer(pagina, backend):
+    historial = [
+        HISTORIAL[0] | {"id": 9, "fecha": fecha_http(0)},
+        HISTORIAL[1] | {"id": 8, "fecha": fecha_http(1)},
+        HISTORIAL[0] | {"id": 7, "fecha": fecha_http(1), "alimento_detectado": "Mango"},
+        HISTORIAL[2] | {"id": 6, "fecha": "Tue, 06 Oct 2026 00:00:00 GMT"},
+        HISTORIAL[1] | {"id": 5, "fecha": "Sat, 03 Oct 2026 00:00:00 GMT"},
     ]
-    for i, (nombre, fecha, kcal, certeza) in enumerate(esperado):
-        fila = pagina.locator("#listaRegistros > li.registro").nth(i)
-        assert fila.locator("h3").inner_text() == nombre
-        datos = [p.inner_text().strip() for p in fila.locator(".registro__dato").all()]
-        assert datos == [fecha, kcal, certeza], f"registro {i}"
+    abrir(pagina, backend, historial=historial[::-1])                      # aunque lleguen desordenados
+    assert pagina.locator("#listaRegistros > li > h2").all_inner_texts() == ["Hoy", "Ayer", "martes 6 de octubre", "sábado 3 de octubre"]
+    assert pagina.locator("#listaRegistros > li").nth(1).locator("li.registro").count() == 2
+    assert "3 comidas" not in pagina.locator("#listaRegistros").inner_text()
+    assert pagina.locator("#listaRegistros > li").nth(1).locator(".dia__cuantas").inner_text() == "2 comidas"
+    assert pagina.locator("#listaRegistros > li").first.locator(".dia__cuantas").inner_text() == "1 comida"
+
+
+def test_la_tarjeta_de_hoy_lleva_la_forma_decorativa_y_las_demas_no(pagina, backend):
+    abrir(pagina, backend, historial=[HISTORIAL[0] | {"fecha": fecha_http(0)}, HISTORIAL[1] | {"fecha": fecha_http(3)}])
+    hoy, otro = pagina.locator("#listaRegistros > li").all()
+    assert "con-forma" in hoy.get_attribute("class") and "con-forma--sol" in hoy.get_attribute("class")
+    assert "con-forma" not in otro.get_attribute("class")
+
+
+def test_el_resumen_del_dia_marca_los_grupos_que_aparecieron_sin_decir_te_faltan(pagina, backend):
+    abrir(pagina, backend, historial=[HISTORIAL[0] | {"fecha": fecha_http(2)}, HISTORIAL[1] | {"fecha": fecha_http(2)}])
+    resumen = pagina.locator(".dia__resumen").first
+    assert resumen.locator(".marca-grupo").count() == 6                    # los seis grupos del plato del ICBF
+    assert resumen.locator(".marca-grupo--llena").count() == 2             # frutas y verduras, y cereales
+    assert "Grupos del plato que aparecieron: Cereales, Frutas y verduras" in resumen.text_content()
+    assert resumen.locator(".marcas-grupos").get_attribute("aria-hidden") == "true"
+    contenido = pagina.locator("main").inner_text().lower()
+    assert "te faltan" not in contenido and "te falta" not in contenido
+
+
+def test_cada_fila_lleva_el_chip_de_su_grupo(pagina, backend):
+    abrir(pagina, backend)
+    assert pagina.locator("#listaRegistros li.registro .registro__grupo").all_inner_texts() == ["Frutas y verduras", "Cereales", "Azúcares"]
+
+
+def test_sin_grupo_en_el_backend_no_se_dibujan_ni_el_chip_ni_las_marcas(pagina, backend):
+    sin_grupo = [{k: v for k, v in r.items() if k not in ("grupo", "sellos")} for r in HISTORIAL]
+    abrir(pagina, backend, historial=sin_grupo)
+    assert pagina.locator(".registro__grupo, .marcas-grupos").count() == 0
+    assert pagina.locator(".dia__cuantas").count() == 3
+
+
+def test_las_calorias_van_en_segundo_plano_con_la_clase_cifra(pagina, backend):
+    abrir(pagina, backend)
+    kcal = pagina.locator("#listaRegistros li.registro").first.locator(".registro__dato")
+    assert kcal.inner_text().strip() == "89 kcal aprox." and "cifra" in kcal.get_attribute("class")
+    assert kcal.evaluate("e => parseFloat(getComputedStyle(e).fontSize)") < pagina.locator("#listaRegistros h3").first.evaluate("e => parseFloat(getComputedStyle(e).fontSize)")
+
+
+def test_en_el_computador_las_tarjetas_de_dias_se_reparten_en_columnas(pagina, backend):
+    pagina.set_viewport_size({"width": 1440, "height": 900})
+    abrir(pagina, backend)
+    cajas = pagina.locator("#listaRegistros > li").evaluate_all("e => e.map(x => x.getBoundingClientRect().toJSON())")
+    assert cajas[0]["y"] == cajas[1]["y"] and cajas[0]["x"] < cajas[1]["x"]          # dos en la misma fila
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= 1440
 
 
 def test_los_datos_van_con_su_icono_de_bootstrap_icons(pagina, backend):
     abrir(pagina, backend)
-    fila = pagina.locator("#listaRegistros > li.registro").first
-    assert [i.get_attribute("class") for i in fila.locator(".registro__dato i").all()] == ["bi bi-calendar3", "bi bi-fire", "bi bi-bullseye"]
+    fila = pagina.locator("#listaRegistros li.registro").first
+    assert [i.get_attribute("class") for i in fila.locator(".registro__dato i").all()] == ["bi bi-fire"]
     assert all(i.get_attribute("aria-hidden") == "true" for i in fila.locator(".registro__dato i").all())
 
 
 def test_sin_sellos_conocidos_no_pinta_nada_de_sellos(pagina, backend):
     registro = HISTORIAL[0] | {"sellos_advertencia": None}
     abrir(pagina, backend, historial=[registro])
-    fila = pagina.locator("#listaRegistros > li.registro").first
+    fila = pagina.locator("#listaRegistros li.registro").first
     assert fila.locator(".sello, .sellos, p:has-text('Sin sellos')").count() == 0
 
 
@@ -91,7 +144,7 @@ def test_sin_registros_invita_a_registrar(pagina, backend):
     pagina.goto(f"{pagina.servidor}/mis-registros.html")
     pagina.locator("#sinRegistros").wait_for()
     assert pagina.locator("#sinRegistros a").get_attribute("href") == "alimentos.html"
-    assert pagina.locator("#sinRegistros a").inner_text() == "Registra tu primera comida"
+    assert pagina.locator("#sinRegistros a").inner_text().strip() == "Registrar comida"
     assert pagina.locator("#listaRegistros > li").count() == 0
 
 
