@@ -317,21 +317,29 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .consejo__texto { max-width: 65ch; overflow-wrap: anywhere; }
 /* El dato curioso largo (500 a 860 caracteres): líneas de unos 65 caracteres y buen interlineado; si pasa de
    cuatro líneas lumea-camara.js lo corta (.dato--cortado) y muestra «Leer más». Sin animación. */
-#backend-dato { max-width: 65ch; line-height: var(--t-interlineado); overflow-wrap: anywhere; }
-#backend-dato.dato--cortado { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden; }
+.dato-largo { max-width: 65ch; line-height: var(--t-interlineado); overflow-wrap: anywhere; }
+.dato-largo.dato--cortado { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden; }
 /* «Leer más» es un botón de texto: sin relleno a los lados, para que su palabra quede alineada con el texto */
 .consejo__mas { justify-self: start; padding-inline: 0; border-width: 0; transition: none; }
 
-/* ---------- 8. Mis registros (rediseño R6) ----------
-   Una lista de filas, no de tarjetas: el nombre y la fecha a la izquierda, calorías y certeza a la derecha,
-   y los sellos de advertencia debajo. */
+/* ---------- 8. Mis registros ----------
+   Una tarjeta por día (de la más reciente a la más vieja) y, dentro, una fila por registro: el nombre y el chip de su grupo
+   a la izquierda, las calorías en segundo plano a la derecha y los sellos de advertencia debajo. */
 .registros__pantalla { display: grid; gap: var(--e-5); }
+.dias { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--e-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); align-items: start; }
+.dia { display: grid; gap: var(--e-3); min-width: 0; }
+.dia__resumen { display: flex; flex-wrap: wrap; align-items: center; gap: var(--e-2) var(--e-4); }
+.dia__cuantas { font-weight: var(--t-peso-fuerte); }
+.marcas-grupos { display: inline-flex; gap: var(--e-1); }
+.marca-grupo { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--c-tinta-suave); background: transparent; }
+.marca-grupo--llena { background: var(--c-tinta-suave); }                      /* llena = ese grupo apareció (es información, no una meta) */
+.registro__grupo { justify-self: start; }
 .registros { list-style: none; margin: 0; padding: 0; }
 .registro {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--e-2) var(--e-5); align-items: start;
   padding: var(--e-4) 0; border-top: 1px solid var(--c-borde);
 }
-.registro:last-child { border-bottom: 1px solid var(--c-borde); }
+.dia .registro:last-child { border-bottom: 0; }
 .registro__nombre { font-size: var(--t-l); overflow-wrap: anywhere; }
 .registro__quien, .registro__datos { display: grid; gap: var(--e-1); min-width: 0; }
 .registro__datos { justify-items: end; text-align: right; }

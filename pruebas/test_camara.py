@@ -364,9 +364,12 @@ def test_los_consejos_no_llevan_color_de_alerta_ni_iconos_de_advertencia(pagina,
     tinta_suave = variable_en_rgb(pagina, "--c-tinta-suave")
     assert pagina.locator("#backend-consejos .consejo__texto").first.evaluate("e => getComputedStyle(e).color") == tinta
     assert pagina.locator("#backend-consejos .consejo__titulo").first.evaluate("e => getComputedStyle(e).color") == tinta_suave
-    fondos = pagina.eval_on_selector_all("#backend-consejos, #backend-consejos .consejo, #consejo-dato",
-                                         "es => es.map(e => getComputedStyle(e).backgroundColor)")
-    assert set(fondos) == {"rgba(0, 0, 0, 0)"}                                       # sin recuadro de aviso
+    # Cada bloque lleva el color suave de su rol (formas.css): comida, marca, logro o emoción. Nunca el de la duda (mango) ni el del error.
+    assert pagina.eval_on_selector_all("#backend-consejos", "es => es.map(e => getComputedStyle(e).backgroundColor)") == ["rgba(0, 0, 0, 0)"]
+    permitidos = {variable_en_rgb(pagina, f"--c-{rol}-suave") for rol in ("comida", "marca", "logro", "emocion")}
+    prohibidos = {variable_en_rgb(pagina, "--c-duda-suave"), variable_en_rgb(pagina, "--c-error-suave")}
+    fondos = set(pagina.eval_on_selector_all("#backend-consejos .consejo, #consejo-dato", "es => es.map(e => getComputedStyle(e).backgroundColor)"))
+    assert fondos <= permitidos and not (fondos & prohibidos)                        # sin recuadro de aviso
     assert "advertencia" not in pagina.locator("#backend-consejos").inner_text().lower()
 
 

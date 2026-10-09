@@ -25,6 +25,7 @@ RUTAS = {
     ("GET", "/perfil"): "perfil.json",
     ("GET", "/progreso"): "progreso.json",
     ("GET", "/historial"): "historial.json",
+    ("GET", "/dato-del-dia"): "dato_del_dia.json",
     ("GET", "/estado-animo"): "estado_animo.json",
     ("POST", "/estado-animo"): "estado_animo_guardado.json",
     ("GET", "/avatar"): "avatar.json",

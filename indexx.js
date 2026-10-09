@@ -68,6 +68,22 @@
     pintarCheckin();
   }
 
+  // ---------- ¿Sabías que…? del día ----------
+  // El dato curioso de hoy (el mismo para todas las personas). Sin dato o con la petición caída, la tarjeta no se dibuja.
+  async function cargarDatoDelDia() {
+    const tarjeta = $("card-dato-dia");
+    if (!tarjeta || typeof obtenerDatoDelDia !== "function") return;
+    try {
+      const { ok, cuerpo } = await obtenerDatoDelDia();                       // api.js
+      const texto = ok && cuerpo && typeof cuerpo.dato_curioso === "string" ? cuerpo.dato_curioso.trim() : "";
+      if (!texto) return;
+      $("dato-dia-alimento").textContent = cuerpo.nombre || "";
+      $("dato-dia-texto").textContent = texto;
+      tarjeta.hidden = false;
+      if (window.LumeaLeerMas) window.LumeaLeerMas.conectar($("dato-dia-texto"), $("dato-dia-mas")).ajustar(true);
+    } catch (e) { /* sin dato: la tarjeta no se dibuja */ }
+  }
+
   // ---------- Elige tus colores ----------
 
   // localStorage y sessionStorage pueden fallar (modo privado): nunca rompen la pantalla
@@ -121,6 +137,7 @@
     });
     $("btn-guardar-animo-inicio").addEventListener("click", guardarAnimo);
     prepararTarjetaDeColores();
+    cargarDatoDelDia();
     const foto = $("input-foto-directa-home");
     if (foto) foto.addEventListener("change", () => { if (foto.files[0]) pasarFotoALaCamara(foto.files[0]); });
     const cerrar = document.querySelector("[data-cerrar-aviso]");

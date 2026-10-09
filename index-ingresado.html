@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="estilos/componentes.css">
   <!-- Lo propio de las pantallas privadas -->
   <link rel="stylesheet" href="estilos/app.css">
+  <link rel="stylesheet" href="estilos/formas.css">
   <link rel="stylesheet" href="estilos/pegatinas.css">
   <link rel="stylesheet" href="estilos/celebracion.css">
 </head>
@@ -135,6 +136,15 @@
 
       </div>
 
+      <!-- ¿SABÍAS QUE…? DEL DÍA: el mismo dato para todas las personas (GET /dato-del-dia, sin correo). Si la petición falla,
+           la tarjeta no se dibuja. «Leer más» es el mismo bloque largo de Registrar (leer-mas.js). -->
+      <section class="tarjeta inicio__dato con-forma con-forma--emocion con-forma--estrella" id="card-dato-dia" aria-labelledby="titulo-dato-dia" hidden>
+        <h2 id="titulo-dato-dia" class="inicio__titulo">¿Sabías que…?</h2>
+        <p id="dato-dia-alimento" class="consejo__titulo"></p>
+        <p id="dato-dia-texto" class="inicio__nota dato-largo"></p>
+        <button type="button" id="dato-dia-mas" class="boton boton--fantasma consejo__mas" aria-expanded="false" aria-controls="dato-dia-texto" hidden>Leer más</button>
+      </section>
+
       <!-- MISIÓN DE HOY: la próxima misión sin cumplir, con su recompensa -->
       <section class="inicio__franja" aria-labelledby="titulo-mision">
         <h2 id="titulo-mision" class="inicio__rotulo">Misión de hoy</h2>
@@ -168,6 +178,7 @@
   <script src="lumea-ui.js"></script>
   <script src="companero.js"></script>
   <script src="selector-colores.js"></script>
+  <script src="leer-mas.js"></script>
   <script src="indexx.js"></script>
   <script src="menu-privado.js"></script>
 </body>

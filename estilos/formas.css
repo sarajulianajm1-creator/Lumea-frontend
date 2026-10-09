@@ -1,0 +1,51 @@
+/* =====================================================================
+   LUMEA · formas.css — la forma decorativa de una tarjeta (P4)
+   ---------------------------------------------------------------------
+   Una tarjeta de color suave con una forma grande, del mismo color pero más oscuro, que se recorta con el borde de la
+   tarjeta. Es solo adorno: no lleva texto ni significado, no se anuncia y no recibe toques.
+     <section class="tarjeta con-forma con-forma--emocion con-forma--estrella">…</section>
+   Rol (fondo --c-<rol>-suave y forma --c-<rol>-contenedor): comida, marca, logro, emocion, mision.
+   Forma (img/formas/*.svg, originales de un solo trazado): sol, luna, estrella, gota, hoja, flor.
+   Se ajusta con --forma-tam (9rem), --forma-giro (-12deg) y --forma-imagen. Solo tokens: nada de colores a mano.
+   Con colores forzados (forced-colors: active) la forma no se dibuja.
+   ===================================================================== */
+.con-forma {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--forma-fondo, var(--c-superficie));
+}
+.con-forma::after {
+  content: "";
+  position: absolute;
+  right: calc(var(--forma-tam, 9rem) * -0.16);
+  bottom: calc(var(--forma-tam, 9rem) * -0.2);
+  width: var(--forma-tam, 9rem);
+  aspect-ratio: 1;
+  background: var(--forma-color, var(--c-borde));
+  -webkit-mask: var(--forma-imagen) center / contain no-repeat;
+  mask: var(--forma-imagen) center / contain no-repeat;
+  transform: rotate(var(--forma-giro, -12deg));
+  z-index: -1;
+  pointer-events: none;
+}
+
+.con-forma--comida  { --forma-fondo: var(--c-comida-suave);  --forma-color: var(--c-comida-contenedor); }
+.con-forma--marca   { --forma-fondo: var(--c-marca-suave);   --forma-color: var(--c-marca-contenedor, color-mix(in srgb, var(--c-marca) 20%, var(--c-marca-suave))); }
+.con-forma--logro   { --forma-fondo: var(--c-logro-suave);   --forma-color: var(--c-logro-contenedor); }
+.con-forma--emocion { --forma-fondo: var(--c-emocion-suave); --forma-color: var(--c-emocion-contenedor); }
+.con-forma--mision  { --forma-fondo: var(--c-mision-suave);  --forma-color: var(--c-mision-contenedor); }
+
+.con-forma--sol      { --forma-imagen: url("../img/formas/sol.svg"); }
+.con-forma--luna     { --forma-imagen: url("../img/formas/luna.svg"); }
+.con-forma--estrella { --forma-imagen: url("../img/formas/estrella.svg"); }
+.con-forma--gota     { --forma-imagen: url("../img/formas/gota.svg"); }
+.con-forma--hoja     { --forma-imagen: url("../img/formas/hoja.svg"); }
+.con-forma--flor     { --forma-imagen: url("../img/formas/flor.svg"); }
+
+@media (forced-colors: active) {
+  .con-forma::after { display: none; }
+}
+
+/* Un bloque de consejo con forma (Registrar) o una tarjeta (Inicio, Mis registros): el contenido deja sitio a la forma */
+.consejo.con-forma { padding: var(--e-4); border-radius: var(--r-tarjeta); }

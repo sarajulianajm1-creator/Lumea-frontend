@@ -212,7 +212,7 @@ def test_cuatro_superficies_como_maximo_y_un_solo_boton_relleno(pagina, backend)
     abrir(pagina, backend)
     # sin contar la tarjeta «Elige tus colores», que desaparece una vez elegida la paleta
     superficies = pagina.locator("main .tarjeta:not(#card-colores), main .inicio__franja")
-    assert superficies.count() <= 4                                         # antes eran 13 cajas
+    assert superficies.count() <= 5                                         # antes eran 13 cajas; la quinta es el «¿Sabías que…?» del día (P3)
     # «una acción principal por pantalla»: solo un botón relleno, y es «Registrar comida»
     rellenos = pagina.locator("main .boton:not(.boton--secundario):not(.boton--fantasma)")
     assert rellenos.count() == 1
@@ -229,7 +229,7 @@ def test_las_semillas_aparecen_tres_veces_como_maximo(pagina, backend):
 def test_cada_bloque_es_una_seccion_con_su_titulo(pagina, backend):
     abrir(pagina, backend)
     secciones = pagina.locator("main section[aria-labelledby]:not(#card-colores)")
-    assert secciones.count() == 4
+    assert secciones.count() == 5                                            # Tu día, ¿Cómo llegas hoy?, ¿Sabías que…?, misión y etapa
     for seccion in secciones.all():
         titulo = seccion.get_attribute("aria-labelledby")
         assert pagina.locator(f"h2#{titulo}").count() == 1
@@ -254,3 +254,64 @@ def test_la_fecha_va_en_un_time_con_su_fecha_y_sin_hora(pagina, backend):
     fecha = pagina.locator("time.inicio__fecha")
     assert fecha.inner_text() == "Lunes, 5 de octubre"
     assert fecha.get_attribute("datetime") == "2026-10-05"
+
+
+# ---------- «¿Sabías que…?» del día (P3) ----------
+
+def test_el_dato_del_dia_se_dibuja_con_el_alimento_de_subtitulo_y_sin_correo(pagina, backend):
+    pagina.goto(f"{pagina.servidor}/index-ingresado.html")
+    tarjeta = pagina.locator("#card-dato-dia")
+    tarjeta.wait_for()
+    assert tarjeta.get_by_role("heading", name="¿Sabías que…?", level=2).count() == 1
+    assert pagina.locator("#dato-dia-alimento").inner_text() == "Banano"
+    assert pagina.locator("#dato-dia-texto").inner_text().strip() != ""
+    assert ("GET", "/dato-del-dia") in backend.llamadas
+    peticion = next(u for m, u, c in backend.peticiones if m == "GET" and "/dato-del-dia" in u)
+    assert "@" not in peticion and "email" not in peticion and "?" not in peticion              # el mismo para todas las personas
+    assert "con-forma--emocion" in tarjeta.get_attribute("class") and "con-forma--estrella" in tarjeta.get_attribute("class")
+    assert pagina.errores == []
+
+
+def test_si_no_hay_dato_la_tarjeta_no_se_dibuja(pagina, backend):
+    backend.poner("GET", "/dato-del-dia", {"error": "Sin datos curiosos."}, estado=404)
+    pagina.goto(f"{pagina.servidor}/index-ingresado.html")
+    pagina.locator(".lumea-bind-nombre").first.wait_for()
+    pagina.wait_for_timeout(400)
+    assert not pagina.locator("#card-dato-dia").is_visible()
+
+
+def test_si_la_peticion_del_dato_falla_el_resto_de_inicio_funciona(pagina, backend):
+    pagina.route("http://127.0.0.1:5002/dato-del-dia", lambda ruta: ruta.abort())
+    pagina.goto(f"{pagina.servidor}/index-ingresado.html")
+    pagina.locator("[data-accion-principal]").wait_for()
+    pagina.wait_for_timeout(300)
+    assert not pagina.locator("#card-dato-dia").is_visible()
+    assert pagina.get_by_role("heading", name="Tu día").is_visible()
+
+
+def test_el_dato_largo_se_corta_y_leer_mas_lo_abre(pagina, backend):
+    largo = " ".join(["El banano es una fruta muy versátil que acompaña desayunos, meriendas y postres en todo el país."] * 6)
+    backend.poner("GET", "/dato-del-dia", {"fecha": "2026-10-09", "alimento_codigo": "banano", "nombre": "Banano", "dato_curioso": largo})
+    pagina.goto(f"{pagina.servidor}/index-ingresado.html")
+    boton = pagina.locator("#dato-dia-mas")
+    boton.wait_for()
+    assert "dato--cortado" in pagina.locator("#dato-dia-texto").get_attribute("class")
+    assert boton.get_attribute("aria-expanded") == "false" and boton.get_attribute("aria-controls") == "dato-dia-texto"
+    boton.click()
+    assert boton.get_attribute("aria-expanded") == "true" and boton.inner_text() == "Leer menos"
+    assert "dato--cortado" not in pagina.locator("#dato-dia-texto").get_attribute("class")
+
+
+def test_un_dato_corto_no_ofrece_leer_mas(pagina, backend):
+    pagina.goto(f"{pagina.servidor}/index-ingresado.html")
+    pagina.locator("#card-dato-dia").wait_for()
+    assert not pagina.locator("#dato-dia-mas").is_visible()
+
+
+def test_el_dato_del_dia_nunca_es_html(pagina, backend):
+    backend.poner("GET", "/dato-del-dia", {"fecha": "2026-10-09", "alimento_codigo": "x", "nombre": "<b>Raro</b>",
+                                            "dato_curioso": '<img src=x onerror="window.hackeado=1">'})
+    pagina.goto(f"{pagina.servidor}/index-ingresado.html")
+    pagina.locator("#card-dato-dia").wait_for()
+    assert pagina.locator("#card-dato-dia img, #card-dato-dia b").count() == 0
+    assert pagina.evaluate("window.hackeado") is None

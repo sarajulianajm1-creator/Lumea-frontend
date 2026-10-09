@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="estilos/componentes.css">
   <!-- Lo propio de las pantallas privadas -->
   <link rel="stylesheet" href="estilos/app.css">
+  <link rel="stylesheet" href="estilos/formas.css">
   <!-- Celebración de semillas, misiones, calcomanías y nivel (lógica en celebracion.js) -->
   <link rel="stylesheet" href="estilos/pegatinas.css">
   <link rel="stylesheet" href="estilos/celebracion.css">
@@ -114,9 +115,9 @@
             <!-- Consejos (K0.5): hasta tres bloques cortos que dibuja lumea-camara.js con textContent, y el dato curioso
                  como cuarto. Sin «consejo» en la respuesta (backend viejo) no se dibuja ningún título: queda como antes. -->
             <div id="backend-consejos" class="consejos"></div>
-            <div id="consejo-dato" class="consejo">
+            <div id="consejo-dato" class="consejo con-forma con-forma--emocion con-forma--estrella">
               <h3 id="titulo-dato" class="consejo__titulo" hidden>¿Sabías que…?</h3>
-              <p id="backend-dato" class="inicio__nota"></p>
+              <p id="backend-dato" class="inicio__nota dato-largo"></p>
               <!-- Si el dato pasa de cuatro líneas se corta; lumea-camara.js muestra este botón solo entonces -->
               <button type="button" id="btn-dato-mas" class="boton boton--fantasma consejo__mas" aria-expanded="false" aria-controls="backend-dato" hidden>Leer más</button>
             </div>
@@ -133,6 +134,7 @@
   <script src="formato.js"></script>
   <script src="pegatinas.js"></script>
   <script src="celebracion.js"></script>
+  <script src="leer-mas.js"></script>
   <script src="lumea-camara.js"></script>
   <script src="menu-privado.js"></script>
 </body>

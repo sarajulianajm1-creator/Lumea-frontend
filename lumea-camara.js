@@ -182,6 +182,8 @@ const MOSTRAR_CALORIAS = true;
     if (!caja || !hay) return;
     const limpio = (v) => (typeof v === "string" ? v.trim() : "");
     const sello = (Array.isArray(c.sellos) && c.sellos[0]) || {};
+    // Cada bloque lleva su forma decorativa (formas.css): rol y forma. «A tener en cuenta» es logro y gota, nunca un color de alerta.
+    const FORMAS = { "Lo que aporta": "comida hoja", "Para completar tu plato": "marca flor", "Una idea": "marca flor", "A tener en cuenta": "logro gota" };
     [
       ["Lo que aporta", limpio(c.aporta)],
       limpio(c.para_completar) ? ["Para completar tu plato", limpio(c.para_completar)] : ["Una idea", limpio(sello.idea)],
@@ -189,7 +191,8 @@ const MOSTRAR_CALORIAS = true;
     ].forEach(([tit, texto]) => {
       if (!texto) return;
       const bloque = document.createElement("div");
-      bloque.className = "consejo";
+      const [rol, forma] = FORMAS[tit].split(" ");
+      bloque.className = `consejo con-forma con-forma--${rol} con-forma--${forma}`;
       const h = document.createElement("h3");
       h.className = "consejo__titulo";
       h.textContent = tit;
@@ -201,42 +204,9 @@ const MOSTRAR_CALORIAS = true;
     });
   }
 
-  // El dato curioso puede ser largo (500 a 860 caracteres). Líneas de unos 65 caracteres (CSS) y, si pasa de
-  // LINEAS_DATO líneas, se corta y el botón «Leer más» (aria-expanded, sin animación) lo abre y lo cierra.
-  const LINEAS_DATO = 4;
-  let anchoDato = null;
-  function ajustarDato(reiniciar) {
-    const p = $("backend-dato"), boton = $("btn-dato-mas");
-    if (!p || !boton) return;
-    if (reiniciar) { boton.setAttribute("aria-expanded", "false"); boton.textContent = "Leer más"; }
-    const abierto = boton.getAttribute("aria-expanded") === "true";
-    const alto = parseFloat(getComputedStyle(p).lineHeight);
-    // scrollHeight es el alto de todo el texto, esté cortado o no
-    const lineas = alto > 0 ? Math.round(p.scrollHeight / alto) : 0;
-    const largo = lineas > LINEAS_DATO;
-    boton.hidden = !largo;
-    p.classList.toggle("dato--cortado", largo && !abierto);
-  }
-  (function conectarDato() {
-    const p = $("backend-dato"), boton = $("btn-dato-mas");
-    if (!p || !boton) return;
-    boton.addEventListener("click", () => {
-      const abrir = boton.getAttribute("aria-expanded") !== "true";
-      boton.setAttribute("aria-expanded", String(abrir));
-      boton.textContent = abrir ? "Leer menos" : "Leer más";
-      ajustarDato(false);
-    });
-    // Si cambia el ancho (giro del celular, ventana), el texto ocupa otras líneas: se vuelve a medir.
-    // Solo se mira el ancho: cortar el texto cambia el alto y no debe volver a disparar la medida.
-    if (window.ResizeObserver) {
-      new ResizeObserver(() => {
-        const ancho = p.clientWidth;
-        if (ancho === anchoDato) return;
-        anchoDato = ancho;
-        ajustarDato(false);
-      }).observe(p);
-    }
-  })();
+  // El dato curioso puede ser largo (500 a 860 caracteres): «Leer más» vive en leer-mas.js, que comparte con Inicio.
+  const datoLargo = window.LumeaLeerMas.conectar($("backend-dato"), $("btn-dato-mas"));
+  const ajustarDato = (reiniciar) => datoLargo.ajustar(reiniciar);
 
   function mostrarOpciones(r) {
     const caja = $("backend-opciones");
