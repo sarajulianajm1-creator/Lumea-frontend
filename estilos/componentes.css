@@ -380,7 +380,7 @@ p { margin: 0; text-wrap: pretty; }
     flex: 1; flex-direction: column; justify-content: center; gap: 2px;
     padding: var(--e-1); font-size: var(--t-xs);
   }
-  .nav-app__enlace[aria-current="page"] { background: transparent; }
+  .nav-app__enlace[aria-current="page"] { background: var(--c-marca-suave); }          /* el fondo del ítem activo: es el que viaja entre páginas (app.css) */
   .contenido {
     padding: var(--e-5) var(--e-4) calc(var(--alto-barra-inferior) + var(--e-6));
     gap: var(--e-5);

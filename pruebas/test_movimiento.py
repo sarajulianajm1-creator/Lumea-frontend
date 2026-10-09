@@ -60,7 +60,7 @@ def test_las_tarjetas_entran_escalonadas_de_40_a_60_ms_una_tras_otra_en_inicio(p
     retardos = pagina.locator(BLOQUES).evaluate_all("els => els.filter(e => e.offsetParent !== null).map(e => parseFloat(getComputedStyle(e).animationDelay) * 1000)")
     assert len(retardos) >= 4 and retardos[0] == 0
     pasos = {round(b - a) for a, b in zip(retardos, retardos[1:]) if b > a}
-    assert pasos and all(40 <= p <= 60 for p in pasos), retardos                   # --m-escalon: 50 ms
+    assert 50 in pasos and all(p % 50 == 0 for p in pasos), retardos              # --m-escalon: 50 ms (un esqueleto que se va puede dejar un hueco de 100)
     assert retardos == sorted(retardos) and max(retardos) <= 6 * 50 + 1            # nunca pasa de medio segundo
 
 
@@ -264,3 +264,35 @@ def test_con_movimiento_reducido_el_indicador_de_pestanas_salta_de_una_vez(pagin
     pagina.emulate_media(reduced_motion="reduce")
     abrir(pagina, "avatar.html", espiar=False)
     assert pagina.locator(".pestanas__indicador").evaluate("e => getComputedStyle(e).transitionDuration") == "0s, 0s"
+
+
+# ---------- P11 · 6: el ítem activo de la barra viaja de una página a otra ----------
+
+@pytest.mark.parametrize("ancho", [390, 1280])
+@pytest.mark.parametrize("nombre", ["index-ingresado.html", "mis-registros.html", "progreso.html", "avatar.html"])
+def test_el_item_activo_del_menu_lleva_view_transition_name_y_es_el_unico(pagina, nombre, ancho):
+    pagina.set_viewport_size({"width": ancho, "height": 844})
+    abrir(pagina, nombre, espiar=False)
+    datos = pagina.evaluate("""() => [...document.querySelectorAll('*')].filter(e => getComputedStyle(e).viewTransitionName === 'nav-activo')
+        .map(e => [e.tagName, e.getAttribute('aria-current'), e.getAttribute('aria-label')])""")
+    assert len(datos) == 1 and datos[0][:2] == ["A", "page"]                                  # solo el ítem activo, y solo uno por página
+
+
+def test_en_la_barra_inferior_el_item_activo_tiene_fondo_para_que_viaje(pagina):
+    pagina.set_viewport_size({"width": 390, "height": 844})
+    abrir(pagina, "mis-registros.html", espiar=False)
+    fondo = pagina.locator(".nav-app__enlace[aria-current=page]").evaluate("e => getComputedStyle(e).backgroundColor")
+    suave = pagina.evaluate("(() => { const i = document.createElement('i'); i.style.backgroundColor = 'var(--c-marca-suave)'; document.body.appendChild(i); const c = getComputedStyle(i).backgroundColor; i.remove(); return c })()")
+    assert fondo == suave
+
+
+def test_con_movimiento_reducido_el_item_activo_no_viaja(pagina):
+    pagina.emulate_media(reduced_motion="reduce")
+    abrir(pagina, "progreso.html", espiar=False)
+    assert pagina.locator(".nav-app__enlace[aria-current=page]").evaluate("e => getComputedStyle(e).viewTransitionName") == "none"
+
+
+def test_el_nombre_nav_activo_solo_se_declara_donde_hay_movimiento():
+    css = (RAIZ / "estilos" / "app.css").read_text(encoding="utf-8")
+    bloque = css[css.index("@media (prefers-reduced-motion: no-preference) {\n  @view-transition"):]
+    assert "view-transition-name: nav-activo" in bloque.split("\n}\n")[0]

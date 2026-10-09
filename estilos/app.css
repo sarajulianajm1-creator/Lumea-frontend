@@ -437,6 +437,10 @@ html, body { transition: background-color var(--m-base) var(--m-salida), color v
   @view-transition { navigation: auto; }
   .nav-app { view-transition-name: menu; }
   .nav-app__marca { view-transition-name: logo; }
+  /* El ítem activo (su fondo y su rótulo) viaja de una página a otra: en cada página solo uno lleva el nombre. Sin soporte de
+     view-transition-name el navegador lo ignora y todo se queda como estaba. */
+  .nav-app__enlace[aria-current="page"] { view-transition-name: nav-activo; }
+  ::view-transition-group(nav-activo) { animation-duration: var(--m-base); animation-timing-function: var(--m-salida); }
   ::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--m-base); animation-timing-function: var(--m-salida); }
 }
 
