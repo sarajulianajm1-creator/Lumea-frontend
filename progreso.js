@@ -27,13 +27,16 @@
     lista.replaceChildren();
     const maximo = Math.max(3, ...semana.map((d) => d.comidas));
     semana.forEach((d) => {
-      const altura = d.comidas === 0 ? 12 : Math.min(150, Math.round((d.comidas / maximo) * 130) + 20);
+      const sinBarra = d.comidas === 0 || d.futuro;                                       // un día con 0 comidas no lleva barra: solo la línea base
+      const altura = sinBarra ? 2 : Math.min(150, Math.round((d.comidas / maximo) * 130) + 20);
       const columna = UI.crear("div", "bar-col-item" + (d.esHoy ? " today" : "") + (d.futuro ? " bar-col-item--futuro" : ""));
       columna.setAttribute("role", "listitem");
       if (d.esHoy) columna.setAttribute("aria-current", "date");
-      const barra = UI.crear("div", "bar-fill-body");
+      const barra = UI.crear("div", "bar-fill-body" + (sinBarra ? " bar-fill-body--base" : ""));
       barra.setAttribute("aria-hidden", "true");
-      barra.style.height = `${d.futuro ? 12 : altura}px`;
+      barra.style.height = `${altura}px`;
+      const numero = UI.crear("span", "bar-numero cifra", d.futuro ? "" : String(d.comidas));     // cada barra muestra su número
+      numero.setAttribute("aria-hidden", "true");
       if (d.tieneFruta) {
         const fruta = UI.crear("i", "bi bi-apple bar-fruit-floating-icon");
         fruta.setAttribute("aria-hidden", "true");
@@ -43,7 +46,7 @@
       letra.setAttribute("aria-hidden", "true");
       const detalle = d.futuro ? "todavía no llega"
         : `${F.plural(d.comidas, "comida", "comidas")}${d.tieneFruta ? ", con fruta" : ""}`;
-      columna.append(barra, letra, UI.crear("span", "solo-lector", `${d.nombre}${d.esHoy ? " (hoy)" : ""}: ${detalle}`));
+      columna.append(numero, barra, letra, UI.crear("span", "solo-lector", `${d.nombre}${d.esHoy ? " (hoy)" : ""}: ${detalle}`));
       lista.appendChild(columna);
     });
   }

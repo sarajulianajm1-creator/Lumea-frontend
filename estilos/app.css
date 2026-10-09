@@ -114,6 +114,13 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
    de logro, los chips y la cara elegida; las tarjetas quedan casi neutras. */
 .inicio__saludo { display: flex; justify-content: space-between; align-items: center; gap: var(--e-4); }
 .inicio__saludo-texto { flex: 1 1 auto; min-width: 0; }
+.inicio__saludo > .chip { white-space: nowrap; flex: none; }                       /* «Etapa 2» nunca se parte en dos líneas */
+@media (max-width: 720px) {                                                          /* celular: la pastilla pasa a su propia línea, debajo de la fecha */
+  .inicio__saludo { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--e-2) var(--e-4); }
+  .inicio__saludo > .inicio__companero { grid-row: 1 / span 2; }
+  .inicio__saludo > .inicio__companero:empty { display: none; }
+  .inicio__saludo > .chip { grid-column: 2; justify-self: start; }
+}
 /* El compañero que saluda: grande en el computador (140 px) y más pequeño en el celular (96 px) */
 .inicio__companero { flex: 0 0 auto; display: block; width: 96px; height: 96px; }
 .inicio__companero:empty { display: none; }
@@ -264,6 +271,9 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .bar-col-item--futuro { opacity: .55; }
 .bar-fill-body { position: relative; width: 26px; background: var(--c-comida); border-radius: var(--r-control) var(--r-control) 0 0; }
 .bar-col-item.today .bar-fill-body { background: var(--c-marca); }
+.bar-numero { min-height: 1.25em; font-size: var(--t-s); font-weight: var(--t-peso-fuerte); line-height: 1.25; }
+.bar-fill-body--base { width: 100%; max-width: 40px; border-radius: 0; background: var(--c-borde-fuerte); }          /* 0 comidas: solo la línea base */
+.bar-col-item.today .bar-fill-body--base { background: var(--c-borde-fuerte); }
 .bar-fruit-floating-icon { position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: var(--t-l); color: var(--c-comida-tinta); }
 .bar-day-name { font-size: var(--t-xs); font-weight: var(--t-peso-medio); color: var(--c-tinta-suave); }
 .bar-col-item.today .bar-day-name { color: var(--c-marca-tinta); font-weight: var(--t-peso-fuerte); }

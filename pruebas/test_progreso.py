@@ -302,3 +302,23 @@ def test_progreso_en_celular_cabe_y_apila(pagina, backend):
     assert pagina.evaluate("document.documentElement.scrollWidth") <= 390
     tops = pagina.evaluate("[...document.querySelectorAll('main .tarjeta')].map(e => e.getBoundingClientRect().top)")
     assert tops == sorted(tops) and len(set(tops)) == len(tops)                                                 # una debajo de otra
+
+
+# ---------- P9: «Comidas de la semana» ----------
+
+def test_un_dia_con_0_comidas_no_lleva_barra_solo_la_linea_base_y_cada_barra_muestra_su_numero(pagina, backend):
+    abrir(pagina, backend)
+    dias = pagina.locator("#grafica-barras-semana .bar-col-item")
+    numeros = [d.locator(".bar-numero").inner_text() for d in dias.all()]
+    comidas = [d.locator(".solo-lector").inner_text() for d in dias.all()]
+    for numero, frase in zip(numeros, comidas):
+        if "todavía no llega" in frase:
+            assert numero == ""                                          # un día que no llega no tiene número
+        else:
+            assert numero == frase.split(": ")[1].split(" ")[0]          # el número de la barra es el de las comidas
+    for d in dias.all():
+        base = "0 comidas" in d.locator(".solo-lector").inner_text() or "todavía no llega" in d.locator(".solo-lector").inner_text()
+        barra = d.locator(".bar-fill-body")
+        assert ("bar-fill-body--base" in barra.get_attribute("class")) == base
+        assert barra.evaluate("e => e.getBoundingClientRect().height") < 4 if base else barra.evaluate("e => e.getBoundingClientRect().height") > 20
+    assert pagina.locator(".bar-numero").evaluate_all("e => e.every(x => x.getAttribute('aria-hidden') === 'true' && x.classList.contains('cifra'))")
