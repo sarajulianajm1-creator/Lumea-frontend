@@ -344,10 +344,6 @@ html:not([data-piel="sara"]) .bar-fill-body { background: var(--c-comida); }
 html:not([data-piel="sara"]) .bar-col-item.today .bar-fill-body { background: var(--c-marca); }
 html:not([data-piel="sara"]) .bar-fruit-floating-icon { color: var(--c-comida-tinta); }
 html:not([data-piel="sara"]) .bar-col-item.today .bar-day-name { color: var(--c-marca-tinta); }
-html:not([data-piel="sara"]) .animo-day-pill { background: var(--c-fondo); border-color: var(--c-borde); }
-html:not([data-piel="sara"]) .animo-day-pill.today { background: var(--c-emocion-suave); border-color: var(--c-emocion-tinta); }
-html:not([data-piel="sara"]) .animo-day-pill__nombre { color: var(--c-tinta-suave); }
-html:not([data-piel="sara"]) .animo-day-pill__letra { color: var(--c-tinta-suave); }
 
 /* ---- Ánimo ---- */
 html:not([data-piel="sara"]) .animo-stage-box {

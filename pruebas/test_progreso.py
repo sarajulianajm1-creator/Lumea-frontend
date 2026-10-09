@@ -1,4 +1,5 @@
 """progreso.html (rediseño R6, conectado por api.js): nivel, racha, comidas y ánimo de la semana, el álbum, la bienvenida y los estados."""
+import re
 from datetime import datetime
 
 import pytest
@@ -344,3 +345,62 @@ def test_el_numero_de_la_barra_mas_alta_nunca_se_monta_sobre_la_descripcion(pagi
     assert all(top >= medidas["graficaIni"] - 0.5 and fin <= medidas["graficaFin"] + 0.5 for top, fin in medidas["columnas"])
     assert max(medidas["barras"]) <= medidas["zona"]                                              # la barra más alta cabe en su zona
     assert pagina.evaluate("document.documentElement.scrollWidth") <= ancho
+
+
+# ---------- P10 · 3: «Tu ánimo de la semana» en una sola fila de 7 días ----------
+
+ANIMO_SEMANA = [{"id": 5, "estado": "muy_bien", "fecha": fecha(5)}, {"id": 4, "estado": "mal", "fecha": fecha(6)},
+                {"id": 3, "estado": "neutral", "fecha": fecha(7)}]            # lunes, martes y hoy (miércoles); el resto, sin check-in o futuro
+
+
+@pytest.mark.parametrize("ancho", [320, 390, 1280])
+def test_la_semana_de_animo_es_una_sola_fila_de_siete_dias_que_cabe_sin_scroll(pagina, backend, ancho):
+    pagina.set_viewport_size({"width": ancho, "height": 844})
+    abrir(pagina, backend, animo=ANIMO_SEMANA)
+    pagina.locator("#animo-semana-fila img").first.wait_for()
+    m = pagina.evaluate("""() => { const fila = document.querySelector('#animo-semana-fila'), rf = fila.getBoundingClientRect();
+        const dias = [...fila.querySelectorAll('.animo-dia')], tarjeta = document.querySelector('#semana-animo-caja').getBoundingClientRect();
+        return { n: dias.length, tops: dias.map(d => Math.round(d.getBoundingClientRect().top)), letras: dias.map(d => d.querySelector('.animo-dia__letra').textContent),
+                 dentro: dias.every(d => { const r = d.getBoundingClientRect(); return r.left >= rf.left - 1 && r.right <= rf.right + 1 }),
+                 tarjetaDentro: rf.right <= tarjeta.right && rf.left >= tarjeta.left, scroll: document.documentElement.scrollWidth,
+                 caras: [...fila.querySelectorAll('.animo-dia__cara')].map(c => c.getBoundingClientRect().width) } }""")
+    assert m["n"] == 7 and len(set(m["tops"])) == 1                           # una sola fila
+    assert m["letras"] == ["L", "M", "M", "J", "V", "S", "D"]
+    assert m["dentro"] and m["tarjetaDentro"] and m["scroll"] <= ancho
+    assert all(26 <= c <= 42 for c in m["caras"]), m["caras"]                # 36–40 px cuando hay sitio; se achica un poco a 320
+
+
+def test_cada_dia_tiene_su_estado_visual_y_la_palabra_va_en_el_nombre_accesible_y_en_el_tooltip(pagina, backend):
+    abrir(pagina, backend, animo=ANIMO_SEMANA)
+    pagina.locator("#animo-semana-fila img").first.wait_for()
+    dias = pagina.locator("#animo-semana-fila .animo-dia")
+    clases = [d.get_attribute("class") for d in dias.all()]
+    assert "animo-dia--con" in clases[0] and "animo-dia--con" in clases[1] and "animo-dia--con" in clases[2]
+    assert "animo-dia--hoy" in clases[2] and sum("animo-dia--hoy" in c for c in clases) == 1
+    assert all("animo-dia--sin" in c for c in clases[3:4]) is False                           # jueves, viernes… aún no llegan
+    assert all("animo-dia--futuro" in c for c in clases[3:])
+    assert [d.get_attribute("title") for d in dias.all()][:3] == ["Lunes: Muy bien", "Martes: Mal", "Miércoles (hoy): Neutral"]
+    assert dias.nth(2).get_attribute("aria-current") == "date"
+    assert pagina.locator("#animo-semana-fila .solo-lector").first.inner_text() == "Lunes: Muy bien"
+    visible = pagina.locator("#animo-semana-fila").evaluate("e => [...e.querySelectorAll('.animo-dia > *:not(.solo-lector)')].map(x => x.textContent).join('')")
+    assert visible == "LMMJVSD"                                                                # debajo solo va la letra del día, nunca la palabra
+    borde = pagina.locator("#animo-semana-fila").evaluate("""e => [...e.querySelectorAll('.animo-dia__circulo')].map(c => getComputedStyle(c).borderTopStyle)""")
+    assert borde[:3] == ["none"] * 3 and borde[3:] == ["dotted"] * 4
+
+
+def test_un_dia_pasado_sin_checkin_es_un_circulo_punteado(pagina, backend):
+    pagina.clock.set_fixed_time(datetime(2026, 10, 10, 12, 0))                                # sábado: lunes a viernes ya pasaron
+    abrir(pagina, backend, animo=[{"id": 1, "estado": "bien", "fecha": fecha(7)}])
+    pagina.locator("#animo-semana-fila img").first.wait_for()
+    estilos = pagina.locator("#animo-semana-fila").evaluate("""e => [...e.querySelectorAll('.animo-dia')].map(d => [d.className.includes('--sin'), getComputedStyle(d.querySelector('.animo-dia__circulo')).borderTopStyle])""")
+    assert estilos[0] == [True, "dashed"] and estilos[2] == [False, "none"]
+
+
+def test_todas_las_caras_van_del_mismo_color_el_color_no_ordena_los_animos(pagina, backend):
+    abrir(pagina, backend, animo=ANIMO_SEMANA)
+    pagina.locator("#animo-semana-fila img").nth(2).wait_for()
+    fuentes = pagina.locator("#animo-semana-fila img").evaluate_all("e => e.map(i => i.dataset.fuente)")
+    sin_cara = [re.sub(r"(eyesVariant|mouthVariant)=[^&]*&?", "", s) for s in fuentes]       # lo único que cambia es la expresión
+    assert len(set(sin_cara)) == 1, sin_cara
+    fondos = pagina.locator("#animo-semana-fila .animo-dia--con .animo-dia__circulo").evaluate_all("e => e.map(c => getComputedStyle(c).backgroundColor)")
+    assert len(set(fondos)) == 1 and len(fondos) == 3

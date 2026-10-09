@@ -129,7 +129,7 @@ def test_si_guardar_falla_se_avisa_y_se_puede_intentar_otra_vez(pagina, backend)
 def test_esta_semana_viene_del_backend_no_de_ejemplos(pagina, backend):
     backend.poner("GET", "/estado-animo", {"success": True, "cantidad": 0, "historial": []})
     abrir(pagina, backend)
-    pagina.locator("#animo-semana-fila .animo-day-pill").first.wait_for()
+    pagina.locator("#animo-semana-fila .animo-dia").first.wait_for()
     lectores = pagina.locator("#animo-semana-fila .solo-lector").all_inner_texts()
     assert len(lectores) == 7 and all("sin check-in" in t or "todavía no llega" in t for t in lectores)
 

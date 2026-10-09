@@ -66,23 +66,30 @@
     contenedor.replaceChildren(img);
   }
 
-  // La fila de los 7 días con la cara del avatar de cada uno (Progreso y Ánimo). El nombre siempre va escrito.
+  // La fila de los 7 días (L a D) con la cara del compañero de cada uno (Progreso y Ánimo). La palabra del ánimo va en el nombre
+  // accesible y en el tooltip (title), no debajo: todas las caras del mismo color, porque el color no ordena los ánimos.
+  //   con check-in: la cara sobre un círculo · pasado sin check-in: círculo punteado · hoy: con anillo · futuro: tenue.
   function dibujarSemanaAnimo(fila, semana) {
     fila.replaceChildren();
     semana.forEach((d) => {
-      const dia = crear("div", "animo-day-pill" + (d.esHoy ? " today" : ""));
-      dia.setAttribute("role", "listitem");
-      if (d.esHoy) dia.setAttribute("aria-current", "date");
-      const cara = crear("span", "lumea-cara animo-day-pill__cara");
-      cara.setAttribute("aria-hidden", "true");
-      if (d.estado) ponerCara(cara, d.estado);
       const nombre = d.estado ? (F.NOMBRE_ANIMO[d.estado] || d.estado) : "";
-      const letra = crear("small", "animo-day-pill__letra fw-bold d-block", d.dia + (d.esHoy ? " (hoy)" : ""));
-      letra.setAttribute("aria-hidden", "true");
-      const rotulo = crear("span", "animo-day-pill__nombre", nombre);
-      rotulo.setAttribute("aria-hidden", "true");
       const lector = d.futuro ? "todavía no llega" : (nombre || "sin check-in");
-      dia.append(cara, letra, rotulo, crear("span", "solo-lector", `${d.nombre}${d.esHoy ? " (hoy)" : ""}: ${lector}`));
+      const frase = `${d.nombre}${d.esHoy ? " (hoy)" : ""}: ${lector}`;
+      const estado = d.estado ? " animo-dia--con" : (d.futuro ? " animo-dia--futuro" : " animo-dia--sin");
+      const dia = crear("div", "animo-dia" + estado + (d.esHoy ? " animo-dia--hoy" : ""));
+      dia.setAttribute("role", "listitem");
+      dia.title = frase;                                           // el tooltip: la palabra del ánimo
+      if (d.esHoy) dia.setAttribute("aria-current", "date");
+      const circulo = crear("span", "animo-dia__circulo");
+      circulo.setAttribute("aria-hidden", "true");
+      if (d.estado) {
+        const cara = crear("span", "lumea-cara animo-dia__cara");
+        ponerCara(cara, d.estado);
+        circulo.appendChild(cara);
+      }
+      const letra = crear("span", "animo-dia__letra", d.dia);
+      letra.setAttribute("aria-hidden", "true");
+      dia.append(circulo, letra, crear("span", "solo-lector", frase));
       fila.appendChild(dia);
     });
   }

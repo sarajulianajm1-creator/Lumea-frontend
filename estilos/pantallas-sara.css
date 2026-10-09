@@ -66,18 +66,8 @@
 .progreso-faltan { font-size: var(--t-l); }
 .racha-rotulo { font-size: 0.75rem; }
 .face-cara { width: 44px; height: 44px; }
-.animo-day-pill__cara { width: 40px; height: 40px; margin: 0 auto var(--e-1); }
-.animo-day-pill__nombre { display: block; font-size: 0.72rem; min-height: 1.2em; }
-.animo-day-pill__letra { font-size: 0.72rem; }
 .cara-live-avatar .lumea-cara { width: 100%; height: 100%; }
 .sidebar-user-avatar .lumea-cara, .avatar-header-icon .lumea-cara, .shape-face-circle .lumea-cara { width: 100%; height: 100%; }
 .bar-col-item--futuro { opacity: 0.55; }
 
-/* En celular los siete días caben en una fila: la cara y el texto se achican (el nombre sigue escrito) */
-.animo-day-pill { min-width: 0; }
-@media (max-width: 480px) {
-  .animo-semana-row { gap: var(--e-1); }
-  .animo-day-pill { padding: var(--e-2) 2px; }
-  .animo-day-pill__cara { width: 28px; height: 28px; }
-  .animo-day-pill__nombre, .animo-day-pill__letra { font-size: 0.62rem; overflow-wrap: anywhere; }
-}
+/* La semana de ánimo (.animo-dia) se dibuja en app.css */

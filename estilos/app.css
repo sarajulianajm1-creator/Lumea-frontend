@@ -231,13 +231,20 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 #btn-guardar-animo { min-width: 220px; }
 #semana-animo-caja { display: grid; gap: var(--e-3); }
 
-/* La semana de ánimo (Ánimo y Progreso): una cara por día */
-.animo-semana-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: var(--e-2); }
-.animo-day-pill { min-width: 0; padding: var(--e-2); text-align: center; border: 1px solid var(--c-borde); border-radius: var(--r-tarjeta); background: var(--c-fondo); }
-.animo-day-pill.today { background: var(--c-emocion-suave); border-color: var(--c-emocion-tinta); }
-.animo-day-pill__cara { display: block; width: 40px; height: 40px; margin: 0 auto var(--e-1); }
-.animo-day-pill__letra, .animo-day-pill__nombre { display: block; font-size: var(--t-xs); color: var(--c-tinta-suave); }
-.animo-day-pill__nombre { min-height: 1.2em; }
+/* La semana de ánimo (Ánimo y Progreso): una sola fila de 7 días (L a D), sin scroll horizontal ni a 320 px.
+   Con check-in: la cara del compañero sobre un círculo «contenedor» · pasado sin check-in: círculo punteado · hoy: con anillo ·
+   futuro: tenue (borde más claro, sin bajar la opacidad del texto). Todas las caras del mismo color: el color no ordena los ánimos. */
+.animo-semana-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--e-1); }
+.animo-dia { min-width: 0; display: grid; justify-items: center; gap: var(--e-1); }
+.animo-dia__circulo { display: grid; place-items: center; width: min(100%, 48px); aspect-ratio: 1; border-radius: 50%; box-sizing: border-box; }
+.animo-dia--con .animo-dia__circulo { background: var(--c-emocion-contenedor); }
+.animo-dia--sin .animo-dia__circulo { border: 2px dashed var(--c-tinta-suave); }
+.animo-dia--futuro .animo-dia__circulo { border: 2px dotted var(--c-borde-fuerte); }
+.animo-dia--hoy .animo-dia__circulo { outline: 2px solid var(--c-emocion-tinta); outline-offset: 2px; }
+.animo-dia__cara { width: 88%; max-width: 40px; height: auto; aspect-ratio: 1; }          /* 36–40 px cuando hay sitio */
+.animo-dia__cara .lumea-cara__img { object-fit: contain; }
+.animo-dia__letra { font-size: var(--t-xs); font-weight: var(--t-peso-medio); color: var(--c-tinta-suave); }
+.animo-dia--hoy .animo-dia__letra { color: var(--c-tinta); font-weight: var(--t-peso-fuerte); }
 
 /* ---------- 6. Progreso (rediseño R6) ----------
    Cinco superficies como máximo: el nivel, la racha, las comidas de la semana, el ánimo de la semana y
