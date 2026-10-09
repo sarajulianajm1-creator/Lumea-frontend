@@ -35,7 +35,7 @@ def test_al_abrir_la_pantalla_se_mueve_una_sola_cosa_la_entrada(pagina, nombre):
     abrir(pagina, nombre)
     assert pagina.evaluate("window.__animaciones") == ["entrada"]
     movimientos = [p for p in pagina.evaluate("window.__transiciones") if p in MOVIMIENTO]
-    assert movimientos == []                                                  # ni barras que se llenan ni nada que se corra solo
+    assert set(movimientos) <= {"width"}                                      # solo las barras se llenan (una vez, P6); nada más se corre solo
 
 
 @pytest.mark.parametrize("nombre", PRIVADAS)
@@ -87,12 +87,44 @@ def test_ninguna_hoja_escribe_una_duracion_a_mano():
             assert not re.search(r"\b\d*\.?\d+m?s\b", sin_variables), f"{hoja.name}: {declaracion.strip()}"
 
 
-def test_no_hay_transicion_automatica_entre_paginas():
-    """Una sola entrada por pantalla: la transición del navegador entre páginas sumaría una segunda."""
+def test_entre_pantallas_hay_un_fundido_corto_solo_con_movimiento():
+    """P6: @view-transition vive dentro de prefers-reduced-motion: no-preference, con la duración del token --m-base."""
+    css = re.sub(r"/\*.*?\*/", "", (RAIZ / "estilos" / "app.css").read_text(encoding="utf-8"), flags=re.S)
+    bloque = css[css.index("@media (prefers-reduced-motion: no-preference)"):]
+    assert "@view-transition" in bloque and "navigation: auto" in bloque
+    assert "animation-duration: var(--m-base)" in bloque
     for hoja in (RAIZ / "estilos").glob("*.css"):
-        if hoja.name == "inicio.css":                                         # el ejercicio de Isabella: no se toca
+        if hoja.name in ("inicio.css", "app.css"):                            # inicio.css: el ejercicio de Isabella; app.css: arriba
             continue
         assert "@view-transition" not in re.sub(r"/\*.*?\*/", "", hoja.read_text(encoding="utf-8"), flags=re.S), hoja.name
+
+
+@pytest.mark.parametrize("nombre", PRIVADAS)
+def test_el_menu_y_el_logo_llevan_su_nombre_de_transicion(pagina, nombre):
+    abrir(pagina, nombre, espiar=False)
+    nombres = pagina.evaluate("[document.querySelector('.nav-app'), document.querySelector('.nav-app__marca')].map(e => getComputedStyle(e).viewTransitionName)")
+    assert nombres == ["menu", "logo"]
+
+
+def test_con_movimiento_reducido_no_hay_fundido_entre_pantallas(pagina):
+    pagina.emulate_media(reduced_motion="reduce")
+    abrir(pagina, "avatar.html", espiar=False)
+    nombres = pagina.evaluate("[document.querySelector('.nav-app'), document.querySelector('.nav-app__marca')].map(e => getComputedStyle(e).viewTransitionName)")
+    assert nombres == ["none", "none"]
+
+
+@pytest.mark.parametrize("selector", [".boton", ".pestana", ".animo-cara", ".prenda__mosaico", ".nav-app__enlace"])
+def test_al_presionar_la_respuesta_es_inmediata_menos_de_0_1_s(pagina, selector):
+    abrir(pagina, {".animo-cara": "emociones.html", ".boton": "index-ingresado.html"}.get(selector, "avatar.html"), espiar=False)
+    elemento = pagina.locator(f"{selector}:visible").first
+    elemento.wait_for()
+    caja = elemento.bounding_box()
+    pagina.mouse.move(caja["x"] + caja["width"] / 2, caja["y"] + caja["height"] / 2)
+    pagina.mouse.down()
+    try:
+        assert elemento.evaluate("e => getComputedStyle(e).transitionDuration") .split(", ")[0] == "0s"
+    finally:
+        pagina.mouse.up()
 
 
 # ---------- Responder a lo que la persona hace: 120 ms ----------
@@ -155,6 +187,14 @@ def test_el_esqueleto_de_carga_esta_quieto_y_es_de_un_solo_color(pagina):
     assert datos == ["none", "none"]                                          # sin destello que se repita sin parar y sin degradado
 
 
-def test_la_barra_de_nivel_no_se_llena_sola_al_abrir_la_pantalla(pagina):
+def test_la_barra_se_llena_una_vez_al_cargar(pagina):
+    """P6: el ancho de la barra pasa de 0 a su valor cuando llegan los datos (--m-lento); con movimiento reducido, de golpe."""
+    abrir(pagina, "index-ingresado.html", espiar=False)
+    datos = pagina.locator(".barra-xp__relleno").first.evaluate("e => [getComputedStyle(e).transitionProperty, getComputedStyle(e).transitionDuration]")
+    assert datos == ["width", "0.42s"]
+
+
+def test_con_movimiento_reducido_la_barra_se_llena_de_golpe(pagina):
+    pagina.emulate_media(reduced_motion="reduce")
     abrir(pagina, "index-ingresado.html", espiar=False)
     assert pagina.locator(".barra-xp__relleno").first.evaluate("e => getComputedStyle(e).transitionDuration") == "0s"
