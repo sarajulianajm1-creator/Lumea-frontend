@@ -13,7 +13,7 @@
 //
 // Cambia esta URL si el backend corre en otra dirección/puerto (ej. el día
 // de la sustentación, si no es localhost).
-const API_BASE_URL = "http://127.0.0.1:5002";
+const API_BASE_URL = `http://${location.hostname}:5002`;
 
 // Ayudantes internos: hacen el fetch y convierten la respuesta a JSON.
 async function _getJSON(ruta, parametros) {
