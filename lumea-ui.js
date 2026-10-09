@@ -59,10 +59,9 @@
   function ponerCara(contenedor, estado) {
     const url = urlDeCara(estado);
     if (!url) { contenedor.replaceChildren(siluetaDeCara()); return; }
-    const img = document.createElement("img");
-    img.alt = "";
-    img.src = url;
-    img.className = "lumea-cara__img";
+    // El compañero se dibuja en el navegador (companero.js, DiceBear local): no se le pide nada a api.dicebear.com
+    const img = window.LumeaCompanero ? window.LumeaCompanero.imagen(url, null, "lumea-cara__img") : null;
+    if (!img) { contenedor.replaceChildren(siluetaDeCara()); return; }
     img.addEventListener("error", () => contenedor.replaceChildren(siluetaDeCara()));
     contenedor.replaceChildren(img);
   }

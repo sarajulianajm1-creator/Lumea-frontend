@@ -46,7 +46,7 @@ def parametros(src):
 
 def srcs(pagina):
     """El src de la imagen de cada botón, en orden (None si el botón no tiene imagen)."""
-    return pagina.evaluate("""[...document.querySelectorAll('.animo-cara')].map(b => { const i = b.querySelector('img'); return i ? i.src : null })""")
+    return pagina.evaluate("""[...document.querySelectorAll('.animo-cara')].map(b => { const i = b.querySelector('img'); return i ? i.dataset.fuente : null })""")
 
 
 # ---------- Las cinco caras son las del compañero ----------
@@ -66,7 +66,7 @@ def test_cada_boton_trae_la_cara_de_su_estado_del_companero_y_quieta(pagina, bac
 def test_la_direccion_no_lleva_datos_de_la_persona(pagina, backend, nombre):
     abrir(pagina, backend, nombre)
     pagina.get_by_role("button", name="Bien", exact=True).click()                                # incluso la animada
-    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
+    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[data-fuente*=medium]').length === 1")
     for src in srcs(pagina):
         datos = parametros(src)
         assert set(datos) <= PARAMETROS_PERMITIDOS, f"parámetro de más: {set(datos) - PARAMETROS_PERMITIDOS}"
@@ -122,13 +122,13 @@ def test_solo_la_cara_elegida_se_anima_y_la_animacion_la_sigue(pagina, backend, 
 
     assert animadas() == [None] * 5
     pagina.get_by_role("button", name="Bien", exact=True).click()
-    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
+    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[data-fuente*=medium]').length === 1")
     assert animadas() == [None, None, None, "medium", None]
     assert parametros(srcs(pagina)[3])["eyesVariant"] == "happy"                                 # sigue siendo SU cara
     pagina.get_by_role("button", name="Mal", exact=True).click()                                 # el movimiento sigue a lo que la persona hace
-    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
+    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[data-fuente*=medium]').length === 1")
     assert animadas() == [None, "medium", None, None, None]
-    assert pagina.locator("img[src*=medium], img[src*=slow]").count() == 1                       # nunca dos caras moviéndose
+    assert pagina.locator("img[data-fuente*=medium], img[data-fuente*=slow]").count() == 1                       # nunca dos caras moviéndose
 
 
 @pytest.mark.parametrize("nombre", PAGINAS)
@@ -146,7 +146,7 @@ def test_las_demas_caras_no_se_vuelven_a_cargar_al_elegir_otra(pagina, backend, 
     abrir(pagina, backend, nombre)
     pagina.evaluate("document.querySelectorAll('.animo-cara img').forEach((i, n) => { i.dataset.marca = n })")
     pagina.get_by_role("button", name="Bien", exact=True).click()
-    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
+    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[data-fuente*=medium]').length === 1")
     marcas = pagina.evaluate("[...document.querySelectorAll('.animo-cara')].map(b => { const i = b.querySelector('img'); return i && i.dataset.marca || null })")
     assert marcas == ["0", "1", "2", None, "4"]                       # solo la elegida es una imagen nueva
 

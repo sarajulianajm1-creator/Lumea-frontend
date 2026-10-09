@@ -177,10 +177,10 @@ def test_elegir_el_modo_se_aplica_y_se_guarda(pagina, backend, modo, atributo):
 def test_elegir_una_paleta_no_cambia_las_caras_del_check_in_porque_son_del_companero(pagina, backend):
     abrir(pagina, backend)
     pagina.wait_for_function("document.querySelectorAll('.inicio__animo .animo-cara img').length === 5")
-    antes = pagina.eval_on_selector_all(".inicio__animo .animo-cara img", "e => e.map(i => i.src)")
+    antes = pagina.eval_on_selector_all(".inicio__animo .animo-cara img", "e => e.map(i => i.dataset.fuente)")
     tarjeta(pagina).get_by_label("Carnaval", exact=True).check(force=True)
     assert pagina.evaluate("document.documentElement.dataset.paleta") == "carnaval"
-    despues = pagina.eval_on_selector_all(".inicio__animo .animo-cara img", "e => e.map(i => i.src)")
+    despues = pagina.eval_on_selector_all(".inicio__animo .animo-cara img", "e => e.map(i => i.dataset.fuente)")
     assert antes == despues                                                            # el color del compañero es suyo, no de la paleta
     assert all("bodyColor=F6B73C" in s for s in despues)
     assert pagina.evaluate("localStorage.getItem('lumea-caras')") is None              # esa clave ya no existe

@@ -44,8 +44,8 @@ def cargar_respuesta(nombre):
     return json.loads((RESPUESTAS / f"{nombre}.json").read_text(encoding="utf-8"))
 
 
-_ROPA = [("buzo_verde", "Buzo verde", 1), ("camiseta_lumea", "Camiseta Lumea", 3), ("ruana", "Ruana", 6)]
-_ACCESORIOS = [("gafas", "Gafas", 2), ("audifonos", "Audífonos", 4), ("sombrero_vueltiao", "Sombrero vueltiao", 8)]
+# La persona (voxel-art) y el armario por etapas: `objetos_avatar.json` y `rasgos_disponibles.json` salen de la
+# configuración real del backend (gamificacion_config.OBJETOS_AVATAR y gamificacion.rasgos_disponibles(), 9 oct 2026).
 
 
 # ---------- Los seis compañeros (Camino del cuidado): DiceBear 10.x «gaze», como los manda el backend ----------
@@ -89,33 +89,29 @@ def avatares_estado(nivel=2, actual="sol", xp_total=45):
     return {"success": True, "avatar_actual": actual, "nivel_maximo": nivel, "xp_total": xp_total, "avatares": lista}
 
 
-def avatar_estado(nivel=2, ropa=None, accesorio=None, imagenes=False):
-    """El cuerpo de GET /avatar (y de equipar/quitar, que responden igual) como lo arma el backend
-    real: 3 prendas y 3 accesorios que se abren por nivel máximo, y las capas en orden de apilado."""
-    def url(archivo):
-        return f"http://127.0.0.1:5002/static/avatar/{archivo}"
-
-    def objeto(tipo, id_, nombre, nivel_requerido):
-        archivo = f"{tipo}_{id_}.png"
-        return {"id": id_, "tipo": tipo, "nombre": nombre, "archivo": archivo, "imagen_lista": imagenes,
-                "nivel_requerido": nivel_requerido, "desbloqueado": nivel >= nivel_requerido,
-                "niveles_faltantes": max(0, nivel_requerido - nivel),
-                "puesto": id_ in (ropa, accesorio), "url": url(archivo)}
-
-    objetos = {"ropa": [objeto("ropa", *o) for o in _ROPA], "accesorio": [objeto("accesorio", *o) for o in _ACCESORIOS]}
-    base = {"id": "base_1", "nombre": "Base 1", "archivo": "base_1.png", "imagen_lista": imagenes, "url": url("base_1.png")}
-    capas = [{"tipo": "base", "id": "base_1", "archivo": "base_1.png", "imagen_lista": imagenes, "url": url("base_1.png")}]
+def avatar_estado(nivel=2, ropa="camiseta_lisa", accesorio=None, rasgos=None):
+    """El cuerpo de GET /avatar (y de equipar, quitar y rasgos, que responden igual) como lo arma el backend real
+    (CONTRATO_GAMIFICACION.md, «La persona»): `persona` con los 8 rasgos y lo puesto, `rasgos_disponibles`, y una
+    prenda o accesorio por cada una de las 10 etapas, abiertos por nivel máximo. Lo viejo (base, capas) sigue, en desuso."""
+    datos = cargar_respuesta("objetos_avatar")
+    objetos = {"ropa": [], "accesorio": []}
+    for o in datos["objetos"]:
+        objetos[o["tipo"]].append({**o, "desbloqueado": nivel >= o["nivel_requerido"],
+                                   "niveles_faltantes": max(0, o["nivel_requerido"] - nivel), "puesto": o["id"] in (ropa, accesorio)})
     puesto = {"ropa": None, "accesorio": None}
     for tipo, id_ in (("ropa", ropa), ("accesorio", accesorio)):
         if id_:
             o = next(x for x in objetos[tipo] if x["id"] == id_)
-            puesto[tipo] = {k: o[k] for k in ("id", "nombre", "archivo", "imagen_lista", "url")}
-            capas.append({"tipo": tipo, "id": id_, "archivo": o["archivo"], "imagen_lista": imagenes, "url": o["url"]})
+            puesto[tipo] = {k: o[k] for k in ("id", "nombre", "parametros")}
     return {
-        "success": True, "nivel_maximo": nivel, "imagenes_listas": imagenes, "base": base, "puesto": puesto, "capas": capas,
-        "bases": [dict(base, seleccionada=True), {"id": "base_2", "nombre": "Base 2", "archivo": "base_2.png", "imagen_lista": imagenes,
-                                                   "seleccionada": False, "url": url("base_2.png")}],
-        "objetos": objetos,
+        "success": True, "nivel_maximo": nivel,
+        "persona": {"estilo": "voxel-art", "rasgos": {**datos["rasgos_por_defecto"], **(rasgos or {})}, "puesto": puesto},
+        "rasgos_disponibles": cargar_respuesta("rasgos_disponibles"),
+        "objetos": objetos, "puesto": puesto,
+        "imagenes_listas": False,                                                        # EN DESUSO
+        "base": {"id": "base_1", "nombre": "Base 1", "archivo": "base_1.png", "imagen_lista": False,
+                 "url": "http://127.0.0.1:5002/static/avatar/base_1.png"},
+        "bases": [], "capas": [],
         "respaldo_dicebear": companero_basico("sol"),
     }
 
@@ -183,6 +179,9 @@ def backend():
 def pagina(page, backend, servidor):
     """Página con backend simulado, sin internet y con sesión iniciada."""
     page.route("http://127.0.0.1:5002/**", backend._responder)
+    # Todo lo que la página pide fuera de esta máquina (para comprobar que no le pide nada a DiceBear)
+    page.peticiones_externas = []
+    page.on("request", lambda r: None if r.url.startswith(("http://127.0.0.1", "data:", "blob:")) else page.peticiones_externas.append(r.url))
 
     def sin_internet(route):                      # Google Fonts, DiceBear…
         ruta = route.request.url.split("?")[0]

@@ -10,6 +10,10 @@
 // un dato de la persona. La animación vive dentro del SVG y se apaga sola con prefers-reduced-motion;
 // además aquí no se pide ninguna si la persona tiene el movimiento reducido.
 //
+// DIBUJO LOCAL: el compañero se dibuja en el navegador con vendor/dicebear/ (core + gaze.json). La dirección
+// que manda el backend solo se LEE (sus parámetros): nunca se pide a api.dicebear.com. Cada <img> trae esa
+// dirección en data-fuente (con la animación pedida) y, en src, el dibujo como dirección data:.
+//
 // Esto reemplaza a caras-checkin.js: ya no hay sets de caras que elegir ni la clave lumea-caras en el
 // navegador. Las cinco caras del check-in (Inicio y Ánimo) son siempre las de tu compañero.
 //
@@ -47,16 +51,54 @@
     return u.toString();
   }
 
-  // Una <img> del compañero; si no carga, se quita sola (lo que haya al lado, como la palabra, queda)
+  // ---------- El dibujo local (gaze 10.x, CC0) ----------
+  const PARAMETROS = ["shapeVariant", "bodyColor", "eyesVariant", "animationVariant"];   // los únicos que se leen de la dirección
+  let nucleo = null;
+  // Un servidor sencillo (python -m http.server) puede cortar alguna de las ~40 peticiones de módulos que llegan juntas:
+  // si pasa, se intenta una vez más antes de rendirse.
+  function cargarNucleo(intentos) {
+    if (!nucleo) {
+      nucleo = Promise.all([
+        import("./vendor/dicebear/core/index.js"),
+        fetch("vendor/dicebear/estilos/gaze.json").then((r) => { if (!r.ok) throw new Error("gaze.json"); return r.json(); }),
+      ]).then(([m, def]) => ({ Avatar: m.Avatar, estilo: new m.Style(def) }))
+        .catch((e) => {
+          nucleo = null;
+          if ((intentos || 0) >= 2) throw e;
+          return new Promise((ok) => setTimeout(ok, 150)).then(() => cargarNucleo((intentos || 0) + 1));
+        });
+    }
+    return nucleo;
+  }
+
+  // Las opciones de DiceBear a partir de la dirección: cada valor va en una lista; la semilla, tal cual
+  function opciones(fuente) {
+    const parametros = new URL(fuente).searchParams;
+    const o = { seed: parametros.get("seed") || "lumea" };
+    PARAMETROS.forEach((clave) => { if (parametros.get(clave)) o[clave] = [parametros.get(clave).replace(/^#/, "")]; });
+    return o;
+  }
+
+  const dibujos = new Map();                               // dirección → dirección data: (no se vuelve a dibujar)
+  function dibujar(fuente) {
+    if (!dibujos.has(fuente)) {
+      dibujos.set(fuente, cargarNucleo().then(({ Avatar, estilo }) =>
+        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(new Avatar(estilo, opciones(fuente)).toString())));
+      dibujos.get(fuente).catch(() => dibujos.delete(fuente));
+    }
+    return dibujos.get(fuente);
+  }
+
+  // Una <img> del compañero; si no se puede dibujar, se quita sola (lo que haya al lado, como la palabra, queda)
   function imagen(direccion, animacion, clase) {
     const fuente = url(direccion, animacion);
     if (!fuente) return null;
     const img = document.createElement("img");
     img.alt = "";
-    img.src = fuente;
     img.className = clase || "companero__img";
     img.dataset.fuente = fuente;
     img.addEventListener("error", () => img.remove());
+    dibujar(fuente).then((dibujo) => { img.src = dibujo; }, () => img.dispatchEvent(new Event("error")));
     return img;
   }
 
@@ -76,5 +118,5 @@
     });
   }
 
-  window.LumeaCompanero = { url, imagen, pintarCheckin, movimientoReducido };
+  window.LumeaCompanero = { url, imagen, dibujar, pintarCheckin, movimientoReducido };
 })();

@@ -150,11 +150,11 @@ def test_la_semana_de_animo_va_quieta_y_es_la_cara_de_cada_estado_del_companero(
     abrir(pagina, backend, animo=animo)
     imgs = pagina.locator("#animo-semana-fila img")
     assert imgs.count() == 3
-    src = imgs.evaluate_all("e => e.map(i => i.src)")
+    src = imgs.evaluate_all("e => e.map(i => i.dataset.fuente)")
     assert [s.split("eyesVariant=")[1] for s in src] == ["dots", "bars", "happy"]       # lunes, martes, miércoles
     assert all("animationVariant" not in s and "/10.x/gaze/" in s and "seed=lumea-sol" in s for s in src)   # quietas, del compañero
     assert imgs.evaluate_all("e => e.every(i => i.alt === '')")
-    assert pagina.locator('img[src*="animationVariant=slow"], img[src*="animationVariant=medium"]').count() == 0
+    assert pagina.locator('img[data-fuente*="animationVariant=slow"], img[data-fuente*="animationVariant=medium"]').count() == 0
 
 
 def test_animo_de_la_semana_con_las_caras_del_avatar(pagina, backend):
@@ -164,7 +164,7 @@ def test_animo_de_la_semana_con_las_caras_del_avatar(pagina, backend):
     lectores = [t.strip() for t in pagina.locator("#animo-semana-fila .solo-lector").all_inner_texts()]
     assert lectores[:3] == ["Lunes: Neutral", "Martes: sin check-in", "Miércoles (hoy): Bien"]
     assert pagina.locator("#animo-semana-fila img").count() == 2          # una cara por día con check-in
-    src = pagina.locator("#animo-semana-fila img").last.get_attribute("src")
+    src = pagina.locator("#animo-semana-fila img").last.get_attribute("data-fuente")
     assert "eyesVariant=happy" in src                                           # la cara de «bien» del avatar
 
 

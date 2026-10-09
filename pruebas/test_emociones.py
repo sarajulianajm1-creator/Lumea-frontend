@@ -52,10 +52,10 @@ def test_el_boton_de_guardar_no_dice_xp_ni_hay_pildora_ni_flecha_de_volver(pagin
 def test_las_caras_de_los_botones_y_la_grande_son_las_del_mismo_companero(pagina, backend):
     abrir(pagina, backend)
     pagina.wait_for_function("document.querySelectorAll('.animo-caras img').length === 5")
-    assert all("/10.x/gaze/" in i.get_attribute("src") and "seed=lumea-sol" in i.get_attribute("src") for i in pagina.locator(".animo-caras img").all())
+    assert all("/10.x/gaze/" in i.get_attribute("data-fuente") and "seed=lumea-sol" in i.get_attribute("data-fuente") for i in pagina.locator(".animo-caras img").all())
     boton(pagina, "Mal").click()
-    assert "eyesVariant=small" in pagina.locator("#cara-grande img").get_attribute("src")    # la grande, la del compañero
-    assert "eyesVariant=small" in boton(pagina, "Mal").locator("img").get_attribute("src")    # y la del botón elegido
+    assert "eyesVariant=small" in pagina.locator("#cara-grande img").get_attribute("data-fuente")    # la grande, la del compañero
+    assert "eyesVariant=small" in boton(pagina, "Mal").locator("img").get_attribute("data-fuente")    # y la del botón elegido
 
 
 def test_sin_emojis_ni_version_en_la_pantalla(pagina, backend):
@@ -70,10 +70,10 @@ def test_la_cara_grande_cambia_en_vivo_al_elegir(pagina, backend):
     abrir(pagina, backend)
     assert pagina.locator("#btn-guardar-animo").is_disabled()          # sin elegir no se guarda
     boton(pagina, "Mal").click()
-    assert "eyesVariant=small" in pagina.locator("#cara-grande img").get_attribute("src")
+    assert "eyesVariant=small" in pagina.locator("#cara-grande img").get_attribute("data-fuente")
     assert pagina.locator("#texto-estado-seleccionado").inner_text() == "Me siento mal"
     boton(pagina, "Muy bien").click()
-    assert "eyesVariant=grin" in pagina.locator("#cara-grande img").get_attribute("src")
+    assert "eyesVariant=grin" in pagina.locator("#cara-grande img").get_attribute("data-fuente")
     assert pagina.locator("#texto-estado-seleccionado").inner_text() == "Me siento muy bien"
     pulsados = pagina.locator(".animo-cara[aria-pressed=true]")
     assert pulsados.count() == 1 and "Muy bien" in pulsados.inner_text()
@@ -142,12 +142,12 @@ def test_la_semana_va_quieta_y_en_toda_la_pantalla_solo_se_mueve_la_cara_elegida
         {"id": 1, "estado": "bien", "fecha": "Mon, 05 Oct 2026 00:00:00 GMT"}]})
     abrir(pagina, backend)
     pagina.locator("#animo-semana-fila img").first.wait_for()
-    semana = pagina.locator("#animo-semana-fila img").evaluate_all("e => e.map(i => i.src)")
+    semana = pagina.locator("#animo-semana-fila img").evaluate_all("e => e.map(i => i.dataset.fuente)")
     assert [s.split("eyesVariant=")[1] for s in semana] == ["happy", "bars"]                # lunes y martes
     assert all("animationVariant" not in s and "seed=lumea-sol" in s for s in semana)
     boton(pagina, "Mal").click()
-    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[src*=medium]').length === 1")
-    movimiento = 'img[src*="animationVariant=slow"], img[src*="animationVariant=medium"]'
+    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[data-fuente*=medium]').length === 1")
+    movimiento = 'img[data-fuente*="animationVariant=slow"], img[data-fuente*="animationVariant=medium"]'
     assert pagina.locator(movimiento).count() == 1                                          # la elegida; ni la grande ni la semana
 
 
