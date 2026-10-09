@@ -176,7 +176,7 @@ def test_si_no_hay_companero_el_saludo_queda_sin_imagen(pagina, backend):
     abrir(pagina, backend, "index-ingresado.html", compa=None)
     pagina.wait_for_timeout(300)
     assert pagina.locator("#companero-saluda img").count() == 0
-    assert pagina.locator("h1").inner_text().startswith("Hola")
+    assert pagina.locator("h1").inner_text().startswith("Buen")
 
 
 def _progreso_registrado(estado):

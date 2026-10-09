@@ -45,6 +45,30 @@
     pintarSemana();
   }
 
+  // «Buenos días» (5:00 a 11:59), «Buenas tardes» (12:00 a 17:59) y «Buenas noches» (18:00 a 4:59), con la hora del dispositivo.
+  // De día va el sol y de noche la luna (data-momento, que el CSS convierte en la forma detrás del compañero).
+  function saludoDeLaHora(hora) {
+    if (hora >= 5 && hora < 12) return { texto: "Buenos días", momento: "dia" };
+    if (hora >= 12 && hora < 18) return { texto: "Buenas tardes", momento: "dia" };
+    return { texto: "Buenas noches", momento: "noche" };
+  }
+  function pintarSaludoDeLaHora() {
+    const s = saludoDeLaHora(new Date().getHours());
+    const texto = $("saludo-hora"), cabecera = $("saludo");
+    if (texto) texto.textContent = s.texto;
+    if (cabecera) cabecera.dataset.momento = s.momento;
+  }
+  pintarSaludoDeLaHora();
+
+  // Al tocar al compañero da un saltico (avatar-saltico); mientras salta, otro toque no lo reinicia
+  const compa = $("companero-saluda");
+  if (compa) compa.addEventListener("click", () => {
+    if (compa.classList.contains("inicio__companero--saltico")) return;
+    compa.classList.add("inicio__companero--saltico");
+    compa.addEventListener("animationend", () => compa.classList.remove("inicio__companero--saltico"), { once: true });
+    if (!getComputedStyle(compa).animationName || getComputedStyle(compa).animationName === "none") compa.classList.remove("inicio__companero--saltico");   // sin movimiento: nada que esperar
+  });
+
   // El compañero que saluda junto al «Hola, Ana»: la cara del ánimo de hoy (neutral si todavía no hay check-in), despacio.
   // Es lo único que se mueve en Inicio; al guardar el ánimo cambia a esa cara. Decorativo: sin imagen, el saludo queda igual.
   function pintarSaludo() {

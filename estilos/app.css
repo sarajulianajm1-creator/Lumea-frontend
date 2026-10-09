@@ -513,3 +513,25 @@ html, body { transition: background-color var(--m-base) var(--m-salida), color v
   .visor[data-mirando] .visor__luz { animation: none; display: none; }
   .resultado--entra * { animation: none !important; }
 }
+
+/* ---------- Inicio según la hora (P11): sol de día, luna de noche (el Cántico: hermano sol, hermana luna) ----------
+   De 5:00 a 11:59 «Buenos días» y de 12:00 a 17:59 «Buenas tardes», las dos con el sol; de 18:00 a 4:59 «Buenas noches» con la luna.
+   La forma va suave detrás del compañero, es solo adorno (el compañero ya es aria-hidden) y no recibe toques. */
+@keyframes avatar-saltico {
+  0%   { transform: none; }
+  40%  { transform: translateY(-14px); }
+  100% { transform: none; }
+}
+.inicio__companero { position: relative; isolation: isolate; cursor: pointer; }
+.inicio__companero::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: -10%; background: var(--forma-color, var(--c-logro-contenedor));
+  -webkit-mask: var(--forma-imagen) center / contain no-repeat; mask: var(--forma-imagen) center / contain no-repeat;
+}
+.inicio__saludo[data-momento="dia"]   { --forma-imagen: url("../img/formas/sol.svg");  --forma-color: var(--c-logro-contenedor); }
+.inicio__saludo[data-momento="noche"] { --forma-imagen: url("../img/formas/luna.svg"); --forma-color: var(--c-emocion-contenedor); }
+.inicio__companero:empty::before { display: none; }
+@media (forced-colors: active) { .inicio__companero::before { display: none; } }
+/* Al tocar al compañero da un saltico (un solo movimiento; el rebote es de logros y de juego, no de castigo) */
+.inicio__companero--saltico { animation: avatar-saltico var(--m-lento) var(--m-resorte); }
+@media (prefers-reduced-motion: reduce) { .inicio__companero--saltico { animation: none; } }

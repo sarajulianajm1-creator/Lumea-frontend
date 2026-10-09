@@ -40,11 +40,7 @@
 .avatar-figura__silueta .icono { width: 96px; height: 96px; stroke-width: 1.25; }
 /* Al ponerse algo: un saltico (un solo movimiento, con rebote porque es un logro) */
 .avatar-figura--saltico { animation: avatar-saltico var(--m-lento) var(--m-resorte); }
-@keyframes avatar-saltico {
-  0%   { transform: none; }
-  40%  { transform: translateY(-14px); }
-  100% { transform: none; }
-}
+/* (los cuadros de @keyframes avatar-saltico están en app.css: los usan Avatar e Inicio) */
 @media (prefers-reduced-motion: reduce) { .avatar-figura--saltico { animation: none; } }
 
 /* ---------- Pestañas ---------- */

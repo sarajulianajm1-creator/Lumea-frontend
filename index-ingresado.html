@@ -52,11 +52,11 @@
          ============================================================ -->
     <main class="contenido">
 
-      <header class="inicio__saludo">
+      <header class="inicio__saludo" id="saludo" data-momento="dia">
         <!-- El compañero que saluda: grande, animado despacio y con la cara del ánimo de hoy (indexx.js). Decorativo: si no se dibuja, el saludo queda igual. -->
         <span class="inicio__companero" id="companero-saluda" aria-hidden="true"></span>
         <div class="inicio__saludo-texto">
-          <h1 class="contenido__titulo">Hola, <span class="lumea-bind-nombre">Cargando...</span></h1>
+          <h1 class="contenido__titulo"><span id="saludo-hora">Hola</span>, <span class="lumea-bind-nombre">Cargando...</span></h1>
           <time class="inicio__fecha lumea-bind-fecha">Cargando fecha...</time>
         </div>
         <span class="chip chip--logro lumea-bind-nivel cifra">Etapa --</span>

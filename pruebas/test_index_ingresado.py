@@ -27,7 +27,7 @@ def texto(pagina, selector):
 def test_el_saludo_es_el_unico_h1_con_el_nombre(pagina, backend):
     abrir(pagina, backend)
     assert pagina.locator("h1").count() == 1
-    assert texto(pagina, "h1") == "Hola, Ana"
+    assert texto(pagina, "h1") == "Buenas tardes, Ana"                    # HOY son las 12:00
 
 
 @pytest.mark.parametrize("racha,cifra", [(0, "0 días"), (1, "1 día"), (3, "3 días")])
@@ -436,3 +436,47 @@ def test_sin_sessionstorage_la_barra_funciona_igual(pagina, backend):
     abrir(pagina, backend)
     pagina.wait_for_timeout(500)
     assert pagina.locator(".lumea-bind-comidas-bar").get_attribute("aria-valuenow") == "33"
+
+
+# ---------- P11 · 4: Inicio según la hora ----------
+
+@pytest.mark.parametrize("hora,minuto,saludo,forma", [
+    (5, 0, "Buenos días", "sol"), (11, 59, "Buenos días", "sol"),
+    (12, 0, "Buenas tardes", "sol"), (17, 59, "Buenas tardes", "sol"),
+    (18, 0, "Buenas noches", "luna"), (23, 30, "Buenas noches", "luna"), (0, 0, "Buenas noches", "luna"), (4, 59, "Buenas noches", "luna"),
+])
+def test_el_saludo_y_la_forma_cambian_con_la_hora(pagina, backend, hora, minuto, saludo, forma):
+    cuerpo = cargar_respuesta("progreso")
+    backend.poner("GET", "/progreso", cuerpo)
+    pagina.clock.set_fixed_time(datetime(2026, 10, 5, hora, minuto))
+    pagina.goto(f"{pagina.servidor}/index-ingresado.html")
+    pagina.locator("main .lumea-bind-nivel", has_text="Etapa").first.wait_for()
+    assert texto(pagina, "h1") == f"{saludo}, Ana"
+    imagen = pagina.locator("#companero-saluda").evaluate("e => getComputedStyle(e, '::before').maskImage || getComputedStyle(e, '::before').webkitMaskImage")
+    assert f"formas/{forma}.svg" in imagen                                                       # sol de día (mañana y tarde), luna de noche
+
+
+def test_la_forma_va_detras_del_companero_y_es_solo_adorno(pagina, backend):
+    abrir(pagina, backend)
+    pagina.locator("#companero-saluda img").wait_for()
+    datos = pagina.locator("#companero-saluda").evaluate("""e => { const p = getComputedStyle(e, '::before'), c = getComputedStyle(e);
+        return { aria: e.getAttribute('aria-hidden'), z: p.zIndex, eventos: p.pointerEvents, contenido: p.content, pos: p.position, aislado: c.isolation } }""")
+    assert datos == {"aria": "true", "z": "-1", "eventos": "none", "contenido": '""', "pos": "absolute", "aislado": "isolate"}
+
+
+def test_al_tocar_al_companero_da_un_saltico(pagina, backend):
+    abrir(pagina, backend)
+    pagina.locator("#companero-saluda img").wait_for()
+    pagina.locator("#companero-saluda").click()
+    nombres = pagina.locator("#companero-saluda").evaluate("e => e.getAnimations().map(a => a.animationName)")
+    assert nombres == ["avatar-saltico"]
+    pagina.wait_for_timeout(700)
+    assert pagina.locator("#companero-saluda").evaluate("e => e.getAnimations().length") == 0          # un solo saltico, no se repite
+
+
+def test_con_movimiento_reducido_el_companero_no_salta(pagina, backend):
+    pagina.emulate_media(reduced_motion="reduce")
+    abrir(pagina, backend)
+    pagina.locator("#companero-saluda img").wait_for()
+    pagina.locator("#companero-saluda").click()
+    assert pagina.locator("#companero-saluda").evaluate("e => e.getAnimations().length") == 0
