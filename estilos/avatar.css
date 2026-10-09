@@ -50,18 +50,22 @@
 /* ---------- Pestañas ---------- */
 .avatar-panel { display: grid; gap: var(--e-4); }
 .pestanas {
-  display: flex; flex-wrap: wrap; gap: var(--e-1);
+  /* Una sola fila, siempre dentro de su contenedor: si no caben, se desliza de lado (con imán), sin partirse */
+  display: flex; flex-wrap: nowrap; gap: var(--e-1);
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity; scrollbar-width: none;
   padding: var(--e-1);
   border-radius: var(--r-pildora);
   background: var(--c-superficie-2);
   border: 1.5px solid var(--c-borde);
 }
+.pestanas::-webkit-scrollbar { display: none; }
 .pestana {
-  flex: 1 1 auto; white-space: nowrap; font-size: var(--t-s);
+  flex: 1 0 auto; white-space: nowrap; font-size: var(--t-s); scroll-snap-align: center;
   min-height: 44px; padding: 0 var(--e-3);
   border: 0; border-radius: var(--r-pildora);
   background: transparent; color: var(--c-tinta);
-  font: inherit; font-weight: var(--t-peso-medio); cursor: pointer;
+  font: inherit; font-size: var(--t-s); font-weight: var(--t-peso-medio); cursor: pointer;
   transition: background var(--m-rapido) var(--m-salida);
 }
 .pestana:hover { background: var(--c-marca-suave); }
@@ -133,26 +137,31 @@
 .prenda__estado { display: inline-flex; align-items: center; justify-content: center; }
 
 /* ---------- Cómo me veo: los rasgos, siempre abiertos ---------- */
-.rasgos { display: grid; gap: var(--e-4); }
+.rasgos { display: grid; gap: var(--e-5); }
+.rasgos-seccion { display: grid; gap: var(--e-4); }
+.rasgos-seccion__titulo { font-size: var(--t-l); padding-bottom: var(--e-1); border-bottom: 1px solid var(--c-borde); }
 .rasgo { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: var(--e-2); }
 .rasgo__nombre { padding: 0; font-weight: var(--t-peso-fuerte); }
-.rasgo__opciones { display: flex; flex-wrap: wrap; gap: var(--e-2); }
-.rasgo__opcion { position: relative; display: grid; justify-items: center; gap: var(--e-1); cursor: pointer; }
+.rasgo__opcion { position: relative; display: grid; justify-items: center; align-content: start; gap: var(--e-1); cursor: pointer; }
 .rasgo__radio { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+/* Los colores: muestras redondas en una cuadrícula que no deja una huérfana (--cols-m en el celular, --cols-g en pantallas anchas) */
+.rasgo--color .rasgo__opciones { display: grid; grid-template-columns: repeat(var(--cols-m, 6), 44px); gap: var(--e-2); justify-content: start; }
+@media (min-width: 480px) { .rasgo--color .rasgo__opciones { grid-template-columns: repeat(var(--cols-g, 8), 44px); } }
 .rasgo__muestra { display: block; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--c-borde-fuerte); }
+.rasgo__muestra--ninguna { background: linear-gradient(to top right, transparent calc(50% - 1.5px), var(--c-tinta-suave) 50%, transparent calc(50% + 1.5px)); }   /* «Sin fondo»: tachada */
 .rasgo__radio:checked ~ .rasgo__muestra { outline: 3px solid var(--c-tinta); outline-offset: 2px; }
 .rasgo__radio:focus-visible ~ .rasgo__muestra,
-.rasgo__radio:focus-visible ~ .rasgo__mini,
-.rasgo__radio:focus-visible ~ .rasgo__texto { outline: 3px solid var(--c-foco); outline-offset: 2px; }
-.rasgo__mini { display: block; width: 64px; aspect-ratio: 1; border-radius: var(--r-control); background: var(--c-superficie-2); border: 1.5px solid var(--c-borde); }
+.rasgo__radio:focus-visible ~ .rasgo__mini { outline: 3px solid var(--c-foco); outline-offset: 2px; }
+/* Los mosaicos: una cuadrícula real, todos del mismo tamaño y con espacio fijo para dos líneas de nombre */
+.rasgo--mosaico .rasgo__opciones { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: var(--e-3) var(--e-2); }
+.rasgo__mini { display: block; width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: var(--r-control); background: var(--c-superficie-2); border: 1.5px solid var(--c-borde); }
 .rasgo__mini img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .rasgo__radio:checked ~ .rasgo__mini { border-color: var(--c-tinta); border-width: 3px; }
-.rasgo--mosaico .rasgo__texto { font-size: var(--t-xs); max-width: 88px; text-align: center; overflow-wrap: break-word; }
-.rasgo--texto .rasgo__texto {
-  display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--e-3);
-  border-radius: var(--r-pildora); border: 1.5px solid var(--c-borde); background: var(--c-superficie);
-}
-.rasgo--texto .rasgo__radio:checked ~ .rasgo__texto { background: var(--c-marca); color: var(--c-sobre-marca); border-color: var(--c-marca); font-weight: var(--t-peso-fuerte); }
+.rasgo__texto { width: 100%; min-height: calc(2 * 1.25em); font-size: var(--t-xs); line-height: 1.25; text-align: center; overflow-wrap: break-word; }
+/* Vista previa pequeña y fija arriba del panel (celular): se ve la persona mientras se editan los rasgos */
+.rasgos-vista { position: sticky; top: var(--e-2); z-index: 3; justify-self: end; width: 88px; aspect-ratio: 1; margin-bottom: calc(-88px + var(--e-2)); border-radius: var(--r-tarjeta); background: var(--c-superficie); border: 1.5px solid var(--c-borde); }
+.rasgos-vista img { display: block; width: 100%; height: 100%; object-fit: contain; }
+@media (min-width: 992px) { .rasgos-vista { display: none; } }
 
 /* ---------- Tu compañero: la tarjeta de una prenda, con el dibujo del compañero (sin caja de color: su forma es su silueta) ---------- */
 .prenda__imagen--companero { width: 88px; background: transparent; }

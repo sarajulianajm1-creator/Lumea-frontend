@@ -34,10 +34,21 @@
   const NOMBRE_ANIMO = { muy_mal: "Muy mal", mal: "Mal", neutral: "Neutral", bien: "Bien", muy_bien: "Muy bien" };
   // Cada misión diaria tiene su calcomanía (la que se gana la primera vez que se cumple)
   const CALCOMANIA_DE_MISION = { fruta: "fruta", tres_comidas: "tres_al_dia", check_in_animo: "como_llegas" };
-  // Los rasgos, en el orden en que se muestran; los que se dibujan como muestras redondas y como mosaicos pequeños
-const RASGOS_ORDEN = ["skinColor", "topVariant", "hairColor", "eyesVariant", "mouthVariant", "cheeksVariant", "beardVariant", "shirtColor"];
-const RASGOS_COLOR = ["skinColor", "hairColor", "shirtColor"];
-const RASGOS_MOSAICO = ["topVariant", "eyesVariant", "mouthVariant"];
+  // Los rasgos, en secciones y en el orden en que se muestran. Los que el backend todavía no manda (B8) no se dibujan.
+const SECCIONES = [
+  { titulo: "Cara", claves: ["skinColor", "eyesVariant", "eyebrowsVariant", "noseVariant", "mouthVariant", "cheeksVariant", "beardVariant"] },
+  { titulo: "Pelo", claves: ["topVariant", "hairColor"] },
+  { titulo: "Ropa", claves: ["shirtColor", "pantsColor", "shoesColor"] },
+  { titulo: "Fondo", claves: ["backgroundColor"] },
+];
+const RASGOS_ORDEN = SECCIONES.flatMap((x) => x.claves);
+const RASGOS_COLOR = ["skinColor", "hairColor", "shirtColor", "pantsColor", "shoesColor", "backgroundColor"];   // muestras redondas
+const RASGOS_MOSAICO = ["topVariant", "eyesVariant", "eyebrowsVariant", "noseVariant", "mouthVariant", "cheeksVariant", "beardVariant"];
+// El mosaico se acerca a la parte de la cara que cambia ([x, y, ancho, alto] en el lienzo de 128 de la persona)
+const RECORTES = {
+  eyesVariant: [31, 26, 56, 56], eyebrowsVariant: [31, 26, 56, 56], noseVariant: [41, 50, 34, 34],
+  mouthVariant: [40, 60, 36, 36], cheeksVariant: [30, 40, 56, 56], beardVariant: [38, 56, 42, 42],
+};
 const HEX = /^[0-9a-f]{6}$/i;
 
   // Íconos de Lucide (licencia ISC), 24x24
@@ -89,8 +100,8 @@ const HEX = /^[0-9a-f]{6}$/i;
   }
 
   // La dirección data: de la persona con esos rasgos y esa ropa; null si no se puede dibujar
-  async function dibujoDePersona(persona, animada) {
-    try { return await (await cargarPersona()).urlDePersona(persona, { animada: !!animada }); } catch (e) { return null; }
+  async function dibujoDePersona(persona, animada, recorte) {
+    try { return await (await cargarPersona()).urlDePersona(persona, { animada: !!animada, recorte: recorte || null }); } catch (e) { return null; }
   }
 
   // Lo que la persona lleva puesto ahora, con `objeto` (de ropa o accesorio) en lugar de lo que hubiera de su tipo
@@ -125,6 +136,8 @@ const HEX = /^[0-9a-f]{6}$/i;
     const dibujo = conPersona() ? await dibujoDePersona(personaCon(null), true) : null;
     if (turno !== estado.figura) return;                    // llegó otro dibujo más nuevo (un rasgo que cambió)
 
+    const vista = $("rasgos-vista-img");                    // la vista previa pequeña de «Cómo me veo» (celular)
+    if (vista && dibujo) vista.src = dibujo;
     if (dibujo) {                                           // la persona grande y animada; el compañero pequeño y quieto
       caja.setAttribute("aria-label", `Tu avatar y tu compañero${detalleAnimo}`);
       let img = caja.querySelector(".avatar-figura__persona-img");
@@ -317,62 +330,83 @@ const HEX = /^[0-9a-f]{6}$/i;
     return lista;
   }
 
+  // El mayor divisor de n que no pasa de tope: las muestras de color se reparten sin dejar una huérfana (12 → 6 + 6, 8 → 4 + 4)
+  function columnasSinHuerfanas(n, tope) {
+    for (let c = Math.min(n, tope); c > 1; c--) if (n % c === 0) return c;
+    return n;
+  }
+
   function dibujarRasgos() {
     const form = $("rasgos-form");
     form.replaceChildren();
     const disponibles = rasgosDisponibles();
-    const claves = RASGOS_ORDEN.filter((k) => disponibles[k]);
-    $("rasgos-guardar").hidden = !claves.length;
-    claves.forEach((clave) => {
-      const info = disponibles[clave];
-      const grupo = crear("fieldset", `rasgo rasgo--${RASGOS_COLOR.includes(clave) ? "color" : (RASGOS_MOSAICO.includes(clave) ? "mosaico" : "texto")}`);
-      grupo.appendChild(crear("legend", "rasgo__nombre", info.nombre));
-      const opciones = crear("div", "rasgo__opciones");
-      opcionesDe(info).forEach(([valor, nombre]) => {
-        const etiqueta = crear("label", "rasgo__opcion");
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.name = `rasgo-${clave}`;
-        radio.value = valor;
-        radio.className = "rasgo__radio";
-        radio.checked = String(estado.rasgos[clave] == null ? "" : estado.rasgos[clave]) === valor;
-        radio.addEventListener("change", () => cambiarRasgo(clave, valor));
-        etiqueta.appendChild(radio);
-        if (RASGOS_COLOR.includes(clave)) {
-          const muestra = crear("span", "rasgo__muestra");
-          if (HEX.test(valor)) muestra.style.backgroundColor = `#${valor}`;
-          etiqueta.appendChild(muestra);
-          etiqueta.appendChild(crear("span", "solo-lector", nombre));
-        } else if (RASGOS_MOSAICO.includes(clave)) {
-          const mini = crear("span", "rasgo__mini");
-          mini.setAttribute("aria-hidden", "true");
-          const img = document.createElement("img");
-          img.alt = "";
-          img.dataset.rasgo = clave;
-          img.dataset.valor = valor;
-          mini.appendChild(img);
-          etiqueta.appendChild(mini);
-          etiqueta.appendChild(crear("span", "rasgo__texto", nombre));
-        } else {
-          etiqueta.appendChild(crear("span", "rasgo__texto", nombre));
-        }
-        opciones.appendChild(etiqueta);
-      });
-      grupo.appendChild(opciones);
-      form.appendChild(grupo);
+    $("rasgos-guardar").hidden = !RASGOS_ORDEN.some((k) => disponibles[k]);
+    SECCIONES.forEach((seccion) => {
+      const claves = seccion.claves.filter((k) => disponibles[k]);
+      if (!claves.length) return;
+      const caja = crear("section", "rasgos-seccion");
+      caja.appendChild(crear("h3", "rasgos-seccion__titulo", seccion.titulo));
+      claves.forEach((clave) => caja.appendChild(grupoDeRasgo(clave, disponibles[clave])));
+      form.appendChild(caja);
     });
     estado.rasgosDibujados = true;
     redibujarMiniaturas();
   }
 
-  // Los mosaicos pequeños (peinado, ojos, boca) muestran a la persona con esa opción y sus otros rasgos de ahora
+  // Un rasgo: un <fieldset> con su <legend> y un radio con su <label> por opción
+  function grupoDeRasgo(clave, info) {
+    const esColor = RASGOS_COLOR.includes(clave);
+    const grupo = crear("fieldset", `rasgo rasgo--${esColor ? "color" : "mosaico"} rasgo--${clave}`);
+    grupo.appendChild(crear("legend", "rasgo__nombre", info.nombre));
+    const opciones = crear("div", "rasgo__opciones");
+    const lista = opcionesDe(info);
+    if (esColor) {
+      opciones.style.setProperty("--cols-m", String(columnasSinHuerfanas(lista.length, 6)));
+      opciones.style.setProperty("--cols-g", String(columnasSinHuerfanas(lista.length, 8)));
+    }
+    lista.forEach(([valor, nombre]) => {
+      const etiqueta = crear("label", "rasgo__opcion");
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = `rasgo-${clave}`;
+      radio.value = valor;
+      radio.className = "rasgo__radio";
+      radio.checked = String(estado.rasgos[clave] == null ? "" : estado.rasgos[clave]) === valor;
+      radio.addEventListener("change", () => cambiarRasgo(clave, valor));
+      etiqueta.appendChild(radio);
+      if (esColor) {
+        const muestra = crear("span", "rasgo__muestra" + (valor === "" ? " rasgo__muestra--ninguna" : ""));
+        if (HEX.test(valor)) muestra.style.backgroundColor = `#${valor}`;
+        etiqueta.appendChild(muestra);
+        etiqueta.appendChild(crear("span", "solo-lector", nombre));
+        etiqueta.title = nombre;
+      } else {
+        const mini = crear("span", "rasgo__mini");
+        mini.setAttribute("aria-hidden", "true");
+        const img = document.createElement("img");
+        img.alt = "";
+        img.dataset.rasgo = clave;
+        img.dataset.valor = valor;
+        mini.appendChild(img);
+        etiqueta.appendChild(mini);
+        etiqueta.appendChild(crear("span", "rasgo__texto", nombre));
+      }
+      opciones.appendChild(etiqueta);
+    });
+    grupo.appendChild(opciones);
+    return grupo;
+  }
+
+  // Los mosaicos (peinado, ojos, cejas, nariz, boca, mejillas y barba) muestran a la persona con esa opción y sus otros rasgos de
+  // ahora; los de la cara se acercan a la parte que cambia, para que se note la diferencia
   let tiempoMiniaturas = null;
   function redibujarMiniaturas() {
     clearTimeout(tiempoMiniaturas);
     tiempoMiniaturas = setTimeout(() => {
       document.querySelectorAll("#rasgos-form img[data-rasgo]").forEach((img) => {
-        const rasgos = { ...estado.rasgos, [img.dataset.rasgo]: img.dataset.valor };
-        dibujoDePersona(personaCon(null, rasgos), false).then((dibujo) => { if (dibujo) img.src = dibujo; });
+        const clave = img.dataset.rasgo;
+        const rasgos = { ...estado.rasgos, [clave]: img.dataset.valor };
+        dibujoDePersona(personaCon(null, rasgos), false, RECORTES[clave] || null).then((dibujo) => { if (dibujo) img.src = dibujo; });
       });
     }, 60);
   }
@@ -525,6 +559,10 @@ const HEX = /^[0-9a-f]{6}$/i;
       pestana.tabIndex = activa ? 0 : -1;                   // solo la activa entra con Tab; las flechas mueven
       $(`panel-${n}`).hidden = !activa;
       if (activa && enfocar) pestana.focus();
+      if (activa) {                                         // la fila se desliza de lado hasta la pestaña elegida (sin mover la página hacia abajo)
+        const fila = pestana.parentElement;
+        fila.scrollLeft = Math.max(0, pestana.offsetLeft - (fila.clientWidth - pestana.offsetWidth) / 2);
+      }
     });
     if (nombre === "armario" && estado.armarioSucio) dibujarArmario();
     if (nombre === "como-me-veo" && estado.avatar && !estado.rasgosDibujados) dibujarRasgos();

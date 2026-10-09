@@ -101,7 +101,7 @@ def test_sin_poder_dibujar_la_cara_queda_en_silueta(pagina, backend):
 # ---------- Pestañas ----------
 def test_las_pestanas_siguen_el_patron_aria(pagina, backend):
     abrir(pagina, backend)
-    assert pagina.locator("[role=tablist] [role=tab]").all_inner_texts() == ["Mi armario", "Cómo me veo", "Misiones", "Calcomanías", "Tu compañero"]
+    assert pagina.locator("[role=tablist] [role=tab]").all_inner_texts() == ["Mi armario", "Cómo me veo", "Misiones", "Calcomanías", "Compañero"]
     assert pagina.locator("#pestana-armario").get_attribute("aria-selected") == "true"      # el armario es la acción principal
     assert pagina.locator("#pestana-misiones").get_attribute("tabindex") == "-1"
     assert pagina.locator("#panel-armario").is_visible() and not pagina.locator("#panel-misiones").is_visible()
@@ -261,18 +261,116 @@ def test_si_falla_el_guardado_no_cambia_nada(pagina, backend):
 
 
 # ---------- Cómo me veo: los rasgos son libres ----------
-RASGOS_ENVIABLES = {"skinColor", "topVariant", "hairColor", "eyesVariant", "mouthVariant", "cheeksVariant", "beardVariant", "shirtColor"}
+RASGOS_ENVIABLES = {"skinColor", "topVariant", "hairColor", "eyesVariant", "mouthVariant", "cheeksVariant", "beardVariant", "shirtColor",
+                    "eyebrowsVariant", "noseVariant", "pantsColor", "shoesColor", "backgroundColor"}
 
 
-def test_los_rasgos_nunca_se_bloquean_y_salen_en_el_orden_de_la_mision(pagina, backend):
+def test_los_rasgos_nunca_se_bloquean_y_van_en_secciones_con_subtitulo(pagina, backend):
     abrir(pagina, backend, ruta="avatar.html#como-me-veo")
+    assert pagina.locator("#rasgos-form .rasgos-seccion__titulo").all_inner_texts() == ["Cara", "Pelo", "Ropa", "Fondo"]
     leyendas = pagina.locator("#rasgos-form legend").all_inner_texts()
-    assert leyendas[:5] == ["Tono de piel", "Peinado", "Color de pelo", "Ojos", "Boca"] and len(leyendas) == 8
-    assert pagina.locator("#rasgos-form fieldset").count() == 8
+    assert leyendas == ["Tono de piel", "Ojos", "Cejas", "Nariz", "Boca", "Mejillas", "Barba",
+                        "Peinado", "Color de pelo", "Color de la camiseta", "Color del pantalón", "Color de los zapatos", "Fondo"]
+    assert pagina.locator("#rasgos-form fieldset").count() == 13
     assert pagina.locator("#rasgos-form input[type=radio]:disabled").count() == 0
     assert pagina.locator("#rasgos-form [aria-disabled=true]").count() == 0
     assert pagina.locator("#rasgos-form .prenda--bloqueada, #rasgos-form .prenda__candado").count() == 0
-    assert pagina.locator("#rasgos-form fieldset").first.locator("legend").inner_text() == "Tono de piel"
+
+
+def test_si_el_backend_aun_no_manda_los_rasgos_nuevos_no_se_dibujan(pagina, backend):
+    cuerpo = avatar_estado(2)
+    for k in ("eyebrowsVariant", "noseVariant", "pantsColor", "shoesColor", "backgroundColor"):
+        cuerpo["rasgos_disponibles"].pop(k)
+        cuerpo["persona"]["rasgos"].pop(k)
+    abrir(pagina, backend, ruta="avatar.html#como-me-veo", avatar=cuerpo)
+    assert pagina.locator("#rasgos-form fieldset").count() == 8
+    assert pagina.locator("#rasgos-form .rasgos-seccion__titulo").all_inner_texts() == ["Cara", "Pelo", "Ropa"]        # «Fondo» queda sin nada y no se dibuja
+    persona_dibujada(pagina)
+
+
+def test_sin_fondo_es_una_opcion_que_se_guarda_como_null(pagina, backend):
+    abrir(pagina, backend, ruta="avatar.html#como-me-veo")
+    assert pagina.get_by_role("radio", name="Sin fondo").is_checked()
+    pagina.get_by_role("radio", name="Celeste").check(force=True)
+    backend.poner("POST", "/avatar/rasgos", avatar_estado(2, rasgos={"backgroundColor": "b6e3f4"}))
+    pagina.get_by_role("button", name="Guardar cómo me veo").click()
+    pagina.locator("#avatar-aviso", has_text="Guardamos cómo te ves.").wait_for()
+    assert backend.cuerpo_enviado("POST", "/avatar/rasgos")["rasgos"]["backgroundColor"] == "b6e3f4"
+    pagina.get_by_role("radio", name="Sin fondo").check(force=True)
+    backend.poner("POST", "/avatar/rasgos", avatar_estado(2))
+    pagina.get_by_role("button", name="Guardar cómo me veo").click()
+    pagina.wait_for_function("(window.__n = (window.__n || 0) + 1) > 3 && document.getElementById('avatar-aviso').textContent === 'Guardamos cómo te ves.'")
+    assert backend.cuerpo_enviado("POST", "/avatar/rasgos")["rasgos"]["backgroundColor"] is None
+
+
+def test_los_mosaicos_son_una_cuadricula_del_mismo_tamano_con_nombre_de_dos_lineas(pagina, backend):
+    abrir(pagina, backend, ruta="avatar.html#como-me-veo")
+    pagina.wait_for_function("[...document.querySelectorAll('#rasgos-form img[data-rasgo]')].every(i => i.src.startsWith('data:image/svg+xml'))")
+    minis = pagina.locator("#rasgos-form .rasgo--mosaico .rasgo__mini").evaluate_all("e => e.map(x => { const r = x.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)] })")
+    assert len({tuple(m) for m in minis}) == 1 and minis[0][0] >= 80                          # todos iguales y de 88 px o más
+    cols = pagina.locator("#rasgos-form .rasgo--eyesVariant .rasgo__opciones").evaluate("e => getComputedStyle(e).gridTemplateColumns.split(' ').length")
+    assert cols >= 3
+    alto = pagina.locator("#rasgos-form .rasgo__texto").evaluate_all("e => [...new Set(e.map(x => Math.round(x.getBoundingClientRect().height)))]")
+    assert all(a >= 2 * 1.25 * 12 for a in alto)                                              # espacio fijo para dos líneas
+
+
+def test_los_mosaicos_de_la_cara_se_acercan_a_ella(pagina, backend):
+    abrir(pagina, backend, ruta="avatar.html#como-me-veo")
+    pagina.wait_for_function("[...document.querySelectorAll('#rasgos-form img[data-rasgo]')].every(i => i.src.startsWith('data:image/svg+xml'))")
+    from urllib.parse import unquote
+    def caja_de(clave):
+        svg = unquote(pagina.locator(f"#rasgos-form img[data-rasgo={clave}]").first.get_attribute("src").split(",", 1)[1])
+        return svg.split('viewBox="')[1].split('"')[0].split()
+    for clave in ("eyesVariant", "eyebrowsVariant", "noseVariant", "mouthVariant", "cheeksVariant", "beardVariant"):
+        assert float(caja_de(clave)[2]) < 128, clave                                          # un recorte del lienzo de 128
+    assert caja_de("topVariant") == ["0", "0", "128", "128"]                                  # el peinado se ve con todo el cuerpo
+
+
+def test_los_8_tonos_de_piel_van_en_4_por_2_en_el_celular_y_en_una_fila_en_pantalla_ancha(pagina, backend):
+    pagina.set_viewport_size({"width": 390, "height": 844})
+    abrir(pagina, backend, ruta="avatar.html#como-me-veo")
+    def filas():
+        return pagina.locator(".rasgo--skinColor .rasgo__muestra").evaluate_all("e => [...new Set(e.map(x => Math.round(x.getBoundingClientRect().top)))].length")
+    assert filas() == 2
+    assert pagina.locator(".rasgo--skinColor .rasgo__muestra").evaluate_all("e => [...new Set(e.slice(0, 4).map(x => Math.round(x.getBoundingClientRect().top)))].length") == 1
+    pagina.set_viewport_size({"width": 1280, "height": 800})
+    assert filas() == 1
+
+
+def test_en_el_celular_una_vista_previa_pequena_y_fija_acompana_la_edicion(pagina, backend):
+    pagina.set_viewport_size({"width": 390, "height": 844})
+    abrir(pagina, backend, ruta="avatar.html#como-me-veo")
+    pagina.locator("#rasgos-vista-img[src^='data:image/svg+xml']").wait_for()
+    assert pagina.locator(".rasgos-vista").evaluate("e => getComputedStyle(e).position") == "sticky"
+    pagina.evaluate("window.scrollTo(0, document.querySelector('#rasgos-form').getBoundingClientRect().top + scrollY + 500)")
+    pagina.wait_for_timeout(200)
+    assert pagina.evaluate("scrollY") > 600
+    caja = pagina.locator(".rasgos-vista").bounding_box()
+    assert 0 <= caja["y"] < 40 and caja["width"] <= 100                                       # sigue a la vista y es pequeña
+    pagina.set_viewport_size({"width": 1280, "height": 800})
+    assert not pagina.locator(".rasgos-vista").is_visible()                                   # en el computador la vitrina ya está al lado
+
+
+def test_las_pestanas_van_en_una_sola_fila_dentro_de_su_contenedor(pagina, backend):
+    for ancho in (390, 1280):
+        pagina.set_viewport_size({"width": ancho, "height": 844})
+        abrir(pagina, backend, ruta="avatar.html")
+        pagina.reload()
+        pagina.locator("#avatar-contenido").wait_for()
+        tops = pagina.locator(".pestana").evaluate_all("e => [...new Set(e.map(x => Math.round(x.getBoundingClientRect().top)))].length")
+        assert tops == 1, f"{ancho}: las pestañas se parten en filas"
+        caja = pagina.locator("#pestanas").bounding_box()
+        assert caja["x"] + caja["width"] <= ancho + 1
+        assert pagina.evaluate("document.documentElement.scrollWidth") <= ancho
+    # en el celular no caben todas: la fila se desliza de lado (con imán), sin partirse
+    pagina.set_viewport_size({"width": 390, "height": 844})
+    pagina.reload()
+    pagina.locator("#avatar-contenido").wait_for()
+    datos = pagina.locator("#pestanas").evaluate("e => [getComputedStyle(e).overflowX, getComputedStyle(e).scrollSnapType, e.scrollWidth > e.clientWidth]")
+    assert datos[0] == "auto" and datos[1].startswith("x") and datos[2] is True
+    pagina.locator("#pestana-companero").click()                                              # elegir la última la deja a la vista
+    assert pagina.locator("#pestana-companero").evaluate("e => { const f = e.parentElement.getBoundingClientRect(), r = e.getBoundingClientRect(); return r.left >= f.left - 1 && r.right <= f.right + 1 }")
+    assert pagina.locator("[role=tab]").count() == 5 and pagina.evaluate("location.hash") == "#companero"
 
 
 def test_los_tonos_de_piel_se_llaman_tono_1_a_tono_8_y_hay_un_radio_con_etiqueta_por_opcion(pagina, backend):

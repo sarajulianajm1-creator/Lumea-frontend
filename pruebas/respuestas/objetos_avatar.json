@@ -99,7 +99,12 @@
     "mouthVariant": "smile",
     "cheeksVariant": null,
     "beardVariant": null,
-    "shirtColor": "40c057"
+    "shirtColor": "40c057",
+    "eyebrowsVariant": "flat",
+    "noseVariant": "small",
+    "pantsColor": "3b5b8c",
+    "shoesColor": "343a40",
+    "backgroundColor": null
   },
   "niveles": 10
 }

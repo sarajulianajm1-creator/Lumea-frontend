@@ -20,13 +20,14 @@
 // =====================================================================
 
 const SEMILLA = "lumea";
-const PANTALON = "3b5b8c";
+const PANTALON = "3b5b8c";                 // si el backend todavía no manda el pantalón y los zapatos (B8), son fijos
 const ZAPATOS = "f1f3f5";
 
 // Las claves de rasgos que se aceptan (lo demás se ignora)
-const COLORES = ["skinColor", "hairColor", "shirtColor"];
-const VARIANTES = ["topVariant", "eyesVariant", "mouthVariant"];
-const OPCIONALES = { cheeksVariant: "cheeksProbability", beardVariant: "beardProbability" };
+const COLORES = ["skinColor", "hairColor", "shirtColor", "pantsColor", "shoesColor"];
+const VARIANTES = ["topVariant", "eyesVariant", "mouthVariant", "noseVariant"];
+// Las que pueden no estar («Ninguno»): su probabilidad vale 100 si hay opción y 0 si no
+const OPCIONALES = { cheeksVariant: "cheeksProbability", beardVariant: "beardProbability", eyebrowsVariant: "eyebrowsProbability" };
 
 let nucleo = null;
 // Un servidor sencillo (python -m http.server) puede cortar alguna de las ~40 peticiones de módulos que llegan juntas:
@@ -39,8 +40,8 @@ function cargarNucleo(intentos = 0) {
     ]).then(([m, def]) => ({ Avatar: m.Avatar, estilo: new m.Style(def) }))
       .catch((e) => {
         nucleo = null;
-        if (intentos >= 2) throw e;
-        return new Promise((ok) => setTimeout(ok, 150)).then(() => cargarNucleo(intentos + 1));
+        if (intentos >= 4) throw e;
+        return new Promise((ok) => setTimeout(ok, 250)).then(() => cargarNucleo(intentos + 1));
       });
   }
   return nucleo;
@@ -61,7 +62,7 @@ export function opcionesDePersona(persona, { animada = false } = {}) {
   const puesto = (persona && persona.puesto) || {};
   const opciones = {
     seed: SEMILLA,
-    backgroundColor: ["ffffff00"],
+    backgroundColor: ["ffffff00"],                 // sin fondo, salvo que la persona elija uno
     pantsColor: [PANTALON],
     shoesColor: [ZAPATOS],
     outfitVariant: ["plain"],                      // sin ropa puesta: la camiseta lisa
@@ -72,8 +73,10 @@ export function opcionesDePersona(persona, { animada = false } = {}) {
     animationVariant: [animada && !movimientoReducido() ? "slow" : "none"],
   };
   COLORES.concat(VARIANTES).forEach((clave) => { if (rasgos[clave]) opciones[clave] = lista(rasgos[clave]); });
+  if (rasgos.backgroundColor) opciones.backgroundColor = lista(rasgos.backgroundColor);
   Object.keys(OPCIONALES).forEach((clave) => {
     if (rasgos[clave]) { opciones[clave] = lista(rasgos[clave]); opciones[OPCIONALES[clave]] = 100; }
+    else if (clave in rasgos) opciones[OPCIONALES[clave]] = 0;              // «Ninguno» (null)
   });
   // Lo que la persona tiene puesto: sus parámetros (outfitVariant, glassesVariant, y un color si la prenda lo pide)
   ["ropa", "accesorio"].forEach((tipo) => {
@@ -85,13 +88,16 @@ export function opcionesDePersona(persona, { animada = false } = {}) {
   return opciones;
 }
 
-export async function dibujarPersona(persona, { animada = false } = {}) {
+// `recorte` ([x, y, ancho, alto] en el lienzo de 128) acerca el dibujo a una parte de la persona (la cara, para los mosaicos de
+// ojos, cejas, nariz, boca, mejillas y barba): solo cambia el viewBox del SVG.
+export async function dibujarPersona(persona, { animada = false, recorte = null } = {}) {
   const { Avatar, estilo } = await cargarNucleo();
-  return new Avatar(estilo, opcionesDePersona(persona, { animada })).toString();
+  const svg = new Avatar(estilo, opcionesDePersona(persona, { animada })).toString();
+  return recorte ? svg.replace(/viewBox="[^"]*"/, `viewBox="${recorte.join(" ")}"`) : svg;
 }
 
 // Una dirección data: lista para <img src>; no sale ninguna petición
-export async function urlDePersona(persona, { animada = false } = {}) {
-  const svg = await dibujarPersona(persona, { animada });
+export async function urlDePersona(persona, { animada = false, recorte = null } = {}) {
+  const svg = await dibujarPersona(persona, { animada, recorte });
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }

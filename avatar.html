@@ -82,7 +82,7 @@
         <button type="button" role="tab" id="pestana-como-me-veo" class="pestana" aria-controls="panel-como-me-veo" aria-selected="false" tabindex="-1">Cómo me veo</button>
         <button type="button" role="tab" id="pestana-misiones" class="pestana" aria-controls="panel-misiones" aria-selected="false" tabindex="-1">Misiones</button>
         <button type="button" role="tab" id="pestana-calcomanias" class="pestana" aria-controls="panel-calcomanias" aria-selected="false" tabindex="-1">Calcomanías</button>
-        <button type="button" role="tab" id="pestana-companero" class="pestana" aria-controls="panel-companero" aria-selected="false" tabindex="-1">Tu compañero</button>
+        <button type="button" role="tab" id="pestana-companero" class="pestana" aria-controls="panel-companero" aria-selected="false" tabindex="-1">Compañero</button>
       </div>
 
       <!-- MI ARMARIO: la acción principal de la pantalla. Cada mosaico es la persona con esa prenda puesta. -->
@@ -96,6 +96,8 @@
       <div role="tabpanel" id="panel-como-me-veo" class="panel-pestana" aria-labelledby="pestana-como-me-veo" tabindex="0" hidden>
         <h2 class="panel-pestana__titulo">Cómo me veo</h2>
         <p class="panel-pestana__nota">Elige cómo eres. Todo está abierto desde el primer día y lo puedes cambiar cuando quieras.</p>
+        <!-- Vista previa pequeña y fija mientras se edita (solo en el celular: en el computador la vitrina se ve al lado) -->
+        <div class="rasgos-vista" aria-hidden="true"><img id="rasgos-vista-img" alt=""></div>
         <form id="rasgos-form" class="rasgos" novalidate></form>
         <button type="button" id="rasgos-guardar" class="boton boton--secundario">Guardar cómo me veo</button>
       </div>
