@@ -455,6 +455,13 @@ Misión: `docs/tickets/MISION-pulido.md` (rama `rediseno`, 9 de oct de 2026). Pl
 - **Barras:** se llenan una vez al cargar (`transition: width var(--m-lento)`); con movimiento reducido, de golpe. **Con movimiento reducido nada se mueve:** ni la persona ni el compañero (pruebas).
 - **Cambiaron, y por qué:** `test_movimiento.py` (el R8 prohibía el fundido entre páginas y la barra que se llena; la misión de pulido los pide: se reemplazaron por pruebas del fundido, de `view-transition-name`, de `:active` inmediato y de la barra); `test_index_ingresado.py` (hasta 6 superficies y 6 secciones, por el dato del día y la franja de la semana); `test_camara.py` (los bloques de consejo ahora llevan el color suave de su rol, nunca el de duda ni el de error); `test_caras_checkin.py` (en Inicio los botones van quietos y el compañero que saluda es lo único que se mueve).
 
+### Cierre (P7) · pruebas
+
+- `.venv/bin/pytest pruebas` → **840 pasan, 1 `xfail`** (antes 742 + 1). `.venv/bin/pytest pruebas -m capturas` → **282 casos pasan, 0 errores de contraste** (corrido con todo lo de Inicio, Mis registros y Registrar; las formas de `marca` se midieron después con `test_formas.py`, que mide los colores calculados porque axe no ve los pseudoelementos). `test_caras_checkin` y `test_camara::test_un_bloque_vacio_no_se_dibuja` fallaron una vez cada una bajo carga en una corrida y pasan solas y en las corridas siguientes (la causa real de la intermitencia de las caras, el corte de peticiones del servidor de pruebas, se arregló con el reintento).
+- **Nuevas:** `test_crear_cuenta.py`, `test_sin_dicebear.py`, `test_formas.py`; ampliadas `test_avatar.py` (reescrita), `test_celebracion.py`, `test_index_ingresado.py`, `test_mis_registros.py`, `test_movimiento.py`, `test_caras_checkin.py`, `test_camara.py`.
+- **No se tocaron** `estilos/tokens.css`, `estilos/paletas.css` ni `estilos/fuentes/` (son de Isabella).
+- **Bitácora** (`docs/bitacora-ia.md`: una fila por fase) y **defensa** (`docs/defensa/preguntas-pulido.md`: dos preguntas sin respuesta).
+
 ### Lo que quedó pendiente / para Isabella
 
 - **El backend que corre en el 5002 es el viejo** (arrancó a las 8:33): sin `persona`, `/dato-del-dia` ni `grupo` en `/historial`. Hay que reiniciarlo con la rama `gamificacion-100` para ver P2 a P4 con datos reales.
