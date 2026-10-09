@@ -1,4 +1,4 @@
-# Lumea: reglas para Claude Code
+# Lumea - reglas para Claude Code -
 
 Lumea es una app web que promueve hábitos de alimentación saludable en adolescentes: la IA reconoce la comida en una foto y la gamificación celebra lo que la persona hace, sin prohibir nada. Concurso Fedesoft 2026; el video se entrega el 9 de octubre.
 

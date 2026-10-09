@@ -1,4 +1,4 @@
-# Marca de Lumea
+# Marca de Lumea - 🌿
 
 Este archivo lo leen las skills de diseño antes de proponer cualquier cosa.
 Si cambias algo aquí, cambia la dirección de todo el diseño.
