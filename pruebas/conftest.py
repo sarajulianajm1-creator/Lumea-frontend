@@ -122,9 +122,14 @@ class _Silencioso(SimpleHTTPRequestHandler):
         pass
 
 
+class _ServidorConCola(ThreadingHTTPServer):
+    """Con la cola de conexiones por defecto (5), las ~40 peticiones de módulos de DiceBear que llegan juntas se cortaban a veces."""
+    request_queue_size = 128
+
+
 @pytest.fixture(scope="session")
 def servidor():
-    http = ThreadingHTTPServer(("127.0.0.1", 0), partial(_Silencioso, directory=str(RAIZ)))
+    http = _ServidorConCola(("127.0.0.1", 0), partial(_Silencioso, directory=str(RAIZ)))
     threading.Thread(target=http.serve_forever, daemon=True).start()
     yield f"http://127.0.0.1:{http.server_address[1]}"
     http.shutdown()

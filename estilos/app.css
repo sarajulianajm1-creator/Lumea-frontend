@@ -274,7 +274,7 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 .bar-numero { min-height: 1.25em; font-size: var(--t-s); font-weight: var(--t-peso-fuerte); line-height: 1.25; }
 .bar-fill-body--base { width: 100%; max-width: 40px; border-radius: 0; background: var(--c-borde-fuerte); }          /* 0 comidas: solo la línea base */
 .bar-col-item.today .bar-fill-body--base { background: var(--c-borde-fuerte); }
-.bar-fruit-floating-icon { position: absolute; top: -24px; left: 50%; transform: translateX(-50%); font-size: var(--t-l); color: var(--c-comida-tinta); }
+.bar-fruit-floating-icon { position: absolute; top: 0; left: calc(100% + 2px); font-size: var(--t-m); line-height: 1; color: var(--c-comida-tinta); }      /* al lado de la barra: no tapa el número */
 .bar-day-name { font-size: var(--t-xs); font-weight: var(--t-peso-medio); color: var(--c-tinta-suave); }
 .bar-col-item.today .bar-day-name { color: var(--c-marca-tinta); font-weight: var(--t-peso-fuerte); }
 
@@ -355,7 +355,7 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 /* Los sellos en la lista: el octágono pequeño (unos 56 px) y su nombre escrito al lado; el texto del sello completo sigue en el HTML
    y en su nombre accesible. Así no tapan toda la fila. */
 .sellos--lista { align-items: center; gap: var(--e-2) var(--e-3); }
-.sellos--lista .sello { --tam-sello: 56px; padding: 0; font-size: 0; }
+.sellos--lista .sello { --tam-sello: 56px; padding: 0; text-indent: 100%; white-space: nowrap; overflow: hidden; }   /* el texto queda en el HTML, fuera del octágono */
 .sellos--lista .sello::before { inset: 3px; }
 .sellos--lista .sello::after { inset: 5px; }
 .registro__sellos-texto { flex: 1 1 100%; font-size: var(--t-s); color: var(--c-tinta); }

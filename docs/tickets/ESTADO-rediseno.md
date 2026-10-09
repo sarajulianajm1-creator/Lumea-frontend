@@ -455,6 +455,26 @@ Misión: `docs/tickets/MISION-pulido.md` (rama `rediseno`, 9 de oct de 2026). Pl
 - **Barras:** se llenan una vez al cargar (`transition: width var(--m-lento)`); con movimiento reducido, de golpe. **Con movimiento reducido nada se mueve:** ni la persona ni el compañero (pruebas).
 - **Cambiaron, y por qué:** `test_movimiento.py` (el R8 prohibía el fundido entre páginas y la barra que se llena; la misión de pulido los pide: se reemplazaron por pruebas del fundido, de `view-transition-name`, de `:active` inmediato y de la barra); `test_index_ingresado.py` (hasta 6 superficies y 6 secciones, por el dato del día y la franja de la semana); `test_camara.py` (los bloques de consejo ahora llevan el color suave de su rol, nunca el de duda ni el de error); `test_caras_checkin.py` (en Inicio los botones van quietos y el compañero que saluda es lo único que se mueve).
 
+### P9 · Correcciones de Isabella (9 oct, 11:45): LISTA
+
+Respuestas de Isabella a las capturas a 390×844: «Etapa N» → opción A (la pastilla debajo de la fecha, sin partirse); «Foto directa» → «Tomar foto ahora». Capturas a 1280×800 y 390×844 de lo tocado en `pruebas/capturas/p9/` (git la ignora).
+
+1. **Pestañas de Avatar:** una sola fila dentro de su contenedor redondo; si no caben (celular), la fila se desliza de lado (`overflow-x: auto`, `scroll-snap`); «Tu compañero» → «Compañero»; se conservan `role=tab`, las flechas del teclado y los `#`. Al elegir una pestaña, la fila se desliza hasta ella sin mover la página.
+2. **«Cómo me veo»:** secciones con subtítulo (Cara: piel, ojos, cejas, nariz, boca, mejillas, barba; Pelo: peinado y color; Ropa: camiseta, pantalón y zapatos; Fondo); mosaicos en `repeat(auto-fill, minmax(88px, 1fr))`, del mismo tamaño y con espacio fijo para dos líneas; los de ojos, cejas, nariz, boca, mejillas y barba **se acercan a la cara** (`recorte` del `viewBox` del SVG en `persona.js`); los colores en muestras que se reparten sin huérfanas (piel 4 × 2 en el celular y una fila en pantalla ancha); en el celular, una vista previa pequeña y fija (sticky) mientras se edita. **Los rasgos nuevos del backend (B8)** (`eyebrowsVariant`, `noseVariant`, `pantsColor`, `shoesColor`, `backgroundColor` con «Sin fondo» → `null`) se dibujan con sus nombres de `rasgos_disponibles`; si el backend no los manda, no se dibujan. Las respuestas simuladas se regeneraron con la configuración real del backend (13 rasgos).
+3. **Menú lateral:** su fondo ahora es el de la columna entera (`.app::before`), así que ocupa todo el alto de la página aunque la captura sea larga; el menú sigue pegado arriba (`sticky`, 100dvh).
+4. **Mis registros:** los sellos van de unos 56 px (el octágono, con su nombre accesible y el texto en el HTML) y, al lado, su nombre escrito («Exceso en azúcares · Contiene edulcorantes»); rótulo visible «Grupos del plato» y cada marca con su nombre accesible («Frutas y verduras: sí»); «--» → «:» en el subtítulo.
+5. **Términos y páginas públicas:** dos botones seguidos con `gap` (`publico.css`; los textos no cambian).
+6. **«Etapa N» en el celular (Inicio):** `white-space: nowrap` y la pastilla en su propia línea, debajo de la fecha; en el computador sigue a la derecha del saludo.
+7. **Progreso:** un día con 0 comidas no lleva barra (solo la línea base) y cada barra muestra su número; la manzana de la fruta pasó al lado de la barra para no tapar el número.
+8. **«Foto directa» → «Tomar foto ahora»** (abre la cámara del teléfono y manda la foto a Registrar).
+- **Pruebas que cambiaron:** `test_accesibilidad` (lo que va en una fila que se desliza de lado no cuenta como «se sale del ancho»), `test_mis_registros` (los sellos de la lista son pequeños y ya no se exige el tamaño de texto de 12,8 px al octágono, que es un pictograma con su nombre al lado), `test_avatar` y `test_progreso`. El servidor de pruebas ahora acepta más conexiones en cola (`request_queue_size`) para que las ~40 peticiones de módulos de DiceBear no se corten.
+
+### Textos nuevos (P9) para que Isabella revise
+
+- Avatar: «Compañero» (pestaña) · «Cara», «Pelo», «Ropa», «Fondo» (secciones) · «Sin fondo» (viene del backend)
+- Mis registros: «Grupos del plato» · «Frutas y verduras: sí» (nombre accesible) · «Exceso en azúcares · Contiene edulcorantes» (el sello escrito)
+- Inicio: «Tomar foto ahora»
+
 ### Cierre (P7) · pruebas
 
 - `.venv/bin/pytest pruebas` → **840 pasan, 1 `xfail`** (antes 742 + 1). `.venv/bin/pytest pruebas -m capturas` → **282 casos pasan, 0 errores de contraste** (corrido con todo lo de Inicio, Mis registros y Registrar; las formas de `marca` se midieron después con `test_formas.py`, que mide los colores calculados porque axe no ve los pseudoelementos). `test_caras_checkin` y `test_camara::test_un_bloque_vacio_no_se_dibuja` fallaron una vez cada una bajo carga en una corrida y pasan solas y en las corridas siguientes (la causa real de la intermitencia de las caras, el corte de peticiones del servidor de pruebas, se arregló con el reintento).

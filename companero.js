@@ -65,8 +65,8 @@
       ]).then(([m, def]) => ({ Avatar: m.Avatar, estilo: new m.Style(def) }))
         .catch((e) => {
           nucleo = null;
-          if ((intentos || 0) >= 4) throw e;
-          return new Promise((ok) => setTimeout(ok, 250)).then(() => cargarNucleo((intentos || 0) + 1));
+          if ((intentos || 0) >= 7) throw e;
+          return new Promise((ok) => setTimeout(ok, 250 * ((intentos || 0) + 1))).then(() => cargarNucleo((intentos || 0) + 1));
         });
     }
     return nucleo;

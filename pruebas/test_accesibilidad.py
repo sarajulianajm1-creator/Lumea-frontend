@@ -102,6 +102,9 @@ def test_sin_barra_horizontal_a_200_por_ciento_de_zoom_y_a_320_px(pagina, backen
     # y nada importante queda cortado a la derecha: ningún control se sale del ancho
     sale = pagina.evaluate("""(w) => [...document.querySelectorAll('a, button, input, h1, h2, img.marca')]
         .filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.right > w + 1 && !e.classList.contains('solo-lector') })
+        // salvo lo que va en una fila que se desliza de lado (las pestañas de Avatar): esa fila sí cabe, y se llega a todo con el dedo o las flechas
+        .filter((e) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) {
+            if (['auto', 'scroll'].includes(getComputedStyle(p).overflowX) && p.getBoundingClientRect().right <= w + 1) return false } return true })
         .map((e) => e.tagName + '.' + e.className)""", ANCHOS[ancho])
     assert sale == []
 
