@@ -96,6 +96,22 @@
 
   // ---------- Sincronizar todo con el estado ----------
 
+  // «Tu día»: el porcentaje de la barra se guarda en sessionStorage (con el día) para que, al volver a Inicio después de registrar una comida,
+  // la barra se llene desde el valor anterior. Todo con try/catch: sin sessionStorage la barra se llena desde donde esté.
+  const CLAVE_BARRA = "lumea_barra_dia";
+  const hoyLocal = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+  let barraDelDiaPuesta = false;
+  function pctAnteriorDeLaBarra() {
+    try {
+      const v = JSON.parse(sessionStorage.getItem(CLAVE_BARRA));
+      return v && v.dia === hoyLocal() && Number.isFinite(v.pct) ? Math.min(100, Math.max(0, v.pct)) : null;
+    } catch (e) { return null; }
+  }
+  function guardarPctDeLaBarra(pct) {
+    if (!document.querySelector(".lumea-bind-comidas-bar")) return;
+    try { sessionStorage.setItem(CLAVE_BARRA, JSON.stringify({ dia: hoyLocal(), pct })); } catch (e) { /* sin sessionStorage: nada que guardar */ }
+  }
+
   function sincronizarLumeaUI() {
     actualizarFechaActual();
     const store = window.lumeaStore;
@@ -124,9 +140,20 @@
     // La barra de comidas de hoy: lo que lleva sobre la meta de comidas (nunca pasa de 100 %)
     const pctComidas = s.meta_comidas > 0 ? Math.min(100, Math.round((s.comidas_hoy.length / s.meta_comidas) * 100)) : 0;
     todos(".lumea-bind-comidas-bar").forEach((barra) => {
+      if (!barraDelDiaPuesta) {                        // al volver a Inicio la barra parte de lo que se vio la última vez y se llena hasta hoy
+        const antes = pctAnteriorDeLaBarra();
+        if (antes !== null && antes !== pctComidas) {
+          barra.style.transition = "none";
+          barra.style.width = `${antes}%`;
+          barra.getBoundingClientRect();               // fija el punto de partida antes de dejar que se anime
+          barra.style.transition = "";
+        }
+      }
       barra.style.width = `${pctComidas}%`;
       barra.setAttribute("aria-valuenow", String(pctComidas));
     });
+    if (!barraDelDiaPuesta && document.querySelector(".lumea-bind-comidas-bar")) barraDelDiaPuesta = true;
+    guardarPctDeLaBarra(pctComidas);
     const hechas = s.misiones.filter((m) => m.cumplida).length;
     poner(".lumea-bind-misiones-count", `${hechas} de ${s.misiones.length || 3}`);
 

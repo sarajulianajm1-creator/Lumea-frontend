@@ -75,6 +75,8 @@
 /* «backwards» (y no «both»): al terminar, la animación no fija opacity y la salida puede apagarlo */
 .momento { animation: momento-entra var(--m-lento) var(--m-salida) backwards; }
 .momento--saliendo { opacity: 0; transform: translateY(-6px); transition: opacity var(--m-base), transform var(--m-base); }
+/* El «+N semillas» no solo se apaga: sube y se desvanece (la curva de salida, --m-lento) */
+.celebracion__chip.momento--saliendo { transform: translateY(calc(var(--e-5) * -1)); transition: opacity var(--m-lento) var(--m-salida), transform var(--m-lento) var(--m-salida); }
 @keyframes momento-entra {
   from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: none; }
@@ -122,5 +124,5 @@
 /* Quien pide menos movimiento: todo aparece de golpe */
 @media (prefers-reduced-motion: reduce) {
   .momento, .celebracion__nivel[open] { animation: none; }
-  .momento--saliendo { transition: none; transform: none; }
+  .momento--saliendo, .celebracion__chip.momento--saliendo { transition: none; transform: none; }
 }

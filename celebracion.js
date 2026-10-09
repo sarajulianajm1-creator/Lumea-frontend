@@ -29,7 +29,7 @@
   "use strict";
 
   // Cuánto dura cada momento que se va solo (en milisegundos). Las pruebas los acortan.
-  const TIEMPOS = { xp: 3000, mision: 3500, salida: 220 };
+  const TIEMPOS = { xp: 3000, mision: 3500, salida: 420 };       // salida = --m-lento: el «+N semillas» sube y se desvanece
 
   const cola = [];
   let ocupada = false;

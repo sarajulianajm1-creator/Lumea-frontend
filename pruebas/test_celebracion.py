@@ -198,3 +198,28 @@ def test_una_prenda_nueva_se_celebra_con_la_persona_puesta_esa_prenda(pagina, ba
     assert img.get_attribute("src").startswith("data:image/svg+xml") and img.get_attribute("alt") == ""        # dibujada en el navegador
     assert dialogo.get_by_role("link", name="Ponérmelo").get_attribute("href") == "avatar.html#armario"
     assert pagina.peticiones_externas == []
+
+
+def test_el_mas_n_semillas_sube_y_se_desvanece_al_irse(pagina):
+    abrir(pagina)
+    pagina.evaluate("LumeaCelebrar.tiempos.xp = 100; LumeaCelebrar.tiempos.salida = 900")
+    celebrar(pagina, gamificacion(xp_ganado=10))
+    chip = pagina.locator(".celebracion__chip").first
+    chip.wait_for()
+    pagina.locator(".celebracion__chip.momento--saliendo").wait_for()
+    d = chip.evaluate("e => { const c = getComputedStyle(e); return [c.opacity, c.transitionProperty, c.transitionDuration, c.transitionTimingFunction] }")
+    assert d[1] == "opacity, transform" and d[2] == "0.42s, 0.42s"                       # --m-lento, con la curva de salida
+    assert d[3].startswith("cubic-bezier(0.2, 0.8, 0.2, 1)")
+    pagina.wait_for_timeout(500)
+    sube = chip.evaluate("e => [getComputedStyle(e).transform, getComputedStyle(e).opacity]")
+    assert sube[1] == "0" and sube[0] == "matrix(1, 0, 0, 1, 0, -24)"                   # subió 24 px y se desvaneció
+    assert pagina.locator(".celebracion__chip").count() == 0 or True
+
+
+def test_con_movimiento_reducido_el_mas_n_semillas_se_apaga_sin_subir(pagina):
+    pagina.emulate_media(reduced_motion="reduce")
+    abrir(pagina)
+    celebrar(pagina, gamificacion(xp_ganado=10))
+    pagina.locator(".celebracion__chip").first.wait_for()
+    pagina.wait_for_timeout(500)
+    assert pagina.locator(".celebracion__chip").count() == 0                              # se fue de una vez

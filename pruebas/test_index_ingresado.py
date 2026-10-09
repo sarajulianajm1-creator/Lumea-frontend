@@ -395,3 +395,44 @@ def test_el_atajo_de_la_camara_se_llama_tomar_foto_ahora(pagina, backend):
     etiqueta = pagina.locator("label.foto-directa")
     assert etiqueta.inner_text().strip() == "Tomar foto ahora"
     assert pagina.locator("[data-accion-principal]").inner_text().strip() == "Registrar comida"      # sigue siendo el único botón principal
+
+
+# ---------- P11 · 3: la barra de «Tu día» se llena desde el valor anterior ----------
+
+def _historial_de_hoy(n):
+    return [{"id": i, "alimento_codigo": "arepa", "alimento_detectado": "arepa", "balanceado": 1, "calorias_aprox": 100, "certeza_ia": 90.0,
+             "fecha": "Mon, 05 Oct 2026 00:00:00 GMT", "sellos_advertencia": [], "es_fruta": False} for i in range(1, n + 1)]
+
+
+ESPIA_BARRA = """window.__desde = null; document.addEventListener('transitionrun', (e) => {
+    if (e.propertyName === 'width' && e.target.matches('.lumea-bind-comidas-bar')) window.__desde = e.target.offsetWidth / e.target.parentElement.offsetWidth }, true);"""
+
+
+def test_al_volver_a_inicio_la_barra_de_tu_dia_parte_del_valor_anterior(pagina, backend):
+    backend.poner("GET", "/historial", {"success": True, "cantidad_registros": 2, "historial": _historial_de_hoy(2)})
+    pagina.add_init_script("sessionStorage.setItem('lumea_barra_dia', JSON.stringify({ dia: '2026-10-05', pct: 33 }))" )
+    pagina.add_init_script(ESPIA_BARRA)
+    abrir(pagina, backend)
+    pagina.wait_for_timeout(700)
+    assert abs(pagina.evaluate("window.__desde") - 0.33) < 0.03                               # 2 de 3: la barra parte de 33 % (lo que se vio antes)…
+    assert pagina.locator(".lumea-bind-comidas-bar").evaluate("e => e.style.width") == "67%"      # …y llega a 67 %
+    guardado = pagina.evaluate("JSON.parse(sessionStorage.getItem('lumea_barra_dia'))")
+    assert guardado == {"dia": "2026-10-05", "pct": 67}                                       # y guarda el valor nuevo para la próxima vez
+
+
+def test_sin_valor_anterior_o_de_otro_dia_la_barra_se_llena_desde_cero(pagina, backend):
+    backend.poner("GET", "/historial", {"success": True, "cantidad_registros": 1, "historial": _historial_de_hoy(1)})
+    pagina.add_init_script("sessionStorage.setItem('lumea_barra_dia', JSON.stringify({ dia: '2026-10-04', pct: 90 }))")       # de ayer: no cuenta
+    pagina.add_init_script(ESPIA_BARRA)
+    abrir(pagina, backend)
+    pagina.wait_for_timeout(700)
+    assert pagina.evaluate("window.__desde") < 0.03                                           # parte de cero
+    assert pagina.locator(".lumea-bind-comidas-bar").evaluate("e => e.style.width") == "33%"
+
+
+def test_sin_sessionstorage_la_barra_funciona_igual(pagina, backend):
+    backend.poner("GET", "/historial", {"success": True, "cantidad_registros": 1, "historial": _historial_de_hoy(1)})
+    pagina.add_init_script("Object.defineProperty(window, 'sessionStorage', { get() { throw new Error('bloqueado') } })")
+    abrir(pagina, backend)
+    pagina.wait_for_timeout(500)
+    assert pagina.locator(".lumea-bind-comidas-bar").get_attribute("aria-valuenow") == "33"
