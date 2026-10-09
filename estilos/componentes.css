@@ -304,6 +304,17 @@ p { margin: 0; text-wrap: pretty; }
   border-radius: var(--r-control);
   background: var(--c-borde);
 }
+/* Tarjetas de carga (P11): bloques con la forma final de lo que va a llegar (dato del día, «Tu semana», Mis registros), para que nada salte.
+   Siempre quietas: sin brillo animado, con o sin prefers-reduced-motion. Son aria-hidden; el aviso de «Cargando…» va aparte. */
+.esqueleto-tarjeta { display: grid; gap: var(--e-3); align-content: start; }
+.esqueleto-tarjeta[hidden] { display: none; }
+.esqueleto { display: block; }
+.esqueleto--titulo { height: 24px; width: 40%; }
+.esqueleto--linea { height: 14px; width: 100%; }
+.esqueleto--media { width: 80%; }
+.esqueleto--corta { width: 55%; }
+.esqueleto--dias { height: 76px; width: 100%; }
+.esqueleto--fila { height: 64px; width: 100%; }
 
 /* ---------- 10. Estructura de la app: lateral en computador, barra abajo en celular ---------- */
 /* UN solo <nav> en el HTML. El CSS decide si es columna o barra:

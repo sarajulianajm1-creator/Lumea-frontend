@@ -94,6 +94,8 @@
     if (!franja) return;
     const dias = s.cargado ? s.ultimos_dias : null;
     franja.hidden = !dias;
+    const esqueleto = $("esqueleto-semana");
+    if (esqueleto && (s.cargado || window.lumeaStore.error)) esqueleto.remove();          // el esqueleto se queda mientras llegan los datos
     if (!dias) return;
     const firma = JSON.stringify(dias.map((d) => [d.clave, d.comidas, d.estado]));
     if (firma === firmaSemana) return;                                         // nada cambió: las caras no se vuelven a dibujar
@@ -141,7 +143,9 @@
   // El dato curioso de hoy (el mismo para todas las personas). Sin dato o con la petición caída, la tarjeta no se dibuja.
   async function cargarDatoDelDia() {
     const tarjeta = $("card-dato-dia");
-    if (!tarjeta || typeof obtenerDatoDelDia !== "function") return;
+    const esqueleto = $("esqueleto-dato");
+    const sinEsqueleto = () => { if (esqueleto) esqueleto.remove(); };      // llegue o no el dato, el esqueleto se va
+    if (!tarjeta || typeof obtenerDatoDelDia !== "function") { sinEsqueleto(); return; }
     try {
       const { ok, cuerpo } = await obtenerDatoDelDia();                       // api.js
       const texto = ok && cuerpo && typeof cuerpo.dato_curioso === "string" ? cuerpo.dato_curioso.trim() : "";
@@ -151,6 +155,7 @@
       tarjeta.hidden = false;
       if (window.LumeaLeerMas) window.LumeaLeerMas.conectar($("dato-dia-texto"), $("dato-dia-mas")).ajustar(true);
     } catch (e) { /* sin dato: la tarjeta no se dibuja */ }
+    finally { sinEsqueleto(); }
   }
 
   // ---------- Elige tus colores ----------

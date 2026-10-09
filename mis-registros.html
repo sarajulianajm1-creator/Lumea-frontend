@@ -55,7 +55,20 @@
             <p class="contenido__subtitulo">Tu histórico de comidas, sin comparaciones ni juicios: solo para tu propia reflexión.</p>
           </header>
 
-          <p id="cargando" class="inicio__nota" role="status">Cargando tu historial...</p>
+          <!-- Mientras llega el historial: una tarjeta de bloques con la forma final (quieta, sin brillo animado) y el aviso para el lector de pantalla -->
+          <div id="cargando" role="status">
+            <span class="solo-lector">Cargando tu historial…</span>
+            <ul class="dias" aria-hidden="true">
+              <li class="tarjeta dia esqueleto-tarjeta">
+                <span class="esqueleto esqueleto--titulo"></span>
+                <span class="esqueleto esqueleto--linea esqueleto--corta"></span>
+                <span class="esqueleto esqueleto--linea esqueleto--media"></span>
+                <span class="esqueleto esqueleto--fila"></span>
+                <span class="esqueleto esqueleto--fila"></span>
+                <span class="esqueleto esqueleto--fila"></span>
+              </li>
+            </ul>
+          </div>
 
           <div id="sinRegistros" class="estado-pantalla" hidden>
             <p>Todavía no tienes comidas registradas.</p>

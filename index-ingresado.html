@@ -138,6 +138,12 @@
 
       <!-- TU SEMANA, EN UNA FRANJA: los últimos 7 días (hoy a la derecha) con las comidas y la cara quieta del ánimo. La franja entera
            lleva a Progreso. Información, sin juicio: ningún día va en rojo ni se marca como malo (indexx.js la llena). -->
+      <!-- Mientras llega «Tu semana»: bloques con su forma final, que se esconden cuando llega (o falla) -->
+      <section class="tarjeta inicio__semana esqueleto-tarjeta" id="esqueleto-semana" aria-hidden="true">
+        <span class="esqueleto esqueleto--titulo"></span>
+        <span class="esqueleto esqueleto--dias"></span>
+        <span class="esqueleto esqueleto--linea esqueleto--corta"></span>
+      </section>
       <section class="tarjeta inicio__semana" id="franja-semana" aria-labelledby="titulo-semana" hidden>
         <h2 id="titulo-semana" class="inicio__rotulo">Tu semana</h2>
         <ol class="semana-franja" id="semana-franja"></ol>
@@ -148,6 +154,12 @@
       <div class="inicio__fila inicio__fila--dato">
         <!-- ¿SABÍAS QUE…? DEL DÍA: el mismo dato para todas las personas (GET /dato-del-dia, sin correo). Si la petición falla,
              la tarjeta no se dibuja. «Leer más» es el mismo bloque largo de Registrar (leer-mas.js). -->
+        <section class="tarjeta inicio__dato esqueleto-tarjeta" id="esqueleto-dato" aria-hidden="true">
+          <span class="esqueleto esqueleto--titulo"></span>
+          <span class="esqueleto esqueleto--linea"></span>
+          <span class="esqueleto esqueleto--linea esqueleto--media"></span>
+          <span class="esqueleto esqueleto--linea esqueleto--corta"></span>
+        </section>
         <section class="tarjeta inicio__dato con-forma con-forma--marca con-forma--estrella" id="card-dato-dia" aria-labelledby="titulo-dato-dia" hidden>
           <h2 id="titulo-dato-dia" class="inicio__titulo">¿Sabías que…?</h2>
           <p id="dato-dia-alimento" class="consejo__titulo"></p>
