@@ -66,16 +66,17 @@
   border: 0; border-radius: var(--r-pildora);
   background: transparent; color: var(--c-tinta);
   font: inherit; font-size: var(--t-s); font-weight: var(--t-peso-medio); cursor: pointer;
-  transition: background var(--m-rapido) var(--m-salida);
+  transition: background var(--m-rapido) var(--m-salida), color var(--m-rapido) var(--m-salida);
 }
 .pestanas { position: relative; isolation: isolate; }
-/* El indicador de la pestaña activa (avatar.js lo pone): una píldora que se desliza de una pestaña a otra. Sin él, la pestaña activa lleva su propio fondo. */
+/* El indicador de la pestaña activa (avatar.js lo pone): una píldora que se desliza de una pestaña a otra. La pestaña activa conserva su
+   propio fondo (así el contraste del texto se mide bien y sin JavaScript sigue viéndose), pero lo toma cuando la píldora llega: --m-base de espera. */
 .pestanas__indicador {
   position: absolute; top: var(--e-1); bottom: var(--e-1); left: 0; z-index: -1; pointer-events: none;
   border-radius: var(--r-pildora); background: var(--c-marca);
   transition: transform var(--m-base) var(--m-salida), width var(--m-base) var(--m-salida);
 }
-.pestanas[data-indicador] .pestana[aria-selected="true"] { background: transparent; }
+.pestanas[data-indicador] .pestana[aria-selected="true"] { transition-delay: var(--m-base); }
 .pestana:hover { background: var(--c-marca-suave); }
 .pestana[aria-selected="true"] { background: var(--c-marca); color: var(--c-sobre-marca); font-weight: var(--t-peso-fuerte); }
 .pestana:focus-visible, .panel-pestana:focus-visible { outline: 3px solid var(--c-foco); outline-offset: 2px; }
