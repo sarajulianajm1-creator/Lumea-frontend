@@ -617,3 +617,11 @@ def test_el_dato_largo_con_consejos_sigue_sin_desbordar_ni_bajar_de_12_8_px(pagi
     assert pagina.evaluate("document.documentElement.scrollWidth") <= 375
     assert estado_dato(pagina)["visible"]
     assert pagina.evaluate("parseFloat(getComputedStyle(document.getElementById('btn-dato-mas')).fontSize)") >= 12.8
+
+
+def test_sin_camara_en_vivo_el_aviso_manda_a_subir_foto(pagina):
+    """P11 · 0: en una dirección sin https ni localhost el navegador no da la cámara; el aviso dice qué hacer."""
+    pagina.add_init_script("Object.defineProperty(navigator, 'mediaDevices', { value: undefined, configurable: true })")
+    abrir(pagina)
+    pagina.get_by_role("button", name="Encender cámara").click()
+    assert pagina.locator("#backend-estado").inner_text() == "La cámara en vivo solo funciona en localhost o con https. Usa «Subir foto»: en el celular también abre la cámara."

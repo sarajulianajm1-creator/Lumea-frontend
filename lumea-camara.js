@@ -90,7 +90,7 @@ const MOSTRAR_CALORIAS = true;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       poner("backend-estado", location.protocol === "file:"
         ? "Abre esta página desde un servidor (http://localhost), no con doble clic."
-        : "Este navegador no permite la cámara en esta dirección.");
+        : "La cámara en vivo solo funciona en localhost o con https. Usa «Subir foto»: en el celular también abre la cámara.");
       return;
     }
     try {
