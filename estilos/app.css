@@ -66,7 +66,7 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
   .nav-app__corto { display: inline; }
   .nav-app__enlace { min-width: 0; }
   .nav-app__enlace--registrar {
-    flex: 0 0 76px; background: var(--c-marca); color: var(--c-sobre-marca);
+    flex: 0 0 76px; background: var(--c-marca-tinta); color: var(--c-sobre-marca);
     border-radius: var(--r-control);
   }
   .nav-app__enlace--registrar:hover, .nav-app__enlace--registrar[aria-current="page"] { background: var(--c-marca-hover); color: var(--c-sobre-marca); }
@@ -110,8 +110,8 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 }
 .pildora--logro { background: var(--c-logro-suave); color: var(--c-logro-tinta); }
 /* ---------- 4. Inicio (rediseño R2) ----------
-   Dos tarjetas y dos franjas planas. Color solo en los momentos: el botón principal, la barra
-   de logro, los chips y la cara elegida; las tarjetas quedan casi neutras. */
+   Un rol de color por tarjeta (60-30-10): «Tu día» logro + sol, «¿Cómo llegas hoy?» emoción + luna, «¿Sabías que…?» marca + estrella;
+   nunca dos tarjetas vecinas con el mismo rol. Lo demás queda neutro: la semana y las dos franjas. El botón principal es el 10 %. */
 .inicio__saludo { display: flex; justify-content: space-between; align-items: center; gap: var(--e-4); }
 .inicio__saludo-texto { flex: 1 1 auto; min-width: 0; }
 .inicio__saludo > .chip { white-space: nowrap; flex: none; }                       /* «Etapa 2» nunca se parte en dos líneas */
@@ -140,6 +140,9 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 .inicio__apilado { display: grid; gap: var(--e-4); min-width: 0; align-content: start; }
 .inicio__dia, .inicio__animo { display: flex; flex-direction: column; gap: var(--e-3); }
 .inicio__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-2); }
+/* Lo que va dentro de una tarjeta de color: el riel de la barra y la cara elegida toman el «contenedor» del rol para no perderse en el fondo suave */
+.inicio__dia .barra-xp__riel { background: var(--c-logro-contenedor); }
+.inicio__animo .animo-cara[aria-pressed="true"] { background: var(--c-emocion-contenedor); }
 
 /* Foto directa: el input va escondido; el botón (la etiqueta) muestra el foco cuando el input lo tiene */
 .foto-directa { cursor: pointer; }
@@ -443,3 +446,11 @@ html, body { transition: background-color var(--m-base) var(--m-salida), color v
 .inicio__semana-enlace { justify-self: start; font-weight: var(--t-peso-medio); color: var(--c-marca-tinta); }
 .inicio__semana-enlace::after { content: ""; position: absolute; inset: 0; border-radius: var(--r-tarjeta); }
 .inicio__semana:hover .inicio__semana-enlace { text-decoration: underline; }
+
+/* ---------- Mensajes y avisos: el fondo suave del rol según su sentido (logro = éxito, duda = advertencia, error = error) ----------
+   Sin degradados ni sombras. El texto sigue en tinta; el sentido nunca va solo en el color (cada mensaje tiene su palabra). */
+.estado-pantalla[role="alert"], .estado[role="alert"] { background: var(--c-error-suave); border-radius: var(--r-tarjeta); color: var(--c-tinta); }
+.card-bienvenida-calida { background: var(--c-logro-suave); }
+.card-bienvenida-calida .bi { color: var(--c-logro-tinta); }
+.inicio__confirmacion { padding: var(--e-2) var(--e-3); border-radius: var(--r-control); background: var(--c-logro-suave); color: var(--c-tinta); }
+.inicio__confirmacion[hidden] { display: none; }

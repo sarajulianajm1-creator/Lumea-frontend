@@ -15,6 +15,7 @@ Moderno, juguetón (playful), no sobrecargado, pero llamativo.
 
 Cómo se traduce (ver `docs/investigacion-paletas.md`):
 - El "Wow" sale de **momentos**, no de pantallas enteras: colores muy saturados en áreas pequeñas (un logro, una calcomanía) sobre superficies tranquilas. La saturación es lo que más activa (Wilms y Oberfeld, 2018); un color pequeño gusta más cuanto más contrasta con su fondo (Schloss y Palmer, 2011).
+- **Un rol de color por tarjeta (60-30-10), decisión de Isabella del 9 de octubre de 2026.** Reemplaza la regla «color solo en los momentos» de Inicio. El 60 % es el fondo crema, el 30 % las tarjetas, cada una con el fondo `-suave` de un solo rol y una forma del Cántico (`.con-forma`), y el 10 % el botón principal (`--c-marca-tinta` con `--c-sobre-marca`). **Nunca dos tarjetas vecinas con el mismo rol.** Los mensajes toman el fondo `-suave` según su sentido: logro = éxito, duda = advertencia, error = error. Sin degradados ni sombras nuevas.
 - "Acogedor" y "Seguro": superficies claras y teñidas, nunca gris puro (el gris se asocia con tristeza en 30 países; Jonauskaite et al., 2020). Nada de rojo sobre la comida.
 - "Fluido": transiciones cortas (120–420 ms), un solo movimiento automático por pantalla, todo respeta `prefers-reduced-motion`.
 

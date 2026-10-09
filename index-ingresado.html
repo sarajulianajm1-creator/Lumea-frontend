@@ -83,7 +83,7 @@
       <div class="inicio__fila">
 
         <!-- TU DÍA: las comidas de hoy y la única acción principal de la pantalla -->
-        <section class="tarjeta inicio__dia" aria-labelledby="titulo-dia">
+        <section class="tarjeta inicio__dia con-forma con-forma--logro con-forma--sol" aria-labelledby="titulo-dia">
           <h2 id="titulo-dia" class="inicio__titulo">Tu día</h2>
           <p class="inicio__cifra"><span class="lumea-bind-comidas-count numero cifra">-- de --</span> comidas</p>
           <div class="barra-xp__riel">
@@ -101,7 +101,7 @@
         </section>
 
         <!-- ¿CÓMO LLEGAS HOY?: eliges una cara y la guardas; las semillas aparecen en la celebración, no aquí -->
-        <section class="tarjeta inicio__animo" aria-labelledby="titulo-animo" id="card-checkin-inicio">
+        <section class="tarjeta inicio__animo con-forma con-forma--emocion con-forma--luna" aria-labelledby="titulo-animo" id="card-checkin-inicio">
           <h2 id="titulo-animo" class="inicio__titulo">¿Cómo llegas hoy?</h2>
           <p class="inicio__nota">Elige la cara que más se parece a tu día</p>
           <!-- Cada botón deja un hueco (data-cara-checkin) para la cara de tu compañero (companero.js) -->
@@ -148,7 +148,7 @@
       <div class="inicio__fila inicio__fila--dato">
         <!-- ¿SABÍAS QUE…? DEL DÍA: el mismo dato para todas las personas (GET /dato-del-dia, sin correo). Si la petición falla,
              la tarjeta no se dibuja. «Leer más» es el mismo bloque largo de Registrar (leer-mas.js). -->
-        <section class="tarjeta inicio__dato con-forma con-forma--emocion con-forma--estrella" id="card-dato-dia" aria-labelledby="titulo-dato-dia" hidden>
+        <section class="tarjeta inicio__dato con-forma con-forma--marca con-forma--estrella" id="card-dato-dia" aria-labelledby="titulo-dato-dia" hidden>
           <h2 id="titulo-dato-dia" class="inicio__titulo">¿Sabías que…?</h2>
           <p id="dato-dia-alimento" class="consejo__titulo"></p>
           <p id="dato-dia-texto" class="inicio__nota dato-largo"></p>

@@ -268,7 +268,7 @@ def test_el_dato_del_dia_se_dibuja_con_el_alimento_de_subtitulo_y_sin_correo(pag
     assert ("GET", "/dato-del-dia") in backend.llamadas
     peticion = next(u for m, u, c in backend.peticiones if m == "GET" and "/dato-del-dia" in u)
     assert "@" not in peticion and "email" not in peticion and "?" not in peticion              # el mismo para todas las personas
-    assert "con-forma--emocion" in tarjeta.get_attribute("class") and "con-forma--estrella" in tarjeta.get_attribute("class")
+    assert "con-forma--marca" in tarjeta.get_attribute("class") and "con-forma--estrella" in tarjeta.get_attribute("class")
     assert pagina.errores == []
 
 

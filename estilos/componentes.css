@@ -68,7 +68,7 @@ p { margin: 0; text-wrap: pretty; }
   border-radius: var(--r-control);
   font: inherit; font-weight: var(--t-peso-medio);
   cursor: pointer;
-  background: var(--c-marca); color: var(--c-sobre-marca);
+  background: var(--c-marca-tinta); color: var(--c-sobre-marca);      /* el relleno es la «tinta» de la marca: 4,5:1 con su texto en las 5 paletas, claras y oscuras */
   transition: background var(--m-rapido) var(--m-salida),
               transform var(--m-rapido) var(--m-salida);
 }
