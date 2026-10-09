@@ -212,7 +212,7 @@ def test_cuatro_superficies_como_maximo_y_un_solo_boton_relleno(pagina, backend)
     abrir(pagina, backend)
     # sin contar la tarjeta «Elige tus colores», que desaparece una vez elegida la paleta
     superficies = pagina.locator("main .tarjeta:not(#card-colores), main .inicio__franja")
-    assert superficies.count() <= 5                                         # antes eran 13 cajas; la quinta es el «¿Sabías que…?» del día (P3)
+    assert superficies.count() <= 6                                         # antes eran 13 cajas; la quinta es el «¿Sabías que…?» del día y la sexta la franja de la semana (P3)
     # «una acción principal por pantalla»: solo un botón relleno, y es «Registrar comida»
     rellenos = pagina.locator("main .boton:not(.boton--secundario):not(.boton--fantasma)")
     assert rellenos.count() == 1
@@ -229,7 +229,7 @@ def test_las_semillas_aparecen_tres_veces_como_maximo(pagina, backend):
 def test_cada_bloque_es_una_seccion_con_su_titulo(pagina, backend):
     abrir(pagina, backend)
     secciones = pagina.locator("main section[aria-labelledby]:not(#card-colores)")
-    assert secciones.count() == 5                                            # Tu día, ¿Cómo llegas hoy?, ¿Sabías que…?, misión y etapa
+    assert secciones.count() == 6                                            # Tu día, ¿Cómo llegas hoy?, Tu semana, ¿Sabías que…?, misión y etapa
     for seccion in secciones.all():
         titulo = seccion.get_attribute("aria-labelledby")
         assert pagina.locator(f"h2#{titulo}").count() == 1
@@ -315,3 +315,55 @@ def test_el_dato_del_dia_nunca_es_html(pagina, backend):
     pagina.locator("#card-dato-dia").wait_for()
     assert pagina.locator("#card-dato-dia img, #card-dato-dia b").count() == 0
     assert pagina.evaluate("window.hackeado") is None
+
+
+# ---------- Tu semana, en una franja (P3) ----------
+
+def test_la_franja_muestra_los_ultimos_7_dias_con_hoy_a_la_derecha(pagina, backend):
+    abrir(pagina, backend)
+    pagina.locator("#semana-franja li").first.wait_for()
+    dias = pagina.locator("#semana-franja > li")
+    assert dias.count() == 7
+    # HOY es el lunes 5 de octubre: los 7 días van del martes 29 de septiembre al lunes 5, y hoy queda a la derecha
+    letras = [d.locator(".semana-dia__letra").inner_text() for d in dias.all()]
+    assert letras == ["M", "M", "J", "V", "S", "D", "L"]
+    assert dias.last.get_attribute("aria-current") == "date" and dias.first.get_attribute("aria-current") is None
+    assert [d.locator(".semana-dia__comidas").inner_text() for d in dias.all()] == ["0", "0", "0", "0", "1", "1", "1"]
+
+
+def test_la_franja_se_lee_como_una_lista_con_el_dia_las_comidas_y_el_animo(pagina, backend):
+    abrir(pagina, backend)
+    pagina.locator("#semana-franja li").first.wait_for()
+    frases = [t.strip() for t in pagina.locator("#semana-franja .solo-lector").all_text_contents()]
+    assert frases[0] == "martes 29: 0 comidas, sin check-in"
+    assert frases[-1].startswith("lunes 5 (hoy): 1 comida, ")
+    assert frases[-2] == "domingo 4: 1 comida, ánimo neutral"
+    assert pagina.locator("section#franja-semana ol").count() == 1
+
+
+def test_la_cara_del_dia_es_quieta_y_sin_check_in_queda_un_punto_vacio(pagina, backend):
+    abrir(pagina, backend)
+    pagina.locator("#semana-franja li").first.wait_for()
+    assert pagina.locator("#semana-franja .semana-dia__cara--vacia").count() >= 5
+    assert pagina.locator("#semana-franja img[data-fuente*=slow], #semana-franja img[data-fuente*=medium]").count() == 0
+    assert pagina.locator("#semana-franja .semana-dia__cara").evaluate_all("e => e.every(x => x.getAttribute('aria-hidden') === 'true')")
+
+
+def test_la_franja_entera_lleva_a_progreso_y_no_juzga_ningun_dia(pagina, backend):
+    abrir(pagina, backend)
+    franja = pagina.locator("#franja-semana")
+    franja.wait_for()
+    enlace = franja.get_by_role("link", name="Ver mi progreso")
+    assert enlace.get_attribute("href") == "progreso.html"
+    caja, tarjeta = enlace.evaluate("e => getComputedStyle(e, '::after').position"), franja.bounding_box()
+    assert caja == "absolute"                                                          # el enlace cubre toda la franja
+    colores = pagina.locator("#semana-franja .semana-dia").evaluate_all("e => e.map(x => getComputedStyle(x).backgroundColor)")
+    assert len(set(colores)) == 1                                                      # ningún día de otro color (ni rojo)
+    assert "falta" not in franja.inner_text().lower() and "mal día" not in franja.inner_text().lower()
+
+
+def test_si_no_llegan_ni_el_historial_ni_el_animo_la_franja_no_se_dibuja(pagina, backend):
+    backend.poner("GET", "/historial", {"error": "x"}, estado=500)
+    backend.poner("GET", "/estado-animo", {"error": "x"}, estado=500)
+    abrir(pagina, backend)
+    assert not pagina.locator("#franja-semana").is_visible()

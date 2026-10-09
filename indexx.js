@@ -42,6 +42,7 @@
     if (registrado) aviso.textContent = `Hoy llegaste: ${F.NOMBRE_ANIMO[s.animo_hoy.estado] || s.animo_hoy.estado}. Tu check-in ya está registrado.`;
     if (window.LumeaCompanero) window.LumeaCompanero.pintarCheckin();       // las cinco caras, quietas (data-caras-quietas)
     pintarSaludo();
+    pintarSemana();
   }
 
   // El compañero que saluda junto al «Hola, Ana»: la cara del ánimo de hoy (neutral si todavía no hay check-in), despacio.
@@ -57,6 +58,50 @@
     if (actual && actual.dataset.fuente === C.url(direccion, "slow")) return;     // la misma cara: no se reinicia
     const img = C.imagen(direccion, "slow", "inicio__companero-img");
     if (img) { img.addEventListener("error", () => hueco.replaceChildren()); hueco.replaceChildren(img); } else hueco.replaceChildren();
+  }
+
+  // ---------- Tu semana, en una franja ----------
+  // Los últimos 7 días con hoy a la derecha: la inicial, cuántas comidas y la cara quieta del último ánimo del día
+  // (un punto vacío si no hubo check-in). Para el lector de pantalla, una lista: «martes 6: 2 comidas, ánimo bien».
+  let firmaSemana = "";
+  function pintarSemana() {
+    const franja = $("franja-semana");
+    const s = window.lumeaStore.obtener();
+    if (!franja) return;
+    const dias = s.cargado ? s.ultimos_dias : null;
+    franja.hidden = !dias;
+    if (!dias) return;
+    const firma = JSON.stringify(dias.map((d) => [d.clave, d.comidas, d.estado]));
+    if (firma === firmaSemana) return;                                         // nada cambió: las caras no se vuelven a dibujar
+    firmaSemana = firma;
+    const lista = $("semana-franja");
+    lista.replaceChildren();
+    dias.forEach((d) => {
+      const li = document.createElement("li");
+      li.className = "semana-dia" + (d.esHoy ? " semana-dia--hoy" : "");
+      if (d.esHoy) li.setAttribute("aria-current", "date");
+      const letra = document.createElement("span");
+      letra.className = "semana-dia__letra";
+      letra.setAttribute("aria-hidden", "true");
+      letra.textContent = d.dia;
+      const cara = document.createElement("span");
+      cara.className = "semana-dia__cara";
+      cara.setAttribute("aria-hidden", "true");
+      if (d.estado && window.LumeaUI) window.LumeaUI.ponerCara(cara, d.estado);
+      else cara.classList.add("semana-dia__cara--vacia");                     // sin check-in: un punto vacío
+      const comidas = document.createElement("span");
+      comidas.className = "semana-dia__comidas cifra";
+      comidas.setAttribute("aria-hidden", "true");
+      comidas.textContent = d.comidas == null ? "–" : String(d.comidas);
+      const lector = document.createElement("span");
+      lector.className = "solo-lector";
+      const partes = [];
+      if (d.comidas != null) partes.push(F.plural(d.comidas, "comida", "comidas"));
+      partes.push(d.estado ? `ánimo ${(F.NOMBRE_ANIMO[d.estado] || d.estado).toLowerCase()}` : "sin check-in");
+      lector.textContent = `${d.nombre.toLowerCase()} ${d.numero}${d.esHoy ? " (hoy)" : ""}: ${partes.join(", ")}`;
+      li.append(letra, cara, comidas, lector);
+      lista.appendChild(li);
+    });
   }
 
   async function guardarAnimo() {

@@ -57,6 +57,7 @@
         avatar: null,
         calcomanias: null,
         animo_hoy: { estado: null, registrado: false, historial_semana: null },
+        ultimos_dias: null,          // los últimos 7 días (hoy al final) para la franja de Inicio; null = no llegó ni el historial ni el ánimo
       };
     }
 
@@ -150,6 +151,15 @@
       const dias = extra.animo ? F.animoPorDia(extra.animo, semana) : null;
       const deHoy = dias ? (dias.find((d) => d.clave === hoyClave) || {}).estado : null;
       const estadoHoy = (p.avatar && p.avatar.estado_animo_hoy) || deHoy || null;
+      // La franja «Tu semana» de Inicio: los últimos 7 días, con hoy a la derecha (comidas del historial y último ánimo de cada día)
+      const ultimos = F.ultimosDias(hoy);
+      const comidas = extra.historial ? F.comidasPorDia(extra.historial, ultimos) : null;
+      const animos = extra.animo ? F.animoPorDia(extra.animo, ultimos) : null;
+      s.ultimos_dias = comidas || animos ? ultimos.map((d, i) => ({
+        dia: F.DIAS_CORTO[d.indice], nombre: F.DIAS_LARGO[d.indice], numero: d.numero, clave: d.clave,
+        comidas: comidas ? comidas[i].comidas : null, estado: animos ? animos[i].estado : null, esHoy: d.clave === hoyClave,
+      })) : null;
+
       s.animo_hoy = {
         estado: estadoHoy,
         registrado: !!estadoHoy,

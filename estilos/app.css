@@ -404,3 +404,18 @@ html, body { transition: background-color var(--m-base) var(--m-salida), color v
 
 /* Los párrafos no pasan de unos 70 caracteres por línea (en el computador) */
 .contenido__subtitulo, .inicio__nota, .panel-pestana__nota { max-width: 70ch; }
+
+/* ---------- Tu semana, en una franja (Inicio) ---------- */
+.inicio__semana { position: relative; display: grid; gap: var(--e-3); }
+.semana-franja { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--e-2); }
+.semana-dia { display: grid; justify-items: center; align-content: start; gap: var(--e-1); padding: var(--e-2) var(--e-1); border-radius: var(--r-tarjeta); border: 1.5px solid transparent; min-width: 0; }
+.semana-dia--hoy { border-color: var(--c-borde-fuerte); }                          /* hoy se distingue por el borde, no por un color de juicio */
+.semana-dia__letra { font-size: var(--t-s); color: var(--c-tinta-suave); }
+.semana-dia__cara { display: block; width: 36px; height: 36px; }
+.semana-dia__cara .lumea-cara__img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.semana-dia__cara--vacia::before { content: ""; display: block; width: 12px; height: 12px; margin: 12px; border-radius: 50%; border: 2px solid var(--c-borde-fuerte); }
+.semana-dia__comidas { font-weight: var(--t-peso-fuerte); }
+/* La franja entera es el enlace a Progreso (el enlace cubre toda la tarjeta) */
+.inicio__semana-enlace { justify-self: start; font-weight: var(--t-peso-medio); color: var(--c-marca-tinta); }
+.inicio__semana-enlace::after { content: ""; position: absolute; inset: 0; border-radius: var(--r-tarjeta); }
+.inicio__semana:hover .inicio__semana-enlace { text-decoration: underline; }

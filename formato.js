@@ -76,6 +76,14 @@
     });
   }
 
+  // Los últimos `n` días (por defecto 7), con hoy al final: [{ clave: "2026-10-03", indice: 0..6 (lunes = 0), numero: 3 }]
+  function ultimosDias(hoy, n = 7) {
+    return Array.from({ length: n }, (_, i) => {
+      const f = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - (n - 1 - i));
+      return { clave: clave(f.getFullYear(), f.getMonth(), f.getDate()), indice: (f.getDay() + 6) % 7, numero: f.getDate() };
+    });
+  }
+
   // El backend manda la fecha como «Mon, 05 Oct 2026 00:00:00 GMT»: medianoche en UTC.
   // Se lee con los campos UTC; con los locales, en Colombia (UTC-5) saldría el día anterior.
   function claveDeFechaDelServidor(texto) {
@@ -110,6 +118,6 @@
 
   window.LumeaFormato = {
     plural, semillas, porcentajeNivel, textoNivel, textoRacha, notaRacha, textoMeta,
-    NOMBRE_ANIMO, DIAS_CORTO, DIAS_LARGO, claveDeHoy, semanaDe, claveDeFechaDelServidor, comidasPorDia, animoPorDia,
+    NOMBRE_ANIMO, DIAS_CORTO, DIAS_LARGO, claveDeHoy, semanaDe, ultimosDias, claveDeFechaDelServidor, comidasPorDia, animoPorDia,
   };
 })();
