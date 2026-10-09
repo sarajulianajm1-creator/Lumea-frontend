@@ -65,20 +65,20 @@
   min-height: 44px; padding: 0 var(--e-3);
   border: 0; border-radius: var(--r-pildora);
   background: transparent; color: var(--c-tinta);
-  font: inherit; font-size: var(--t-s); font-weight: var(--t-peso-medio); cursor: pointer;
-  transition: background var(--m-rapido) var(--m-salida), color var(--m-rapido) var(--m-salida);
+  font: inherit; font-size: var(--t-s); font-weight: var(--t-peso-medio); cursor: pointer;       /* el mismo peso en todas: el ancho de la pestaña no cambia */
+  transition: background var(--m-rapido) var(--m-salida), color var(--m-base) var(--m-salida);    /* el color cambia con la misma duración y curva que la píldora */
 }
 .pestanas { position: relative; isolation: isolate; }
-/* El indicador de la pestaña activa (avatar.js lo pone): una píldora que se desliza de una pestaña a otra. La pestaña activa conserva su
-   propio fondo (así el contraste del texto se mide bien y sin JavaScript sigue viéndose), pero lo toma cuando la píldora llega: --m-base de espera. */
+/* El indicador de la pestaña activa (avatar.js lo pone): una píldora que se desliza de una pestaña a otra (transform y width, en la misma
+   transición). Es lo único que se mueve: la pestaña activa no pinta fondo propio, solo cambia el color de su texto a --c-marca-tinta, que
+   contrasta 4,5:1 sobre la píldora (--c-marca-suave) y sobre el fondo de la fila (lo comprueba test_avatar.py en las 5 paletas, claro y oscuro). */
 .pestanas__indicador {
   position: absolute; top: var(--e-1); bottom: var(--e-1); left: 0; z-index: -1; pointer-events: none;
-  border-radius: var(--r-pildora); background: var(--c-marca);
+  border-radius: var(--r-pildora); background: var(--c-marca-suave);
   transition: transform var(--m-base) var(--m-salida), width var(--m-base) var(--m-salida);
 }
-.pestanas[data-indicador] .pestana[aria-selected="true"] { transition-delay: var(--m-base); }
-.pestana:hover { background: var(--c-marca-suave); }
-.pestana[aria-selected="true"] { background: var(--c-marca); color: var(--c-sobre-marca); font-weight: var(--t-peso-fuerte); }
+.pestana:hover { background: color-mix(in srgb, var(--c-marca-suave) 55%, transparent); }
+.pestana[aria-selected="true"] { color: var(--c-marca-tinta); }
 .pestana:focus-visible, .panel-pestana:focus-visible { outline: 3px solid var(--c-foco); outline-offset: 2px; }
 
 .panel-pestana { display: grid; gap: var(--e-3); align-content: start; }

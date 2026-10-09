@@ -368,7 +368,8 @@ def test_las_pestanas_van_en_una_sola_fila_dentro_de_su_contenedor(pagina, backe
     pagina.locator("#avatar-contenido").wait_for()
     datos = pagina.locator("#pestanas").evaluate("e => [getComputedStyle(e).overflowX, getComputedStyle(e).scrollSnapType, e.scrollWidth > e.clientWidth]")
     assert datos[0] == "auto" and datos[1].startswith("x") and datos[2] is True
-    pagina.locator("#pestana-companero").click()                                              # elegir la última la deja a la vista
+    pagina.locator("#pestana-companero").click()                                              # elegir la última la deja a la vista (la fila se desliza suave)
+    pagina.wait_for_function("(() => { const e = document.querySelector('#pestana-companero'); const f = e.parentElement.getBoundingClientRect(), r = e.getBoundingClientRect(); return r.left >= f.left - 1 && r.right <= f.right + 1 })()")
     assert pagina.locator("#pestana-companero").evaluate("e => { const f = e.parentElement.getBoundingClientRect(), r = e.getBoundingClientRect(); return r.left >= f.left - 1 && r.right <= f.right + 1 }")
     assert pagina.locator("[role=tab]").count() == 5 and pagina.evaluate("location.hash") == "#companero"
 
@@ -684,3 +685,86 @@ def test_la_accion_principal_de_avatar_es_el_armario_y_nada_queda_debajo_de_la_v
     for selector in ("#panel-armario", "#panel-companero", ".avatar-panel"):
         caja = pagina.locator(selector).bounding_box()
         assert caja["x"] >= vitrina["x"] + vitrina["width"] - 1 or caja["y"] + caja["height"] <= vitrina["y"] + 1
+
+
+# ---------- P11 · 1: pestañas fluidas ----------
+
+PALETAS = ["laguna", "neblina", "carnaval", "colibri", "cosecha", None]
+
+
+def _lum(c):
+    f = lambda v: (v / 255 / 12.92) if v / 255 <= 0.03928 else (((v / 255) + 0.055) / 1.055) ** 2.4
+    return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2])
+
+
+def _contraste(a, b):
+    la, lb = sorted((_lum(a), _lum(b)), reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+
+RESOLVER = "(c) => { const e = document.createElement('i'); e.style.color = c; document.body.appendChild(e); const r = getComputedStyle(e).color; e.remove(); return r }"
+
+
+@pytest.mark.parametrize("paleta", PALETAS)
+@pytest.mark.parametrize("modo", ["claro", "oscuro"])
+def test_el_texto_activo_contrasta_4_5_sobre_la_pildora_y_sobre_el_fondo_de_la_fila(pagina, backend, paleta, modo):
+    import re
+    guardar = f"localStorage.setItem('lumea-paleta', '{paleta}'); " if paleta else ""
+    pagina.add_init_script(guardar + f"localStorage.setItem('lumea-modo', '{modo}')")
+    abrir(pagina, backend)
+    pagina.locator(".pestanas__indicador").wait_for(state="attached")
+    c = pagina.evaluate("""() => { const a = document.querySelector('.pestana[aria-selected=true]'), p = document.querySelector('.pestanas__indicador'), f = document.querySelector('.pestanas');
+        return [getComputedStyle(a).color, getComputedStyle(p).backgroundColor, getComputedStyle(f).backgroundColor] }""")
+    rgb = lambda t: tuple(float(x) for x in re.findall(r"[\d.]+", t)[:3])
+    texto, pildora, fila = (rgb(x) for x in c)
+    assert _contraste(texto, pildora) >= 4.5, (paleta, modo, c)
+    assert _contraste(texto, fila) >= 4.5, (paleta, modo, c)                    # así axe pasa sin que la pestaña pinte fondo propio
+
+
+def test_solo_se_mueve_la_pildora_la_pestana_activa_no_pinta_fondo_ni_cambia_de_ancho(pagina, backend):
+    abrir(pagina, backend)
+    pagina.locator(".pestanas__indicador").wait_for(state="attached")
+    datos = pagina.evaluate("""() => { const a = document.querySelector('.pestana[aria-selected=true]'), c = getComputedStyle(a);
+        return { fondo: c.backgroundColor, espera: c.transitionDelay, pesos: [...document.querySelectorAll('.pestana')].map(e => getComputedStyle(e).fontWeight),
+                 anchos: [...document.querySelectorAll('.pestana')].map(e => e.getBoundingClientRect().width) } }""")
+    assert datos["fondo"] == "rgba(0, 0, 0, 0)" and set(datos["espera"].split(", ")) == {"0s"}      # sin fondo propio ni transition-delay
+    assert len(set(datos["pesos"])) == 1                                                              # el mismo peso en todas
+    pagina.get_by_role("tab", name="Misiones").click()
+    pagina.wait_for_timeout(500)
+    assert pagina.locator(".pestana").evaluate_all("e => e.map(x => x.getBoundingClientRect().width)") == datos["anchos"]   # el ancho no cambia al elegir
+    # el color del texto y la píldora comparten duración y curva
+    t = pagina.evaluate("""() => { const a = getComputedStyle(document.querySelector('.pestana')), p = getComputedStyle(document.querySelector('.pestanas__indicador'));
+        const i = a.transitionProperty.split(', ').indexOf('color');
+        return [a.transitionDuration.split(', ')[i], a.transitionTimingFunction.split(/, (?![^(]*\\))/)[i], p.transitionDuration.split(', ')[0], p.transitionTimingFunction.split(/, (?![^(]*\\))/)[0], p.transitionProperty] }""")
+    assert t[0] == t[2] == "0.22s" and t[1] == t[3] and t[4] == "transform, width"
+
+
+def test_el_panel_nuevo_entra_con_fundido_y_12_px_desde_el_lado_de_la_pestana_elegida(pagina, backend):
+    abrir(pagina, backend)
+    pagina.locator(".pestanas__indicador").wait_for(state="attached")
+    panel = pagina.locator("#panel-misiones")
+    pagina.get_by_role("tab", name="Misiones").click()
+    cuadros = panel.evaluate("e => e.getAnimations().map(a => [a.effect.getTiming().duration, a.effect.getKeyframes().map(k => [k.opacity, k.transform])])")
+    assert cuadros and cuadros[0][0] == 220 and cuadros[0][1] == [["0", "translateX(12px)"], ["1", "none"]]       # viene de la derecha
+    pagina.get_by_role("tab", name="Mi armario").click()
+    izq = pagina.locator("#panel-armario").evaluate("e => e.getAnimations().map(a => a.effect.getKeyframes().map(k => k.transform))")
+    assert izq[0][0] == "translateX(-12px)"                                                                      # y de la izquierda al volver
+
+
+def test_con_movimiento_reducido_el_panel_cambia_de_golpe(pagina, backend):
+    pagina.emulate_media(reduced_motion="reduce")
+    abrir(pagina, backend)
+    pagina.get_by_role("tab", name="Misiones").click()
+    assert pagina.locator("#panel-misiones").evaluate("e => e.getAnimations().length") == 0
+    assert pagina.locator("#panel-misiones").is_visible() and not pagina.locator("#panel-armario").is_visible()
+
+
+def test_el_cambio_de_panel_no_salta_de_alto(pagina, backend):
+    abrir(pagina, backend)
+    pagina.locator(".pestanas__indicador").wait_for(state="attached")
+    antes = pagina.locator(".avatar-panel").evaluate("e => e.offsetHeight")
+    pagina.get_by_role("tab", name="Misiones").click()
+    alto = pagina.locator(".avatar-panel").evaluate("e => e.getAnimations().map(a => a.effect.getKeyframes().map(k => k.height))")
+    despues = pagina.locator(".avatar-panel").evaluate("e => (e.getAnimations(), e.offsetHeight)")
+    if antes != despues:                                                                                         # si cambia de alto, lo anima desde el alto anterior
+        assert alto and alto[0][0] == f"{antes}px"

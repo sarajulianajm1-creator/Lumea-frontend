@@ -551,22 +551,48 @@ const HEX = /^[0-9a-f]{6}$/i;
   }
 
   // ---------- Pestañas (patrón ARIA de «tabs») ----------
+  const sinMovimiento = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const tokenCss = (nombre) => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+  let primeraSeleccion = true;                             // al abrir la pantalla el panel no se anima
+
+  // El panel nuevo entra con fundido y 12 px de desplazamiento desde el lado de la pestaña elegida, y la columna cambia de alto sin saltar
+  // (duración y curva de --m-base y --m-salida; con prefers-reduced-motion no se anima nada).
+  function animarPanel(panel, columna, altoAntes, haciaLaDerecha) {
+    const duracion = parseFloat(tokenCss("--m-base")) || 0;
+    if (!duracion) return;
+    const opciones = { duration: duracion, easing: tokenCss("--m-salida") || "ease-out" };
+    panel.animate([{ opacity: 0, transform: `translateX(${haciaLaDerecha ? 12 : -12}px)` }, { opacity: 1, transform: "none" }], opciones);
+    const altoDespues = columna.offsetHeight;
+    if (altoAntes && altoDespues && altoAntes !== altoDespues) {
+      columna.style.overflow = "hidden";                   // solo mientras dura el cambio de alto
+      const alto = columna.animate([{ height: `${altoAntes}px` }, { height: `${altoDespues}px` }], opciones);
+      alto.onfinish = alto.oncancel = () => { columna.style.overflow = ""; };
+    }
+  }
+
   function seleccionar(nombre, { enfocar = false, escribirHash = true } = {}) {
+    const previa = PESTANAS.find((n) => $(`pestana-${n}`).getAttribute("aria-selected") === "true");
+    const columna = $("pestanas").parentElement;
+    const animar = !primeraSeleccion && previa && previa !== nombre && !sinMovimiento();
+    const altoAntes = animar ? columna.offsetHeight : 0;
+    primeraSeleccion = false;
     PESTANAS.forEach((n) => {
       const activa = n === nombre;
       const pestana = $(`pestana-${n}`);
       pestana.setAttribute("aria-selected", String(activa));
       pestana.tabIndex = activa ? 0 : -1;                   // solo la activa entra con Tab; las flechas mueven
       $(`panel-${n}`).hidden = !activa;
-      if (activa && enfocar) pestana.focus();
-      if (activa) {                                         // la fila se desliza de lado hasta la pestaña elegida (sin mover la página hacia abajo)
+      if (activa && enfocar) pestana.focus({ preventScroll: true });
+      if (activa) {                                         // si la pestaña queda fuera de vista, la fila se desliza suave hasta centrarla (sin mover la página)
         const fila = pestana.parentElement;
-        fila.scrollLeft = Math.max(0, pestana.offsetLeft - (fila.clientWidth - pestana.offsetWidth) / 2);
+        const fuera = pestana.offsetLeft < fila.scrollLeft || pestana.offsetLeft + pestana.offsetWidth > fila.scrollLeft + fila.clientWidth;
+        if (fuera) fila.scrollTo({ left: Math.max(0, pestana.offsetLeft - (fila.clientWidth - pestana.offsetWidth) / 2), behavior: sinMovimiento() ? "auto" : "smooth" });
       }
     });
     moverIndicador($(`pestana-${nombre}`), true);
     if (nombre === "armario" && estado.armarioSucio) dibujarArmario();
     if (nombre === "como-me-veo" && estado.avatar && !estado.rasgosDibujados) dibujarRasgos();
+    if (animar) animarPanel($(`panel-${nombre}`), columna, altoAntes, PESTANAS.indexOf(nombre) > PESTANAS.indexOf(previa));
     if (escribirHash && location.hash !== `#${nombre}`) history.replaceState(null, "", `#${nombre}`);
   }
 

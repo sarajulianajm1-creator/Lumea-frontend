@@ -157,7 +157,8 @@ def test_pasar_el_cursor_o_enfocar_responde_en_120_ms(pagina, nombre, selectores
         elementos = pagina.locator(selector)
         assert elementos.count() > 0, selector
         duraciones = elementos.first.evaluate("e => getComputedStyle(e).transitionDuration")
-        assert set(segundos(duraciones)) == {0.12}, f"{selector}: {duraciones}"           # --m-rapido
+        esperado = {0.12, 0.22} if selector == ".pestana" else {0.12}                    # --m-rapido (el fondo); en la pestaña, el color va con la píldora (--m-base)
+        assert set(segundos(duraciones)) == esperado, f"{selector}: {duraciones}"
 
 
 # ---------- El cambio de paleta: fondo y texto, 220 ms ----------
