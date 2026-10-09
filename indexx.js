@@ -40,7 +40,23 @@
     const aviso = $("checkin-confirmado");
     aviso.hidden = !registrado;
     if (registrado) aviso.textContent = `Hoy llegaste: ${F.NOMBRE_ANIMO[s.animo_hoy.estado] || s.animo_hoy.estado}. Tu check-in ya está registrado.`;
-    if (window.LumeaCompanero) window.LumeaCompanero.pintarCheckin();       // la cara elegida se anima; las demás, quietas
+    if (window.LumeaCompanero) window.LumeaCompanero.pintarCheckin();       // las cinco caras, quietas (data-caras-quietas)
+    pintarSaludo();
+  }
+
+  // El compañero que saluda junto al «Hola, Ana»: la cara del ánimo de hoy (neutral si todavía no hay check-in), despacio.
+  // Es lo único que se mueve en Inicio; al guardar el ánimo cambia a esa cara. Decorativo: sin imagen, el saludo queda igual.
+  function pintarSaludo() {
+    const hueco = $("companero-saluda");
+    const C = window.LumeaCompanero, UI = window.LumeaUI;
+    if (!hueco || !C || !UI) return;
+    const s = window.lumeaStore.obtener();
+    const estado = s.cargado && s.animo_hoy.registrado ? s.animo_hoy.estado : "neutral";
+    const direccion = UI.urlDeCara(estado);
+    const actual = hueco.firstElementChild;
+    if (actual && actual.dataset.fuente === C.url(direccion, "slow")) return;     // la misma cara: no se reinicia
+    const img = C.imagen(direccion, "slow", "inicio__companero-img");
+    if (img) { img.addEventListener("error", () => hueco.replaceChildren()); hueco.replaceChildren(img); } else hueco.replaceChildren();
   }
 
   async function guardarAnimo() {

@@ -52,7 +52,9 @@
     <main class="contenido">
 
       <header class="inicio__saludo">
-        <div>
+        <!-- El compañero que saluda: grande, animado despacio y con la cara del ánimo de hoy (indexx.js). Decorativo: si no se dibuja, el saludo queda igual. -->
+        <span class="inicio__companero" id="companero-saluda" aria-hidden="true"></span>
+        <div class="inicio__saludo-texto">
           <h1 class="contenido__titulo">Hola, <span class="lumea-bind-nombre">Cargando...</span></h1>
           <time class="inicio__fecha lumea-bind-fecha">Cargando fecha...</time>
         </div>
@@ -102,7 +104,7 @@
           <h2 id="titulo-animo" class="inicio__titulo">¿Cómo llegas hoy?</h2>
           <p class="inicio__nota">Elige la cara que más se parece a tu día</p>
           <!-- Cada botón deja un hueco (data-cara-checkin) para la cara de tu compañero (companero.js) -->
-          <div class="animo-caras" role="group" aria-labelledby="titulo-animo">
+          <div class="animo-caras" role="group" aria-labelledby="titulo-animo" data-caras-quietas>
             <button type="button" class="animo-cara" data-estado="muy_mal" aria-pressed="false">
               <span class="animo-cara__imagen" data-cara-checkin="muy_mal"></span>
               <span class="animo-cara__nombre">Muy mal</span>

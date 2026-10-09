@@ -20,6 +20,7 @@
 // Cómo se usa:
 //   <span data-cara-checkin="muy_mal"></span>   un hueco por estado, dentro del botón del check-in
 //   LumeaCompanero.pintarCheckin()              dibuja las cinco caras; la del botón con aria-pressed="true" se anima
+//                                               (salvo dentro de [data-caras-quietas]: en Inicio la única que se mueve es la del saludo)
 //   LumeaCompanero.url(direccion, "slow")             la misma dirección con la animación pedida (o quieta si no se pide)
 //   LumeaCompanero.imagen(direccion, "slow", clase)   una <img alt=""> del compañero; si no carga, se quita sola
 //
@@ -110,7 +111,7 @@
       const boton = hueco.closest("button");
       const elegida = !!boton && boton.getAttribute("aria-pressed") === "true";
       const quieta = UI ? UI.urlDeCara(hueco.dataset.caraCheckin) : null;
-      const animacion = elegida ? "medium" : null;
+      const animacion = elegida && !hueco.closest("[data-caras-quietas]") ? "medium" : null;       // en Inicio, solo se mueve el saludo
       const actual = hueco.firstElementChild;
       if (actual && actual.dataset.fuente === url(quieta, animacion)) return;
       const img = imagen(quieta, animacion, "companero__img");

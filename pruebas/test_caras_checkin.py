@@ -66,7 +66,8 @@ def test_cada_boton_trae_la_cara_de_su_estado_del_companero_y_quieta(pagina, bac
 def test_la_direccion_no_lleva_datos_de_la_persona(pagina, backend, nombre):
     abrir(pagina, backend, nombre)
     pagina.get_by_role("button", name="Bien", exact=True).click()                                # incluso la animada
-    pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[data-fuente*=medium]').length === 1")
+    if nombre == "emociones.html":
+        pagina.wait_for_function("document.querySelectorAll('.animo-cara[aria-pressed=true] img[data-fuente*=medium]').length === 1")
     for src in srcs(pagina):
         datos = parametros(src)
         assert set(datos) <= PARAMETROS_PERMITIDOS, f"parámetro de más: {set(datos) - PARAMETROS_PERMITIDOS}"
@@ -113,8 +114,7 @@ def test_se_elige_y_se_guarda_con_el_teclado(pagina, backend):
     assert pagina.locator("#btn-guardar-animo").is_enabled()
 
 
-@pytest.mark.parametrize("nombre", PAGINAS)
-def test_solo_la_cara_elegida_se_anima_y_la_animacion_la_sigue(pagina, backend, nombre):
+def test_solo_la_cara_elegida_se_anima_y_la_animacion_la_sigue(pagina, backend, nombre="emociones.html"):
     abrir(pagina, backend, nombre)
 
     def animadas():
@@ -131,6 +131,60 @@ def test_solo_la_cara_elegida_se_anima_y_la_animacion_la_sigue(pagina, backend, 
     assert pagina.locator("img[data-fuente*=medium], img[data-fuente*=slow]").count() == 1                       # nunca dos caras moviéndose
 
 
+# ---------- Inicio: los botones del check-in quedan quietos y el compañero que saluda es lo único que se mueve ----------
+
+def test_en_inicio_las_cinco_caras_del_check_in_quedan_quietas(pagina, backend):
+    abrir(pagina, backend, "index-ingresado.html")
+    pagina.get_by_role("button", name="Bien", exact=True).click()
+    pagina.wait_for_timeout(250)
+    assert all("animationVariant" not in s for s in srcs(pagina))
+    assert pagina.locator(".animo-caras img[data-fuente*=medium], .animo-caras img[data-fuente*=slow]").count() == 0
+
+
+def test_el_companero_saluda_con_la_cara_neutral_y_despacio_si_hoy_no_hay_check_in(pagina, backend):
+    abrir(pagina, backend, "index-ingresado.html")
+    saludo = pagina.locator(".inicio__saludo #companero-saluda img")
+    saludo.wait_for()
+    datos = parametros(saludo.get_attribute("data-fuente"))
+    assert datos["eyesVariant"] == "dots" and datos["animationVariant"] == "slow" and datos["seed"] == "lumea-sol"
+    assert saludo.get_attribute("alt") == "" and pagina.locator("#companero-saluda").get_attribute("aria-hidden") == "true"
+    assert pagina.locator("img[data-fuente*=slow], img[data-fuente*=medium]").count() == 1                 # lo único que se mueve en Inicio
+    caja = saludo.bounding_box()
+    assert 130 <= caja["width"] <= 150                                                                       # unos 140 px en computador
+
+
+def test_el_companero_que_saluda_mide_96_en_el_celular(pagina, backend):
+    pagina.set_viewport_size({"width": 375, "height": 800})
+    abrir(pagina, backend, "index-ingresado.html")
+    pagina.locator("#companero-saluda img").wait_for()
+    assert 90 <= pagina.locator("#companero-saluda img").bounding_box()["width"] <= 100
+    assert pagina.evaluate("document.documentElement.scrollWidth") <= 375
+
+
+def test_al_guardar_el_animo_el_companero_que_saluda_cambia_a_esa_cara(pagina, backend):
+    abrir(pagina, backend, "index-ingresado.html")
+    pagina.locator("#companero-saluda img").wait_for()
+    backend.poner("GET", "/progreso", _progreso_registrado("mal"))
+    backend.poner("GET", "/estado-animo", {"success": True, "cantidad": 1, "historial": [{"id": 1, "fecha": "Thu, 08 Oct 2026 00:00:00 GMT", "estado": "mal"}]})
+    pagina.get_by_role("button", name="Mal", exact=True).click()
+    pagina.locator("#btn-guardar-animo-inicio").click()
+    pagina.wait_for_function("document.querySelector('#companero-saluda img') && document.querySelector('#companero-saluda img').dataset.fuente.includes('eyesVariant=small')")
+    assert pagina.locator("img[data-fuente*=slow], img[data-fuente*=medium]").count() == 1
+
+
+def test_si_no_hay_companero_el_saludo_queda_sin_imagen(pagina, backend):
+    abrir(pagina, backend, "index-ingresado.html", compa=None)
+    pagina.wait_for_timeout(300)
+    assert pagina.locator("#companero-saluda img").count() == 0
+    assert pagina.locator("h1").inner_text().startswith("Hola")
+
+
+def _progreso_registrado(estado):
+    cuerpo = cargar_respuesta("progreso")
+    cuerpo["progreso"]["avatar"] = companero("sol", estado)
+    return cuerpo
+
+
 @pytest.mark.parametrize("nombre", PAGINAS)
 def test_con_movimiento_reducido_las_caras_se_ven_pero_no_piden_animacion(pagina, backend, nombre):
     pagina.emulate_media(reduced_motion="reduce")
@@ -140,8 +194,7 @@ def test_con_movimiento_reducido_las_caras_se_ven_pero_no_piden_animacion(pagina
     assert all(s is not None and "animationVariant" not in s for s in srcs(pagina))
 
 
-@pytest.mark.parametrize("nombre", PAGINAS)
-def test_las_demas_caras_no_se_vuelven_a_cargar_al_elegir_otra(pagina, backend, nombre):
+def test_las_demas_caras_no_se_vuelven_a_cargar_al_elegir_otra(pagina, backend, nombre="emociones.html"):
     """Una cara que ya está dibujada tal cual no parpadea ni reinicia su animación."""
     abrir(pagina, backend, nombre)
     pagina.evaluate("document.querySelectorAll('.animo-cara img').forEach((i, n) => { i.dataset.marca = n })")
@@ -154,7 +207,8 @@ def test_las_demas_caras_no_se_vuelven_a_cargar_al_elegir_otra(pagina, backend, 
 def test_ya_registrado_hoy_la_cara_de_hoy_es_la_elegida(pagina, backend):
     abrir(pagina, backend, "index-ingresado.html", registrado="mal")
     assert pagina.get_by_role("button", name="Mal", exact=True).get_attribute("aria-pressed") == "true"
-    assert "animationVariant=medium" in srcs(pagina)[1]
+    assert "animationVariant" not in srcs(pagina)[1]                                             # en Inicio los botones quedan quietos
+    assert "eyesVariant=small" in pagina.locator("#companero-saluda img").get_attribute("data-fuente")        # y el que saluda lleva esa cara
 
 
 # ---------- Sin compañero o sin internet: queda la palabra ----------

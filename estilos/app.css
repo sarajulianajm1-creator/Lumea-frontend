@@ -112,7 +112,13 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 /* ---------- 4. Inicio (rediseño R2) ----------
    Dos tarjetas y dos franjas planas. Color solo en los momentos: el botón principal, la barra
    de logro, los chips y la cara elegida; las tarjetas quedan casi neutras. */
-.inicio__saludo { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--e-4); }
+.inicio__saludo { display: flex; justify-content: space-between; align-items: center; gap: var(--e-4); }
+.inicio__saludo-texto { flex: 1 1 auto; min-width: 0; }
+/* El compañero que saluda: grande en el computador (140 px) y más pequeño en el celular (96 px) */
+.inicio__companero { flex: 0 0 auto; display: block; width: 96px; height: 96px; }
+.inicio__companero:empty { display: none; }
+.inicio__companero-img { display: block; width: 100%; height: 100%; object-fit: contain; }
+@media (min-width: 768px) { .inicio__companero { width: 140px; height: 140px; } }
 .inicio__fecha { display: block; margin-top: var(--e-1); color: var(--c-tinta-suave); }
 .inicio__titulo { font-size: var(--t-l); }
 .inicio__rotulo { font-size: var(--t-l); font-weight: var(--t-peso-fuerte); line-height: var(--t-interlineado-titulo); }
