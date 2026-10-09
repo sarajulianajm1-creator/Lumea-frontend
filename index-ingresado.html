@@ -136,34 +136,40 @@
 
       </div>
 
-      <!-- ¿SABÍAS QUE…? DEL DÍA: el mismo dato para todas las personas (GET /dato-del-dia, sin correo). Si la petición falla,
-           la tarjeta no se dibuja. «Leer más» es el mismo bloque largo de Registrar (leer-mas.js). -->
-      <section class="tarjeta inicio__dato con-forma con-forma--emocion con-forma--estrella" id="card-dato-dia" aria-labelledby="titulo-dato-dia" hidden>
-        <h2 id="titulo-dato-dia" class="inicio__titulo">¿Sabías que…?</h2>
-        <p id="dato-dia-alimento" class="consejo__titulo"></p>
-        <p id="dato-dia-texto" class="inicio__nota dato-largo"></p>
-        <button type="button" id="dato-dia-mas" class="boton boton--fantasma consejo__mas" aria-expanded="false" aria-controls="dato-dia-texto" hidden>Leer más</button>
-      </section>
+      <!-- Segunda fila (computador): el «¿Sabías que…?» a la izquierda; la misión y la etapa, apiladas, a la derecha -->
+      <div class="inicio__fila inicio__fila--dato">
+        <!-- ¿SABÍAS QUE…? DEL DÍA: el mismo dato para todas las personas (GET /dato-del-dia, sin correo). Si la petición falla,
+             la tarjeta no se dibuja. «Leer más» es el mismo bloque largo de Registrar (leer-mas.js). -->
+        <section class="tarjeta inicio__dato con-forma con-forma--emocion con-forma--estrella" id="card-dato-dia" aria-labelledby="titulo-dato-dia" hidden>
+          <h2 id="titulo-dato-dia" class="inicio__titulo">¿Sabías que…?</h2>
+          <p id="dato-dia-alimento" class="consejo__titulo"></p>
+          <p id="dato-dia-texto" class="inicio__nota dato-largo"></p>
+          <button type="button" id="dato-dia-mas" class="boton boton--fantasma consejo__mas" aria-expanded="false" aria-controls="dato-dia-texto" hidden>Leer más</button>
+        </section>
 
-      <!-- MISIÓN DE HOY: la próxima misión sin cumplir, con su recompensa -->
-      <section class="inicio__franja" aria-labelledby="titulo-mision">
-        <h2 id="titulo-mision" class="inicio__rotulo">Misión de hoy</h2>
-        <p id="proxima-mision-titulo" class="inicio__franja-texto">Cargando misión...</p>
-        <span id="proxima-mision-xp" class="chip chip--mision" hidden></span>
-      </section>
+        <div class="inicio__apilado">
+          <!-- MISIÓN DE HOY: la próxima misión sin cumplir, con su recompensa -->
+          <section class="inicio__franja" aria-labelledby="titulo-mision">
+            <h2 id="titulo-mision" class="inicio__rotulo">Misión de hoy</h2>
+            <p id="proxima-mision-titulo" class="inicio__franja-texto">Cargando misión...</p>
+            <span id="proxima-mision-xp" class="chip chip--mision" hidden></span>
+          </section>
 
-      <!-- NIVEL Y RACHA: enlaza a Progreso -->
-      <section aria-labelledby="titulo-nivel">
-        <h2 id="titulo-nivel" class="solo-lector">Etapa y racha</h2>
-        <a href="progreso.html" class="inicio__franja inicio__nivel">
-          <span class="inicio__rotulo lumea-bind-nivel cifra">Etapa --</span>
-          <div class="barra-xp__riel">
-            <div class="barra-xp__relleno lumea-bind-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia la siguiente etapa" style="width: 0%;"></div>
-          </div>
-          <i class="bi bi-chevron-right inicio__flecha" aria-hidden="true"></i>
-          <p class="inicio__nota"><span class="lumea-bind-xp-text">Cargando semillas...</span>. Racha: <span class="lumea-bind-racha cifra">--</span><span class="solo-lector">. Ver mi progreso</span></p>
-        </a>
-      </section>
+          <!-- NIVEL Y RACHA: enlaza a Progreso -->
+          <section aria-labelledby="titulo-nivel">
+            <h2 id="titulo-nivel" class="solo-lector">Etapa y racha</h2>
+            <a href="progreso.html" class="inicio__franja inicio__nivel">
+              <span class="inicio__rotulo lumea-bind-nivel cifra">Etapa --</span>
+              <div class="barra-xp__riel">
+                <div class="barra-xp__relleno lumea-bind-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Avance hacia la siguiente etapa" style="width: 0%;"></div>
+              </div>
+              <i class="bi bi-chevron-right inicio__flecha" aria-hidden="true"></i>
+              <p class="inicio__nota"><span class="lumea-bind-xp-text">Cargando semillas...</span>. Racha: <span class="lumea-bind-racha cifra">--</span><span class="solo-lector">. Ver mi progreso</span></p>
+            </a>
+          </section>
+
+        </div>
+      </div>
 
     </main>
   </div>

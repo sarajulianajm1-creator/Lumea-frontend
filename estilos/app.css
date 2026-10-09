@@ -128,6 +128,9 @@ a.boton, a.chip { text-decoration: none; }     /* un enlace con forma de botón 
 
 .inicio__fila { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--e-5); align-items: start; }
 @media (max-width: 1100px) { .inicio__fila { grid-template-columns: minmax(0, 1fr); } }   /* el menú lateral se come 248 px */
+/* Segunda fila: el dato del día y, a su lado, la misión y la etapa apiladas (ninguna franja ocupa todo el ancho con una sola línea) */
+.inicio__fila--dato { grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+.inicio__apilado { display: grid; gap: var(--e-4); min-width: 0; align-content: start; }
 .inicio__dia, .inicio__animo { display: flex; flex-direction: column; gap: var(--e-3); }
 .inicio__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-2); }
 
@@ -230,6 +233,12 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
    Cinco superficies como máximo: el nivel, la racha, las comidas de la semana, el ánimo de la semana y
    el enlace al álbum (una franja plana). El color va en los momentos: la barra y el chip de logro, las barras de comida. */
 .progreso__contenido { display: grid; gap: var(--e-5); }
+/* Computador: la racha y las comidas de la semana, lado a lado; lo demás, a lo ancho */
+@media (min-width: 1100px) {
+  .progreso__contenido { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .progreso__contenido > * { grid-column: 1 / -1; }
+  .progreso__contenido > [aria-labelledby="titulo-racha"], .progreso__contenido > #semana-comidas-caja { grid-column: auto; }
+}
 .progreso__bloque { display: grid; gap: var(--e-3); align-content: start; }
 .progreso__cabeza { display: flex; justify-content: space-between; align-items: center; gap: var(--e-3); }
 .progreso__enlace { font-weight: var(--t-peso-medio); }
@@ -378,3 +387,20 @@ a.inicio__franja:hover .inicio__nota { color: var(--c-tinta); text-decoration: u
 /* Al cambiar de paleta (o de modo), el fondo y el texto cambian de color en 220 ms. La transición va SOLO en
    estas dos propiedades y SOLO en la página: no hay ningún «transition: all» ni se mueve cada elemento. */
 html, body { transition: background-color var(--m-base) var(--m-salida), color var(--m-base) var(--m-salida); }
+
+/* ---------- 10. Movimiento con propósito (P6) ---------- */
+/* Entre pantallas: un fundido corto del navegador; el menú y el logo se quedan en su sitio (no parpadean). Solo con movimiento. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  .nav-app { view-transition-name: menu; }
+  .nav-app__marca { view-transition-name: logo; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--m-base); animation-timing-function: var(--m-salida); }
+}
+
+/* Al tocar: botones, opciones y mosaicos responden al instante (sin esperar a la transición del cursor, que dura --m-rapido) */
+.boton:active, .pestana:active, .animo-cara:active, .selector__opcion:active, .opciones__boton:active,
+.prenda__mosaico:active, .rasgo__opcion:active, .nav-app__enlace:active, .nav-app__salir:active { transition: none; }
+.animo-cara:active, .selector__opcion:active, .opciones__boton:active, .rasgo__opcion:active { transform: scale(.97); }
+
+/* Los párrafos no pasan de unos 70 caracteres por línea (en el computador) */
+.contenido__subtitulo, .inicio__nota, .panel-pestana__nota { max-width: 70ch; }

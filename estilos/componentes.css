@@ -49,8 +49,7 @@ p { margin: 0; text-wrap: pretty; }
      deformaba los círculos y las píldoras justo al enfocarlos. */
 }
 
-/* Sin transición automática entre páginas (rediseño R8): cada pantalla tiene UNA entrada propia
-   (.contenido, en app.css) y la transición del navegador sumaría una segunda. */
+/* Entre páginas hay un fundido corto del navegador (@view-transition, en app.css, solo si la persona admite movimiento). */
 
 .icono {
   width: 20px; height: 20px;
@@ -209,7 +208,8 @@ p { margin: 0; text-wrap: pretty; }
 .barra-xp__relleno {
   height: 100%; width: var(--avance, 0%);
   border-radius: inherit; background: var(--c-logro);
-  /* Sin transición (R8): la barra aparece llena hasta donde va; nada se mueve solo al abrir la pantalla. */
+  /* Se llena UNA vez al cargar (P6): el ancho pasa de 0 a su valor cuando llegan los datos; después solo cambia si la persona hace algo. */
+  transition: width var(--m-lento) var(--m-salida);
 }
 .numero { font-variant-numeric: tabular-nums; }        /* cifras que no "bailan" */
 /* Enchufe de las cifras (Isabella): calorías, gramos, semillas, etapa y racha. Sin --f-cifras se ven como el resto. */
